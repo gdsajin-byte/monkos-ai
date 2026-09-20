@@ -87,3 +87,140 @@ Avoid: `text, objects, patterns, high contrast, noise`
 
 - **AI로 만든 인물 사진을 "몽크사진관 촬영 결과물"로 올리지 않는다.** 포트폴리오·후기는 실제 촬영분만. (헌법 4조 4항)
 - 사람 얼굴이 나오는 홍보 이미지는 초상권 문제가 생기므로 **사람 없는 컷**으로 쓴다.
+
+---
+
+# 인물 프로필 사진 프롬프트 (본편 — 꾸 요청 2026-09-20)
+
+## 문장 조립 순서 (이 순서로 쓰면 잘 알아듣는다)
+
+`누가` → `표정` → `옷` → `배경` → `조명` → `구도/렌즈` → `분위기`
+
+```
+Professional studio portrait of a Korean woman in her early 30s,
+gentle closed-lip smile, wearing a charcoal blazer over a white shirt,
+plain light-grey seamless backdrop,
+soft large softbox from the left with a subtle rim light,
+upper-body framing, shot on 85mm f/2.0,
+natural skin texture, calm and confident mood.
+```
+Avoid: `plastic skin, over-smoothing, heavy makeup, distorted hands, extra fingers, text, watermark, harsh shadows`
+비율 `4:5` · 모델 `ultra`
+
+> **핵심**: `natural skin texture`를 꼭 넣는다. 빼면 피부가 플라스틱처럼 나온다.
+
+---
+
+## 1. 비즈니스 프로필 — 남성
+
+```
+Professional studio portrait of a Korean man in his late 30s,
+composed neutral expression with a slight smile,
+navy suit with a white dress shirt, no tie,
+deep charcoal gradient backdrop,
+key light from the right at 45 degrees with soft fill,
+chest-up framing, shot on 85mm f/2.0,
+natural skin texture, trustworthy executive mood.
+```
+Avoid: `plastic skin, over-smoothing, distorted hands, text, watermark, busy background`
+비율 `4:5`
+
+## 2. 비즈니스 프로필 — 여성
+
+```
+Professional studio portrait of a Korean woman in her early 40s,
+warm confident smile,
+ivory blouse under a beige tailored jacket,
+soft warm-grey backdrop,
+beauty dish above with a reflector below,
+upper-body framing, shot on 85mm f/2.0,
+natural skin texture, approachable professional mood.
+```
+Avoid: `plastic skin, over-smoothing, heavy makeup, text, watermark`
+비율 `4:5`
+
+## 3. 링크드인·이력서용 (밝고 깔끔)
+
+```
+Clean corporate headshot of a Korean woman in her late 20s,
+friendly open smile showing teeth,
+light-blue shirt,
+bright white seamless backdrop,
+high-key lighting, two softboxes at equal power,
+head and shoulders framing, shot on 105mm f/2.8,
+natural skin texture, bright and open mood.
+```
+Avoid: `shadows on background, plastic skin, text, watermark, harsh contrast`
+비율 `1:1`
+
+## 4. 강사·작가 프로필 (분위기 있게)
+
+```
+Editorial portrait of a Korean man in his 50s,
+thoughtful expression looking slightly off camera,
+dark knit sweater,
+deep navy textured background,
+single softbox from the side creating gentle falloff,
+upper-body framing, shot on 85mm f/1.8,
+natural skin texture, film-like grain, warm cinematic mood.
+```
+Avoid: `plastic skin, over-smoothing, flat lighting, text, watermark`
+비율 `4:5`
+
+## 5. SNS 프로필 (캐주얼)
+
+```
+Natural-light portrait of a Korean woman in her mid 20s,
+relaxed genuine laugh,
+cream knit cardigan,
+soft blurred indoor background near a large window,
+warm afternoon daylight,
+close-up framing, shot on 50mm f/1.4,
+natural skin texture, airy and friendly mood.
+```
+Avoid: `studio strobe look, plastic skin, text, watermark, cluttered background`
+비율 `1:1`
+
+## 6. 가족 프로필
+
+```
+Studio family portrait of a Korean family of four,
+parents in their 40s and two children, all smiling naturally,
+matching beige and cream knitwear,
+warm ivory seamless backdrop,
+broad soft lighting with gentle shadows,
+full upper-body group framing, shot on 50mm f/4,
+natural skin texture, warm and gentle mood.
+```
+Avoid: `distorted faces, extra limbs, merged bodies, plastic skin, text, watermark`
+비율 `16:9` 또는 `4:5`
+
+---
+
+## 바꿔 쓰는 단어표
+
+| 바꾸고 싶은 것 | 바꿀 자리 | 예시 |
+|---|---|---|
+| 나이 | `in her early 30s` | `in his early 20s` / `in her 60s` |
+| 표정 | `gentle closed-lip smile` | `bright open smile` / `calm neutral expression` |
+| 배경색 | `light-grey seamless backdrop` | `deep navy` / `warm ivory` / `pure white` |
+| 밝기 | `soft large softbox` | `high-key lighting` (밝게) / `single hard light` (강하게) |
+| 얼굴 크기 | `upper-body framing` | `head and shoulders` (크게) / `three-quarter length` (작게) |
+| 느낌 | `calm and confident mood` | `warm and friendly` / `cinematic and moody` |
+
+## 잘 안 나올 때
+
+| 증상 | 처방 |
+|---|---|
+| 피부가 인형같다 | 본문에 `natural skin texture, visible pores` 추가 |
+| 손가락이 이상하다 | `chest-up framing`으로 바꿔 손을 화면 밖으로 |
+| 얼굴이 서양인 같다 | `Korean`을 문장 맨 앞 `누가` 자리로 옮긴다 |
+| 배경이 지저분하다 | Avoid에 `busy background, props, furniture` |
+| 글씨가 박힌다 | Avoid에 `text, letters, watermark, logo` |
+| 너무 어둡다 | `soft fill light, bright exposure` 추가 |
+
+## 주의
+
+- 여기서 나온 인물은 **실존 인물이 아니다.** 홍보 이미지·분위기 참고용으로만 쓰고,
+  **"몽크사진관 촬영 결과물"이나 후기 사진으로 올리지 않는다** (헌법 4조 4항).
+- 실제 고객 사진을 올려 바꾸는 방식(I2I)은 프롬프트 쓰는 법이 다르다. 필요하면 별도 요청.
