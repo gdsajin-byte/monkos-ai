@@ -30,7 +30,7 @@ import {
 // === 핸들러 모듈 ===
 import { handleKakaoAuth, handleKakaoCallback, handleLineAuth, handleLineCallback, handleGoogleRedirectAuth, handleGoogleRedirectCallback, handleGoogleAuth, handleAuthToken, handleAuthVerify, handleAuthRefresh, handleVerifyCookie, handleLogout } from './lib/auth.js';
 import { handleCreditsGet, handleCreditsUse, handleCreditsRefund } from './lib/credits.js';
-import { handleCheckout, handleLemonSqueezyWebhook, handleTossWebhook, handleTossConfirm, handleTossDirect, handleDownloadDirect, handleTossSuccess, handleTossFail, handleDirectInit, handleDirectStatus, handleDirectFail, consumeGenerateQuota, refundGenerateQuota } from './lib/payments.js';
+import { handleCheckout, handleLemonSqueezyWebhook, handleTossWebhook, handleTossConfirm, handleTossDirect, handleDownloadDirect, handleTossSuccess, handleTossFail, handleDirectInit, handleDirectStatus, handleDirectFail, handlePayFail, consumeGenerateQuota, refundGenerateQuota } from './lib/payments.js';
 import { handleTelegramGateCode, handleTelegramMissionCode, handleConsentSns, handleMissionComplete, handleCreditsEvent } from './lib/events.js';
 import { handleTelegramCSWebhook, handleTelegramEventWebhook } from './lib/telegram.js';
 import { handleTelegramTeamWebhook, handleTeamNotify } from './lib/telegram-team.js';
@@ -1008,6 +1008,14 @@ const httpServer = createServer(async (req, res) => {
       return res.end(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.', code: 'RATE_LIMITED' }));
     }
     return handleDirectFail(req, res);
+  }
+  // 주문 문서 없는 결제 표면(크레딧 충전)의 실패 수신 (2026-09-20) — 로그 1행만 남긴다. 인증 불요, 레이트리밋이 남용 방어
+  if (urlPath === '/api/payments/fail' && req.method === 'POST') {
+    if (!checkRateLimit(req, 'pay-fail', 20)) {
+      res.writeHead(429, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.', code: 'RATE_LIMITED' }));
+    }
+    return handlePayFail(req, res);
   }
   if (urlPath === '/api/payments/toss/direct' && req.method === 'POST') return handleTossDirect(req, res);
   if (urlPath === '/api/download/direct' && req.method === 'GET') return handleDownloadDirect(req, res);

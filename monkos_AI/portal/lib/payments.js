@@ -879,6 +879,42 @@ export async function handleDirectFail(req, res) {
 }
 
 /**
+ * POST /api/payments/fail — 주문 문서가 없는 결제 표면(크레딧 충전 등)의 실패 수신 (2026-09-20 신설)
+ * body: { service, provider, stage, code, message, vw, vh, inApp }
+ *
+ * 충전 페이지는 directOrders 문서가 없어 handleDirectFail 을 쓸 수 없다 → 구조화 WARNING 로그 1행만 남긴다.
+ * 인증 불요(실패는 세션이 깨졌을 때도 난다) · Firestore 쓰기 없음 · 텔레그램 없음.
+ * 전 필드 화이트리스트/길이 제한, 모르는 필드는 무시. 남용 방어는 server.js 레이트리밋.
+ */
+const PAY_FAIL_PROVIDERS = new Set(['toss', 'lemon']);
+
+export async function handlePayFail(req, res) {
+  const json = (status, payload) => {
+    res.writeHead(status, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(payload));
+  };
+  try {
+    // 무인증 엔드포인트 — 정상 본문은 수백 바이트. 큰 본문은 읽기 전에 거절
+    if (Number(req.headers['content-length'] || 0) > 4096) return json(413, { error: '요청이 너무 큽니다', code: 'PAYLOAD_TOO_LARGE' });
+    const body = await parseJsonBody(req);
+    const b = (body && typeof body === 'object' && !Array.isArray(body)) ? body : {};
+    const service = (typeof b.service === 'string' && /^[a-z0-9_-]{1,24}$/.test(b.service)) ? b.service : 'unknown';
+    const provider = PAY_FAIL_PROVIDERS.has(b.provider) ? b.provider : 'unknown';
+    const stage = FAIL_STAGES.has(b.stage) ? b.stage : 'unknown';
+    const code = String(b.code || 'UNKNOWN').replace(/[^A-Za-z0-9_.:-]/g, '_').slice(0, 60);
+    // 제어문자 제거 — 로그 행 위조 방지
+    const message = String(b.message || '').replace(/[\u0000-\u001f\u007f]+/g, ' ').slice(0, 200);
+    const dim = (v) => (Number.isFinite(v) && v >= 0 && v <= 20000) ? Math.round(v) : '?';
+    const inApp = b.inApp === true;
+    log(`[Pay-Fail] service=${service} provider=${provider} stage=${stage} code=${code} vp=${dim(b.vw)}x${dim(b.vh)} inApp=${inApp} msg=${message}`, 'WARNING');
+    return json(200, { ok: true });
+  } catch (err) {
+    // 본문 파싱 실패 등 — 계측 엔드포인트라 조용히 400
+    return json(400, { error: '잘못된 요청', code: 'BAD_REQUEST' });
+  }
+}
+
+/**
  * POST /api/payments/toss/direct — 비로그인 직접결제 confirm (토스)
  * 서버가 주문 기록 금액(₩2,000)을 강제 — 클라이언트 amount 불신.
  * 멱등: 동일 orderId 재confirm 시 기존 토큰 재응답 (성공 페이지 새로고침 보호).
