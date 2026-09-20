@@ -41,6 +41,20 @@
     <!-- 스타일시트 -->
     <link rel="stylesheet" href="app.css">
     <link rel="stylesheet" href="cr-coin.css">
+    <style>
+      /* 2026-09-20 결제 표면 감사 — idphoto-kr 08-13 수정 이식.
+         app.css가 body 스크롤을 잠그므로(카메라 SPA 전제: height:100dvh; overflow:hidden) 본문을 자체 스크롤 컨테이너로.
+         짧은 기기에서 하단 카드·소액충전 스테퍼·特商法/환불 링크에 도달할 수 없던 문제 수정.
+         body가 flex column이라 flex:1 + min-height:0 으로 높이가 확정된다 (app.css 7~12행 실측).
+         overscroll-behavior: 결제 조작 중 당겨서 새로고침 오발동 차단. */
+      #charge-content {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+      }
+    </style>
 
     <!-- Lemon Squeezy -->
     <script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
@@ -141,7 +155,7 @@
     </div>
 
     <script type="module">
-    import { store, Monk, sharedInit, buyCreditsJP, navigateTo, CHARGE_OPTIONS, JPY_PER_CREDIT } from './shared.js';
+    import { store, Monk, sharedInit, buyCreditsJP, isCheckoutBusy, navigateTo, CHARGE_OPTIONS, JPY_PER_CREDIT } from './shared.js';
     import { renderChargeCards } from './modules/charge.js';
     import { initChatbot } from './modules/chatbot.js';
 
@@ -207,10 +221,14 @@
       container.querySelectorAll('[data-ci]').forEach(card => {
         card.addEventListener('click', (e) => {
           e.stopPropagation();
+          // 2026-09-20: 체크아웃 생성 중에는 선택 변경·재탭 무시 (레몬 체크아웃 다중 생성 방지)
+          if (isCheckoutBusy()) return;
           const idx = parseInt(card.dataset.ci);
           if (confirmedIdx === idx) {
             const opt = CHARGE_OPTIONS[idx];
-            buyCreditsJP(opt);
+            // 탭한 카드의 가격 라벨에 「読み込み中…」 표시 (실패 시 shared.js가 복원)
+            const labelEl = card.querySelector('.cm-price-block > div') || card.querySelector('.cm-price-block');
+            buyCreditsJP(opt, labelEl);
           } else {
             resetAll();
             confirmedIdx = idx;
@@ -228,9 +246,10 @@
     // ─── 스테퍼 투터치 ───
     document.getElementById('stepper-pay').addEventListener('click', (e) => {
       e.stopPropagation();
+      if (isCheckoutBusy()) return; // 2026-09-20: 체크아웃 다중 생성 방지
       if (confirmedIdx === 4) {
         const topupOpt = CHARGE_OPTIONS.find(o => o.key === 'topup_10');
-        if (topupOpt) buyCreditsJP(topupOpt);
+        if (topupOpt) buyCreditsJP(topupOpt, document.getElementById('stepper-price'));
       } else {
         resetAll();
         confirmedIdx = 4;
@@ -242,18 +261,20 @@
 
     document.getElementById('stepper-minus').addEventListener('click', (e) => {
       e.stopPropagation();
+      if (isCheckoutBusy()) return;
       if (stepperQty > STEP_MIN) stepperQty--;
       resetAll();
     });
 
     document.getElementById('stepper-plus').addEventListener('click', (e) => {
       e.stopPropagation();
+      if (isCheckoutBusy()) return;
       if (stepperQty < STEP_MAX) stepperQty++;
       resetAll();
     });
 
     // ─── 빈 영역 탭 → 확인 해제 ───
-    document.getElementById('charge-content').addEventListener('click', () => { resetAll(); });
+    document.getElementById('charge-content').addEventListener('click', () => { if (isCheckoutBusy()) return; resetAll(); });
 
     // ─── 돌아가기 ───
     function goBack() {

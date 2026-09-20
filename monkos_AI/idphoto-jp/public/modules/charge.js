@@ -4,7 +4,7 @@
  * データ正本: config.js CHARGE_OPTIONS
  */
 
-import { store, Monk, closeCreditModal, buyCreditsJP, CHARGE_OPTIONS, JPY_PER_CREDIT } from '../shared.js';
+import { store, Monk, closeCreditModal, buyCreditsJP, isCheckoutBusy, CHARGE_OPTIONS, JPY_PER_CREDIT } from '../shared.js';
 
 // ─── 少額チャージステッパー ───
 const STEP_UNIT = 10;    // credits per step
@@ -150,7 +150,7 @@ function _buildModal() {
   overlay.addEventListener('click', (e) => { if (e.target === overlay) ChargeModule.close(); });
 
   // コンテンツ空き領域タップ → 確認解除
-  content.addEventListener('click', () => { _resetAllCards(); });
+  content.addEventListener('click', () => { if (isCheckoutBusy()) return; _resetAllCards(); });
 
   // ← 戻る
   overlay.querySelector('#cm-back-btn').addEventListener('click', (e) => {
@@ -162,11 +162,15 @@ function _buildModal() {
   overlay.querySelectorAll('[data-ci]').forEach(card => {
     card.addEventListener('click', (e) => {
       e.stopPropagation();
+      // 2026-09-20: チェックアウト生成中は再タップ・選択変更を無視 (Lemon チェックアウト多重生成防止)
+      if (isCheckoutBusy()) return;
       const idx = parseInt(card.dataset.ci);
       if (_confirmedIdx === idx) {
         const opt = CHARGE_OPTIONS[idx];
-        ChargeModule.close();
-        buyCreditsJP(opt);
+        // モーダルは閉じない — タップしたカードに「読み込み中…」をリダイレクトまで表示する。
+        // 失敗時は shared.js が表示を復元し、そのまま再試行できる。
+        const labelEl = card.querySelector('.cm-price-block > div') || card.querySelector('.cm-price-block');
+        buyCreditsJP(opt, labelEl);
       } else {
         _resetAllCards();
         _confirmedIdx = idx;
@@ -183,11 +187,12 @@ function _buildModal() {
   // ステッパー中央ボタン ツータッチ
   overlay.querySelector('#cm-stepper-pay').addEventListener('click', (e) => {
     e.stopPropagation();
+    if (isCheckoutBusy()) return; // 2026-09-20: 多重チェックアウト防止
     if (_confirmedIdx === 4) {
-      ChargeModule.close();
       // ステッパー: topup_10 商品を数量分で決済
+      // 2026-09-20: モーダルは閉じず、価格ラベルに「読み込み中…」を表示 (カードと同じ扱い)
       const topupOpt = CHARGE_OPTIONS.find(o => o.key === 'topup_10');
-      if (topupOpt) buyCreditsJP(topupOpt);
+      if (topupOpt) buyCreditsJP(topupOpt, _chargeEl.querySelector('#cm-stepper-price'));
     } else {
       _resetAllCards();
       _confirmedIdx = 4;
@@ -200,12 +205,14 @@ function _buildModal() {
   // −/+ 数量変更 + 確認解除
   overlay.querySelector('#cm-stepper-minus').addEventListener('click', (e) => {
     e.stopPropagation();
+    if (isCheckoutBusy()) return;
     if (_stepperQty > STEP_MIN) _stepperQty--;
     _resetAllCards();
   });
 
   overlay.querySelector('#cm-stepper-plus').addEventListener('click', (e) => {
     e.stopPropagation();
+    if (isCheckoutBusy()) return;
     if (_stepperQty < STEP_MAX) _stepperQty++;
     _resetAllCards();
   });
