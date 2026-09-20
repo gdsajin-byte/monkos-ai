@@ -867,7 +867,7 @@ export async function handleDirectFail(req, res) {
       await ref.update({ failAlertSent: true }).catch(() => {});
       sendTelegramMessage(
         TEAM_CHAT_ID,
-        `🚨 *specs 결제 반복 실패*\norderId: ${orderId} (${prev.slug || '?'}, ${prev.market || '?'})\n누적 ${failCount}회 / 최근 ${stage} · ${code}\n뷰포트 ${vw}x${vh}${inApp ? ' · 인앱브라우저' : ''}\n${message || ''}`,
+        `🚨 *단건 결제 반복 실패*\norderId: ${orderId} (${prev.slug || '?'}, ${prev.market || '?'})\n누적 ${failCount}회 / 최근 ${stage} · ${code}\n뷰포트 ${vw}x${vh}${inApp ? ' · 인앱브라우저' : ''}\n${message || ''}`,
         TELEGRAM_TEAM_API
       ).catch(() => {});
     }
