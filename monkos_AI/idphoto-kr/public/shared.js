@@ -129,6 +129,39 @@ export function showChargeModal() {
   import('./modules/charge.js').then(m => m.ChargeModule.show());
 }
 
+// ─── 결제 계측 (2026-09-20 결제 표면 감사) ───
+// 기존 purchase 이벤트와 같은 공통 파라미터(payment_provider·service·market)를 쓴다.
+// ⚠️ paymentKey·토큰·이메일은 파라미터·본문에 절대 넣지 않는다 (헌법 4조 1항)
+const PAY_SERVICE = 'idphoto-kr';
+
+export function isInApp() {
+  return /(GSA\/|FBAN|FBAV|Instagram|KAKAOTALK|Line\/|NAVER\(|DaumApps|; wv\))/i.test(navigator.userAgent || '');
+}
+
+export function gaPay(name, params) {
+  try {
+    if (typeof gtag !== 'function') return;
+    gtag('event', name, { payment_provider: 'toss', service: PAY_SERVICE, market: 'kr', ...(params || {}) });
+  } catch (e) {}
+}
+
+// GA는 유실 가능 → 실패 사유의 정본은 포털 서버 WARNING 로그([Pay-Fail]).
+// 문자열 본문 sendBeacon = text/plain simple request → 교차 출처여도 preflight가 없다
+// (포털 핸들러가 원문을 JSON으로 파싱, 모르는 필드는 무시). 실패해도 고객 동선을 막지 않는다.
+export function reportPayFail(stage, code, message) {
+  const safeCode = String(code || 'UNKNOWN').slice(0, 60);
+  gaPay('pay_fail', { fail_stage: stage, fail_code: safeCode, in_app: isInApp() });
+  try {
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(`${API.PORTAL_URL}/api/payments/fail`, JSON.stringify({
+        service: PAY_SERVICE, provider: 'toss', stage, code: safeCode,
+        message: String(message || '').slice(0, 200),
+        vw: window.innerWidth, vh: window.innerHeight, inApp: isInApp(),
+      }));
+    }
+  } catch (e) {}
+}
+
 // ─── 결제 (토스) — charge.html 리다이렉트 ───
 export async function buyCreditsKR(amount, credits) {
   if (!store.user.id) {
@@ -143,7 +176,10 @@ export async function buyCreditsKR(amount, credits) {
   // 토스 위젯은 charge.html에서만 동작 → 리다이렉트
   closeCreditModal();
   const returnPage = location.pathname.replace(/\.html$/, '').replace(/^\//, '') || 'index';
-  navigateTo(`charge.html?return=${encodeURIComponent(returnPage)}`);
+  // 2026-09-20: 모달에서 고른 상품을 charge.html에 전달 → 로드 시 같은 상품을 미리 선택(1탭 상태)해 둔다.
+  // 값은 결제 금액(원). charge.html이 CHARGE_OPTIONS/스테퍼 단가와 대조해 일치할 때만 쓰고, 아니면 무시한다.
+  const pkgParam = Number.isFinite(Number(amount)) && Number(amount) > 0 ? `&pkg=${encodeURIComponent(Number(amount))}` : '';
+  navigateTo(`charge.html?return=${encodeURIComponent(returnPage)}${pkgParam}`);
 }
 
 function _showTossLoading() {
@@ -167,8 +203,19 @@ export async function initFromTossResult() {
     : window.location.pathname;
 
   if (params.get('toss') === 'fail') {
+    const failCode = params.get('code') || 'RETURN_FAIL';
+    const failMessage = params.get('message') || '';
     history.replaceState({}, '', cleanUrl);
-    alert(params.get('message') || '결제가 취소되었습니다');
+    reportPayFail('return', failCode, failMessage);
+    // 2026-09-20: alert만 띄우면 닫는 순간 사유가 사라지고 선택 뷰로 되돌아가 있다.
+    // charge.html이 핸들러를 등록했으면 그쪽에서 결제 뷰를 복원하고 사유를 결제 버튼 위에 남긴다. 없으면 기존 alert.
+    if (typeof window.monkosOnTossFail === 'function') {
+      try {
+        window.monkosOnTossFail({ code: failCode, message: failMessage });
+        return;
+      } catch (e) {}
+    }
+    alert(failMessage || '결제가 취소되었습니다');
     return;
   }
 
@@ -216,6 +263,7 @@ export async function initFromTossResult() {
     _hideTossLoading();
     if (data.success) {
       sessionStorage.removeItem('monkos_pending_payment');
+      sessionStorage.removeItem('monkos_charge_sel'); // 실패 복귀용 선택 기록 — 결제가 끝났으니 거둔다 (2026-09-20)
       // GA4 purchase 결선 — 충전 확정 시점 = 매출 발생 시점 (2026-09-02 G-M1 수정안 1-A)
       try {
         if (typeof gtag === 'function') {
@@ -235,11 +283,13 @@ export async function initFromTossResult() {
       Monk.log(`결제 완료: +${data.creditsAdded}c (잔액 ${data.credits}c)`);
       _showPaymentResult(true, `+${data.creditsAdded} 크레딧 충전 완료`, `현재 잔액: ${data.credits}c`);
     } else {
+      reportPayFail('confirm', 'CONFIRM_HTTP_' + res.status, data.error || '');
       _showPaymentResult(false, '결제 확인 실패', data.error || '알 수 없는 오류');
     }
   } catch (err) {
     _hideTossLoading();
     Monk.log('결제 확인 에러: ' + err.message);
+    reportPayFail('confirm', 'CONFIRM_NETWORK', 'confirm request failed');
     _showPaymentResult(false, '네트워크 오류', '인터넷 연결을 확인하고 다시 시도해 주세요');
   }
 }
