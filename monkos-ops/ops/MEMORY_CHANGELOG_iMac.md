@@ -617,3 +617,6 @@
 
 ## 2026-09-21 14:52 KST iMac/민아
 - 갱신: reference_astra_codex_launch_aliases.md — mk-g 1종 통합(무승인·무샌드박스, 작가님 지시), 샌드박스 유지안 기각 경위·권한 단계 재제안 금지. MEMORY.md 인덱스 1행 교체(행수 불변 142).
+
+## 2026-09-21 16:37 KST iMac/민아
+- 갱신: project_payment_surface_state_202609.md — 토스 영수증 인증 절차 추가(09-30 적용) 영향 판정 1단락 어펜드. 인덱스 불변.
