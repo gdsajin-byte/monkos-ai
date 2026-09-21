@@ -388,3 +388,25 @@
 < ## secret map (2026-09-19 09:30)
 > ## secret map (2026-09-20 09:30)
 ```
+
+## [2026-09-21 09:30 KST] 순찰 감지
+```diff
+< ## secret map (2026-09-20 09:30)
+> ## secret map (2026-09-21 09:30)
+< NAME               SERVICE_ACCOUNT_NAME
+< monk-image-engine  monk-image-engine@monkos.iam.gserviceaccount.com
+< monkos-idphoto-jp  monk-image-engine@monkos.iam.gserviceaccount.com
+< monkos-idphoto-kr  monk-image-engine@monkos.iam.gserviceaccount.com
+< monkos-portal      monk-image-engine@monkos.iam.gserviceaccount.com
+< monkos-portal-dev  monk-image-engine@monkos.iam.gserviceaccount.com
+< monkos-studio      monk-image-engine@monkos.iam.gserviceaccount.com
+> NAME                   SERVICE_ACCOUNT_NAME
+> monk-image-engine      monk-image-engine@monkos.iam.gserviceaccount.com
+> monkos-idphoto-jp      monk-image-engine@monkos.iam.gserviceaccount.com
+> monkos-idphoto-jp-dev  monk-image-engine@monkos.iam.gserviceaccount.com
+> monkos-idphoto-kr      monk-image-engine@monkos.iam.gserviceaccount.com
+> monkos-idphoto-kr-dev  monk-image-engine@monkos.iam.gserviceaccount.com
+> monkos-portal          monk-image-engine@monkos.iam.gserviceaccount.com
+> monkos-portal-dev      monk-image-engine@monkos.iam.gserviceaccount.com
+> monkos-studio          monk-image-engine@monkos.iam.gserviceaccount.com
+```
