@@ -610,3 +610,7 @@
 - 신설: feedback_tool_limit_not_judgment.md (도구 제약을 판단처럼 포장 금지 — 첫 줄에 도구 한계 명시, 마지막 고리가 작가님 손이면 제안이 아니라 일감. 09-19 질책).
 - 신설: project_payment_surface_state_202609.md (결제 표면 6곳 전수 수정 후 상태 — 계측 위치·미검증 구간·숨김 브라우저 인공물·미결 결정 3건).
 - MEMORY.md 인덱스 2행 추가(138→141행).
+
+## 2026-09-21 14:48 KST iMac/민아
+- 신설: reference_astra_codex_launch_aliases.md (Astra=Codex CLI 기동 3종 mk-g/mk-gw/mk-gm, 샌드박스 실측 방어 범위, `codex sandbox` 단독 실패 주의).
+- MEMORY.md 인덱스 1행 추가(141→142행).
