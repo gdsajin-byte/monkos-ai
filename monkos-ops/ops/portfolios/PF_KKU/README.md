@@ -139,6 +139,7 @@ idpass.monkos.ai (SPA 간판) → monkos.ai/specs/{국가-문서} (본진 SSR, S
 | 09/03 | iMac/민아 | **9월 블로그·플레이스·교육 콘텐츠 우선순위 전달** — GSC 28일(취업사진 앞머리·안경 1위 / 여권사진 규격 노출 305·순위 10.5 = 최대 개선 여지) + 네이버 지역 키워드 기반 8편 + 교육 3편. UTM·플레이스 통계·문답 센서로 귀속 | `marketing/kku/outbox/PLAN_20260903_9월_블로그플레이스_우선순위.md` | ⏳ 꾸 수신 대기 |
 | 09/19 | M2/쌍아+꾸 | monk_studio 7개 페이지 메뉴 CTA 전환 — 톡톡상담 → 네이버 간편예약(m.place 1454242520), 버튼색 블랙 통일(bg-black/hover:bg-gray-800). 푸터·본문 톡톡 문의 창구는 존치 | 커밋 8b165506, MONK_kr/monk_studio/ 7파일 | ⏳ CF Pages 배포 대기(작가님 승인) |
 | 09/20 | M2/쌍아+꾸 | 꾸 할 일 목록 신설 — 인스타 프로필 링크 페이지(리틀리 대신 monk.kr 자체 제작 권장) 외 4건 등재 | `marketing/kku/TODO_꾸.md` | ⏳ 꾸 결정 대기 |
+| 09/19 | iMac/쌍아 | monk_studio 이미지 결손 원인 확정 — `.gitignore:76` 전역 `*.jpg`의 예외가 `!MONK_kr/images/*.jpg` 한 줄뿐이라 `monk_studio/` 이하 17장 미추적·배포본 부재. CF Pages가 사이트 기본 HTML을 200(`text/html`)으로 반환 → `onerror` 폴백 발동 → **메인 6장 unsplash 스톡(프로필 카드 1장은 폴백 주소 404로 깨짐)·family 9장·group 1장 placehold.co 자리표시자**. 판정 3중(git ls-files 0 + 라이브 2회 히트 content_type + 대조군 `MONK_kr/images/main.jpg` 200 image/jpeg) 후 Playwright 렌더 실측으로 확증(currentSrc 6/6 unsplash, 프로필 naturalWidth 0) | 세션로그 2026-09-19_iMac_쌍아.md, `.playwright-mcp/studio_live_services.png` | ⏳ 지시서 미발행 |
 
 ---
 
