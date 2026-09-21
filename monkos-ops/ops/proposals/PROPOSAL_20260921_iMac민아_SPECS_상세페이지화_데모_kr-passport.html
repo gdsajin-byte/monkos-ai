@@ -21,7 +21,7 @@ ul{margin:0;padding-left:1.15em}
 .demo-bar{background:var(--ink);color:#fff;font-size:12px;padding:8px 16px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .demo-bar b{color:#c9bdff;letter-spacing:.06em}
 .demo-bar button{font:inherit;font-size:12px;background:transparent;color:#fff;border:1px solid #6b677a;border-radius:99px;padding:3px 12px;cursor:pointer}
-.tag{display:inline-flex;gap:6px;align-items:center;font-size:11px;font-weight:700;color:var(--accent-d);background:var(--accent-bg);border-radius:4px;padding:2px 8px;margin-bottom:10px;letter-spacing:.02em}
+.tag{display:flex;flex-wrap:wrap;align-self:flex-start;gap:2px 6px;align-items:center;font-size:11px;font-weight:700;color:var(--accent-d);background:var(--accent-bg);border-radius:4px;padding:2px 8px;margin-bottom:10px;letter-spacing:.02em}
 .tag i{font-style:normal;font-weight:500;color:var(--muted)}
 body.no-tags .tag{display:none}
 .slot-note{font-size:11.5px;color:var(--warn);background:var(--warn-bg);border-radius:4px;padding:3px 8px;display:inline-block;margin-top:8px}
@@ -36,6 +36,7 @@ body.no-tags .slot-note{display:none}
 .wrap{max-width:1040px;margin:0 auto;padding-inline:16px;padding-block:18px 120px;display:flex;flex-direction:column;gap:44px}
 .crumb{font-size:12.5px;color:var(--muted)}
 section{display:flex;flex-direction:column;gap:16px}
+h2[id]{scroll-margin-top:16px}
 section>h2{font-size:21px;font-weight:800}
 .lede{color:var(--muted);font-size:14px;max-width:64ch}
 
@@ -60,12 +61,12 @@ section>h2{font-size:21px;font-weight:800}
 .micro{font-size:12.5px;color:var(--muted)}
 
 .dgm{margin:0;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 14px 14px}
-.dgm-stage{width:min(100%,290px);margin-inline:auto;padding:4px 62px 44px 44px}
+.dgm-stage{width:min(100%,320px);margin-inline:auto;padding:4px 62px 44px 44px}
 .dgm-box{position:relative}
 .ph{background:var(--sample) center/cover no-repeat #fff}
 .dgm-photo{aspect-ratio:35/45;width:100%;box-shadow:0 0 0 1px #d7d3e6,0 10px 24px -12px rgba(0,0,0,.35)}
 .ln{position:absolute;left:4%;right:-16px;border-top:2px dashed var(--no)}
-.ln.crown{top:11%}.ln.chin{top:85.5%}
+.ln.crown{top:12%}.ln.chin{top:85.5%}
 .dim{position:absolute;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px}
 .dim span{background:var(--paper);padding:2px 4px}
 .dim-h{left:-34px;top:0;height:100%;border-left:2px solid var(--accent);color:var(--accent-d)}
@@ -73,7 +74,7 @@ section>h2{font-size:21px;font-weight:800}
 .dim-h span{margin-left:-2px}
 .dim-h::before,.dim-h::after,.dim-head::before,.dim-head::after{content:"";position:absolute;left:-6px;width:10px;border-top:2px solid currentColor}
 .dim-h::before,.dim-head::before{top:0}.dim-h::after,.dim-head::after{bottom:0}
-.dim-head{right:-40px;top:11%;height:74.5%;border-left:2px solid var(--no);color:var(--no)}
+.dim-head{right:-40px;top:12%;height:73.5%;border-left:2px solid var(--no);color:var(--no)}
 .dim-w{left:0;top:calc(100% + 18px);width:100%;border-top:2px solid var(--accent);color:var(--accent-d)}
 .dim-w span{transform:translateY(-55%)}
 .dim-w::before,.dim-w::after{content:"";position:absolute;top:-6px;height:10px;border-left:2px solid currentColor}
@@ -82,6 +83,16 @@ figcaption{font-size:13px;color:var(--muted);line-height:1.55}
 .dgm figcaption{margin-top:6px}
 .dgm figcaption b{color:var(--ink)}
 
+.checked{font-size:12.5px;color:var(--muted)}
+.jump{display:flex;flex-wrap:wrap;gap:6px;list-style:none;padding:0;margin:0}
+.jump a{display:block;text-decoration:none;font-size:13px;font-weight:700;color:var(--accent-d);background:var(--accent-bg);border-radius:8px;padding:6px 11px}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+.legend .slot-note{margin-top:0}
+body.no-tags .legend{display:none}
+.myth-fig{display:grid;grid-template-columns:repeat(2,64px);gap:8px;margin-top:4px}
+.myth-fig .frame{border-width:2px}
+.myth-fig .badge{font-size:10px;padding:3px 5px 4px}
+.foot{border-top:1px solid var(--line);padding-top:18px;font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between}
 /* 3 표 */
 .tables{display:grid;gap:16px;grid-template-columns:1fr}
 @media(min-width:820px){.tables{grid-template-columns:1fr 1fr}}
@@ -111,7 +122,7 @@ thead th{font-size:12px;color:var(--muted);font-weight:700;background:var(--soft
 .why{font-size:13.5px;background:var(--soft);border-radius:8px;padding:8px 12px;color:var(--text)}
 .why b{color:var(--accent-d)}
 .pair{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-content:start}
-.pair.two{grid-template-columns:repeat(2,minmax(0,1fr));max-width:280px}
+
 .pair figure{margin:0;display:flex;flex-direction:column;gap:6px}
 .frame{position:relative;aspect-ratio:35/45;max-width:100%;border-radius:6px;overflow:hidden;background:#fff;border:3px solid var(--no)}
 .ok .frame{border-color:var(--ok)}
@@ -203,31 +214,47 @@ body.no-tags .memo{display:none}
 <!-- 도식용 SVG 부품: 그림 안에 글자 없음 -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
-    <symbol id="f-base" viewBox="0 0 70 90">
-      <rect width="70" height="90" fill="#ffffff"/>
-      <path d="M4 90 Q7 70 28 66 L42 66 Q63 70 66 90 Z" fill="#c9c5d8"/>
-      <rect x="29" y="54" width="12" height="14" fill="#e2cdbd"/>
-      <ellipse cx="19.6" cy="42" rx="2.6" ry="4.2" fill="#e2cdbd"/><ellipse cx="50.4" cy="42" rx="2.6" ry="4.2" fill="#e2cdbd"/>
-      <ellipse cx="35" cy="40" rx="15" ry="19" fill="#ecdccf"/>
-      <path d="M19.5 38 Q17 17 35 16 Q53 17 50.5 38 Q48 27 35 26 Q22 27 19.5 38 Z" fill="#2b2733"/>
-      <path d="M35 41 L33.4 47.5 L36.6 47.5" fill="none" stroke="#c9ad98" stroke-width="1"/>
+    <clipPath id="eyeclip"><path d="M10 96 Q70 44 130 96 Q70 138 10 96 Z"/></clipPath>
+    <symbol id="f-base" viewBox="0 0 140 180">
+      <rect width="140" height="180" fill="#ffffff"/>
+      <path d="M52 138 L52 170 L88 170 L88 138 Z" fill="#dcbfa8"/>
+      <path d="M0 180 C4 164 28 160 52 157 Q70 174 88 157 C112 160 136 164 140 180 Z" fill="#46536e"/>
+      <ellipse cx="20" cy="92" rx="6.5" ry="12" fill="#e6c9b3"/><ellipse cx="120" cy="92" rx="6.5" ry="12" fill="#e6c9b3"/>
+      <path d="M22 78 C22 1 118 1 118 78 L118 100 C118 128 94 154 70 154 C46 154 22 128 22 100 Z" fill="#f0d9c6"/>
+      <ellipse cx="40" cy="114" rx="10" ry="6" fill="#eebfae" opacity=".45"/><ellipse cx="100" cy="114" rx="10" ry="6" fill="#eebfae" opacity=".45"/>
+      <path d="M18 84 C12 -8 128 -8 122 84 C119 58 102 44 70 44 C38 44 21 58 18 84 Z" fill="#26222c"/>
+      <path d="M70 92 L66 114 Q70 118 74 114" fill="none" stroke="#d2b19a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
     </symbol>
-    <symbol id="f-brows" viewBox="0 0 70 90"><path d="M25.5 35 L31.5 34.4 M38.5 34.4 L44.5 35" stroke="#2b2733" stroke-width="1.5" stroke-linecap="round" fill="none"/></symbol>
-    <symbol id="f-eyes" viewBox="0 0 70 90"><ellipse cx="28.5" cy="39.6" rx="2.7" ry="1.6" fill="#fff" stroke="#2b2733" stroke-width=".5"/><circle cx="28.5" cy="39.6" r="1.3" fill="#3a2a20"/><ellipse cx="41.5" cy="39.6" rx="2.7" ry="1.6" fill="#fff" stroke="#2b2733" stroke-width=".5"/><circle cx="41.5" cy="39.6" r="1.3" fill="#3a2a20"/></symbol>
-    <symbol id="f-mouth" viewBox="0 0 70 90"><path d="M31 52 L39 52" stroke="#a0574f" stroke-width="1.5" stroke-linecap="round"/></symbol>
-    <symbol id="f-smile" viewBox="0 0 70 90"><path d="M29.5 50.5 Q35 58 40.5 50.5 Z" fill="#fff" stroke="#a0574f" stroke-width="1.2"/></symbol>
-    <symbol id="f-sidehair" viewBox="0 0 70 90"><path d="M20 30 Q14 48 19 66 L25 66 Q21 50 23 36 Z M50 30 Q56 48 51 66 L45 66 Q49 50 47 36 Z" fill="#2b2733"/></symbol>
-    <symbol id="f-bangs" viewBox="0 0 70 90"><path d="M20 26 Q35 20 50 26 L50 36.5 Q35 38.5 20 36.5 Z" fill="#2b2733"/></symbol>
-    <symbol id="f-glasses" viewBox="0 0 70 90"><rect x="23.5" y="35.8" width="10" height="7.6" rx="2.4" fill="none" stroke="#17151f" stroke-width="1.1"/><rect x="36.5" y="35.8" width="10" height="7.6" rx="2.4" fill="none" stroke="#17151f" stroke-width="1.1"/><path d="M33.5 39 L36.5 39" stroke="#17151f" stroke-width="1.1"/></symbol>
-    <symbol id="f-glare" viewBox="0 0 70 90"><path d="M25 43 L30 36 L33 36 L28 43 Z M38 43 L43 36 L46 36 L41 43 Z" fill="#dff1ff" opacity=".95"/></symbol>
-    <symbol id="f-tinted" viewBox="0 0 70 90"><rect x="23.5" y="35.8" width="10" height="7.6" rx="2.4" fill="#3b3550" opacity=".85"/><rect x="36.5" y="35.8" width="10" height="7.6" rx="2.4" fill="#3b3550" opacity=".85"/></symbol>
-    <symbol id="f-hat" viewBox="0 0 70 90"><path d="M17 27 Q35 6 53 27 Z" fill="#54608a"/><rect x="12" y="26" width="46" height="4" rx="2" fill="#3e486d"/></symbol>
-    <symbol id="f-cover" viewBox="0 0 70 90"><path d="M35 12 Q10 14 14 50 Q15 70 24 78 L46 78 Q55 70 56 50 Q60 14 35 12 Z M35 22 Q21 23 20.5 40 Q21 57 35 60 Q49 57 49.5 40 Q49 23 35 22 Z" fill="#54608a" fill-rule="evenodd"/></symbol>
-    <symbol id="f-scarf" viewBox="0 0 70 90"><path d="M16 46 Q35 40 54 46 L56 70 Q35 76 14 70 Z" fill="#8a4f6a"/></symbol>
-    <symbol id="f-hand" viewBox="0 0 70 90"><path d="M0 62 Q14 54 24 60 Q28 64 24 69 Q12 74 0 76 Z" fill="#d9bfae"/><circle cx="58" cy="72" r="9" fill="#f0b323"/><circle cx="58" cy="72" r="4" fill="#dc2626"/></symbol>
-    <symbol id="f-babymouth" viewBox="0 0 70 90"><ellipse cx="35" cy="52" rx="2.6" ry="1.8" fill="#a0574f"/></symbol>
-    <symbol id="eye-nat" viewBox="0 0 70 90"><rect width="70" height="90" fill="#ecdccf"/><path d="M10 26 Q35 14 60 24" stroke="#2b2733" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M6 48 Q35 22 64 48 Q35 70 6 48 Z" fill="#fff" stroke="#2b2733" stroke-width="1.6"/><circle cx="35" cy="47" r="12.5" fill="#6b4a2f"/><circle cx="35" cy="47" r="12.5" fill="none" stroke="#4a3220" stroke-width="1"/><circle cx="35" cy="47" r="5" fill="#111"/><circle cx="39" cy="43" r="2" fill="#fff"/></symbol>
-    <symbol id="eye-lens" viewBox="0 0 70 90"><rect width="70" height="90" fill="#ecdccf"/><path d="M10 26 Q35 14 60 24" stroke="#2b2733" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M6 48 Q35 22 64 48 Q35 70 6 48 Z" fill="#fff" stroke="#2b2733" stroke-width="1.6"/><circle cx="35" cy="47" r="15.5" fill="#5f86a8"/><circle cx="35" cy="47" r="14" fill="none" stroke="#0d0d12" stroke-width="3.4"/><circle cx="35" cy="47" r="9" fill="none" stroke="#9fc3de" stroke-width="1.2" stroke-dasharray="1.5 1.5"/><circle cx="35" cy="47" r="5" fill="#111"/><circle cx="39" cy="43" r="2" fill="#fff"/></symbol>
+    <symbol id="f-brows" viewBox="0 0 140 180"><path d="M38 77 Q48 72 58 76 M82 76 Q92 72 102 77" stroke="#26222c" stroke-width="3.4" stroke-linecap="round" fill="none"/></symbol>
+    <symbol id="f-eyes" viewBox="0 0 140 180">
+      <path d="M39 90 Q48 83 57 90 Q48 96 39 90 Z" fill="#fff"/><circle cx="48" cy="90" r="4.3" fill="#3a2a20"/><circle cx="49.6" cy="88.6" r="1.2" fill="#fff"/><path d="M39 90 Q48 83 57 90" fill="none" stroke="#26222c" stroke-width="1.9" stroke-linecap="round"/>
+      <path d="M83 90 Q92 83 101 90 Q92 96 83 90 Z" fill="#fff"/><circle cx="92" cy="90" r="4.3" fill="#3a2a20"/><circle cx="93.6" cy="88.6" r="1.2" fill="#fff"/><path d="M83 90 Q92 83 101 90" fill="none" stroke="#26222c" stroke-width="1.9" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="f-mouth" viewBox="0 0 140 180"><path d="M59 130 Q70 133 81 130" stroke="#a9574f" stroke-width="2.8" stroke-linecap="round" fill="none"/><path d="M64 136 Q70 138.5 76 136" stroke="#dcaa9f" stroke-width="1.6" stroke-linecap="round" fill="none"/></symbol>
+    <symbol id="f-smile" viewBox="0 0 140 180"><path d="M56 126 Q70 148 84 126 Z" fill="#fff" stroke="#a9574f" stroke-width="2.4" stroke-linejoin="round"/><path d="M59 131 H81" stroke="#e3d6d2" stroke-width="1"/></symbol>
+    <symbol id="f-sidehair" viewBox="0 0 140 180"><path d="M18 66 C6 100 8 150 18 180 L36 180 C28 150 23 112 25 82 Z M122 66 C134 100 132 150 122 180 L104 180 C112 150 117 112 115 82 Z" fill="#26222c"/></symbol>
+    <symbol id="f-bangs" viewBox="0 0 140 180"><path d="M18 84 C18 18 122 18 122 84 C100 88 40 88 18 84 Z" fill="#26222c"/></symbol>
+    <symbol id="f-glasses" viewBox="0 0 140 180"><rect x="33" y="80" width="30" height="21" rx="7" fill="none" stroke="#17151f" stroke-width="2.3"/><rect x="77" y="80" width="30" height="21" rx="7" fill="none" stroke="#17151f" stroke-width="2.3"/><path d="M63 89 Q70 85 77 89 M33 88 L22 86 M107 88 L118 86" fill="none" stroke="#17151f" stroke-width="2.3" stroke-linecap="round"/></symbol>
+    <symbol id="f-glare" viewBox="0 0 140 180"><path d="M38 99 L50 82 L58 82 L46 99 Z M82 99 L94 82 L102 82 L90 99 Z" fill="#e4f3ff" opacity=".94"/></symbol>
+    <symbol id="f-hat" viewBox="0 0 140 180"><path d="M14 58 C14 -6 126 -6 126 58 Z" fill="#55618c"/><rect x="5" y="54" width="130" height="11" rx="5.5" fill="#3e486d"/></symbol>
+    <symbol id="f-cover" viewBox="0 0 140 180"><path d="M70 4 C10 4 4 70 10 120 C14 160 30 176 40 180 L100 180 C110 176 126 160 130 120 C136 70 130 4 70 4 Z M70 41 C38 41 24 62 24 92 C24 124 48 156 70 156 C92 156 116 124 116 92 C116 62 102 41 70 41 Z" fill="#55618c" fill-rule="evenodd"/><path d="M70 41 C38 41 24 62 24 92" fill="none" stroke="#3e486d" stroke-width="1.5" opacity=".6"/></symbol>
+    <symbol id="f-scarf" viewBox="0 0 140 180"><path d="M16 142 C40 133 100 133 124 142 L136 180 L4 180 Z" fill="#8a4f6a"/><path d="M22 152 C50 146 90 146 118 152" fill="none" stroke="#6f3d55" stroke-width="2"/></symbol>
+    <symbol id="b-base" viewBox="0 0 140 180">
+      <rect width="140" height="180" fill="#ffffff"/>
+      <path d="M54 140 L54 170 L86 170 L86 140 Z" fill="#e6c9b3"/>
+      <path d="M0 180 C6 166 30 162 54 159 Q70 172 86 159 C110 162 134 166 140 180 Z" fill="#bcd3e6"/>
+      <ellipse cx="18" cy="96" rx="6" ry="10" fill="#edd0bb"/><ellipse cx="122" cy="96" rx="6" ry="10" fill="#edd0bb"/>
+      <path d="M20 84 C20 -2 120 -2 120 84 L120 104 C120 136 96 154 70 154 C44 154 20 136 20 104 Z" fill="#f6e1d0"/>
+      <ellipse cx="38" cy="118" rx="12" ry="8" fill="#f2b9a8" opacity=".5"/><ellipse cx="102" cy="118" rx="12" ry="8" fill="#f2b9a8" opacity=".5"/>
+      <path d="M34 46 C46 14 94 14 106 46 C92 30 48 30 34 46 Z" fill="#4a3f3a" opacity=".75"/>
+      <path d="M40 82 Q48 79 56 81 M84 81 Q92 79 100 82" stroke="#6b5a50" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+      <circle cx="48" cy="96" r="6" fill="#2e221c"/><circle cx="50" cy="94" r="1.8" fill="#fff"/><circle cx="92" cy="96" r="6" fill="#2e221c"/><circle cx="94" cy="94" r="1.8" fill="#fff"/>
+      <path d="M67 112 Q70 116 73 112" fill="none" stroke="#d9b39d" stroke-width="1.8" stroke-linecap="round"/>
+      <ellipse cx="70" cy="131" rx="6.5" ry="4.2" fill="#a9574f"/>
+    </symbol>
+    <symbol id="b-hand" viewBox="0 0 140 180"><path d="M0 126 C20 116 42 122 48 134 C52 143 44 151 30 153 C18 155 6 157 0 160 Z" fill="#dcbfa8"/><path d="M30 131 Q40 134 44 141 M26 138 Q36 141 40 147" fill="none" stroke="#c4a48c" stroke-width="1.6" stroke-linecap="round"/><circle cx="116" cy="150" r="17" fill="#f0b323"/><circle cx="116" cy="150" r="7.5" fill="#dc2626"/></symbol>
+    <symbol id="eye-nat" viewBox="0 0 140 180"><rect width="140" height="180" fill="#f0d9c6"/><path d="M16 52 Q70 26 126 46" stroke="#26222c" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M10 96 Q70 44 130 96 Q70 138 10 96 Z" fill="#fff"/><g clip-path="url(#eyeclip)"><circle cx="70" cy="94" r="25" fill="#6b4a2f"/><circle cx="70" cy="94" r="24" fill="none" stroke="#4a3220" stroke-width="2"/><circle cx="70" cy="94" r="16" fill="none" stroke="#7d5a3c" stroke-width="5" opacity=".6"/><circle cx="70" cy="94" r="10" fill="#111"/><circle cx="79" cy="85" r="4.2" fill="#fff"/></g><path d="M10 96 Q70 138 130 96" fill="none" stroke="#b79a88" stroke-width="2"/><path d="M10 96 Q70 44 130 96" fill="none" stroke="#26222c" stroke-width="5" stroke-linecap="round"/></symbol>
+    <symbol id="eye-lens" viewBox="0 0 140 180"><rect width="140" height="180" fill="#f0d9c6"/><path d="M16 52 Q70 26 126 46" stroke="#26222c" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M10 96 Q70 44 130 96 Q70 138 10 96 Z" fill="#fff"/><g clip-path="url(#eyeclip)"><circle cx="70" cy="94" r="31" fill="#5f86a8"/><circle cx="70" cy="94" r="27.5" fill="none" stroke="#0d0d12" stroke-width="7"/><circle cx="70" cy="94" r="18" fill="none" stroke="#a9cbe4" stroke-width="2.6" stroke-dasharray="3 3"/><circle cx="70" cy="94" r="10" fill="#111"/><circle cx="79" cy="85" r="4.2" fill="#fff"/></g><path d="M10 96 Q70 138 130 96" fill="none" stroke="#b79a88" stroke-width="2"/><path d="M10 96 Q70 44 130 96" fill="none" stroke="#26222c" stroke-width="5" stroke-linecap="round"/></symbol>
   </defs>
 </svg>
 
@@ -242,6 +269,8 @@ body.no-tags .memo{display:none}
     <ul class="facts">
       <li>흰색 배경</li><li class="num">머리 길이 3.2~3.6cm</li><li>6개월 이내 촬영</li><li class="num">온라인 413×531px</li>
     </ul>
+    <p class="checked num">외교부 여권 사진 규격(2022년 10월 개정) 기준 · 2026-09-21 원문 대조</p>
+    <ul class="jump" aria-label="이 페이지에서 바로 가기"><li><a href="#glance">규격 표</a></li><li><a href="#rules">항목별 합격·반려</a></li><li><a href="#myths">폐지된 옛 규정</a></li><li><a href="#reject">반려 TOP 5</a></li><li><a href="#make">만들기·인화</a></li><li><a href="#faq">FAQ</a></li></ul>
   </section>
 
   <!-- 2 -->
@@ -279,7 +308,7 @@ body.no-tags .memo{display:none}
   <!-- 3 -->
   <section>
     <div class="tag">③ 한눈에 보기 <i>규격 표 + 단위 표 + 출처 + 확인일</i></div>
-    <h2>한눈에 보기</h2>
+    <h2 id="glance">한눈에 보기</h2>
     <div class="tables">
       <div class="scroll"><table>
         <caption>규격</caption>
@@ -319,8 +348,9 @@ body.no-tags .memo{display:none}
   <!-- 5 -->
   <section>
     <div class="tag">⑤ 주제별 규정 블록 × 9 <i>국무부식 "규칙+예시 한자리" · 캐나다식 합격/불합격 짝</i></div>
-    <h2>항목별 규정 — 합격 사진과 반려 사진</h2>
+    <h2 id="rules">항목별 규정 — 합격 사진과 반려 사진</h2>
     <p class="lede">한 줄에는 한 가지 변수만 바꿨습니다. 초록 테두리는 접수 가능, 빨강은 반려 대상입니다. 인용 문구는 외교부 현행 규정 원문입니다.</p>
+    <div class="legend"><span class="slot-note">사진 칸(1·2·3) = 임시 인물, 표정 교체 대상</span><span class="slot-note">도식 칸(4·5·6·7·9) = 가상 인물 사진으로 교체 예정</span></div>
 
     <div class="rules">
 
@@ -430,8 +460,8 @@ body.no-tags .memo{display:none}
           <p class="why"><b>요령</b> 흰 천 위에 눕혀 위에서 찍는 방식이 가장 흔한 해법입니다.</p>
         </div>
         <div class="pair two">
-          <figure class="ok"><div class="frame"><span class="badge">✓ 1</span><svg role="img" aria-label="허용 예시 — 입을 조금 벌린 36개월 이하 유아"><use href="#f-base"/><use href="#f-brows"/><use href="#f-eyes"/><use href="#f-babymouth"/></svg></div><figcaption><b>허용</b> 입을 조금 벌림(36개월 이하)</figcaption></figure>
-          <figure><div class="frame"><span class="badge">✗ 2</span><svg role="img" aria-label="불가 예시 — 보호자 손과 장난감이 보임"><use href="#f-base"/><use href="#f-brows"/><use href="#f-eyes"/><use href="#f-babymouth"/><use href="#f-hand"/></svg></div><figcaption><b>불가</b> 보호자 손·장난감 노출</figcaption></figure>
+          <figure class="ok"><div class="frame"><span class="badge">✓ 1</span><svg role="img" aria-label="허용 예시 — 입을 조금 벌린 36개월 이하 유아"><use href="#b-base"/></svg></div><figcaption><b>허용</b> 입을 조금 벌림(36개월 이하)</figcaption></figure>
+          <figure><div class="frame"><span class="badge">✗ 2</span><svg role="img" aria-label="불가 예시 — 보호자 손과 장난감이 보임"><use href="#b-base"/><use href="#b-hand"/></svg></div><figcaption><b>불가</b> 보호자 손·장난감 노출</figcaption></figure>
         </div>
       </article>
     </div>
@@ -444,10 +474,10 @@ body.no-tags .memo{display:none}
   <!-- 6 -->
   <section>
     <div class="tag">⑥ 흔한 오해 교정 <i>정부에도 상업에도 없는 자리 — 선점</i></div>
-    <h2>아직도 돌아다니는 옛 규정</h2>
+    <h2 id="myths">아직도 돌아다니는 옛 규정</h2>
     <p class="lede">사진관 안내문과 오래된 블로그에는 폐지된 규정이 남아 있습니다. 판단 기준은 외교부 여권안내의 현행 규격 페이지입니다.</p>
     <div class="myths">
-      <div class="myth"><p class="old">양쪽 귀가 다 보여야 한다</p><p class="now">2018년 1월 25일 폐지. 귀는 가려도 되고, 눈썹과 얼굴 윤곽만 드러나면 됩니다.</p><p class="ref">근거: <a href="https://www.korea.kr/news/policyNewsView.do?newsId=148847383" target="_blank" rel="noopener">정책브리핑 2018-01-26</a></p></div>
+      <div class="myth"><p class="old">양쪽 귀가 다 보여야 한다</p><p class="now">2018년 1월 25일 폐지. 귀는 가려도 되고, 눈썹과 얼굴 윤곽만 드러나면 됩니다.</p><div class="myth-fig" aria-hidden="true"><div class="ok"><div class="frame"><span class="badge">✓</span><svg><use href="#f-base"/><use href="#f-sidehair"/><use href="#f-brows"/><use href="#f-eyes"/><use href="#f-mouth"/></svg></div></div><div><div class="frame"><span class="badge">✗</span><svg><use href="#f-base"/><use href="#f-brows"/><use href="#f-eyes"/><use href="#f-mouth"/><use href="#f-bangs"/></svg></div></div></div><p class="ref">근거: <a href="https://www.korea.kr/news/policyNewsView.do?newsId=148847383" target="_blank" rel="noopener">정책브리핑 2018-01-26</a></p></div>
       <div class="myth"><p class="old">뿔테 안경은 안 된다 · 제복은 안 된다 · 어깨가 수평이어야 한다</p><p class="now">같은 날 함께 삭제된 항목입니다. 안경은 반사가 없고 테가 눈을 가리지 않으면 됩니다.</p><p class="ref">근거: 같은 기사</p></div>
       <div class="myth"><p class="old">2018년에 완화됐으니 눈썹은 가려도 된다</p><p class="now">2022년 10월 개정에서 "눈썹 및 얼굴 윤곽을 가리는 사진은 제출 불가"가 다시 명시됐습니다.</p><p class="ref">근거: <a href="https://www.passport.go.kr/home/kor/contents.do?menuPos=32" target="_blank" rel="noopener">외교부 여권 사진 규격</a></p></div>
       <div class="myth"><p class="old">아기는 얼굴이 작게 나와도 된다 <span class="num">(머리 2.3~3.6cm)</span></p><p class="now num">2018년부터 성인과 같은 3.2~3.6cm입니다. 옛 기준으로 찍으면 부적합입니다.</p><p class="ref">근거: 정책브리핑 2018-01-26</p></div>
@@ -458,7 +488,7 @@ body.no-tags .memo{display:none}
   <!-- 7 -->
   <section>
     <div class="tag">⑦ 대표 반려 사유 <i>호주식 — 작은 그림 포함</i></div>
-    <h2>반려 사유 TOP 5</h2>
+    <h2 id="reject">반려 사유 TOP 5</h2>
     <ol class="rej">
       <li><div class="mini fx fx-shadow"><div class="ph"></div></div><div><b>배경 그림자·음영</b><span>얼굴 앞뒤로 그림자가 생긴 경우</span></div></li>
       <li><div class="mini"><div class="ph v-small"></div></div><div><b>머리 길이 범위 밖</b><span class="num">정수리~턱이 3.2~3.6cm를 벗어남</span></div></li>
@@ -471,7 +501,7 @@ body.no-tags .memo{display:none}
   <!-- 8 -->
   <section>
     <div class="tag">⑧ 도구 단계 + 전후 + 인화 배치 <i>인화 시트 그림은 조사한 어느 페이지에도 없음 — 선점</i></div>
-    <h2>셀카 한 장에서 인화까지</h2>
+    <h2 id="make">셀카 한 장에서 인화까지</h2>
     <ol class="steps">
       <li><b>사진 올리기</b>정면, 가슴 위, 밝은 곳에서 찍은 한 장</li>
       <li><b>자동 점검</b>얼굴 위치·구도·화질을 바로 확인</li>
@@ -512,7 +542,7 @@ body.no-tags .memo{display:none}
   <!-- 10 -->
   <section>
     <div class="tag">⑩ 자주 묻는 질문 <i>기존 유지</i></div>
-    <h2>자주 묻는 질문</h2>
+    <h2 id="faq">자주 묻는 질문</h2>
     <div class="faq">
       <details><summary>여권사진 배경은 흰색만 가능한가요?</summary><p>네. 균일하고 잉크 자국 없는 흰색 배경만 허용됩니다. 그림자, 테두리, 무늬가 있으면 반려됩니다.</p></details>
       <details><summary>안경 쓰고 여권사진 찍어도 되나요?</summary><p>일반 안경은 빛 반사가 없고 안경테가 눈을 가리지 않으면 착용 가능합니다. 컬러렌즈, 서클렌즈, 선글라스, 렌즈에 색이 들어간 안경은 불가합니다.</p></details>
@@ -531,6 +561,8 @@ body.no-tags .memo{display:none}
     <h3 class="sub">같은 크기를 쓰는 다른 나라 여권</h3>
     <ul class="sib"><li><a href="#top">일본</a></li><li><a href="#top">영국</a></li><li><a href="#top">독일</a></li><li><a href="#top">프랑스</a></li><li><a href="#top">호주</a></li></ul>
   </section>
+
+  <footer class="foot"><span>© 2026 MONKOS. All rights reserved.</span><span>Terms · Privacy · Refund</span></footer>
 
   <!-- 검토 메모 -->
   <section class="memo">
