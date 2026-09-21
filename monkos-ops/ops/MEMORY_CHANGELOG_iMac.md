@@ -605,3 +605,8 @@
 
 ## 2026-09-17 11:22 KST iMac/민아
 - 신설: project_isolated_experiment_env_intent.md (별도 실험 환경·Astra 편입 조건 3·세션 기록=능력). MEMORY.md 인덱스 1행 추가.
+
+## 2026-09-21 11:58 KST iMac/민아
+- 신설: feedback_tool_limit_not_judgment.md (도구 제약을 판단처럼 포장 금지 — 첫 줄에 도구 한계 명시, 마지막 고리가 작가님 손이면 제안이 아니라 일감. 09-19 질책).
+- 신설: project_payment_surface_state_202609.md (결제 표면 6곳 전수 수정 후 상태 — 계측 위치·미검증 구간·숨김 브라우저 인공물·미결 결정 3건).
+- MEMORY.md 인덱스 2행 추가(138→141행).
