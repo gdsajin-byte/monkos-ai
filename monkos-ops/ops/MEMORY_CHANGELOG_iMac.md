@@ -614,3 +614,6 @@
 ## 2026-09-21 14:48 KST iMac/민아
 - 신설: reference_astra_codex_launch_aliases.md (Astra=Codex CLI 기동 3종 mk-g/mk-gw/mk-gm, 샌드박스 실측 방어 범위, `codex sandbox` 단독 실패 주의).
 - MEMORY.md 인덱스 1행 추가(141→142행).
+
+## 2026-09-21 14:52 KST iMac/민아
+- 갱신: reference_astra_codex_launch_aliases.md — mk-g 1종 통합(무승인·무샌드박스, 작가님 지시), 샌드박스 유지안 기각 경위·권한 단계 재제안 금지. MEMORY.md 인덱스 1행 교체(행수 불변 142).

@@ -75,7 +75,7 @@ monkos-ops/ops/proposals/astra_demo_kr-passport/
 
 ## 5. ⚠️ 준수 조항
 
-- **실행권 범위 = 위 산출물 폴더 안 파일 쓰기뿐.** 배포, `git commit`·`push`, 패키지 설치, 포털 코드(`monkos_AI/`)·데이터(`specs-data.json`)·규정(`.claude/`, `governance/`) 수정 전부 금지. 필요하다고 판단되면 하지 말고 LOG.md에 "요청"으로 적는다.
+- **권한은 기존 막내와 동일(무승인·무샌드박스, 09-21 14:51 작가님 지시로 개정). 이 지시서의 작업 범위 = 위 산출물 폴더.** 범위 밖 작업(배포, 패키지 설치, 포털 코드 `monkos_AI/`·데이터 `specs-data.json`·규정 `.claude/`·`governance/` 수정)은 기존 막내와 같은 규칙 — 하지 말고 LOG.md에 "요청"으로 적고 보고한다(ch7 지시서 범위 밖 작업 금지).
 - **`.env*`, `secrets/`, `~/.ssh`, `~/.config`, `~/.claude` 를 열지 않는다.** 시크릿·API 키·토큰을 생성·추측·출력하지 않는다(헌법 4조 1항). 이미지 생성에 외부 키가 필요해지면 중단하고 작가님에게 묻는다.
 - 고객 데이터·Firestore·결제·크레딧 경로 접근 금지. 라이브 사이트는 공개 페이지 GET만.
 - 파괴적 명령(`rm -rf`, `git reset --hard`, `git clean`, 강제 푸시) 금지(헌법 4조 2항).
@@ -102,4 +102,6 @@ monkos-ops/ops/proposals/astra_demo_kr-passport/
 
 ## 8. 커밋
 
-Astra는 커밋하지 않는다. 검수(민아) 후 민아 또는 작가님이 커밋한다 — `[research] specs 상세페이지 데모 2차(Astra) — 한국 여권 예시 이미지`
+기존 막내 관례대로 Astra가 직접 커밋→푸시한다(09-21 14:51 개정). **산출물 폴더만 스테이징**(`git add monkos-ops/ops/proposals/astra_demo_kr-passport`) — `git add -A` 금지(타 에이전트 미커밋분 혼입 방지). 푸시 전 `git pull --rebase` 아닌 `git fetch` + 상태 확인, 충돌 시 중단·보고.
+
+`[research] specs 상세페이지 데모 2차(Astra) — 한국 여권 예시 이미지`
