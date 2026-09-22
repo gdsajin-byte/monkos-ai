@@ -620,3 +620,6 @@
 
 ## 2026-09-21 16:37 KST iMac/민아
 - 갱신: project_payment_surface_state_202609.md — 토스 영수증 인증 절차 추가(09-30 적용) 영향 판정 1단락 어펜드. 인덱스 불변.
+
+## 2026-09-22 15:00 KST iMac/민아
+- 신설: project_multimodal_team_gpt_gemini.md (GPT·Gemini 멀티모달 축 분담, 채널 구분, GPT 목업=시안·민아 검수). MEMORY.md 인덱스 1행 추가(142→143행).
