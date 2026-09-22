@@ -623,3 +623,6 @@
 
 ## 2026-09-22 15:00 KST iMac/민아
 - 신설: project_multimodal_team_gpt_gemini.md (GPT·Gemini 멀티모달 축 분담, 채널 구분, GPT 목업=시안·민아 검수). MEMORY.md 인덱스 1행 추가(142→143행).
+
+## 2026-09-22 18:57 KST iMac/민아
+- 갱신: project_session_ops_procedures.md — 타임스탬프 위반 패턴 2종·교정안 1단락 어펜드. 인덱스 불변.
