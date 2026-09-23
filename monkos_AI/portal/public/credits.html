@@ -121,6 +121,30 @@ a:hover { text-decoration: underline; }
 .pay-btn:hover { opacity: 0.92; }
 .pay-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* ── 결제 동선 결함 수정 (2026-09-20, specs 09-19 수정의 충전 페이지 이식) ──
+   pay-error : 토스트(3.5초)만으로는 사유가 사라진다 → 결제 버튼 바로 위 상시 슬롯
+   pay-loading: 위젯 렌더 중 빈 화면 = 고장으로 읽힘 → 로딩 문구
+   is-docked : 위젯이 길어 결제 버튼이 화면 아래로 밀리면 하단 고정 */
+.pay-error {
+  margin: 0 0 10px; padding: 10px 12px; border-radius: 10px;
+  font-size: 0.85rem; line-height: 1.5; text-align: left;
+  background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.35); color: #fca5a5;
+}
+.pay-error.info { background: rgba(167,139,250,0.10); border-color: var(--border-hover); color: var(--text); }
+.pay-error-retry {
+  display: block; margin-top: 8px; padding: 8px 16px;
+  background: transparent; color: var(--text-bright);
+  border: 1px solid currentColor; border-radius: 8px;
+  font-size: 0.82rem; font-weight: 600; cursor: pointer;
+}
+.pay-loading { padding: 18px 12px; text-align: center; font-size: 0.85rem; color: var(--text-dim); }
+.pay-btn.is-docked {
+  position: fixed; left: 50%; right: auto; transform: translateX(-50%);
+  width: calc(100% - 32px); max-width: 520px; margin: 0;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  z-index: 60; box-shadow: 0 10px 28px -8px rgba(0,0,0,0.6);
+}
+
 .info-box {
   margin-top: 24px; padding: 16px;
   background: var(--card-bg); border: 1px solid var(--border);
@@ -199,11 +223,19 @@ footer { text-align: center; padding: 40px 0 20px; border-top: 1px solid rgba(16
     <div class="packages" id="packages"></div>
 
     <div id="widgetSection" style="display:none; margin-top:16px;">
+      <div id="payLoading" class="pay-loading" style="display:none;"></div>
       <div id="payment-method"></div>
       <div id="agreement" style="margin-top:8px;"></div>
     </div>
 
+    <!-- 결제 에러 상시 슬롯 — 결제 버튼 바로 위 (2026-09-20) -->
+    <div id="payError" class="pay-error" role="alert" style="display:none;">
+      <span id="payErrorMsg"></span>
+      <button type="button" id="payErrorRetry" class="pay-error-retry" style="display:none;"></button>
+    </div>
     <button class="pay-btn" id="payBtn" onclick="startPayment()" disabled>패키지를 선택해 주세요</button>
+    <!-- 결제 버튼 하단 고정(is-docked) 시 흐름 공백 유지용 (2026-09-20) -->
+    <div id="payBtnSpacer" style="height:0;"></div>
 
     <div class="info-box" id="infoBox">
       <h3 id="infoTitle">안내</h3>
@@ -294,17 +326,98 @@ var T = {
   }
 };
 
+// 결제 동선 문구 (2026-09-20) — 페이지 UI는 ko/en 2종이지만 결제 실패·안내 문구는
+// 유입 언어(ja/es)로 보여준다. 없는 언어는 en 폴백 (pt()).
+var PAY_T = {
+  ko: {
+    widgetLoading: '결제창을 불러오는 중입니다…',
+    widgetFail: '결제창을 불러오지 못했습니다. 아래 버튼으로 다시 시도해 주세요.',
+    retry: '다시 시도',
+    payCancelled: '결제를 취소하셨습니다. 다시 결제하시려면 아래 결제 버튼을 눌러 주세요.',
+    checkoutFail: '결제 페이지를 열지 못했습니다. 잠시 후 다시 시도해 주세요.',
+    confirmRetry: '결제 확인 다시 시도',
+    confirmHint: '아래 버튼으로 결제 확인을 다시 시도해 주세요. 계속 실패하면 info@monkos.ai 로 문의해 주세요.',
+    confirmGiveUp: '결제 확인을 완료하지 못했습니다. info@monkos.ai 로 문의해 주세요.',
+    loginToConfirm: '로그인이 만료되었습니다. 다시 로그인하시면 결제 확인이 이어집니다.',
+    lemonPending: '결제를 완료하셨다면 잔액이 곧 반영됩니다.',
+  },
+  en: {
+    widgetLoading: 'Loading the payment form…',
+    widgetFail: 'The payment form could not be loaded. Please try again with the button below.',
+    retry: 'Try again',
+    payCancelled: 'Payment was cancelled. Tap the pay button below to try again.',
+    checkoutFail: 'The checkout page could not be opened. Please try again in a moment.',
+    confirmRetry: 'Retry payment verification',
+    confirmHint: 'Please retry the verification with the button below. If it keeps failing, contact info@monkos.ai.',
+    confirmGiveUp: 'Payment verification could not be completed. Please contact info@monkos.ai.',
+    loginToConfirm: 'Your session has expired. Sign in again to continue verifying your payment.',
+    lemonPending: 'If you completed the payment, your balance will update here shortly.',
+  },
+  ja: {
+    widgetLoading: '決済画面を読み込んでいます…',
+    widgetFail: '決済画面を読み込めませんでした。下のボタンからもう一度お試しください。',
+    retry: '再試行',
+    payCancelled: 'お支払いがキャンセルされました。もう一度お支払いの場合は下のボタンを押してください。',
+    checkoutFail: '決済ページを開けませんでした。しばらくしてからもう一度お試しください。',
+    confirmRetry: '決済確認を再試行',
+    confirmHint: '下のボタンから決済確認を再試行してください。解決しない場合は info@monkos.ai までご連絡ください。',
+    confirmGiveUp: '決済確認を完了できませんでした。info@monkos.ai までご連絡ください。',
+    loginToConfirm: 'ログインの有効期限が切れました。再度ログインすると決済確認が続行されます。',
+    lemonPending: 'お支払いが完了している場合、残高はまもなく反映されます。',
+  },
+  es: {
+    widgetLoading: 'Cargando el formulario de pago…',
+    widgetFail: 'No se pudo cargar el formulario de pago. Inténtalo de nuevo con el botón de abajo.',
+    retry: 'Reintentar',
+    payCancelled: 'El pago fue cancelado. Pulsa el botón de pago de abajo para intentarlo de nuevo.',
+    checkoutFail: 'No se pudo abrir la página de pago. Inténtalo de nuevo en un momento.',
+    confirmRetry: 'Reintentar la verificación del pago',
+    confirmHint: 'Reintenta la verificación con el botón de abajo. Si sigue fallando, escribe a info@monkos.ai.',
+    confirmGiveUp: 'No se pudo completar la verificación del pago. Escribe a info@monkos.ai.',
+    loginToConfirm: 'Tu sesión ha caducado. Inicia sesión de nuevo para continuar con la verificación del pago.',
+    lemonPending: 'Si completaste el pago, tu saldo se actualizará aquí en breve.',
+  }
+};
+
 var selectedIdx = 0;
 var currentUser = null;
 var returnUrl = null;
 var widgets = null;
 var widgetReady = false;
 var lang = 'ko';
+var msgLang = 'ko'; // 결제 문구 전용 언어 (ko/en/ja/es) — detectMsgLang()
 var globalProducts = null;
 var pollTimer = null;
 var preCheckoutBalance = null;
+// 결제 동선 가드 (2026-09-20)
+var renderInFlight = false;   // 위젯 렌더 진행 중 — 같은 셀렉터에 이중 렌더 금지
+var widgetBroken = false;     // 위젯 단계 실패 후 — 패키지 탭으로 렌더를 다시 부르지 않는다 (재시도 = 새로고침)
+var widgetAmountIdx = -1;     // 위젯에 실제 반영된 금액의 패키지 인덱스 (표시 금액 ≠ 결제 금액 방지)
+var payBusy = false;          // requestPayment 이중 호출 방지
+var lemonBusy = false;        // 레몬 체크아웃 생성 이중 호출 방지
+var confirmInFlight = false;  // 결제 확인(confirm) 이중 호출 방지
+var payErrSeq = 0;
+var PKG_IDX_KEY = 'monkos_credits_pkg_idx';
+var PENDING_PAY_KEY = 'monkos_credits_pending_payment';
+var LEMON_PENDING_KEY = 'monkos_credits_lemon_pending';
 
 function t(key) { return (T[lang] && T[lang][key]) || T.ko[key] || key; }
+function pt(key) { return (PAY_T[msgLang] && PAY_T[msgLang][key]) || PAY_T.en[key] || key; }
+
+// sessionStorage 안전 래퍼 — 사파리 비공개 모드·인앱 일부는 접근 자체가 예외
+function ssGet(key) { try { return sessionStorage.getItem(key); } catch (e) { return null; } }
+function ssSet(key, val) { try { sessionStorage.setItem(key, val); } catch (e) {} }
+function ssDel(key) { try { sessionStorage.removeItem(key); } catch (e) {} }
+
+function detectMsgLang() {
+  if (lang === 'ko') return 'ko';
+  var params = new URLSearchParams(window.location.search);
+  var l = (params.get('lang') || '').slice(0, 2).toLowerCase();
+  if (l !== 'ko' && l !== 'en' && PAY_T[l]) return l;
+  var from = ssGet('monkos_credits_from') || params.get('from') || '';
+  var m = /^\/(ja|es)\//.exec(from);
+  return m ? m[1] : 'en';
+}
 
 function detectLang() {
   var params = new URLSearchParams(window.location.search);
@@ -353,10 +466,14 @@ window.addEventListener('DOMContentLoaded', async function() {
   returnUrl = sessionStorage.getItem('monkos_credits_from') || null;
 
   lang = detectLang();
+  msgLang = detectMsgLang();
   applyLang();
   showReturnBar();
 
   if (lang === 'ko') {
+    // 직전 선택 패키지 복원 (2026-09-20 결함 F) — 토스 실패 복귀·위젯 재시도(새로고침) 후 0번으로 되돌아가지 않게
+    var savedIdx = parseInt(ssGet(PKG_IDX_KEY), 10);
+    if (savedIdx >= 0 && savedIdx < KO_PACKAGES.length) selectedIdx = savedIdx;
     renderKoPackages();
   } else {
     await loadGlobalProducts();
@@ -364,6 +481,16 @@ window.addEventListener('DOMContentLoaded', async function() {
 
   await checkAuth();
   handleTossResult();
+  handleLemonReturn();
+});
+
+// bfcache 복귀(결제창·레몬에서 뒤로가기) — 가드가 잠긴 채 복원되면 결제 버튼이 영구 무반응이 된다 (2026-09-20)
+window.addEventListener('pageshow', function(e) {
+  if (!e.persisted) return;
+  payBusy = false;
+  lemonBusy = false;
+  scheduleDock();
+  handleLemonReturn();
 });
 
 function showReturnBar() {
@@ -399,8 +526,8 @@ function renderKoPackages() {
     var totalC = p.credits + p.bonus;
     var strikePrice = totalC * 150;
     var saved = strikePrice - p.amount;
-    var sel = i === 0 ? ' selected' : '';
-    var chk = i === 0 ? ' checked' : '';
+    var sel = i === selectedIdx ? ' selected' : '';
+    var chk = i === selectedIdx ? ' checked' : '';
     var badge = p.recommended ? '<span class="pkg-badge">추천</span>' : '';
     if (p.best) badge = '<span class="pkg-badge" style="background:#f59e0b;">★ BEST</span>';
     var priceHtml = '<span style="text-decoration:line-through;color:#666;font-size:0.75rem;">₩' + strikePrice.toLocaleString() + '</span> <span class="pkg-price">₩' + p.amount.toLocaleString() + '</span>';
@@ -418,11 +545,15 @@ function renderKoPackages() {
     '</label>';
   }
   container.innerHTML = html;
-  container.querySelectorAll('.pkg').forEach(function(el) {
-    el.addEventListener('click', function() {
+  // .pkg는 라디오를 감싼 <label> — label click은 라디오의 합성 click이 다시 버블링돼 한 번 탭에 2회 발화한다.
+  // 라디오 change로 받아 1탭 = selectPkg 1회 (2026-09-20 결함 B-3: 렌더 중 이중 호출 → 위젯 이중 렌더)
+  container.querySelectorAll('.pkg input[type="radio"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      if (!this.checked) return;
       container.querySelectorAll('.pkg').forEach(function(p) { p.classList.remove('selected'); });
-      this.classList.add('selected');
-      selectPkg(parseInt(this.dataset.idx));
+      var label = this.closest('.pkg');
+      if (label) label.classList.add('selected');
+      selectPkg(parseInt(this.value, 10));
     });
   });
 }
@@ -480,31 +611,228 @@ function selectGlobalPkg(idx) {
   }
 }
 
+// === 결제 계측·에러 슬롯·하단 고정 (2026-09-20 — specs 09-19 수정의 이식) ===
+// 인앱 브라우저(WKWebView 계열) 판정 — specs-funnel.js isInApp 과 동일 패턴
+function isInApp() {
+  return /(GSA\/|FBAN|FBAV|Instagram|KAKAOTALK|Line\/|NAVER\(|DaumApps|; wv\))/i.test(navigator.userAgent || '');
+}
+function payProvider() { return lang === 'ko' ? 'toss' : 'lemon'; }
+
+// GA 결제 단계 이벤트 — 기존 purchase 와 같은 공통 파라미터(service·market·payment_provider).
+// ⚠️ paymentKey·토큰·이메일은 파라미터에 절대 넣지 않는다 (헌법 4조 1항)
+function gaPay(name, params) {
+  try {
+    if (typeof gtag !== 'function') return;
+    var p = { payment_provider: payProvider(), service: 'portal', market: lang === 'ko' ? 'kr' : 'global' };
+    if (params) { for (var k in params) { if (Object.prototype.hasOwnProperty.call(params, k)) p[k] = params[k]; } }
+    gtag('event', name, p);
+  } catch (e) {}
+}
+var gaCheckoutFired = {};
+function gaBeginCheckout(value, currency) {
+  // 결제 버튼 탭 = 결제 시작. 같은 금액 재탭(에러 후 재시도)은 1회로 센다
+  var key = currency + ':' + value;
+  if (gaCheckoutFired[key]) return;
+  gaCheckoutFired[key] = true;
+  gaPay('begin_checkout', { value: value, currency: currency });
+}
+
+// 결제 실패 계측 — 이 페이지는 directOrders 주문 문서가 없어 /api/payments/direct/fail 을 쓸 수 없다.
+// GA는 유실 가능 → 사유의 정본은 서버 WARNING 로그([Pay-Fail]). 실패해도 고객 동선을 막지 않는다.
+function reportPayFail(stage, code, message) {
+  var safeCode = String(code || 'UNKNOWN').slice(0, 60);
+  gaPay('pay_fail', { fail_stage: stage, fail_code: safeCode, in_app: isInApp() });
+  try {
+    fetch('/api/payments/fail', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+      body: JSON.stringify({
+        service: 'credits', provider: payProvider(), stage: stage, code: safeCode,
+        message: String(message || '').slice(0, 200),
+        vw: window.innerWidth, vh: window.innerHeight, inApp: isInApp()
+      })
+    }).catch(function() {});
+  } catch (e) {}
+}
+
+// 결제 에러 상시 슬롯 — 토스트는 3.5초 뒤 사라져 고객에겐 "눌러도 반응 없는 버튼"만 남는다.
+// opts: { info: 중립 안내(취소 등), retryLabel + onRetry: 재시도 버튼, noScroll }
+function showPayError(msg, opts) {
+  opts = opts || {};
+  payErrSeq++;
+  var box = document.getElementById('payError');
+  var retry = document.getElementById('payErrorRetry');
+  if (!box) return;
+  document.getElementById('payErrorMsg').textContent = msg;
+  box.className = 'pay-error' + (opts.info ? ' info' : '');
+  if (opts.onRetry) {
+    retry.textContent = opts.retryLabel || pt('retry');
+    retry.onclick = opts.onRetry; // onclick 대입 — 재표시마다 리스너가 쌓이지 않게
+    retry.style.display = '';
+  } else {
+    retry.onclick = null;
+    retry.style.display = 'none';
+  }
+  box.style.display = '';
+  if (!opts.noScroll) { try { box.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {} }
+  scheduleDock();
+}
+function hidePayError() {
+  var box = document.getElementById('payError');
+  if (!box) return;
+  box.style.display = 'none';
+  document.getElementById('payErrorMsg').textContent = '';
+  document.getElementById('payErrorRetry').onclick = null;
+  scheduleDock();
+}
+// 토스트(기존) + 상시 슬롯 동시 표기
+function showPayProblem(msg, opts) {
+  showToast(msg, 'error');
+  showPayError(msg, opts);
+}
+
+// 결제 버튼 하단 고정 — 토스 위젯 영역이 길어(375폭 실측 약 630px) 버튼이 화면 아래에 남는다.
+// 렌더 직후 1회 스크롤로는 약관 펼침·결제수단 전환 때 다시 밀린다 → scroll/resize/ResizeObserver 로 추적
+var dockRaf = null;
+function undockPayBtn() {
+  var btn = document.getElementById('payBtn');
+  var spacer = document.getElementById('payBtnSpacer');
+  if (btn) btn.classList.remove('is-docked');
+  if (spacer) spacer.style.height = '0px';
+}
+function updateDock() {
+  var wrap = document.getElementById('widgetSection');
+  var btn = document.getElementById('payBtn');
+  var spacer = document.getElementById('payBtnSpacer');
+  var main = document.getElementById('mainArea');
+  if (!wrap || !btn || !spacer || !main) return;
+  if (wrap.style.display === 'none' || main.style.display === 'none') return undockPayBtn();
+  var vh = window.innerHeight || document.documentElement.clientHeight || 0;
+  var wr = wrap.getBoundingClientRect();
+  var inView = wr.bottom > 0 && wr.top < vh - 40;
+  // 고정 중에는 버튼이 흐름 밖이라 스페이서가 '원래 자리'의 정본
+  var naturalBottom = btn.classList.contains('is-docked')
+    ? spacer.getBoundingClientRect().bottom
+    : btn.getBoundingClientRect().bottom;
+  if (inView && naturalBottom > vh - 8) {
+    if (!btn.classList.contains('is-docked')) {
+      spacer.style.height = btn.offsetHeight + 'px';
+      btn.classList.add('is-docked');
+    }
+  } else undockPayBtn();
+}
+function scheduleDock() {
+  if (dockRaf) return;
+  dockRaf = requestAnimationFrame(function() { dockRaf = null; updateDock(); });
+}
+window.addEventListener('scroll', scheduleDock, { passive: true });
+window.addEventListener('resize', scheduleDock);
+if (window.ResizeObserver) {
+  var dockRo = new ResizeObserver(scheduleDock);
+  ['payment-method', 'agreement', 'widgetSection'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) dockRo.observe(el);
+  });
+}
+
 // === 토스 위젯 (ko only) ===
-async function selectPkg(idx) {
+function setWidgetLoading(on) {
+  var el = document.getElementById('payLoading');
+  if (!el) return;
+  if (on) el.textContent = pt('widgetLoading');
+  el.style.display = on ? '' : 'none';
+}
+
+// 위젯 단계 실패 공통 처리 — 종전엔 console.error 만 남고 '결제하기' 라벨의 죽은 버튼이 영구히 남았다.
+// 재시도 = 새로고침: 같은 셀렉터에 렌더를 다시 부르면 이중 렌더로 결제가 깨진다(specs 09-20 실측 INVALID_METHOD_TRANSACTION).
+// 선택 패키지·복귀 URL·미확인 결제는 sessionStorage 에 있어 새로고침으로 잃는 것이 없다.
+function widgetFailed(code, message) {
+  widgetBroken = true;
+  document.getElementById('payBtn').disabled = true;
+  setWidgetLoading(false);
+  // 미확인 결제의 '확인 재시도' 안내가 슬롯을 쓰는 중이면 덮지 않는다 (그쪽이 돈이 걸린 안내) — 토스트만
+  if (loadPendingPayment()) showToast(pt('widgetFail'), 'error');
+  else showPayProblem(pt('widgetFail'), { onRetry: function() { window.location.reload(); } });
+  reportPayFail('widget', code, message);
+}
+
+// 위젯에 선택 패키지 금액 반영 (렌더 완료 후에는 패키지 변경 = setAmount 만)
+function syncAmount() {
+  var idx = selectedIdx;
+  var btn = document.getElementById('payBtn');
+  btn.disabled = true; // 반영 전 결제 금지 — 버튼 라벨 금액 ≠ 위젯 금액 상태로 결제되지 않게
+  return widgets.setAmount({ currency: 'KRW', value: KO_PACKAGES[idx].amount })
+    .then(function() {
+      widgetAmountIdx = idx;
+      if (selectedIdx === idx) btn.disabled = false; // 그 사이 또 바꿨다면 뒤따르는 syncAmount 가 연다
+    })
+    .catch(function(e) {
+      console.error('Widget setAmount failed:', e);
+      widgetFailed((e && e.code) || 'SET_AMOUNT_FAILED', (e && e.message) || '');
+    });
+}
+
+function renderTossWidget() {
+  if (renderInFlight || widgetReady) return;
+  if (!TOSS_CLIENT_KEY) return widgetFailed('CLIENT_KEY_MISSING', 'toss client key not injected');
+  if (typeof window.TossPayments !== 'function') return widgetFailed('SDK_MISSING', 'TossPayments global undefined');
+  if (!widgets) {
+    try {
+      widgets = window.TossPayments(TOSS_CLIENT_KEY).widgets({ customerKey: currentUser.id });
+    } catch (e) {
+      console.error('Widget init failed:', e);
+      return widgetFailed((e && e.code) || 'INIT_EXCEPTION', (e && e.message) || '');
+    }
+  }
+  var btn = document.getElementById('payBtn');
+  var idxAtStart = selectedIdx;
+  var t0 = Date.now(), settled = false, timedOut = false, timeoutErrSeq = -1;
+  renderInFlight = true;
+  document.getElementById('widgetSection').style.display = '';
+  setWidgetLoading(true);
+  // 렌더 멈춤 감시 — 프라미스가 끝나지 않으면 버튼이 영구 disabled 로 남는다. 12초 뒤 사유와 재시도를 보여준다.
+  // renderInFlight 는 풀지 않는다(늦게라도 뜨면 그대로 결제 가능, 그 사이 재렌더 금지).
+  var renderTimer = setTimeout(function() {
+    if (settled) return;
+    timedOut = true;
+    widgetFailed('RENDER_TIMEOUT', 'widget render not settled in 12s');
+    setWidgetLoading(true); // 아직 렌더 중 — 로딩 문구는 유지
+    timeoutErrSeq = payErrSeq;
+  }, 12000);
+  widgets.setAmount({ currency: 'KRW', value: KO_PACKAGES[idxAtStart].amount })
+    .then(function() { return widgets.renderPaymentMethods({ selector: '#payment-method' }); })
+    .then(function() { return widgets.renderAgreement({ selector: '#agreement' }); })
+    .then(function() {
+      settled = true; clearTimeout(renderTimer);
+      renderInFlight = false; widgetReady = true; widgetAmountIdx = idxAtStart;
+      widgetBroken = false; // 타임아웃 뒤 늦게 뜬 경우 포함 — 정상 복귀
+      setWidgetLoading(false);
+      // 늦게 떴다 — 타임아웃 문구만 거둔다 (그 사이 뜬 다른 에러는 건드리지 않는다)
+      if (timedOut && payErrSeq === timeoutErrSeq) hidePayError();
+      gaPay('pay_widget_open', { render_ms: Date.now() - t0, late: timedOut });
+      // 렌더 중 패키지를 바꿨다면 최신 선택으로 금액만 다시 맞춘다
+      if (selectedIdx !== idxAtStart) syncAmount(); else btn.disabled = false;
+      scheduleDock();
+    })
+    .catch(function(e) {
+      settled = true; clearTimeout(renderTimer);
+      renderInFlight = false;
+      console.error('Widget render failed:', e);
+      document.getElementById('widgetSection').style.display = 'none';
+      widgetFailed((e && e.code) || 'RENDER_FAILED', (e && e.message) || '');
+    });
+}
+
+function selectPkg(idx) {
   selectedIdx = idx;
+  ssSet(PKG_IDX_KEY, String(idx));
   var pkg = KO_PACKAGES[idx];
   var btn = document.getElementById('payBtn');
   btn.textContent = '₩' + pkg.amount.toLocaleString() + ' 결제하기';
 
   if (!currentUser || !currentUser.id) return;
-
-  if (!widgets) {
-    try {
-      var tp = TossPayments(TOSS_CLIENT_KEY);
-      widgets = tp.widgets({ customerKey: currentUser.id });
-    } catch(e) { console.error('Widget init failed:', e); return; }
-  }
-
-  await widgets.setAmount({ currency: 'KRW', value: pkg.amount });
-
-  if (!widgetReady) {
-    document.getElementById('widgetSection').style.display = '';
-    await widgets.renderPaymentMethods({ selector: '#payment-method' });
-    await widgets.renderAgreement({ selector: '#agreement' });
-    widgetReady = true;
-    btn.disabled = false;
-  }
+  // 렌더 진행 중 재호출 금지 (2026-09-20 결함 B-1) — 금액은 렌더 완료 시점에 selectedIdx 기준으로 다시 맞춘다
+  if (renderInFlight || widgetBroken) return;
+  if (widgetReady) { syncAmount(); return; }
+  renderTossWidget();
 }
 
 // === 인증 ===
@@ -572,6 +900,9 @@ function googleLogin() {
           else if (globalProducts && globalProducts.length) selectGlobalPkg(selectedIdx);
           if (data.isNewUser) showToast(t('signupToast'), 'success');
           showReturnCta();
+          // 세션 만료로 멈춘 결제 확인을 재로그인 직후 이어간다 (2026-09-20 결함 E)
+          resumePendingConfirm();
+          handleLemonReturn();
         }
       })
       .catch(function() { showToast(t('loginFail'), 'error'); });
@@ -595,13 +926,22 @@ async function startPayment() {
 }
 
 async function startTossPayment() {
+  if (payBusy) return; // 더블 탭 → requestPayment 이중 호출 방지 (2026-09-20 결함 B-4)
   if (!widgets || !widgetReady) {
     showToast(t('selectPkg'), 'error');
     return;
   }
+  // 백스톱: 위젯 금액이 선택 패키지와 다르면 결제하지 않고 금액부터 맞춘다
+  if (widgetAmountIdx !== selectedIdx) { syncAmount(); return; }
   var pkg = KO_PACKAGES[selectedIdx];
   var orderId = 'MONKOS_' + currentUser.id.slice(0, 8) + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
 
+  payBusy = true;
+  hidePayError();
+  clearPendingPayment(); // 새 결제를 시작하면 이전 미확인 결제의 재시도는 거둔다
+  gaBeginCheckout(pkg.amount, 'KRW');
+  gaPay('pay_confirm_click', { value: pkg.amount, currency: 'KRW' });
+  // ⚠️ 여기서 requestPayment 앞에 await 를 넣지 말 것 — user activation 이 만료되면 결제창이 팝업 차단된다 (specs 2026-07-05 실사고)
   try {
     await widgets.requestPayment({
       orderId: orderId,
@@ -612,18 +952,39 @@ async function startTossPayment() {
       customerName: currentUser.name || undefined,
     });
   } catch (err) {
-    if (err.code !== 'PAY_PROCESS_CANCELED' && err.code !== 'USER_CANCEL') {
-      showToast(t('payError') + (err.message || err.code), 'error');
+    var errCode = (err && err.code) || '';
+    var cancelled = errCode === 'PAY_PROCESS_CANCELED' || errCode === 'USER_CANCEL';
+    reportPayFail('request', errCode || 'REQUEST_FAILED', (err && err.message) || '');
+    if (cancelled) {
+      // 취소는 에러가 아니다 — 다만 아무 표시도 없으면 "눌러도 반응 없는 버튼"으로 읽힌다
+      showPayError(pt('payCancelled'), { info: true });
+    } else {
+      showPayProblem(t('payError') + ((err && (err.message || err.code)) || ''));
     }
+  } finally {
+    payBusy = false;
   }
 }
 
 async function startLemonPayment() {
+  if (lemonBusy) return; // 더블 탭 방지 (잠금 모드 폴링 중에는 버튼 자체가 disabled, 조용한 확인 중에는 재결제 허용)
   if (!globalProducts || !globalProducts[selectedIdx]) return;
   var prod = globalProducts[selectedIdx];
 
+  lemonBusy = true;
+  hidePayError();
   preCheckoutBalance = currentUser.credits || 0;
+  // 복귀 기준 잔액 보존 — 창을 열기 *전에* 저장해야 새 창(세션 복제)과 같은 탭 복귀가 모두 이 값을 본다
+  ssSet(LEMON_PENDING_KEY, JSON.stringify({ b: preCheckoutBalance, t: Date.now() }));
+  gaBeginCheckout(prod.priceUsd / 100, 'USD');
 
+  // 팝업 차단 회피 (2026-09-20 결함 A): 클릭 제스처 안에서 빈 창을 먼저 열고, 체크아웃 URL 은 fetch 뒤에 지정한다.
+  // 종전엔 await fetch 뒤에 window.open → 모바일 사파리·인앱에서 차단되는데도 반환값을 안 보고 폴링에 들어가
+  // 버튼이 '확인 중'으로 최대 180초 잠겼다.
+  var lemonWin = null;
+  try { lemonWin = window.open('', '_blank'); } catch (e) {}
+
+  var failCode = '', failMsg = '';
   try {
     var r = await fetch('/api/checkout', {
       method: 'POST',
@@ -632,53 +993,108 @@ async function startLemonPayment() {
         variantId: prod.variantId,
         userId: currentUser.id,
         email: currentUser.email || undefined,
-        redirectUrl: window.location.origin + '/credits.html?lang=' + lang,
+        // lemon=return — 결제 후 이 페이지로 돌아왔음을 알리는 표지 (handleLemonReturn)
+        redirectUrl: window.location.origin + '/credits.html?lang=' + lang + '&lemon=return',
       }),
     });
     var d = await r.json();
     if (d.url) {
-      window.open(d.url, '_blank');
-      startCreditPolling();
-    } else {
-      showToast(t('chargeErr'), 'error');
+      gaPay('pay_widget_open', { value: prod.priceUsd / 100, currency: 'USD' });
+      var opened = false;
+      if (lemonWin && !lemonWin.closed) {
+        try { lemonWin.location = d.url; opened = true; } catch (e) {}
+      }
+      if (!opened) {
+        // 새 창 불가 — 같은 탭으로 이동. 결제 후 redirectUrl(lemon=return)로 복귀하면 handleLemonReturn 이 잔액을 갱신한다.
+        // lemonBusy 는 풀지 않는다(이동 중 재탭 방지). 뒤로가기(bfcache) 복귀는 pageshow 에서 푼다.
+        window.location.href = d.url;
+        return;
+      }
+      lemonBusy = false;
+      startCreditPolling(lemonWin); // 체크아웃이 실제로 열린 경우에만 폴링
+      return;
     }
-  } catch(e) {
-    showToast(t('chargeErr'), 'error');
+    failCode = 'CHECKOUT_HTTP_' + r.status;
+    failMsg = (d && d.error) || '';
+  } catch (e) {
+    failCode = 'CHECKOUT_NETWORK';
+    failMsg = (e && e.message) || '';
   }
+  // 체크아웃 생성 실패 — 빈 창을 닫고, 폴링에 들어가지 않는다
+  if (lemonWin) { try { lemonWin.close(); } catch (e) {} }
+  ssDel(LEMON_PENDING_KEY);
+  lemonBusy = false;
+  showPayProblem(pt('checkoutFail'));
+  reportPayFail('request', failCode, failMsg);
 }
 
 // === 레몬 적립 폴링 ===
-function startCreditPolling() {
+// win  : 체크아웃 새 창 (있으면 '확인 중' 잠금 모드). 창이 닫힌 것으로 보이면 버튼을 풀고 조용히 계속 확인한다.
+// opts : { soft: 버튼을 잠그지 않는 조용한 확인(같은 탭 복귀·뒤로가기), paid: 결제 완료가 확실한 복귀(lemon=return) }
+function startCreditPolling(win, opts) {
+  opts = opts || {};
   if (pollTimer) clearInterval(pollTimer);
   var btn = document.getElementById('payBtn');
-  btn.disabled = true;
-  btn.textContent = t('pollWait');
+  var soft = !!opts.soft;
+  if (soft) {
+    showPayError(pt('lemonPending'), { info: true, noScroll: true });
+  } else {
+    btn.disabled = true;
+    btn.textContent = t('pollWait');
+  }
 
   var elapsed = 0;
   var maxMs = 180000;
   var intervalMs = 5000;
 
+  function unlockBtn() {
+    btn.disabled = false;
+    if (globalProducts && globalProducts[selectedIdx]) selectGlobalPkg(selectedIdx);
+  }
+  function stop() {
+    clearInterval(pollTimer);
+    pollTimer = null;
+    ssDel(LEMON_PENDING_KEY);
+  }
+
   pollTimer = setInterval(function() {
     elapsed += intervalMs;
     if (elapsed > maxMs) {
-      clearInterval(pollTimer);
-      pollTimer = null;
-      btn.disabled = false;
-      if (globalProducts && globalProducts[selectedIdx]) selectGlobalPkg(selectedIdx);
-      showToast(t('pollTimeout'), 'error');
+      stop();
+      unlockBtn();
+      if (soft && !opts.paid) {
+        // 결제 없이 돌아왔을 수 있다(뒤로가기·창 닫기) — 실패로 단정하지 않고 안내만 거둔다
+        hidePayError();
+      } else {
+        showPayProblem(t('pollTimeout'));
+        reportPayFail('poll', 'POLL_TIMEOUT', 'credit polling timed out');
+      }
       return;
+    }
+    // 새 창이 닫힌 것으로 보이면 잠금만 푼다 — 결제하지 않고 닫은 고객이 180초 동안 죽은 버튼을 보지 않게.
+    // (외부 페이지의 COOP 로 closed 가 일찍 true 가 될 수 있어 폴링 자체는 멈추지 않는다)
+    if (!soft && win) {
+      var winClosed = false;
+      try { winClosed = win.closed; } catch (e) { winClosed = true; }
+      if (winClosed) {
+        soft = true;
+        unlockBtn();
+        showPayError(pt('lemonPending'), { info: true, noScroll: true });
+      }
     }
     fetch('/api/credits?userId=' + encodeURIComponent(currentUser.id))
       .then(function(r) { return r.json(); })
       .then(function(data) {
-        if (data.credits !== undefined && data.credits > preCheckoutBalance) {
-          clearInterval(pollTimer);
-          pollTimer = null;
+        if (data.credits === undefined || !pollTimer) return;
+        // 기준 잔액을 모르는 복귀(새 창 쪽 탭 등) — 첫 조회값을 기준으로 삼고 표시만 갱신
+        if (preCheckoutBalance === null) preCheckoutBalance = data.credits;
+        if (data.credits > preCheckoutBalance) {
+          stop();
           var added = data.credits - preCheckoutBalance;
           currentUser.credits = data.credits;
           document.getElementById('balanceCount').textContent = data.credits;
-          btn.disabled = false;
-          if (globalProducts && globalProducts[selectedIdx]) selectGlobalPkg(selectedIdx);
+          unlockBtn();
+          hidePayError();
           showToast('+' + added + 'c ' + t('chargeOk'), 'success');
           returnToService();
         }
@@ -687,14 +1103,56 @@ function startCreditPolling() {
   }, intervalMs);
 }
 
+// 레몬 복귀 처리 (2026-09-20) — 같은 탭 폴백으로 결제하고 돌아온 경우(lemon=return), 또는 결제 없이
+// 뒤로가기로 돌아온 경우. 종전엔 복귀 처리가 없어 웹훅 적립이 늦으면 고객이 옛 잔액만 보고 끝났다.
+function handleLemonReturn() {
+  if (lang === 'ko') return;
+  var params = new URLSearchParams(window.location.search);
+  var isReturn = params.get('lemon') === 'return';
+  if (isReturn) {
+    params.delete('lemon'); // 새로고침 시 재진입 방지 — lang 등 나머지 쿼리는 유지
+    var qs = params.toString();
+    history.replaceState({}, '', window.location.pathname + (qs ? '?' + qs : ''));
+  }
+  var pending = null;
+  try { pending = JSON.parse(ssGet(LEMON_PENDING_KEY) || 'null'); } catch (e) {}
+  if (pending && (typeof pending.b !== 'number' || Date.now() - pending.t > 1800000)) {
+    pending = null; ssDel(LEMON_PENDING_KEY); // 30분 넘은 기록은 버린다
+  }
+  if (!isReturn && !pending) return;
+  if (!currentUser || !currentUser.id || pollTimer) return;
+  preCheckoutBalance = pending ? pending.b : null;
+  fetchBalance(currentUser.id);
+  startCreditPolling(null, { soft: true, paid: isReturn });
+}
+
 // === 토스 결과 처리 ===
+// 미확인 결제 보존 (2026-09-20 결함 E — idphoto-kr shared.js monkos_pending_payment 방식 이식)
+// 종전엔 성공 복귀 즉시 replaceState 로 paymentKey 를 지운 뒤 confirm → 실패·세션 만료 시 재시도 길이 없었다.
+// confirm 성공 전까지 sessionStorage 에 보존한다. ⚠️ paymentKey 는 confirm API 호출 외 어디에도(로그·GA·실패 계측) 보내지 않는다.
+function loadPendingPayment() {
+  try {
+    var p = JSON.parse(ssGet(PENDING_PAY_KEY) || 'null');
+    if (!p || !p.paymentKey || !p.orderId || !p.amount) return null;
+    if (Date.now() - (p.t || 0) > 1800000) { ssDel(PENDING_PAY_KEY); return null; } // 30분 넘은 기록은 버린다
+    return p;
+  } catch (e) { return null; }
+}
+function savePendingPayment(p) { ssSet(PENDING_PAY_KEY, JSON.stringify(p)); }
+function clearPendingPayment() { ssDel(PENDING_PAY_KEY); }
+
 function handleTossResult() {
   var params = new URLSearchParams(window.location.search);
 
   if (params.get('toss') === 'fail') {
+    var failCode = params.get('code') || 'RETURN_FAIL';
     var msg = params.get('message') || t('tossFail');
+    var cancelled = failCode === 'PAY_PROCESS_CANCELED' || failCode === 'USER_CANCEL';
     history.replaceState({}, '', '/credits');
     showToast(msg, 'error');
+    // 토스트는 3.5초 뒤 사라진다 — 사유를 결제 버튼 위에 남긴다 (2026-09-20 결함 C)
+    showPayError(cancelled ? pt('payCancelled') : msg, { info: cancelled });
+    reportPayFail('return', failCode, params.get('message') || '');
     return;
   }
 
@@ -703,58 +1161,106 @@ function handleTossResult() {
     var orderId = params.get('orderId');
     var amount = params.get('amount');
 
+    history.replaceState({}, '', '/credits');
     if (!paymentKey || !orderId || !amount) {
-      history.replaceState({}, '', '/credits');
-      showToast(t('tossInvalid'), 'error');
+      showPayProblem(t('tossInvalid'));
+      reportPayFail('return', 'INVALID_RETURN_PARAMS', 'success return without required params');
       return;
     }
-
-    showLoading(true);
-    history.replaceState({}, '', '/credits');
-
-    var userId = (currentUser && currentUser.id) ? currentUser.id : '';
-
-    fetch('/api/payments/toss/confirm', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        paymentKey: paymentKey,
-        orderId: orderId,
-        amount: parseInt(amount),
-        userId: userId,
-      }),
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      showLoading(false);
-      if (data.success) {
-        // GA4 purchase 결선 — 충전 확정 시점 = 매출 발생 시점 (2026-09-02 G-M1 수정안 1-A)
-        // transaction_id=orderId(주문 단위 1회), value=실결제액. paymentKey 등 토큰 미포함
-        try {
-          if (typeof gtag === 'function') {
-            gtag('event', 'purchase', {
-              transaction_id: orderId,
-              value: parseInt(amount),
-              currency: 'KRW',
-              payment_provider: 'toss',
-              service: 'portal',
-              market: 'kr',
-            });
-          }
-        } catch (e) {}
-        document.getElementById('balanceCount').textContent = data.credits || 0;
-        if (currentUser) currentUser.credits = data.credits;
-        showToast('+' + (data.creditsAdded || '') + 'c ' + t('chargeOk'), 'success');
-        returnToService();
-      } else {
-        showToast(t('chargeFail') + (data.error || ''), 'error');
-      }
-    })
-    .catch(function() {
-      showLoading(false);
-      showToast(t('chargeErr'), 'error');
-    });
+    savePendingPayment({ paymentKey: paymentKey, orderId: orderId, amount: amount, tried: 0, t: Date.now() });
   }
+
+  resumePendingConfirm();
+}
+
+// 보존된 미확인 결제 이어가기 — 아직 한 번도 확인을 안 보낸 건만 자동, 이미 실패한 건은 고객이 버튼으로 재시도
+// (자동 재확인을 매 로드마다 돌리면 같은 실패가 반복 발송된다)
+function resumePendingConfirm() {
+  var p = loadPendingPayment();
+  if (!p) return;
+  if (!currentUser || !currentUser.id) {
+    // 세션 만료 — 로그인 영역에 사유를 남기고, 재로그인 시 googleLogin 이 이 함수를 다시 부른다
+    document.getElementById('loginMsg').textContent = pt('loginToConfirm');
+    showToast(pt('loginToConfirm'), 'error');
+    return;
+  }
+  if (!p.tried) { confirmTossPayment(); return; }
+  showConfirmRetry(t('chargeErr'));
+}
+
+function showConfirmRetry(msg) {
+  var p = loadPendingPayment();
+  if (p && (p.tried || 0) < 3) {
+    showPayProblem(msg + ' ' + pt('confirmHint'), { retryLabel: pt('confirmRetry'), onRetry: confirmTossPayment });
+  } else {
+    // 3회 실패 — 같은 요청을 더 보내지 않는다
+    clearPendingPayment();
+    showPayProblem(msg + ' ' + pt('confirmGiveUp'));
+  }
+}
+
+function confirmTossPayment() {
+  if (confirmInFlight) return;
+  var p = loadPendingPayment();
+  if (!p) { showPayProblem(t('chargeErr') + ' ' + pt('confirmGiveUp')); return; } // 보존 기록 만료(30분) 후 재시도 탭
+  if (!currentUser || !currentUser.id) { resumePendingConfirm(); return; }
+  confirmInFlight = true;
+  p.tried = (p.tried || 0) + 1;
+  savePendingPayment(p);
+  hidePayError();
+  showLoading(true);
+
+  var orderId = p.orderId;
+  var amount = p.amount;
+
+  fetch('/api/payments/toss/confirm', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      paymentKey: p.paymentKey,
+      orderId: orderId,
+      amount: parseInt(amount),
+      userId: currentUser.id,
+    }),
+  })
+  .then(function(r) { return r.json().then(function(data) { return { status: r.status, data: data }; }); })
+  .then(function(res) {
+    var data = res.data || {};
+    confirmInFlight = false;
+    showLoading(false);
+    if (data.success) {
+      clearPendingPayment();
+      ssDel(PKG_IDX_KEY);
+      hidePayError();
+      // GA4 purchase 결선 — 충전 확정 시점 = 매출 발생 시점 (2026-09-02 G-M1 수정안 1-A)
+      // transaction_id=orderId(주문 단위 1회), value=실결제액. paymentKey 등 토큰 미포함
+      try {
+        if (typeof gtag === 'function') {
+          gtag('event', 'purchase', {
+            transaction_id: orderId,
+            value: parseInt(amount),
+            currency: 'KRW',
+            payment_provider: 'toss',
+            service: 'portal',
+            market: 'kr',
+          });
+        }
+      } catch (e) {}
+      document.getElementById('balanceCount').textContent = data.credits || 0;
+      if (currentUser) currentUser.credits = data.credits;
+      showToast('+' + (data.creditsAdded || '') + 'c ' + t('chargeOk'), 'success');
+      returnToService();
+    } else {
+      reportPayFail('confirm', 'CONFIRM_HTTP_' + res.status, data.error || '');
+      showConfirmRetry(t('chargeFail') + (data.error || ''));
+    }
+  })
+  .catch(function() {
+    confirmInFlight = false;
+    showLoading(false);
+    reportPayFail('confirm', 'CONFIRM_NETWORK', 'confirm request failed');
+    showConfirmRetry(t('chargeErr'));
+  });
 }
 
 // === 서비스 복귀 ===

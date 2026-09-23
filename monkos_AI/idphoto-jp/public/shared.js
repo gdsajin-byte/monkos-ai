@@ -129,19 +129,84 @@ export function showChargeModal() {
   import('./modules/charge.js').then(m => m.ChargeModule.show());
 }
 
+// ─── 決済計測 (2026-09-20 決済表面監査) ───
+// 全ページが gtag を読み込み済み (G-JPZWSJ3323)。未定義でも例外にしない。
+// ⚠️ トークン・メールアドレス等はパラメータに入れない。
+function _isInApp() {
+  return /(GSA\/|FBAN|FBAV|Instagram|KAKAOTALK|Line\/|NAVER\(|DaumApps|; wv\))/i.test(navigator.userAgent || '');
+}
+
+function _gaPay(name, params) {
+  try {
+    if (typeof gtag !== 'function') return;
+    gtag('event', name, { payment_provider: 'lemon', service: 'idphoto-jp', market: 'jp', ...(params || {}) });
+  } catch (e) {}
+}
+
+// 失敗理由の正本はポータルのサーバーログ ([Pay-Fail])。文字列ボディの sendBeacon = text/plain の
+// simple request なのでクロスオリジンでも preflight が発生しない。UI は決してブロックしない。
+function _reportPayFail(stage, code, message) {
+  const safeCode = String(code || 'UNKNOWN').slice(0, 60);
+  _gaPay('pay_fail', { fail_stage: stage, fail_code: safeCode, in_app: _isInApp() });
+  try {
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(`${API.PORTAL_URL}/api/payments/fail`, JSON.stringify({
+        service: 'idphoto-jp', provider: 'lemon', stage, code: safeCode,
+        message: String(message || '').slice(0, 200),
+        vw: window.innerWidth, vh: window.innerHeight, inApp: _isInApp(),
+      }));
+    }
+  } catch (e) {}
+}
+
 // ─── 決済 (Lemon Squeezy — Portal API 経由、同一タブリダイレクト) ───
-export async function buyCreditsJP(opt) {
+// 2026-09-20: 連打で Lemon チェックアウトが複数生成される問題の修正 (busy ガード + 「読み込み中…」表示)
+const PRE_CHECKOUT_CREDITS_KEY = 'monkos_pre_checkout_credits';
+let _checkoutBusy = false;
+let _checkoutRestore = null; // タップしたコントロールの表示を元に戻す関数
+
+export function isCheckoutBusy() {
+  return _checkoutBusy;
+}
+
+function _setCheckoutLoading(el) {
+  if (!el) return null;
+  const prevText = el.textContent;
+  el.textContent = '読み込み中…';
+  return () => { el.textContent = prevText; };
+}
+
+function _endCheckoutBusy() {
+  _checkoutBusy = false;
+  if (_checkoutRestore) {
+    try { _checkoutRestore(); } catch (e) {}
+    _checkoutRestore = null;
+  }
+}
+
+// 決済ページから「戻る」で bfcache 復帰した場合 — ガードが掛かったままだとボタンが永久に無反応になる
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) _endCheckoutBusy();
+});
+
+export async function buyCreditsJP(opt, triggerEl) {
   // opt = CHARGE_OPTIONS 要素: { key, variantId, price, credits, bonus }
+  // triggerEl (任意) = タップされたコントロールのラベル要素。リダイレクトまで「読み込み中…」を表示
   if (!store.user.id) {
     import('./modules/gate.js').then(m => {
       m.GateModule.showLoginRequired('クレジットチャージにはログインが必要です\n初回ログインで10cプレゼント！', () => {
-        buyCreditsJP(opt);
+        buyCreditsJP(opt, triggerEl);
       });
     });
     return;
   }
 
+  if (_checkoutBusy) return; // 連打 → チェックアウト多重生成防止
+  _checkoutBusy = true;
+  _checkoutRestore = _setCheckoutLoading(triggerEl);
+
   closeCreditModal();
+  _gaPay('begin_checkout', { value: opt.price, currency: 'JPY' });
 
   try {
     // 決済後の復帰URL — 現在ページに ?payment=complete を付与
@@ -150,29 +215,41 @@ export async function buyCreditsJP(opt) {
     returnUrl.searchParams.set('payment', 'complete');
     const redirectUrl = returnUrl.toString();
 
-    // Portal にチェックアウト URL 要求
-    const res = await fetch(`${API.PORTAL_URL}/api/checkout`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({
-        variantId: opt.variantId,
-        userId: store.user.id,
-        email: store.user.email || undefined,
-        redirectUrl,
-      }),
-    });
+    // Portal にチェックアウト URL 要求 (20秒でタイムアウト — 応答が無いまま busy が残らないように)
+    // 並行して最新残高を取得 — 復帰時に「決済前残高」と比較するため (2026-09-20)
+    const [res] = await Promise.all([
+      fetchWithTimeout(`${API.PORTAL_URL}/api/checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          variantId: opt.variantId,
+          userId: store.user.id,
+          email: store.user.email || undefined,
+          redirectUrl,
+        }),
+      }, 20000),
+      fetchLatestCredits(),
+    ]);
 
     const data = await res.json();
     if (!data.url) {
+      _reportPayFail('request', 'CHECKOUT_HTTP_' + res.status, data.error || 'no checkout url');
+      _endCheckoutBusy();
       alert('決済の準備に失敗しました。しばらくしてからお試しください。');
       return;
     }
 
+    // 決済前残高を保存 — 復帰時 (_handlePaymentComplete) に増加を確認してから完了を案内する
+    try { sessionStorage.setItem(PRE_CHECKOUT_CREDITS_KEY, String(store.user.credits ?? 0)); } catch (e) {}
+
     // 同一タブで遷移 — sessionStorage維持、決済後redirect_urlで復帰
+    // busy は解除しない (遷移中の再タップ防止)。bfcache 復帰は pageshow で解除する。
     location.href = data.url;
   } catch (err) {
     Monk.log('決済エラー: ' + err.message);
+    _reportPayFail('request', err && err.name === 'AbortError' ? 'CHECKOUT_TIMEOUT' : 'CHECKOUT_NETWORK', (err && err.message) || '');
+    _endCheckoutBusy();
     alert('決済エラーが発生しました。もう一度お試しください。');
   }
 }
@@ -369,6 +446,8 @@ export function debugSessionKeys() {
 }
 
 // ─── Lemon Squeezy 決済復帰処理 ───
+// 2026-09-20: 従来は約5秒後に credits>0 なら「完了」と表示していた (決済前残高と未比較 → 既存残高があれば
+// Webhook 未反映でも完了表示、Webhook が5秒より遅ければ無表示)。決済前残高と比較し、増加を確認してから案内する。
 function _handlePaymentComplete() {
   const params = new URLSearchParams(location.search);
   if (params.get('payment') !== 'complete') return;
@@ -379,15 +458,45 @@ function _handlePaymentComplete() {
     : location.pathname;
   history.replaceState({}, '', cleanUrl);
 
+  // 決済前残高 (buyCreditsJP が保存)。無い場合 (別コンテキストで復帰等) は復帰時点の残高を基準にする
+  let baseline = null;
+  try {
+    const raw = sessionStorage.getItem(PRE_CHECKOUT_CREDITS_KEY);
+    sessionStorage.removeItem(PRE_CHECKOUT_CREDITS_KEY);
+    if (raw !== null && raw !== '' && Number.isFinite(Number(raw))) baseline = Number(raw);
+  } catch (e) {}
+  if (baseline === null) baseline = store.user.credits || 0;
+
+  const PENDING_MSG = 'お支払いを確認しています。\nクレジット残高はまもなく更新されます。';
+
+  if (!store.user.id) {
+    // 未ログイン状態では残高を照会できない
+    alert(PENDING_MSG);
+    return;
+  }
+
   Monk.log('LS決済復帰 — クレジット更新中...');
-  setTimeout(() => fetchLatestCredits(), 2000);
-  setTimeout(() => {
-    fetchLatestCredits().then(() => {
-      if (store.user.credits > 0) {
-        alert(`決済が完了しました！\n現在のクレジット: ${store.user.credits}c`);
-      }
-    });
-  }, 5000);
+  // 3秒間隔 × 最大20回 (約60秒) — Webhook 反映待ち
+  const MAX_ATTEMPTS = 20;
+  let attempts = 0;
+  const poll = async () => {
+    attempts++;
+    await fetchLatestCredits();
+    const now = store.user.credits || 0;
+    if (now > baseline) {
+      Monk.log(`クレジット反映確認 (${attempts}回目): ${baseline}c → ${now}c`);
+      alert(`決済が完了しました！\n現在のクレジット: ${now}c`);
+      return;
+    }
+    if (attempts < MAX_ATTEMPTS) {
+      setTimeout(poll, 3000);
+      return;
+    }
+    Monk.log('クレジットポーリングタイムアウト');
+    _reportPayFail('poll', 'POLL_TIMEOUT', 'credit polling timed out');
+    alert(PENDING_MSG);
+  };
+  setTimeout(poll, 2000);
 }
 
 // ─── 共通初期化 ───

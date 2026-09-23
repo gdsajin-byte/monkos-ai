@@ -605,3 +605,21 @@
 
 ## 2026-09-17 11:22 KST iMac/민아
 - 신설: project_isolated_experiment_env_intent.md (별도 실험 환경·Astra 편입 조건 3·세션 기록=능력). MEMORY.md 인덱스 1행 추가.
+
+## 2026-09-21 11:58 KST iMac/민아
+- 신설: feedback_tool_limit_not_judgment.md (도구 제약을 판단처럼 포장 금지 — 첫 줄에 도구 한계 명시, 마지막 고리가 작가님 손이면 제안이 아니라 일감. 09-19 질책).
+- 신설: project_payment_surface_state_202609.md (결제 표면 6곳 전수 수정 후 상태 — 계측 위치·미검증 구간·숨김 브라우저 인공물·미결 결정 3건).
+- MEMORY.md 인덱스 2행 추가(138→141행).
+
+## 2026-09-21 14:48 KST iMac/민아
+- 신설: reference_astra_codex_launch_aliases.md (Astra=Codex CLI 기동 3종 mk-g/mk-gw/mk-gm, 샌드박스 실측 방어 범위, `codex sandbox` 단독 실패 주의).
+- MEMORY.md 인덱스 1행 추가(141→142행).
+
+## 2026-09-21 14:52 KST iMac/민아
+- 갱신: reference_astra_codex_launch_aliases.md — mk-g 1종 통합(무승인·무샌드박스, 작가님 지시), 샌드박스 유지안 기각 경위·권한 단계 재제안 금지. MEMORY.md 인덱스 1행 교체(행수 불변 142).
+
+## 2026-09-21 16:37 KST iMac/민아
+- 갱신: project_payment_surface_state_202609.md — 토스 영수증 인증 절차 추가(09-30 적용) 영향 판정 1단락 어펜드. 인덱스 불변.
+
+## 2026-09-22 15:00 KST iMac/민아
+- 신설: project_multimodal_team_gpt_gemini.md (GPT·Gemini 멀티모달 축 분담, 채널 구분, GPT 목업=시안·민아 검수). MEMORY.md 인덱스 1행 추가(142→143행).

@@ -136,7 +136,9 @@ var SpecsFunnel = (function(){
     var wrap = document.getElementById('v2-toss-widget');
     return !!(wrap && wrap.style.display !== 'none');
   }
+  var payErrSeq = 0;
   function showPayError(msg){
+    payErrSeq++;
     var el = (isWidgetOpen() && payErrorEl) ? payErrorEl : payErrorTopEl;
     if(!el) return showError(msg);
     hidePayError();
@@ -185,9 +187,15 @@ var SpecsFunnel = (function(){
       }
       if(anchorEl && anchorEl.parentNode){ anchorEl.parentNode.insertBefore(reportLinkEl, anchorEl.nextSibling); }
       reportLinkEl.style.display = '';
+      // 위젯 안에서 에러 링크가 뜨면 같은 문구의 상시 링크는 접는다 (한 화면 중복 방지)
+      var payLink = document.querySelector('.v2-report-link-pay');
+      if(payLink) payLink.style.display = (anchorEl && anchorEl.id === 'v2-pay-error') ? 'none' : '';
     }catch(e){}
   }
-  function hideReportLink(){ if(reportLinkEl) reportLinkEl.style.display = 'none'; }
+  function hideReportLink(){
+    if(reportLinkEl) reportLinkEl.style.display = 'none';
+    var payLink = document.querySelector('.v2-report-link-pay'); if(payLink) payLink.style.display = '';
+  }
   function reportContext(){
     var ref = '';
     try{ ref = document.referrer ? new URL(document.referrer).hostname : ''; }catch(e){}
@@ -1121,6 +1129,9 @@ var SpecsFunnel = (function(){
       focusTossWidget();
       return;
     }
+    // 위젯 렌더가 아직 진행 중이면 다시 시작하지 않는다 (2026-09-20 dev 실측).
+    // 렌더 타임아웃이 잠금을 푼 뒤 재클릭하면 같은 자리에 위젯이 이중 렌더되어 결제가 INVALID_METHOD_TRANSACTION으로 깨졌다.
+    if(tossRenderInFlight){ focusTossWidget(); return; }
     hideError();
     payBusy = true;
     var initBody = { slug: CFG.slug, market: CFG.market };
@@ -1163,10 +1174,28 @@ var SpecsFunnel = (function(){
 
   // 토스 결제위젯 방식 (2026-07-05 전환) — 상점 라이브 계약이 위젯 연동(live_gck)에만 있음.
   // 구 결제창(payment/live_ck) 방식은 API 개별연동 MID 계약 미완료로 라이브 결제 불가 (2026-03 위젯 전환 이력).
-  var tossWidgets = null, tossWidgetRendered = false;
+  var tossWidgets = null, tossWidgetRendered = false, tossRenderInFlight = false;
+  // 위젯 로딩 표시 — 렌더가 4~18초 걸리는 동안 화면이 비어 있으면 고객은 고장으로 읽고 떠난다 (09-20 네이버 인앱 init 후 무기록 이탈)
+  var PAY_LOADING = { ko: '결제창을 불러오는 중입니다…', ja: '決済画面を読み込んでいます…', en: 'Loading the payment form…', es: 'Cargando el formulario de pago…' };
+  function setWidgetLoading(on){
+    var wrap = document.getElementById('v2-toss-widget');
+    if(!wrap) return;
+    var el = document.getElementById('v2-pay-loading');
+    if(on){
+      if(!el){
+        el = document.createElement('div');
+        el.id = 'v2-pay-loading'; el.className = 'v2-pay-loading';
+        var lang = (document.documentElement.lang || 'ko').slice(0, 2).toLowerCase();
+        el.textContent = (T && T.payWidgetLoading) || PAY_LOADING[lang] || PAY_LOADING.en;
+        wrap.insertBefore(el, wrap.firstChild);
+      }
+      el.style.display = '';
+    } else if(el){ el.style.display = 'none'; }
+  }
   function startToss(d, extraWin){
     if(extraWin){ try{ extraWin.close(); }catch(e){} }
-    if(!window.TossPayments){ payBusy = false; showPayError(T.payInitFail); return; }
+    // 위젯 단계 실패도 기록한다 — 09-20 네이버 인앱 고객이 init 직후 무기록으로 사라진 사각지대 (SDK 부재·렌더 거절·렌더 멈춤)
+    if(!window.TossPayments){ payBusy = false; showPayError(T.payInitFail); reportPayFail('widget', 'SDK_MISSING', 'TossPayments global undefined'); return; }
     var wrap = document.getElementById('v2-toss-widget');
     var btn = document.getElementById('v2-pay-confirm');
     try{
@@ -1181,6 +1210,19 @@ var SpecsFunnel = (function(){
       btn.textContent = T.payBtnLabel.replace('{price}', _cur + _amt);
       wrap.style.display = 'block';
       setWidgetOpenUI(true);
+      // 렌더 멈춤 감시 — 프라미스가 끝나지 않으면 payBusy가 고착돼 첫 버튼이 영구 무반응이 된다.
+      // 12초 뒤 잠금을 풀고 사유를 보여준다. 위젯 영역은 닫지 않는다(늦게라도 뜨면 그대로 결제 가능).
+      var renderT0 = Date.now(), renderSettled = false, renderTimedOut = false, timeoutErrSeq = -1;
+      tossRenderInFlight = !tossWidgetRendered;
+      if(tossRenderInFlight) setWidgetLoading(true);
+      var renderTimer = setTimeout(function(){
+        if(renderSettled) return;
+        renderTimedOut = true;
+        payBusy = false;
+        showPayError(T.payInitFail);
+        timeoutErrSeq = payErrSeq;
+        reportPayFail('widget', 'RENDER_TIMEOUT', 'widget render not settled in 12s');
+      }, 12000);
       tossWidgets.setAmount({ currency: d.currency || 'KRW', value: d.amount })
         .then(function(){
           if(tossWidgetRendered) return;
@@ -1189,8 +1231,12 @@ var SpecsFunnel = (function(){
             .then(function(){ tossWidgetRendered = true; });
         })
         .then(function(){
+          renderSettled = true; clearTimeout(renderTimer);
+          tossRenderInFlight = false; setWidgetLoading(false);
           payBusy = false;
-          gaTrack('pay_widget_open', { payment_provider: GA_PAY.payment_provider }, true);
+          // 늦게 떴다 — 타임아웃 문구만 거둔다 (그 사이 뜬 다른 에러는 건드리지 않는다)
+          if(renderTimedOut && payErrSeq === timeoutErrSeq) hidePayError();
+          gaTrack('pay_widget_open', { payment_provider: GA_PAY.payment_provider, render_ms: Date.now() - renderT0, late: renderTimedOut }, true);
           // 'nearest' 1회로는 위젯 하단(결제하기)이 화면 밖에 남는다 → 위젯 상단 정렬 + 하단 고정 배선.
           // 단 실패 사유가 이미 떠 있으면(복귀 재오픈) 그 문구를 가리지 않는다.
           var shownErr = payErrorEl && payErrorEl.classList.contains('show') ? payErrorEl : null;
@@ -1198,8 +1244,11 @@ var SpecsFunnel = (function(){
           scheduleDock();
         })
         .catch(function(e){
+          renderSettled = true; clearTimeout(renderTimer);
+          tossRenderInFlight = false; setWidgetLoading(false);
           payBusy = false; wrap.style.display = 'none'; setWidgetOpenUI(false);
           showPayError((e && e.message) || T.payInitFail);
+          reportPayFail('widget', (e && e.code) || 'RENDER_FAILED', (e && e.message) || '');
         });
       btn.onclick = function(){
         gaTrack('pay_confirm_click', { payment_provider: GA_PAY.payment_provider }, true);
@@ -1216,7 +1265,12 @@ var SpecsFunnel = (function(){
           showPayError(cancelled ? T.payCancelled : ((err && err.message) || T.payInitFail));
         });
       };
-    }catch(e){ payBusy = false; showPayError(T.payInitFail); }
+    }catch(e){
+      try{ clearTimeout(renderTimer); }catch(_){}
+      tossRenderInFlight = false; setWidgetLoading(false);
+      payBusy = false; showPayError(T.payInitFail);
+      reportPayFail('widget', 'INIT_EXCEPTION', (e && e.message) || '');
+    }
   }
 
   function startLemon(d, lemonWin){
