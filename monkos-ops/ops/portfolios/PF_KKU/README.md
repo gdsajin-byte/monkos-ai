@@ -141,6 +141,7 @@ idpass.monkos.ai (SPA 간판) → monkos.ai/specs/{국가-문서} (본진 SSR, S
 | 09/20 | M2/쌍아+꾸 | 꾸 할 일 목록 신설 — 인스타 프로필 링크 페이지(리틀리 대신 monk.kr 자체 제작 권장) 외 4건 등재 | `marketing/kku/TODO_꾸.md` | ⏳ 꾸 결정 대기 |
 | 09/19 | iMac/쌍아 | monk_studio 이미지 결손 원인 확정 — `.gitignore:76` 전역 `*.jpg`의 예외가 `!MONK_kr/images/*.jpg` 한 줄뿐이라 `monk_studio/` 이하 17장 미추적·배포본 부재. CF Pages가 사이트 기본 HTML을 200(`text/html`)으로 반환 → `onerror` 폴백 발동 → **메인 6장 unsplash 스톡(프로필 카드 1장은 폴백 주소 404로 깨짐)·family 9장·group 1장 placehold.co 자리표시자**. 판정 3중(git ls-files 0 + 라이브 2회 히트 content_type + 대조군 `MONK_kr/images/main.jpg` 200 image/jpeg) 후 Playwright 렌더 실측으로 확증(currentSrc 6/6 unsplash, 프로필 naturalWidth 0) | 세션로그 2026-09-19_iMac_쌍아.md, `.playwright-mcp/studio_live_services.png` | ⏳ 지시서 미발행 |
 | 09/24 | iMac/민아 | **monk.kr 이미지 결손 해소 + 버튼 배포 체계** (작가님 승인) — 09-19 쌍아 판정 후속: 17장 백업·리사이즈(76.8→2.3MB)·gitignore 예외·`v=20260924`·재배포, 라이브 md5 3/3 일치. M2 쌍아 09-19 CTA 전환 7파일·09-23 길찾기도 같은 날 배포. 버튼 배포 워크플로(`deploy-monk-kr.yml`, workflow_dispatch) + ch5 1조 개정 청구안 — 시크릿 2종 등록 전 실행 불가 | `COMPLETION_20260924_iMac민아_monk.kr_이미지편입_버튼배포워크플로.md` · `COMPLETION_20260924_iMac민아_monk.kr_CF배포_M2작업분.md` · `PETITION_20260924_민아_ch5_1조_monk.kr_버튼배포.md` | 토큰 등록·쌍아 심사 대기 |
+| 09/24 | iMac/민아 | **monk.kr 버튼 배포 첫 실측 성공** (4차, run 35954533890) — 시크릿 2종 등록(GitHub 빈값 사고 → SM 파이프 재등록), wrangler-action npx 거부·러너 IP 403 함정 2건 해소. 이제 기기 무관 `gh workflow run deploy-monk-kr.yml` | `COMPLETION_20260924_iMac민아_monk.kr_버튼배포_첫실측.md` | 쌍아 심사 대기(ch5 1조) |
 
 ---
 
