@@ -131,7 +131,8 @@
   "workbench.panel.defaultLocation": "bottom",
 
   // ─── Claude 관련 ───
-  "claudeCode.selectedModel": "opus[1m]",
+  // 쌍아 모델 — monk_project 워크스페이스 한정 (09-24 작가님 결정). selectedModel은 확장 2.1.280에서 무효 키라 교체
+  "claudeCode.environmentVariables": [{ "name": "ANTHROPIC_MODEL", "value": "claude-opus-5-5[1m]" }],
   "claude.autoScroll": true,
   "workbench.editor.autoLockGroups": {
     "agentSessionsWelcomePage": true,
