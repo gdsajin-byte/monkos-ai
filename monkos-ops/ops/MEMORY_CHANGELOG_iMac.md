@@ -632,3 +632,6 @@
 
 ## 2026-09-24 12:01 KST iMac/민아
 - 갱신: project_payment_surface_state_202609.md — 실고객 첫 즉시결제 완주(09-23) 로그 실측 1단락 어펜드. 인덱스 불변.
+
+## 2026-09-24 12:28 KST iMac/쌍아
+- 갱신: project_model_placement.md — iMac 기본 모델 Opus 5.5 전환·CLI 네이티브 전환·타 디바이스 미점검 1항목 선두 삽입. MEMORY.md 모델 배치 행 현행화(구 기록 병기).
