@@ -176,3 +176,7 @@ apps/crop-app/benchmark/poc-20260707/apple-poc
 
 # T1 튜닝 테스트 이미지
 monkos_AI/portal/tools/t1-tuning/
+
+# monk.kr 정적 자산 — 배포자 기기 종속 방지 (2026-09-24, 작가님 승인). 웹 크기 리사이즈본만 커밋
+!MONK_kr/monk_studio/images/*.jpg
+!MONK_kr/monk_studio/family/images/*.jpg
