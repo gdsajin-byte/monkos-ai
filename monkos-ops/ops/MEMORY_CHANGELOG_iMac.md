@@ -629,3 +629,6 @@
 
 ## 2026-09-24 11:51 KST iMac/민아
 - 갱신: project_aeo_offline_conversion_signal.md — 네이버 AI 브리핑 1순위 인용·og:image 썸네일 실증 1단락 어펜드. 인덱스 불변.
+
+## 2026-09-24 12:01 KST iMac/민아
+- 갱신: project_payment_surface_state_202609.md — 실고객 첫 즉시결제 완주(09-23) 로그 실측 1단락 어펜드. 인덱스 불변.
