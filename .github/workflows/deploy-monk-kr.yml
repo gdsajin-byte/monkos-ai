@@ -28,12 +28,19 @@ jobs:
           test ! -e MONK_kr/functions || { echo "MONK_kr/functions 존재 — 정본 이중화"; exit 1; }
           echo "사유: ${{ inputs.reason }}"
 
-      - name: CF Pages 배포
-        uses: cloudflare/wrangler-action@v3
+      # wrangler-action@v3는 러너의 npm 11에서 npx 자동 설치가 거부됨(첫 실행 실패 09-24) → 로컬과 동일하게 wrangler 직접 실행
+      - uses: actions/setup-node@v4
         with:
-          apiToken: ${{ secrets.CF_PAGES_DEPLOY_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy MONK_kr/ --project-name monk-kr --branch main --commit-dirty=true
+          node-version: 22
+
+      - name: wrangler 설치 (로컬 정본과 동일 버전)
+        run: npm install -g wrangler@4.66.0
+
+      - name: CF Pages 배포
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_DEPLOY_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: wrangler pages deploy MONK_kr/ --project-name monk-kr --branch main --commit-dirty=true
 
       # 라이브 검증 — 2회 히트, 2차로 판정 (live-verify.md)
       - name: 라이브 스모크
