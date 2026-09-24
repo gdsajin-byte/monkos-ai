@@ -1,0 +1,49 @@
+name: Deploy monk.kr (CF Pages)
+
+# 버튼 배포 — 푸시 자동 배포 아님 (법률 ch5 1조 개정 청구 PETITION_20260924 참조)
+# 실행: GitHub Actions 탭 → Run workflow, 또는 `gh workflow run deploy-monk-kr.yml -f reason="..."`
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: '배포 사유 (세션 로그·COMPLETION 대조용)'
+        required: true
+        type: string
+
+concurrency:
+  group: deploy-monk-kr
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      # 정본 = 루트 functions/ (ch5 1조). MONK_kr/functions는 없어야 한다
+      - name: 정본 확인
+        run: |
+          test -d functions && test ! -L functions || { echo "루트 functions/ 부재 또는 symlink"; exit 1; }
+          test ! -e MONK_kr/functions || { echo "MONK_kr/functions 존재 — 정본 이중화"; exit 1; }
+          echo "사유: ${{ inputs.reason }}"
+
+      - name: CF Pages 배포
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_PAGES_DEPLOY_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: pages deploy MONK_kr/ --project-name monk-kr --branch main --commit-dirty=true
+
+      # 라이브 검증 — 2회 히트, 2차로 판정 (live-verify.md)
+      - name: 라이브 스모크
+        run: |
+          sleep 20
+          for p in "" "monk_studio/monk_studio"; do
+            curl -s -o /dev/null "https://monk.kr/$p"
+            code=$(curl -s -o /dev/null -w '%{http_code}' "https://monk.kr/$p")
+            echo "https://monk.kr/$p → $code"
+            [ "$code" = "200" ] || { echo "스모크 실패"; exit 1; }
+          done
+          sha=$(git rev-parse --short HEAD)
+          echo "배포 커밋 $sha · 사유: ${{ inputs.reason }}"
