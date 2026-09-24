@@ -79,6 +79,5 @@
       "Bash(del /s /q *)"
     ],
     "additionalDirectories": []
-  },
-  "model": "claude-opus-5"
+  }
 }
