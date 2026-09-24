@@ -626,3 +626,6 @@
 
 ## 2026-09-22 18:57 KST iMac/민아
 - 갱신: project_session_ops_procedures.md — 타임스탬프 위반 패턴 2종·교정안 1단락 어펜드. 인덱스 불변.
+
+## 2026-09-24 11:51 KST iMac/민아
+- 갱신: project_aeo_offline_conversion_signal.md — 네이버 AI 브리핑 1순위 인용·og:image 썸네일 실증 1단락 어펜드. 인덱스 불변.
