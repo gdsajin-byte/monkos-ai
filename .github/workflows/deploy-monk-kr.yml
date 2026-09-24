@@ -40,17 +40,23 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_DEPLOY_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-        run: wrangler pages deploy MONK_kr/ --project-name monk-kr --branch main --commit-dirty=true
-
-      # 라이브 검증 — 2회 히트, 2차로 판정 (live-verify.md)
-      - name: 라이브 스모크
         run: |
-          sleep 20
+          wrangler pages deploy MONK_kr/ --project-name monk-kr --branch main --commit-dirty=true | tee deploy.log
+          url=$(grep -oE 'https://[0-9a-f]+\.monk-kr\.pages\.dev' deploy.log | tail -1)
+          [ -n "$url" ] || { echo "배포 URL 미검출"; exit 1; }
+          echo "DEPLOY_URL=$url" >> "$GITHUB_ENV"
+
+      # 스모크 — 배포 고유 URL(pages.dev)을 2회 히트, 2차로 판정. monk.kr 자체는 CF가 러너 IP를 403으로 막으므로(09-24 실측) 참고 출력만.
+      # 공개 도메인 최종 판정은 승인자 기기에서 2회 히트 (live-verify.md)
+      - name: 스모크
+        run: |
+          sleep 15
+          UA="Mozilla/5.0 monkos-deploy-smoke"
           for p in "" "monk_studio/monk_studio"; do
-            curl -s -o /dev/null "https://monk.kr/$p"
-            code=$(curl -s -o /dev/null -w '%{http_code}' "https://monk.kr/$p")
-            echo "https://monk.kr/$p → $code"
-            [ "$code" = "200" ] || { echo "스모크 실패"; exit 1; }
+            curl -s -o /dev/null -A "$UA" "$DEPLOY_URL/$p"
+            code=$(curl -s -o /dev/null -w '%{http_code}' -A "$UA" "$DEPLOY_URL/$p")
+            echo "$DEPLOY_URL/$p → $code"
+            [ "$code" = "200" ] || { echo "스모크 실패 (배포 URL)"; exit 1; }
           done
-          sha=$(git rev-parse --short HEAD)
-          echo "배포 커밋 $sha · 사유: ${{ inputs.reason }}"
+          echo "monk.kr (참고, 러너 IP 차단 가능): $(curl -s -o /dev/null -w '%{http_code}' -A "$UA" https://monk.kr/)"
+          echo "배포 커밋 $(git rev-parse --short HEAD) · $DEPLOY_URL · 사유: ${{ inputs.reason }}"
