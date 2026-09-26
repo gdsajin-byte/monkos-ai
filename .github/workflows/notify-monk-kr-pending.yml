@@ -1,0 +1,63 @@
+name: monk.kr 배포 대기 알림
+
+# ch5 1조 10항 — MONK_kr/·functions/ 변경이 main에 푸시되면 "배포 대기"를 작가님에게 알린다.
+# 발단: 09-19~09-24 M2 푸시분 5일 미배포. 원인은 배포 수단만이 아니라 푸시 사실이 전달되지 않은 것.
+#
+# ⚠️ 이 워크플로는 **알림 전용이다. 배포 스텝을 절대 추가하지 말 것** (ch5 1조 1항 — 배포 ≠ push).
+#    배포는 `deploy-monk-kr.yml`(workflow_dispatch, 작가님 승인 트리거)만 수행한다.
+#    governance-check C13이 "배포 명령을 포함한 워크플로 + push 트리거" 조합을 내용 기준으로 적발한다.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'MONK_kr/**'
+      - 'functions/**'
+
+concurrency:
+  group: notify-monk-kr-pending
+  cancel-in-progress: false
+
+jobs:
+  build-message:
+    runs-on: ubuntu-latest
+    outputs:
+      message: ${{ steps.msg.outputs.message }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: 변경 집계
+        id: msg
+        run: |
+          set -euo pipefail
+          SHA_SHORT=$(git rev-parse --short HEAD)
+          # 한글 경로가 이스케이프되어 집계가 어긋나지 않도록 quotePath=false (C12 선례)
+          FILES=$(git -c core.quotePath=false diff --name-only --diff-filter=ACMDR HEAD~1 HEAD -- MONK_kr/ functions/ 2>/dev/null || true)
+          if [ -z "$FILES" ]; then
+            echo "변경 0건 — 알림 생략 (paths 필터 통과했으나 diff 0, 병합 커밋 등)"
+            echo "message=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          COUNT=$(printf '%s\n' "$FILES" | wc -l | tr -d ' ')
+          LIST=$(printf '%s\n' "$FILES" | head -10 | sed 's/^/• /')
+          MORE=""
+          if [ "$COUNT" -gt 10 ]; then MORE=$(printf '\n… 외 %s건' "$((COUNT - 10))"); fi
+          MSG=$(printf '🟡 <b>monk.kr 배포 대기</b>\n\n커밋 <code>%s</code> · 변경 %s건\n%s%s\n\n배포는 푸시로 되지 않습니다 (ch5 1조).\n버튼: <b>Actions › Deploy monk.kr › Run workflow</b>\n사유 서식: <code>작가님 | 직접 | {사유}</code>' \
+            "$SHA_SHORT" "$COUNT" "$LIST" "$MORE")
+          MSG=$(printf '%s' "$MSG" | head -c 3800)
+          {
+            echo "message<<MONKEOF"
+            printf '%s\n' "$MSG"
+            echo "MONKEOF"
+          } >> "$GITHUB_OUTPUT"
+          echo "집계 완료 — ${COUNT}건"
+
+  notify:
+    needs: build-message
+    if: needs.build-message.outputs.message != ''
+    uses: ./.github/workflows/notify.yml
+    secrets: inherit
+    with:
+      message: ${{ needs.build-message.outputs.message }}
