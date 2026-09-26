@@ -109,7 +109,7 @@ status: 현행
 | 33 | REMOVEBG_API_KEY | remove.bg 배경 제거 API | 크롭앱, 스펙스, Android | ⭐ 2026-05-25 추가. 무료 50장/월 |
 | 34 | CHAT_WORKERS_URL | 챗봇 Workers 엔드포인트 | portal | ⭐ 2026-06-02 §A 편입 (§F deploy.sh엔 기존 존재) |
 | 35 | CHAT_API_KEY | 챗봇 Workers API 인증 | portal | ⭐ 2026-06-02 §A 편입 (§3 CF Dashboard와 동일값) |
-| 36 | AGENT_API_KEYS | GH Actions→포털 CMS 에이전트 인증 | portal (blog-draft-publish) | ⭐ 2026-06-11 신설. SM: AGENT-API-KEYS, GH: PORTAL_AGENT_KEY. deploy.sh --set-secrets 주입. **2026-09-26 v2 로테이션**(민아 세션 컨텍스트 부분 노출 → 작가님 `secret add`). prod rev 00564부터 v2, v1은 401 실측. GH PORTAL_AGENT_KEY는 15:54 SM→gh 파이프로 v2 동기(민아, 값 미접촉). v1 disable 미결 |
+| 36 | AGENT_API_KEYS | GH Actions→포털 CMS 에이전트 인증 | portal (blog-draft-publish) | ⭐ 2026-06-11 신설. SM: AGENT-API-KEYS, GH: PORTAL_AGENT_KEY. deploy.sh --set-secrets 주입. **2026-09-26 v2 로테이션**(민아 세션 컨텍스트 부분 노출 → 작가님 `secret add`). prod rev 00564부터 v2, v1은 401 실측. GH PORTAL_AGENT_KEY는 15:54 SM→gh 파이프로 v2 동기(민아, 값 미접촉). v1은 15:56 disabled(작가님 지시, 민아 집행) — 노출 키 완전 폐기 |
 | 37 | RUNPOD_API_KEY | RunPod Serverless API 인증 | monkos-matte (BiRefNet 서빙) | ⭐ 2026-07-07 신설. 키명 monkos-matte, R/W, RunPod T4 flex 서빙용 |
 | 38 | MATTE_SECRET | 4060 BiRefNet 서버 인증 토큰 | 4060 matte-server, portal | ⭐ 2026-07-23 신설. X-Matte-Secret 헤더로 CR→4060 인증. 4060 NSSM env + SM 등록 |
 | 39 | CF_PAGES_TOKEN | CF Pages 배포 API 토큰 | 4060 빌드→CF Pages deploy | ⭐ 2026-07-23 신설. Pages:Edit + Workers Scripts:Edit 스코프. SSG 빌드 파이프라인용 |

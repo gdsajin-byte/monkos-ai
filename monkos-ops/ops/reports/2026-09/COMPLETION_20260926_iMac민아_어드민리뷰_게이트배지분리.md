@@ -40,7 +40,7 @@ portfolio: PF_PORTAL
 ## 시크릿 로테이션 결과
 - 작가님 `secret add AGENT-API-KEYS` → **v2 등록**(15:48). 형식 `AGENT_hex40` 1건, v1과 상이 확인(값 미출력 검사).
 - prod 새 리비전은 `:latest`를 인스턴스 기동 시 해석 → **노출된 v1 키는 prod에서 이미 401**(실측). v2는 200.
-- 잔여: SM v1 아직 `enabled` 상태(disable 권장) · GitHub `PORTAL_AGENT_KEY` 구값(기존에도 401 미결, 인벤토리 #36) — 작가님 판단.
+- 15:54 GitHub `PORTAL_AGENT_KEY` v2 동기(SM→gh 파이프, 값 미접촉) · 15:56 SM v1 disabled(작가님 지시). **로테이션 종결** — 노출 키는 SM·prod·GH 어디서도 유효하지 않음.
 
 ## 미완·대기
 - 헤드샷 갤러리(`service=headshot`)는 기존 기록에 gate 없음 → 배지 공백(기존과 동일). 신규 생성부터 기록.
