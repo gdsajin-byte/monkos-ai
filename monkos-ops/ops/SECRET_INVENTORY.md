@@ -118,6 +118,8 @@ status: 현행
 | 42 | HF_TOKEN | HuggingFace 모델 다운로드 (매트·크롭 벤치마크·3D) | 4060 + 로컬 | ⭐ 2026-07-24 신설(구 하드코딩 토큰 로테이션분, READ 권한). **07-25 순찰이 인벤 미등재 적발 → 소급 등재**. `_start_server.bat` 환경변수 참조 전환 완료. 4060 env 세팅 대기 |
 | 43 | RESEND_API_KEY | monkos.ai 메일 발신 (탈퇴 완료 통지·영수증·CS 회신) | portal (`lib/mailer.js`) | ⭐ 2026-08-13 신설. 도메인 인증은 `send` 서브도메인 방식(루트 MX·SPF 무관 — CF Email Routing 수신 보존). deploy.sh --set-secrets 주입 |
 | 44 | EDGE_TRUST_KEY | CF 엣지 워커↔포털 오리진 신뢰 헤더 공유 시크릿 (타 CF 테넌트 중계 위장 차단 — 쌍아 P2-2) | portal (`lib/shared/edge-trust.js`, deploy.sh --set-secrets) + CF Worker `monkos-portal-edge` env 바인딩 | ⭐ 2026-08-24 신설 (작가님 secret 등록). 대역 AND 키 상수시간 대조, 미설정 시 fail-secure 비신뢰 |
+| 45 | CF_PAGES_DEPLOY_TOKEN | GitHub Actions monk.kr CF Pages 버튼 배포 전용 (계정 토큰 `github-actions-monk-kr-pages`, Pages:Edit 단일 스코프) | `.github/workflows/deploy-monk-kr.yml` (GitHub Secrets 동명 등재) | ⭐ 2026-09-24 신설. **만료 2027-09-24**. #39 CF_PAGES_TOKEN(Pages+Workers Scripts, 4060 SSG용)과 용도 분리 — 스코프가 더 좁은 CI 전용. 09-24 GitHub 최초 등록이 빈값이라 SM→gh 파이프로 재등록 |
+| 46 | CF_ACCOUNT_ID | Cloudflare 계정 ID (비밀도 낮음, Actions 입력용) | `deploy-monk-kr.yml` (GitHub Secrets 동명 등재) | ⭐ 2026-09-24 신설 |
 
 ### B. 루트 .env (로컬 전용 — 2개)
 
