@@ -64,19 +64,7 @@
       </button>
     </div>
 
-    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-5">
-      <button class="preset on border border-gray-200 rounded-xl py-2.5 text-xs font-bold" data-w="413" data-h="531">413 × 531<br><span class="font-normal text-gray-400">여권 · 비자</span></button>
-      <button class="preset border border-gray-200 rounded-xl py-2.5 text-xs font-bold" data-w="354" data-h="472">354 × 472<br><span class="font-normal text-gray-400">반명함</span></button>
-      <button class="preset border border-gray-200 rounded-xl py-2.5 text-xs font-bold" data-w="600" data-h="600">600 × 600<br><span class="font-normal text-gray-400">미국 비자</span></button>
-      <button class="preset border border-gray-200 rounded-xl py-2.5 text-xs font-bold" data-w="390" data-h="567">390 × 567<br><span class="font-normal text-gray-400">중국</span></button>
-      <button class="preset border border-gray-200 rounded-xl py-2.5 text-xs font-bold" data-w="531" data-h="531">531 × 531<br><span class="font-normal text-gray-400">일본</span></button>
-    </div>
 
-    <div class="flex items-center justify-center gap-3 mt-4">
-      <span class="text-xs text-gray-500 font-medium">용량 제한 (선택)</span>
-      <input id="kb" type="number" placeholder="예: 200" class="w-28 border border-gray-200 rounded-xl px-4 h-10 text-sm focus:outline-none focus:border-tiffany">
-      <span class="text-xs text-gray-500 font-medium">KB 이하</span>
-    </div>
   </div>
 
   <!-- 작업 영역 -->
@@ -197,7 +185,7 @@ lucide.createIcons();
     var ctx=cv.getContext('2d');
     ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
     ctx.drawImage(img, sel.x*k, sel.y*k, sel.w*k, sel.h*k, 0, 0, W, H);
-    var limit=+$('kb').value||0, q=0.92, url=cv.toDataURL('image/jpeg',q);
+    var kbEl=$('kb'), limit=kbEl?(+kbEl.value||0):0, q=0.92, url=cv.toDataURL('image/jpeg',q);
     if(limit>0){ while(q>0.3 && (url.length*0.75/1024)>limit){ q-=0.06; url=cv.toDataURL('image/jpeg',q); } }
     var a=document.createElement('a');
     a.href=url; a.download='monk_'+W+'x'+H+'.jpg'; a.click();
