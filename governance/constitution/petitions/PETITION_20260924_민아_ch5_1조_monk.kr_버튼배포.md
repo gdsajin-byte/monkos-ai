@@ -4,8 +4,8 @@ date: 2026-09-24
 petitioner: "iMac/민아"
 origin: 작가님 질의·승인 (2026-09-24 12:38 "제안대로 모두 처리해 승인한다")
 subject: 법률 ch5 1조 개정 — monk.kr 배포를 "wrangler 수동 실행만"에서 "승인자 트리거의 GitHub Actions 버튼 배포"로
-status: "쌍아 심사 대기"
-procedure: 법률 개정 (헌법 5조 2항 — 쌍아+작가님 합의 + 막내 2명↑ 영향평가)
+status: "심사 중"
+procedure: "삼권심사 (법률 개정 사안 — 작가님 지시 09-26로 상향 적용)"
 ---
 
 # 청구안: ch5 1조 monk.kr 버튼 배포
