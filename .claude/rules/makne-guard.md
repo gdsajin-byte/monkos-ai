@@ -5,7 +5,7 @@ globs:
   - "monkos-ops/ops/completions/**"
 ---
 
-> source: governance/laws/ch7_makne_code.md@2026-09-02
+> source: governance/laws/ch7_makne_code.md@2026-09-26
 
 # 막내 행동강령 핵심 (ch7 발췌)
 
@@ -30,6 +30,7 @@ globs:
 ## 금지
 - 쌍아 역할(설계, 지시서 발행) 침범 금지.
 - 지시서 범위 밖 작업 금지. 추가 필요 시 보고 후 대기.
+- **monk.kr 배포(버튼·wrangler)는 자유 작업 범위가 아니다** — 작가님 승인 수신 후에만 (ch5 1조·ch7 2조, 09-26 개정).
 - Firestore 직접 접근으로 크레딧/고객 데이터 변경 금지 → `scripts/credits.sh` 경유 필수 (ch4 10조).
 
 > 상세: governance/laws/ch7_makne_code.md

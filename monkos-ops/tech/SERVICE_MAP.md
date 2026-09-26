@@ -68,7 +68,7 @@ MONK.KR / MONKOS.AI
 | 크롭 엔진 | `monkos_AI/crop-engine/` | ⬜ `monkos-crop-engine` 미생성 | — | ⬜ | 규격 안착 크롭(FaceMesh) 설계 — 서비스 미생성, 폴더·deploy.sh만 실재 | PF_CROP |
 | 매팅·4060 | `monkos_AI/matte-server/` | (Cloud Run 아님) | matte.monkos.ai | 🟡 | 무료 매팅 원가 방어용 자가 GPU(BiRefNet). 4060 가정 사정 오프 빈발 — RunPod 폴백이 전량 흡수(07-25 체계) | PF_INFRA |
 | PT·프레젠테이션 | ❓ (소스 미확인) | ❓ (도메인 매핑·서비스 부재) | pt.monkos.ai | ❓ | 몽코스 3D 프레젠테이션 엔진 (어드민 INTERNAL 명기 08-14 확인). 인프라 소재 확인 필요 [2조 한시적 예외] | PF_PRESENTATION |
-| 본진·monk.kr | `MONK_kr/` | — (CF Pages) | monk.kr | 🟢 | 실물 사진관 기반 데스크톱 본진. 인화 서비스 통합 방향(07-12) | PF_MONK_OS |
+| 본진·monk.kr | `MONK_kr/` | — (CF Pages · 버튼 배포 `deploy-monk-kr.yml`, 예비 wrangler — ch5 1조) | monk.kr | 🟢 | 실물 사진관 기반 데스크톱 본진. 인화 서비스 통합 방향(07-12) | PF_MONK_OS |
 | 장삼 | `apps/jangsam/` | `jangsam-dev` | — | ⏸️ | (프로토 — prod 미생성) | — |
 | 관상·사주 | (포털 내장, admin/gwansang) | — | monkos.ai/admin/gwansang | ⏸️ INTERNAL | 사주×관상 얼굴 지도 — 관상×취업사진 양문형 고리 전략(08-01)의 축. 유료화 전 내부 단계 | PF_FACEREAD |
 | 헤드샷 | (포털 내장) `render-headshot.js` | — | monkos.ai/headshot | 🟢 | AI 프로페셔널 헤드샷 (credits 게이트 유료) | PF_PORTAL |

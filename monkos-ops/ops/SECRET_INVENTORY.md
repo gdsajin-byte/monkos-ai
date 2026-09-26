@@ -291,6 +291,8 @@ status: 현행
 | MCP_GDOCS_CLIENT_SECRET | GCP Secret Manager 동기화 | — | 06-02 | 정본 카탈로그 + 향후 Actions 확장 |
 | MCP_GDOCS_TOKEN | token.json 전체 (GCP와 동일 페이로드) | — | 06-02 | gdocs 토큰 카탈로그 |
 | PORTAL_AGENT_KEY | SM `AGENT-API-KEYS` 동일 페이로드 | — | 06-11 | blog-draft-publish → 포털 CMS 인증 (⚠️ 401 미해소 — Cloud Run `AGENT_API_KEYS` 값 대조 미결, 기보고 #54/#57) |
+| CF_PAGES_DEPLOY_TOKEN | SM `CF_PAGES_DEPLOY_TOKEN`(#45) 동일 값 — SM↔GitHub 자동 동기 없음 | — | 09-24 | monk.kr 버튼 배포 (`deploy-monk-kr.yml`). **만료 2027-09-24** — SM 로테이션 시 `gh secret set` 동시 갱신 필수 |
+| CF_ACCOUNT_ID | SM `CF_ACCOUNT_ID`(#46) 동일 값 | — | 09-24 | monk.kr 버튼 배포 (`deploy-monk-kr.yml`) |
 
 ### 향후 확장 (배포 자동화 시)
 

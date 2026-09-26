@@ -108,7 +108,7 @@ branch: main
 - JS/CSS/HTML 파일 생성·수정·분리
 - 테스트 코드 작성·실행
 - `git add`, `git commit`, `git push origin main`
-- `wrangler pages deploy` (monk.kr 배포)
+- ~~`wrangler pages deploy` (monk.kr 배포)~~ → **자유 작업 범위 아님** — ch5 1조(작가님 승인 후 트리거)를 따른다 (09-26 개정, PETITION_20260924)
 - 로컬 `node`, `npm` 실행 (서버 기동 테스트 등)
 - `./deploy.sh dev`
 

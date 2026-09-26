@@ -4,7 +4,7 @@ date: 2026-09-26
 device: iMac
 agent: 쌍아
 subject: "PETITION_20260924 삼권심사 종합 + 합의안 v2 (ch5 1조 monk.kr 버튼 배포)"
-status: "만장일치 — 작가님 최종 승인 대기"
+status: "승인 완료 — 집행 중"
 petition: governance/constitution/petitions/PETITION_20260924_민아_ch5_1조_monk.kr_버튼배포.md
 portfolio: PF_KKU
 ---
@@ -235,9 +235,10 @@ SECRET_INVENTORY §3 GitHub Secrets 전수 보정 — 실측 26건 중 11건만 
 | 막내1·2·3 개별 동의 (v2) | ✅ 회신 3/3 (15:31~15:35) — 막내3 **동의** / 막내1 이의 1 / 막내2 이의 1 |
 | 쌍아 재조정 (v2.1) | ✅ 15:50 — 이의 2건 전부 수용 (§8) |
 | 막내1·2 재동의 (v2.1) | ✅ 막내2 동의 15:52(aeb8853d) · 막내1 동의 15:55(e8c0b1fa) → **막내 3/3 만장일치** |
-| **작가님 최종 승인** | ⏳ |
+| 작가님 최종 승인 | ✅ 09-26 16:00 ("ㅇㅇ") |
 | 청구인 의견 (민아) | ⏳ 질의 응답 — 이의 시 반영 |
-| 집행 — §5-1 문서·규정(쌍아) + 코드 항목(secret.sh·package.json)은 §5-2 지시서로 이관(쌍아 직접 코딩 금지) | ⏳ |
+| 집행 ① 문서·규정 (쌍아) | ✅ 09-26 16:02 — ch5·ch7·rules 3·deploy-cf·references·SERVICE_MAP·SECRET_INVENTORY §3·CLAUDE.md 이력·청구안 상태 |
+| 집행 ② 코드·워크플로·CI (막내3) | ⏳ `ORDER_20260926_iMac쌍아_막내3_KKU_monkkr버튼배포_v21구현.md` — 완료 시 ch5 1조 부칙 해소 |
 
 동의 회신 형식: `동의` 또는 `이의 — {조항} {사유}`. 이의 조항은 쌍아가 재조정 후 해당 심사역 재동의.
 
