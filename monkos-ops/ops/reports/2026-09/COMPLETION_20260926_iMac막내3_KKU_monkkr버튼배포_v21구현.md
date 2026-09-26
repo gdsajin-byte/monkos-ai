@@ -1,0 +1,147 @@
+---
+type: completion
+date: 2026-09-26
+device: iMac
+agent: 막내3
+status: 진행
+order: ORDER_20260926_iMac쌍아_막내3_KKU_monkkr버튼배포_v21구현
+portfolio: PF_KKU
+subject: "monk.kr 버튼 배포 v2.1 구현 — Part A 완료 / 작가님 버튼 검증 대기"
+---
+
+# COMPLETION — monk.kr 버튼 배포 v2.1 구현 (Part A)
+
+**[2026-09-26 16:21 KST]** iMac/막내3 → 작가님 (참조: iMac/쌍아)
+
+✅ **Part A 4건 + 자체 적발 수정 2건 완료, 커밋·푸시 완료**
+⏳ **작가님 버튼 실행 2회 필요** — 여기서 멈춘다 (ch5 1조 3항 · ch1 7조 2항, 지시서 준수 조항)
+⏳ Part B (10-10까지) 미착수
+
+---
+
+## 1. 커밋 (롤백 단위 = 항목별 1커밋)
+
+| 커밋 | 항목 | 변경 파일 |
+|---|---|---|
+| `e842de97` | A-1 워크플로 | `.github/workflows/deploy-monk-kr.yml` · `MONK_kr/smoke_assert.txt`(신설) |
+| `88e4671b` | A-2 배포 대기 알림 | `.github/workflows/notify-monk-kr-pending.yml`(신설) |
+| `2732f46d` | A-3 governance-check | `.github/workflows/governance-check.yml` (C11 교정 · C13·C14 신설) |
+| `cd72e7cb` | A-4 코드 2건 | `scripts/secret.sh` · `package.json` · `.vscode/tasks.json` |
+| `7d7b12c5` | A-2 자체 적발 수정 | `notify-monk-kr-pending.yml` (비교 기준 `github.event.before`) |
+| `94307308` | 산출물 요건 | `.claude/rules/references.md` 도구 맵 2행 |
+
+푸시: `28be14c6..94307308` (ahead 0 실측)
+
+---
+
+## 2. A-1 워크플로 — 6개 요건
+
+| # | 요건 | 구현 | 검증 |
+|---|---|---|---|
+| 1 | 사유 서식 검증, 배포 스텝보다 앞 | 첫 스텝. `^[^\|]+ [\|] (직접\|YYYY-MM-DD HH:MM) [\|] .+$`, 불일치 시 기대 서식·예시 2건 출력 후 exit 1 | 로컬 양성 3 / 음성 7 전건 정합 |
+| 2 | `sha` 선택 입력 + checkout | `ref: ${{ inputs.sha \|\| github.ref }}` + **`fetch-depth: 0`** | 본인 사법심사 부대의견 ② — 기본 shallow(1)면 임의 SHA가 러너에 없어 9항 롤백이 첫 사용에서 실패 |
+| 3 | wrangler 버전을 package.json에서 | `node -p "require('./package.json').devDependencies.wrangler"` → 범위 지정이면 exit 1 → `npm install -g wrangler@$VER` | 하드코딩 `4.66.0` 제거. 09-24 1차 실패(npm 11의 npx 자동설치 거부)를 피하는 전역 설치 방식 유지 |
+| 4 | STEP_SUMMARY 배포 반영 기록 | 배포 직후 별도 스텝 — SHA·URL·사유 표 + "이 표가 보이면 배포는 도달했다" + `DEPLOYED=1`. 실패 시 `if: failure()` 스텝이 `DEPLOYED` 여부로 "배포 완료 — 롤백 판단 필요" / "배포 이전 실패 — 라이브 미반영" 분기 | 로컬 분기 검증 |
+| 5 | 콘텐츠 어서션 | `MONK_kr/smoke_assert.txt` 신설(7행). 상태코드는 **도달 확인**으로 강등, 판정은 어서션 | 아래 §3 |
+| 6 | 6조 게이트 비적용 사유 주석 | 헤더에 게이트 1·2·3·5 비적용 사유 각 1행 + 적용 대상(4·6) 명기 | 6조 서문 신규 의무 첫 이행 |
+
+---
+
+## 3. 어서션 항목 선정 근거 (지시서 요구)
+
+**원칙**: CF Pages는 미존재 경로에도 index.html을 200으로 반환한다(soft-404). 따라서 `+` 문구가 `MONK_kr/index.html`에 존재하면 **페이지가 사라져도 fallback으로 통과**한다. 선정 시 `grep -cF <문구> MONK_kr/index.html` = 0을 확인했다.
+
+| 경로 | 부호 | 문구 | index.html 히트 | 근거 |
+|---|---|---|---|---|
+| `/` | + | `<title>MONK \| 몽크사진관` | (루트 자체) | 빈 배포·잘못된 루트 검출 |
+| `/monk_studio/monk_studio` | + | `v=20260924` | **0** | 09-24 캐시 버스터(`7c1a0bde`). fallback 통과 불가 |
+| `/monk_studio/monk_studio` | + | `간편예약` | **0** | 09-19 CTA 전면 통일(`8b165506` 외) |
+| `/monk_studio/monk_studio` | + | `길찾기` | **0** | 09-23 네이버 지도 버튼(`5f342730`) |
+| `/monk_studio/monk_studio` | − | `톡톡상담` | 0 | 09-19 폐기 문구 재유입 방지(07-17 41일 잔존 사고 계열) |
+| `/monk_studio/family/family` | + | `v=20260924` | **0** | 하위 디렉터리 라우팅 |
+| `/zzz-monkos-assert-selftest` | − | `v=20260924` | — | **대조군** — 미존재 경로가 index fallback임을 검증. 이 행이 실패하면 위 `+` 어서션들의 전제가 무효 |
+
+**제외 판정 — 바이너리 경로**: 이미지·폰트는 넣지 않았다. 실측 근거 — `main.jpg`(210,983B)를 셸 변수에 담으면 NUL 제거로 200,780자가 되고 `grep -cF`가 히트 수를 출력하지 않아(exit 1, 빈 출력) `[ "$HIT" -gt 0 ]`가 `set -u` 하에서 스텝을 죽인다. 어서션 엔진에 `HIT` 비수치 방어(`판정 불가` 명시 실패)를 넣었으나, 바이너리는 애초에 본문 grep 대상이 아니다. 미추적 이미지 결손은 C14(소스 단계)가 담당한다.
+
+---
+
+## 4. 검증 — 방법 병기
+
+### 4-1. 로컬 스모크 (워크플로 run 블록을 그대로 추출해 실행)
+
+| 대상 | 양성 대조군 | 음성 대조군 |
+|---|---|---|
+| 콘텐츠 어서션 | 현행 라이브 배포본(`3442d99e.monk-kr.pages.dev`) **7/7 통과** | ① 문구 부재 → `✗ 어서션 실패 [+\|히트 0]` exit 1 ② 서식 오류 4종(탭 없음·부호 오류·문구 공백·경로 미시작) 전건 적발 exit 1 ③ 파일 부재 → 스킵 명시 출력 exit 0 ④ 주석만(유효 0건) → `✗ 유효 어서션 0건` exit 1 |
+| 사유 서식 | 3건 통과 | 7건 차단 (구 09-24 사유 문자열·공백 없음·0패딩 없음·사유 공백·시각 비서식·주체 공백·시분 누락) |
+| 알림 메시지 | HEAD=MONK_kr 변경 → 1건 집계·메시지 생성 | 무변경 커밋 → `message=` 빈값 → notify 잡 스킵 |
+| C13 | deploy-monk-kr.yml 1본 검출·위반 0 (알림 워크플로는 배포 명령 없어 제외) | push 트리거 + `npx wrangler pages deploy` 워크플로 주입 → 정확히 적발 |
+| C14 | 본 워킹트리 **25건** 검출 (`_functions_backup_20260220/` 16본·`cloudflare-workers/.wrangler/…sqlite`·`.DS_Store` 2) | — |
+
+### 4-2. 라이브 검증 (비배포분, 러너 실측)
+
+**알림 워크플로 — run `36226455728` success (46s)**
+- `비교 범위: 28be14c63bfe9b68703cb47b0d3908f3e3462bb2 HEAD` → **푸시 이전 커밋 기준으로 동작 확인**
+- `집계 완료 — 1건` → `[OK] 텔레그램 발신 완료 (chat_id: 8430...)` — **실발송 확인**
+- 이것이 §5 자체 적발의 실증이다: `HEAD~1..HEAD`였다면 이번 푸시는 마지막 커밋이 `references.md`라서 **0건 → 무음 스킵**됐다.
+
+**governance-check — run `36226455489` success (22s)**
+- C11: `ℹ️ 배포 워크플로 1본은 본 스텝의 검사 대상이 아니다 … : .github/workflows/deploy-monk-kr.yml` — 사각지대 가시화(막내1 이의 해소)
+- C13: `✅ 배포 명령 포함 워크플로 1본 — 자동 트리거 없음 (workflow_dispatch 전용): deploy-monk-kr.yml` — 오탐 0
+- C14: `ℹ️ 러너 스코프 미추적 입력 자산 0건 — **통과가 아니다**. 위 한계 주석 참조.` — 예측대로 0건, 거짓 녹색 없음
+
+### 4-3. 미실시 — 작가님 버튼 필요
+
+monk.kr **2회 히트 판정은 배포 후에 의미가 있다.** 현재 라이브는 09-24 배포본(`afeb748`)이며 이후 `MONK_kr/` 변경은 `smoke_assert.txt` 1건(서빙 무관)뿐이라, 지금 2회 히트를 재서 보고하면 v2.1 검증이 아니라 09-24 상태의 재측정이다. 배포 후 재측정하여 추기한다.
+
+---
+
+## 5. 자체 적발 2건 (스모크 중 발견 → 수정)
+
+1. **`$COUNT건`이 `set -u`에서 unbound variable** — bash가 한글까지 변수명으로 읽어 `COUNT건`을 찾는다. 알림 스텝이 실패했을 것. → `${COUNT}건`. 전 워크플로·셸 스크립트 동일 패턴 스캔 결과 다른 잔존 0건(양성 대조군: `${VAR}한글` 정상형 10건 히트).
+2. **C13 최초 판정식이 governance-check 자신을 오탐** — 단순 문자열 매칭이라 자체 grep 패턴·`find -name deploy.sh`의 문자열을 배포 명령으로 읽었다. → **실행 형태 판정**으로 교체(명령 선두 또는 `&&`/`;`/`||` 뒤, `deploy.sh`는 `./`·`bash`·`sh` 런처 요구). C11의 워크플로 카운트도 같은 판정식 공유.
+3. **(A-2) 비교 기준 `HEAD~1`이 다중 커밋 푸시에서 무음** — 위 4-2에서 실증. → `github.event.before`(all-zeros·부재 시 HEAD~1 폴백 + 폴백 사실 출력), `fetch-depth: 0`.
+
+---
+
+## 6. 판정·택1 사유 (지시서 요구)
+
+- **A-3 C11 — 출력 교정 채택**(순회 확대 미채택). 게이트 1·2·5는 셸 스크립트 형상 전제(`set -euo pipefail`·`git status --porcelain`)라 YAML에 적용하면 의미 없는 적발만 12→13본으로 늘어난다. 대신 "deploy.sh N본 검사 / 배포 워크플로 M본 미검사 + 담당 스텝(C13·C14)"을 **매 실행 출력**해 사각지대를 가시화했다. 워크플로용 게이트는 A-1 헤더 주석(6조 서문 의무)이 개별 이행한다.
+- **A-4 package.json — 삭제 채택**(표준 명령 정본화 미채택). 1조 6항 "이 명령 외의 배포 진입점을 두지 않는다"에 정본화는 배치된다. 구 `deploy` 스크립트는 `--branch main` 부재로 프로덕션도 아닌 **Preview** 배포였다.
+
+---
+
+## 7. 지시서 미명시 동봉 1건 (보고)
+
+`.vscode/tasks.json`의 **"Wrangler: Deploy"** 태스크(`npm run deploy`)를 제거했다. A-4로 npm 스크립트를 삭제하면 이 태스크는 `missing script` 오류로 남고, 남겨두면 승인·사유·어서션을 전부 우회하는 **제3의 배포 진입점**이 된다(1조 6항 위반). A-4 택1의 직접 귀결이라 같은 커밋에 동봉했다. 쌍아 판단으로 되돌릴 수 있다.
+
+---
+
+## 8. 미결·보고 (쌍아 판단 요청)
+
+1. 🔴 **C14는 CI에서 구조적으로 0건이다.** 러너는 clean checkout이므로 작업 트리의 미추적·무시 파일이 존재하지 않는다. 지시서가 지정한 명령(`git ls-files --others --ignored`)을 그대로 구현하되 "통과가 아니다"를 매 실행 출력해 거짓 녹색을 막았다. **실효 검사는 별도 방식이 필요하다** — 09-19 이미지 결손의 실제 원인은 전역 `*.jpg` 무시 + 예외 1줄이었고, 이는 **gitignore 정적 분석**(배포 루트의 자산 확장자를 삼키는 규칙에 서브디렉터리 예외가 있는지)으로 CI에서 잡을 수 있다. 범위 밖으로 판단해 구현하지 않았다. 착수 여부 지시 요청.
+2. `cloudflare-workers/node_modules/.cache/wrangler/wrangler-account.json`은 C14의 `BUILD_OUT`(node_modules 제외)에 걸려 목록에 오르지 않는다. 같은 디렉터리의 `.wrangler/state/…sqlite`가 대신 노출되어 디렉터리 자체는 가시화된다. 노이즈와의 교환 — 제외 목록 조정 판단 요청.
+3. C10 신규 경고: `monkos-ops/ops/templates/CONSTITUTION_ESSENCE.md` 스탬프 `2026-08-13` ≠ CLAUDE.md 최종 개정 `2026-09-26`. 헌법 5조 1항(에센스 동시 갱신) — 쌍아 소관. Part B의 C10 항목과 별건.
+4. `package-lock.json`은 `.gitignore:3`으로 **미추적**이다. 따라서 러너·신규 클론에 lock이 없고, 1조 6항의 버전 정본은 `package.json` 단일이라는 점이 오히려 정합적이다(막내2 재측정과 일치). `npm ci` 대신 `npm install -g wrangler@$VER`를 쓴 이유이기도 하다(`canvas` 네이티브 빌드 회피 포함).
+5. §5-4 권고 대상 `MONK_kr/README.md:8`·`TECH_SPEC_MPA.md:299`의 비정본 명령(`--project-name=` 표기·`--branch` 누락)은 손대지 않았다 — 종합의견서에서 별도 권고로 배정된 건.
+
+---
+
+## 9. 작가님 요청 — 버튼 2회 (여기서 멈춤)
+
+배포 스텝에 도달하는 검증은 **프로덕션 배포**이므로 실행하지 않았습니다 (ch5 1조 3항 · ch1 7조 2항).
+
+**① 양성 검증 (실배포 1회)**
+`Actions › Deploy monk.kr › Run workflow`
+- `reason` = `작가님 | 직접 | v2.1 첫 검증`
+- `sha` = 비움
+
+**② 음성 검증 (배포 전 차단 — 배포 스텝에 도달하지 않습니다)**
+같은 버튼, `reason` = `v2.1 서식 음성 검증` (구분자 없음)
+→ 첫 스텝에서 exit 1, 기대 서식 출력. 체크아웃조차 하지 않습니다.
+
+실행 후 run ID를 알려주시면 스텝 단위 판정 + STEP_SUMMARY + monk.kr 2회 히트 재측정을 본 파일에 추기하겠습니다.
+
+---
+
+**[2026-09-26 16:21 KST]** iMac/막내3 → 작가님
+Part A 완료. 준수: 프로덕션 배포 0 · `gh workflow run` 0 · Run 버튼 0 · 시크릿 값 조회 0(`secret map`만) · 경로 명시 add.
