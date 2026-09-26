@@ -24,17 +24,29 @@ jobs:
     outputs:
       message: ${{ steps.msg.outputs.message }}
     steps:
+      # fetch-depth 0 — 푸시 1회에 여러 커밋이 담기면 HEAD~1 범위로는 앞 커밋의 변경을 놓친다
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: 변경 집계
         id: msg
         run: |
           set -euo pipefail
           SHA_SHORT=$(git rev-parse --short HEAD)
+          # 비교 기준은 **푸시 이전 커밋**(github.event.before). HEAD~1로 잡으면 다중 커밋 푸시에서
+          # 앞 커밋의 MONK_kr 변경을 놓치고 "변경 0건"으로 무음 처리된다 (09-26 자체 적발).
+          BASE="${{ github.event.before }}"
+          case "$BASE" in ''|0000000000000000000000000000000000000000) BASE="" ;; esac
+          if [ -n "$BASE" ] && git cat-file -e "${BASE}^{commit}" 2>/dev/null; then
+            RANGE="${BASE} HEAD"
+          else
+            RANGE="HEAD~1 HEAD"
+            echo "ℹ️ github.event.before 사용 불가 — HEAD~1 폴백 (첫 푸시·강제 푸시 등)"
+          fi
+          echo "비교 범위: $RANGE"
           # 한글 경로가 이스케이프되어 집계가 어긋나지 않도록 quotePath=false (C12 선례)
-          FILES=$(git -c core.quotePath=false diff --name-only --diff-filter=ACMDR HEAD~1 HEAD -- MONK_kr/ functions/ 2>/dev/null || true)
+          FILES=$(git -c core.quotePath=false diff --name-only --diff-filter=ACMDR $RANGE -- MONK_kr/ functions/ 2>/dev/null || true)
           if [ -z "$FILES" ]; then
             echo "변경 0건 — 알림 생략 (paths 필터 통과했으나 diff 0, 병합 커밋 등)"
             echo "message=" >> "$GITHUB_OUTPUT"
