@@ -156,6 +156,8 @@ status: 현행
 | 11 | ADMIN_CHAT_ID | 관리자 채팅 ID |
 | 12 | TX_API_KEY | D1 거래 원장 |
 | 13 | CHAT_API_KEY | 챗봇 Workers API 인증 (monkos.ai→Workers 서비스 간 호출) | ⭐ 2026-05-25 추가
+| 45 | CF_PAGES_DEPLOY_TOKEN | GitHub Actions monk.kr CF Pages 버튼 배포 전용 (계정 토큰 `github-actions-monk-kr-pages`, Pages:Edit 단일 스코프) | `.github/workflows/deploy-monk-kr.yml` (GitHub Secrets 동명 등재) | ⭐ 2026-09-24 신설. **만료 2027-09-24**. #39 CF_PAGES_TOKEN(Pages+Workers Scripts, 4060 SSG용)과 용도 분리 — 스코프가 더 좁은 CI 전용. 09-24 GitHub 최초 등록이 빈값이라 SM→gh 파이프로 재등록 |
+| 46 | CF_ACCOUNT_ID | Cloudflare 계정 ID (비밀도 낮음, Actions 입력용) | `deploy-monk-kr.yml` (GitHub Secrets 동명 등재) | ⭐ 2026-09-24 신설 |
 
 > ⚠️ **§E GEMINI_API_KEY 지문 미대조** (2026-06-12 검수): monkos_AI와 "동일값 추정"일 뿐 실측 대조된 적 없음. 만약 구 프로젝트(Default Gemini 등) 발급 키였다면 06-12 프로젝트 종료로 무효화됐을 수 있음 → **지문 대조 또는 monk.kr Gemini 폴백 라이브 검증 필요** (ORDER_20260612 Task 1 연계).
 
