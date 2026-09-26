@@ -43,6 +43,7 @@ export async function saveImages(service, userId, style, originalImage, generate
     sessionId: extras?.sessionId || null,
     authenticated: !!ownerId,
     gate: extras?.gate || null,
+    creditSource: extras?.creditSource || null, // 'welcome' | 'purchased' | null (gate=credits 한정, 2026-09-26)
     service,
     style,
     slug: extras?.slug || null,

@@ -12,6 +12,7 @@ import { PORT, log, parseJsonBody, parseCookies, verifyAuthToken } from './share
 import { consumeGenerateQuota, refundGenerateQuota } from './payments.js';
 import { generateHeadshot } from './headshot-generate.js';
 import { saveImages } from './gcs-save.js';
+import { resolveCreditSource } from './credit-source.js';
 import { trackEvent } from './tracking.js';
 
 const STYLE_MODIFIERS = {
@@ -92,7 +93,8 @@ export async function handleHeadshotGenerate(req, res) {
     }
 
     try {
-      await saveImages('headshot', gateUserId, purpose || 'linkedin_pro', image, generatedBase64);
+      const creditSource = gateMode === 'credits' ? await resolveCreditSource(gateUserId) : null;
+      await saveImages('headshot', gateUserId, purpose || 'linkedin_pro', image, generatedBase64, { gate: gateMode, creditSource, sessionId: req.sessionId });
       log(`[Headshot] GCS 저장 완료: ${gateUserId}`);
     } catch (e) {
       log(`[Headshot] GCS 저장 실패 (무시): ${e.message}`, 'WARNING');
