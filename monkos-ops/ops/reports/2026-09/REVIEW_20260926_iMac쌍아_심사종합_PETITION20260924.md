@@ -4,7 +4,7 @@ date: 2026-09-26
 device: iMac
 agent: 쌍아
 subject: "PETITION_20260924 삼권심사 종합 + 합의안 v2 (ch5 1조 monk.kr 버튼 배포)"
-status: 동의 수집 중
+status: "v2.1 재동의 수집 중"
 petition: governance/constitution/petitions/PETITION_20260924_민아_ch5_1조_monk.kr_버튼배포.md
 portfolio: PF_KKU
 ---
@@ -101,6 +101,7 @@ portfolio: PF_KKU
 6. 표준 명령(예비 경로): `npx wrangler pages deploy MONK_kr/ --project-name monk-kr --branch main --commit-dirty=true`
    CWD = 프로젝트 루트. 정본 = 루트 `functions/`. `MONK_kr/functions/`는 없다.
    Production = `--branch main`, Preview = 미지정. 이 명령 외의 배포 진입점을 두지 않는다.
+   wrangler 버전 정본 = `package.json` 정확 고정(범위 지정 금지). 버튼 배포도 같은 버전을 쓴다. [v2.1 — 막내2 이의 수용]
 
 7. 스모크 판정: 상태코드 단독 판정을 금지한다. CF Pages는 미존재 경로에도 200을
    반환한다(09-26 음성 대조군 3인 실측). 판정은 콘텐츠 어서션으로 한다.
@@ -183,7 +184,7 @@ portfolio: PF_KKU
 | 8 | `monkos-ops/tech/SERVICE_MAP.md:71` | 배포 경로 열 보강 |
 | 9 | `monkos-ops/ops/SECRET_INVENTORY.md` §3 GitHub Secrets | #45·#46 2행 |
 | 10 | `scripts/secret.sh:301` · `:161` | `'*.yml'` 추가 · 오안내 교정(막내2 §2-3 문안) |
-| 11 | `package.json:7` | 비정본 `deploy` 스크립트 삭제 또는 표준 명령으로 정본화 |
+| 11 | `package.json:7` · `:10` | 비정본 `deploy` 스크립트 삭제 또는 표준 명령으로 정본화 · wrangler `^4.66.0` → `4.66.0` 정확 고정 (v2.1 — 막내2 이의) |
 | 12 | `CLAUDE.md` 개정 이력 | 법률 개정 1행 |
 | 13 | `governance/constitution/petitions/PETITION_20260924_…` | status → 승인 완료, 본 문서 링크 |
 
@@ -192,13 +193,25 @@ portfolio: PF_KKU
 `deploy-monk-kr.yml`: 사유 서식 검증 · `sha` 선택 입력 · 콘텐츠 어서션(`MONK_kr/smoke_assert.txt`) · STEP_SUMMARY 배포 반영 표기 / 신규 `notify-monk-kr-pending.yml`(push 경로 → notify.yml) / governance-check C13·C14.
 > 스모크 검증은 **프로덕션 배포가 수반**되므로 첫 실행은 작가님 버튼(또는 새 턴 승인)으로 한다.
 
+**v2.1 추가 구현 요건** (동의 회신 반영 — 조문 무수정):
+- **사유 서식 검증 스텝은 배포 스텝보다 앞에 둔다** (막내3 ③ — 순서가 뒤집히면 8항과 같은 계열 사고)
+- **checkout에 `ref: ${{ inputs.sha || github.ref }}` + `fetch-depth: 0`** — 기본 shallow(1)로는 임의 SHA가 러너에 없어 5항·9항 롤백이 첫 사용에서 실패한다 (막내3 ②)
+- **wrangler 버전은 `package.json`에서 읽는다** — 워크플로 내 버전 하드코딩 제거 (1조 6항, 막내2 이의)
+- **governance-check C11** — 순회 대상에 배포 워크플로(`.github/workflows/`)를 추가하거나, 추가하지 않으면 출력을 "배포 게이트 정적 검사 통과 (deploy.sh N본 — 배포 워크플로 미검사)"로 고쳐 범위를 명시 (막내1 이의 — ch5 6조 무음 강등 금지)
+- **`deploy-monk-kr.yml`에 6조 게이트 1~5 비적용 사유 주석 1행** (막내1 이의 — 6조 서문 신규 의무의 첫 이행)
+- **C13 판정 기준은 파일명이 아니라 내용** — "`wrangler pages deploy` 또는 `deploy.sh` 호출을 포함한 워크플로에 push·schedule·repository_dispatch 트리거 존재" (막내3 ④)
+- **`deploy-cf.md` 예비 경로 절차에 `git status --porcelain MONK_kr/ functions/` 비어 있음 확인을 명령 1행으로** — wrangler는 dirty여도 경고만 내고 배포한다(막내3 소스 실측) (막내3 ①)
+
 ### 5-3. 14일 내
 
 `secret_patrol.sh` — `gh secret list --json name,updatedAt` 스냅샷 + SECRET_INVENTORY 만료일 열 + D-30 경고.
+SECRET_INVENTORY §3 GitHub Secrets 전수 보정 — 실측 26건 중 11건만 등재 (v2.1 — 막내2 권고 ①).
+`.claude/rules/references.md`에 `> source:` 스탬프 부여 또는 governance-check C10의 무스탬프 파일 무음 스킵(`continue`)을 명시 출력으로 전환 — 신설되는 monk.kr 배포 정본 서술이 드리프트 감지 밖에 놓이지 않도록 (v2.1 — 막내2 권고 ②).
 
 ### 5-4. 권고 (장부화)
 
 `kku-context.md:65`·`makne-finish.md:65`·`MONK_kr/README.md:8`·`TECH_SPEC_MPA.md:299` 표현 정합.
+`PROPOSAL_20260903_쌍아_논스훅_미착수판정.md` T2 트리거에 "버튼 배포 = 작가님 화면 없이 프로덕션에 도달하는 경로 신설" 1행 (v2.1 — 막내3 부수 권고).
 
 ---
 
@@ -219,8 +232,22 @@ portfolio: PF_KKU
 | 청구 (민아) | ✅ 09-24 a35247a2 |
 | 삼권심사 의견서 3건 | ✅ 09-26 13:46~13:49 |
 | 쌍아 취합 + 작가님 합의 (§0 원취지·gh 유지) | ✅ 09-26 14:26~14:33 |
-| **막내1·2·3 개별 동의** | ⏳ 본 합의안 v2 기준 |
+| 막내1·2·3 개별 동의 (v2) | ✅ 회신 3/3 (15:31~15:35) — 막내3 **동의** / 막내1 이의 1 / 막내2 이의 1 |
+| 쌍아 재조정 (v2.1) | ✅ 15:50 — 이의 2건 전부 수용 (§8) |
+| **막내1·2 재동의 (v2.1)** | ⏳ |
 | 청구인 의견 (민아) | ⏳ 질의 응답 — 이의 시 반영 |
 | 작가님 최종 승인 → 집행(§5-1 동시 커밋 → §5-2 지시서) | ⏳ |
 
 동의 회신 형식: `동의` 또는 `이의 — {조항} {사유}`. 이의 조항은 쌍아가 재조정 후 해당 심사역 재동의.
+
+---
+
+## 8. 동의 회신 결과 + v2.1 조정 (2026-09-26 15:50 KST)
+
+| 심사역 | 회신 | 내용 | 쌍아 처리 |
+|---|---|---|---|
+| 막내3 사법 | **동의** | 조건 5건 전부 반영 확인. `--commit-dirty` 조건부 반대 **자기 철회** — wrangler 4.66.0 소스 실측상 플래그 제거는 경고만 늘 뿐 차단력 0, 1조 5항 클린 확인 의무가 목적을 더 정확히 달성. 부대 의견 4건(조문 이의 아님) | 4건 전부 §5-2·§5-4에 반영 |
+| 막내1 입법 | **이의 1** | §3-2 6조 서문은 "배포 경로"로 확대됐으나 governance-check C11은 `deploy.sh`만 순회 — 확대분 무검사인데 "✅ 통과"를 출력(무음 강등). 신규 의무("미성립 게이트 사유 1행")의 이행 대상 미지정. **조문 무수정, §5-2 1행으로 해소** 제안. 나머지 11건 동의, gh 유지 불수용엔 이의 없음 | **수용** — §5-2 C11 항목 + 워크플로 사유 주석 |
+| 막내2 행정 | **이의 1** | C5 절반만 반영 — `package.json:7` 스크립트만 수용, `:10` 캐럿 `^4.66.0` ↔ 러너 고정 4.66.0 정합 방침 0건. 지금은 일치하나 구조적으로 갈라짐. 권고 2건(동의 전제 아님) | **수용** — 1조 6항에 버전 정본 1행(조문), §5-1 #11·§5-2 반영. 권고 2건 §5-3 반영 |
+
+**조문 변경은 1조 6항 1행뿐**(막내2 이의). 나머지는 전부 구현 요건(§5)이다. 재동의 대상 = 막내1(§5-2 C11 항목) · 막내2(1조 6항 + §5-1 #11).

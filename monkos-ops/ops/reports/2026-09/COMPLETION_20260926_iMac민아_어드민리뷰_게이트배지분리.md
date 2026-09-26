@@ -3,7 +3,7 @@ type: completion
 date: 2026-09-26
 device: iMac
 agent: 민아
-status: dev 검증 완료 · prod 배포 승인 대기
+status: 완료 (prod 배포·라이브 판정 완료)
 portfolio: PF_PORTAL
 ---
 
@@ -32,8 +32,17 @@ portfolio: PF_PORTAL
 - **대조군**: prod 동일 API는 `creditSource` 필드 부재(미배포) → 필드 출현이 배포 효과임을 확인. **양성 대조군(purchased) 라이브 부재** — 충전 결제 고객이 아직 0명이라 단위 테스트로 대체. 첫 충전 고객 발생 시 실측 필요.
 - **UI 렌더**: 실제 HTML + dev 실측 JSON을 로컬 스텁으로 서빙해 내장 브라우저 캡처. 12:45 카드 "웰컴"(파랑), 나머지 "무료", 범례 "매출 0건 · 웰컴 2 · 무료 10". 콘솔 에러 0.
 
+## prod 배포 [예외] (2026-09-26 15:51 KST 갱신)
+- 작가님 승인 15:46(새 턴) → `deploy.sh prod --yes` → rev **`monkos-portal-00564-8kf`** 100%, 드리프트 없음, EXIT 0. 민아 경로 범위 초과 ②(프로덕션 표면) — 세션로그 `[예외]` 기록, 쌍아 사후 추인 대상.
+- **라이브 판정(monkos.ai, 2회 히트, 새 키 v2)**: 2차 응답 credits 게이트 2건 `creditSource=welcome`, free 10건 null → dev와 동일. 음성 대조군(무효 키) 401.
+- 배포 로그 `[obfuscate] WARN public/index.html Unexpected token (3:12)`는 dev 배포에도 동일 출현한 선행 경고(본 건 무관, 쌍아 인지 대상).
+
+## 시크릿 로테이션 결과
+- 작가님 `secret add AGENT-API-KEYS` → **v2 등록**(15:48). 형식 `AGENT_hex40` 1건, v1과 상이 확인(값 미출력 검사).
+- prod 새 리비전은 `:latest`를 인스턴스 기동 시 해석 → **노출된 v1 키는 prod에서 이미 401**(실측). v2는 200.
+- 잔여: SM v1 아직 `enabled` 상태(disable 권장) · GitHub `PORTAL_AGENT_KEY` 구값(기존에도 401 미결, 인벤토리 #36) — 작가님 판단.
+
 ## 미완·대기
-- **prod 배포 미실행** — ch1 7조 승인 게이트(새 턴 승인 수신 후 `deploy.sh prod --yes`). 승인 시 민아 경로 범위 초과 ②(프로덕션 표면) → 세션로그 `[예외]` + 본 COMPLETION 갱신.
 - 헤드샷 갤러리(`service=headshot`)는 기존 기록에 gate 없음 → 배지 공백(기존과 동일). 신규 생성부터 기록.
 
 ## 부수 적발
