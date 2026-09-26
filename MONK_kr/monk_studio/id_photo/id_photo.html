@@ -69,14 +69,15 @@
         .font-serif { font-family:'Pretendard', sans-serif; letter-spacing:-0.02em; }
 
         /* 기존 클래스명을 유지한 채 색만 새 팔레트로 */
-        .text-tiffany { color:var(--accent) !important; }
+        /* 포인트색(80CBC4)은 최소한으로: Deluxe 테두리 · BEST 배지 · 목록 점에만 (꾸 09-26) */
+        .text-tiffany { color:var(--ink-2) !important; }
         .bg-tiffany   { background-color:var(--accent) !important; }
         .border-tiffany { border-color:var(--accent) !important; }
         .text-amber   { color:var(--ink-2) !important; }
         .bg-amber     { background-color:var(--ink) !important; }
         .border-amber { border-color:var(--line) !important; }
-        .hover\:text-amber:hover { color:var(--accent) !important; }
-        .hover\:bg-tiffany:hover { background-color:var(--accent) !important; }
+        .hover\:text-amber:hover { color:var(--ink) !important; }
+        .hover\:bg-tiffany:hover { background-color:var(--ink) !important; }
 
         .text-gray-900 { color:var(--ink) !important; }
         .text-gray-800, .text-gray-700, .text-gray-600 { color:var(--ink-2) !important; }
