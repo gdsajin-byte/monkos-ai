@@ -48,12 +48,6 @@
       "problemMatcher": []
     },
     {
-      "label": "Wrangler: Deploy",
-      "type": "shell",
-      "command": "npm run deploy",
-      "problemMatcher": []
-    },
-    {
       "label": "Kill All Node Processes",
       "type": "shell",
       "command": "killall node || true",
