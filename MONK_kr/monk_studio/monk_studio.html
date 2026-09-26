@@ -11,14 +11,14 @@
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>몽크사진관 | MONK STUDIO - 증명사진·프로필사진·가족사진</title>
+        <title>몽크사진관 | 증명사진·프로필사진·가족사진</title>
     <link rel="icon" type="image/png" sizes="32x32" href="/images/studio-icon-32.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/images/studio-icon-192.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/images/studio-touch-180.png">
     <meta name="description" content="몽크사진관 - 증명사진, 여권사진, 프로필사진, 가족사진, 단체사진. 프리미엄 촬영부터 AI 보정까지.">
 
     <!-- OG Tags -->
-    <meta property="og:title" content="몽크사진관 | MONK STUDIO">
+    <meta property="og:title" content="몽크사진관">
     <meta property="og:description" content="증명사진, 프로필사진, 가족사진. 프리미엄 촬영 + AI 보정.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://monk.kr/monk_studio/monk_studio.html">
@@ -72,12 +72,12 @@
         
         
         body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif !important;
             scroll-behavior: smooth;
         }
         
         .font-serif {
-            font-family: 'Pretendard', sans-serif;
+            font-family: 'Pretendard', sans-serif !important;
         }
 
         /* --- Color Palette Definition --- */
@@ -141,14 +141,15 @@
                 </a>
                 
                 <!-- Desktop Navigation -->
-                <nav class="hidden md:flex space-x-8 items-center">
-                    <a href="#service" class="text-gray-600 hover:text-tiffany font-medium transition-colors">상품</a>
-                    <a href="#about" class="text-gray-600 hover:text-tiffany font-medium transition-colors">Philosophy</a>
-                    <a href="#portfolio" class="text-gray-600 hover:text-tiffany font-medium transition-colors">갤러리</a>
+                <nav class="hidden md:flex space-x-6 items-center">
+                    <a href="#service" class="text-gray-600 hover:text-tiffany font-medium transition-colors">촬영 상품</a>
+                    <a href="./store/store.html" class="text-gray-600 hover:text-tiffany font-medium transition-colors">온라인 스토어</a>
+                    <a href="./biztrip/biztrip.html" class="text-gray-600 hover:text-tiffany font-medium transition-colors">출장촬영</a>
+                    <a href="https://m.place.naver.com/place/1454242520/review/visitor" target="_blank" rel="noopener" class="text-gray-600 hover:text-tiffany font-medium transition-colors">후기</a>
+                    <a href="https://blog.naver.com/studio_monk" target="_blank" rel="noopener" class="text-gray-600 hover:text-tiffany font-medium transition-colors">블로그</a>
                     <a href="#contact" class="text-gray-600 hover:text-tiffany font-medium transition-colors">오시는 길</a>
-                    
-                    <!-- 간편예약: 네이버 그린으로 색상 통일 -->
-                    <a href="https://booking.naver.com/booking/13/bizes/1177662" target="_blank" class="px-6 pt-[9px] pb-[11px] bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors duration-300 inline-flex items-center justify-center leading-none">
+
+                    <a href="https://booking.naver.com/booking/13/bizes/1177662" target="_blank" class="px-6 h-11 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors duration-300 inline-flex items-center justify-center leading-none">
                         <span>간편예약</span>
                     </a>
                 </nav>
@@ -165,12 +166,13 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full shadow-xl">
             <div class="px-4 pt-2 pb-6 space-y-1">
-                <a href="#service" class="block w-full text-left px-3 py-3 text-base font-medium text-gray-600 hover:text-tiffany hover:bg-gray-50 rounded-md">상품</a>
-                <a href="#about" class="block w-full text-left px-3 py-3 text-base font-medium text-gray-600 hover:text-tiffany hover:bg-gray-50 rounded-md">Philosophy</a>
-                <a href="#portfolio" class="block w-full text-left px-3 py-3 text-base font-medium text-gray-600 hover:text-tiffany hover:bg-gray-50 rounded-md">갤러리</a>
+                <a href="#service" class="block w-full text-left px-3 py-3 text-base font-medium text-gray-600 hover:text-tiffany hover:bg-gray-50 rounded-md">촬영 상품</a>
+                <a href="./store/store.html" class="block w-full text-left px-3 py-3 text-base font-medium text-gray-600 hover:text-tiffany hover:bg-gray-50 rounded-md">온라인 스토어</a>
+                <a href="./biztrip/biztrip.html" class="block w-full text-left px-3 py-3 text-base font-medium text-gray-600 hover:text-tiffany hover:bg-gray-50 rounded-md">출장촬영</a>
+                <a href="https://m.place.naver.com/place/1454242520/review/visitor" target="_blank" rel="noopener" class="block w-full text-left px-3 py-3 text-base font-medium text-gray-600 hover:text-tiffany hover:bg-gray-50 rounded-md">후기</a>
+                <a href="https://blog.naver.com/studio_monk" target="_blank" rel="noopener" class="block w-full text-left px-3 py-3 text-base font-medium text-gray-600 hover:text-tiffany hover:bg-gray-50 rounded-md">블로그</a>
                 <a href="#contact" class="block w-full text-left px-3 py-3 text-base font-medium text-gray-600 hover:text-tiffany hover:bg-gray-50 rounded-md">오시는 길</a>
-                <!-- 모바일 메뉴 간편예약 버튼도 네이버 그린으로 통일 -->
-                <a href="https://booking.naver.com/booking/13/bizes/1177662" target="_blank" class="block w-full text-center px-3 pt-[13px] pb-[15px] mt-4 text-base font-bold text-white bg-black hover:bg-gray-800 rounded-xl leading-none">
+                <a href="https://booking.naver.com/booking/13/bizes/1177662" target="_blank" class="w-full h-[52px] px-3 mt-4 text-base font-bold text-white bg-black hover:bg-gray-800 rounded-xl leading-none inline-flex items-center justify-center">
                     간편예약
                 </a>
             </div>
@@ -343,7 +345,7 @@
                 </div>
 
                 <div class="bg-gray-50 rounded-3xl p-10 md:p-14 shadow-sm border border-gray-100">
-                    <h3 class="font-serif text-2xl font-bold text-gray-900 mb-6">MONK STUDIO</h3>
+                    <img src="/images/monk-logo.png" alt="몽크사진관" class="h-8 w-auto mb-6">
                     <p class="text-gray-600 text-lg leading-relaxed mb-6 break-keep">
                         경기도 하남시 미사강변동로 95<br>
                         그랑파사쥬 B1029호 (미사역 연결)
@@ -351,7 +353,7 @@
 
                     <!-- 네이버 지도 길찾기 -->
                     <div class="mb-12">
-                        <a href="https://map.naver.com/p/entry/place/1454242520" target="_blank" rel="noopener" class="px-6 pt-[9px] pb-[11px] bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors duration-300 inline-flex items-center justify-center gap-2 leading-none">
+                        <a href="https://map.naver.com/p/entry/place/1454242520" target="_blank" rel="noopener" class="px-6 h-11 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors duration-300 inline-flex items-center justify-center gap-2 leading-none">
                             <i data-lucide="map-pin" class="w-4 h-4"></i><span>네이버 지도로 길찾기</span>
                         </a>
                     </div>
@@ -386,7 +388,7 @@
     <!-- Footer -->
     <footer class="bg-gray-50 border-t border-gray-200 py-20 text-center">
         <div class="max-w-7xl mx-auto px-4">
-            <h2 class="font-serif text-2xl font-bold text-gray-900 mb-8">MONK STUDIO</h2>
+            <img src="/images/monk-logo.png" alt="몽크사진관" class="h-8 w-auto mx-auto mb-6">
             <div class="flex flex-col sm:flex-row justify-center gap-4 mb-12">
                 <a href="https://talk.naver.com/W5UJ45" target="_blank" class="px-8 py-3 bg-white border border-gray-300 rounded-full hover:border-[#03C75A] hover:text-[#03C75A] transition-all duration-300 text-sm font-bold text-gray-600 shadow-sm">
                     <i data-lucide="message-circle" class="w-4 h-4 inline mr-2"></i> 네이버 톡톡 문의
@@ -396,7 +398,7 @@
                 </a>
             </div>
             <p class="text-gray-400 text-xs font-light tracking-wide">
-                &copy; 2025 MONK STUDIO. All rights reserved.<br>
+                &copy; 2026 몽크사진관. All rights reserved.<br>
                 Designed with Tiffany Blue
             </p>
         </div>

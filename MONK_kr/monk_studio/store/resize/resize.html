@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>사진 리사이즈 | 몽크사진관</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/studio-icon-32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/images/studio-icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/studio-touch-180.png">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  body{font-family:'Noto Sans KR',-apple-system,sans-serif}
+  .text-tiffany{color:#0ABAB5} .border-tiffany{border-color:#0ABAB5}
+  .preset.on{border-color:#0ABAB5;background:rgba(10,186,181,.06);border-width:2px}
+  #stage{position:relative;display:inline-block;line-height:0;
+    background-image:linear-gradient(45deg,#e9e9e9 25%,transparent 25%),linear-gradient(-45deg,#e9e9e9 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e9e9e9 75%),linear-gradient(-45deg,transparent 75%,#e9e9e9 75%);
+    background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0}
+  #shade{position:absolute;inset:0;background:rgba(0,0,0,.45);pointer-events:none}
+  #box{position:absolute;border:2px solid #0ABAB5;box-shadow:0 0 0 9999px rgba(0,0,0,.45);cursor:move;touch-action:none}
+  #box .g{position:absolute;inset:0;pointer-events:none;
+    background:
+      linear-gradient(to right, rgba(255,255,255,.55) 1px, transparent 1px) 33.33% 0/33.33% 100%,
+      linear-gradient(to bottom, rgba(255,255,255,.55) 1px, transparent 1px) 0 33.33%/100% 33.33%}
+  .hd{position:absolute;width:14px;height:14px;background:#fff;border:2px solid #0ABAB5;border-radius:3px}
+  .hd.se{right:-8px;bottom:-8px;cursor:nwse-resize}
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+<header class="bg-white border-b border-gray-100 sticky top-0 z-40">
+  <div class="max-w-4xl mx-auto px-6 h-20 flex items-center justify-between">
+    <a href="../../monk_studio.html" class="flex items-center group">
+      <i data-lucide="arrow-left" class="h-6 w-6 text-gray-400 mr-2"></i>
+      <img src="/images/monk-logo.png" alt="몽크사진관" class="h-9 w-auto translate-y-[7px]">
+    </a>
+    <a href="#" class="px-5 h-10 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors text-sm leading-none inline-flex items-center justify-center">간편예약</a>
+  </div>
+</header>
+
+<main class="max-w-4xl mx-auto px-6 py-12">
+
+  <div class="text-center mb-8">
+    <h1 class="text-2xl font-bold mb-3">사진 리사이즈</h1>
+    <p class="text-gray-600 leading-relaxed break-keep">원하는 크기로 사진을 자르고 내려받으세요.<br>
+      <b class="text-gray-900">사진은 서버에 올라가지 않습니다.</b> 창을 닫으면 사라집니다.</p>
+  </div>
+
+  <!-- 조작 줄 -->
+  <div class="bg-white border border-gray-200 rounded-2xl p-5 mb-5">
+    <div class="flex flex-wrap items-end justify-center gap-3">
+      <label class="px-5 h-12 bg-white border border-gray-300 text-gray-700 font-bold rounded-xl hover:border-gray-500 transition-colors inline-flex items-center justify-center gap-2 cursor-pointer text-sm">
+        <input id="file" type="file" accept="image/*" class="hidden">
+        <i data-lucide="upload" class="w-4 h-4"></i><span class="-translate-y-px">사진 업로드</span>
+      </label>
+      <div>
+        <label class="block text-xs text-gray-500 mb-1.5 font-medium">가로 PX</label>
+        <input id="w" type="number" value="413" class="w-28 border border-gray-200 rounded-xl px-4 h-12 focus:outline-none focus:border-tiffany">
+      </div>
+      <div>
+        <label class="block text-xs text-gray-500 mb-1.5 font-medium">세로 PX</label>
+        <input id="h" type="number" value="531" class="w-28 border border-gray-200 rounded-xl px-4 h-12 focus:outline-none focus:border-tiffany">
+      </div>
+      <button id="dl" class="px-6 h-12 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors inline-flex items-center justify-center gap-2 text-sm disabled:opacity-40" disabled>
+        <i data-lucide="download" class="w-4 h-4"></i><span class="-translate-y-px">자르기 및 다운로드</span>
+      </button>
+    </div>
+
+
+  </div>
+
+  <!-- 작업 영역 -->
+  <div class="bg-white border border-gray-200 rounded-2xl p-6">
+    <div id="empty" class="py-24 text-center">
+      <i data-lucide="image" class="w-10 h-10 mx-auto text-gray-300 mb-3"></i>
+      <p class="text-gray-400 text-sm">사진을 업로드하면 여기에 표시됩니다</p>
+    </div>
+    <div id="wrap" class="text-center" hidden>
+      <div id="stage">
+        <img id="src" alt="">
+        <div id="box"><div class="g"></div><div class="hd se"></div></div>
+      </div>
+      <p id="info" class="text-sm text-gray-500 mt-4"></p>
+      <p class="text-xs text-gray-400 mt-1">상자를 끌어 위치를 잡고, 오른쪽 아래 모서리로 크기를 조절하세요.</p>
+    </div>
+  </div>
+
+  <div class="mt-8 bg-white border border-gray-200 rounded-3xl p-8 text-center">
+    <p class="font-bold mb-2">직접 하기 번거로우신가요?</p>
+    <p class="text-sm text-gray-600 leading-relaxed mb-6">나라와 용도만 알려주시면 규격에 맞춰 촬영·인화해 드립니다.</p>
+    <div class="flex flex-col sm:flex-row justify-center gap-2">
+      <a href="tel:031-791-5030" class="px-6 h-11 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors inline-flex items-center justify-center gap-2 leading-none text-sm"><i data-lucide="phone" class="w-4 h-4"></i><span class="-translate-y-px">031-791-5030</span></a>
+      <a href="https://talk.naver.com/W5UJ45" target="_blank" rel="noopener" class="px-6 h-11 bg-[#03C75A] text-white font-bold rounded-xl hover:bg-[#02b351] transition-colors inline-flex items-center justify-center gap-2 leading-none text-sm"><i data-lucide="message-circle" class="w-4 h-4"></i><span class="-translate-y-px">네이버 톡톡 문의</span></a>
+    </div>
+  </div>
+
+</main>
+
+<script>
+lucide.createIcons();
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var img=new Image(), loaded=false;
+  var box=$('box'), stage=$('stage'), srcEl=$('src');
+  var sel={x:0,y:0,w:0,h:0};          // 표시 좌표(px)
+  var MAXW=560;                        // 화면에 보여줄 최대 폭
+
+  function ratio(){ var W=+$('w').value||1, H=+$('h').value||1; return W/H; }
+
+  $('file').addEventListener('change', function(e){
+    var f=e.target.files[0]; if(!f) return;
+    var r=new FileReader();
+    r.onload=function(ev){
+      img=new Image();
+      img.onload=function(){
+        loaded=true;
+        var s=Math.min(1, MAXW/img.width);
+        srcEl.src=img.src;
+        srcEl.style.width=Math.round(img.width*s)+'px';
+        srcEl.style.height=Math.round(img.height*s)+'px';
+        $('empty').hidden=true; $('wrap').hidden=false; $('dl').disabled=false;
+        initSel();
+      };
+      img.src=ev.target.result;
+    };
+    r.readAsDataURL(f);
+  });
+
+  function dispSize(){ return {w:srcEl.clientWidth, h:srcEl.clientHeight}; }
+
+  function initSel(){
+    var d=dispSize(), r=ratio();
+    var w=d.w, h=w/r;
+    if(h>d.h){ h=d.h; w=h*r; }
+    w*=0.8; h*=0.8;
+    sel={x:(d.w-w)/2, y:(d.h-h)/2, w:w, h:h};
+    apply();
+  }
+
+  function clamp(){
+    var d=dispSize();
+    sel.w=Math.max(30, Math.min(sel.w, d.w));
+    sel.h=sel.w/ratio();
+    if(sel.h>d.h){ sel.h=d.h; sel.w=sel.h*ratio(); }
+    sel.x=Math.max(0, Math.min(sel.x, d.w-sel.w));
+    sel.y=Math.max(0, Math.min(sel.y, d.h-sel.h));
+  }
+
+  function apply(){
+    clamp();
+    box.style.left=sel.x+'px'; box.style.top=sel.y+'px';
+    box.style.width=sel.w+'px'; box.style.height=sel.h+'px';
+    $('info').textContent='출력 ' + (+$('w').value) + ' × ' + (+$('h').value) + ' PX　·　원본 ' + img.width + ' × ' + img.height + ' PX';
+  }
+
+  // 드래그 이동 / 모서리 크기 조절
+  var drag=null;
+  box.addEventListener('pointerdown', function(e){
+    var handle=e.target.classList.contains('se');
+    drag={mode:handle?'size':'move', sx:e.clientX, sy:e.clientY, ox:sel.x, oy:sel.y, ow:sel.w};
+    box.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  box.addEventListener('pointermove', function(e){
+    if(!drag) return;
+    var dx=e.clientX-drag.sx, dy=e.clientY-drag.sy;
+    if(drag.mode==='move'){ sel.x=drag.ox+dx; sel.y=drag.oy+dy; }
+    else { sel.w=drag.ow+dx; sel.h=sel.w/ratio(); }
+    apply();
+  });
+  box.addEventListener('pointerup', function(){ drag=null; });
+
+  document.querySelectorAll('.preset').forEach(function(b){
+    b.onclick=function(){
+      document.querySelectorAll('.preset').forEach(function(x){x.classList.remove('on')});
+      b.classList.add('on');
+      $('w').value=b.dataset.w; $('h').value=b.dataset.h;
+      if(loaded) initSel();
+    };
+  });
+  ['w','h'].forEach(function(id){ $(id).addEventListener('input', function(){ if(loaded) initSel(); }); });
+
+  $('dl').onclick=function(){
+    if(!loaded) return;
+    var W=+$('w').value, H=+$('h').value, d=dispSize();
+    var k=img.width/d.w;                       // 표시 → 원본 배율
+    var cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+    var ctx=cv.getContext('2d');
+    ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
+    ctx.drawImage(img, sel.x*k, sel.y*k, sel.w*k, sel.h*k, 0, 0, W, H);
+    var kbEl=$('kb'), limit=kbEl?(+kbEl.value||0):0, q=0.92, url=cv.toDataURL('image/jpeg',q);
+    if(limit>0){ while(q>0.3 && (url.length*0.75/1024)>limit){ q-=0.06; url=cv.toDataURL('image/jpeg',q); } }
+    var a=document.createElement('a');
+    a.href=url; a.download='monk_'+W+'x'+H+'.jpg'; a.click();
+  };
+})();
+</script>
+</body>
+</html>
