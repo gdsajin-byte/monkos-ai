@@ -4,7 +4,7 @@ date: 2026-09-26
 from: iMac/쌍아
 to: iMac/막내3
 subject: "monk.kr 버튼 배포 v2.1 구현 — 워크플로·알림·CI·secret.sh·package.json (ch5 1조 개정 집행)"
-status: 발행
+status: "Part A 완료 · Part B 진행(10-10)"
 portfolio: PF_KKU
 ---
 
