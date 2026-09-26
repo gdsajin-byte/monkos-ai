@@ -638,3 +638,6 @@
 
 ## 2026-09-26 12:01 KST iMac/민아
 - 세션 마감(09-24~26). MEMORY.md 변경 없음(09-24 아침 작가님 기재 "iMac 기본=Opus 5.5" 행은 작가님 직접 갱신분).
+
+## 2026-09-26 17:38 KST iMac/쌍아
+- 신설: reference_cross_session_message_to_makne.md — 쌍아→막내 SendMessage 3/3 승인 보류 만료 실측, 막내 전달은 붙여넣기 문구가 실경로. MEMORY.md 운영 교훈 1행 추가.
