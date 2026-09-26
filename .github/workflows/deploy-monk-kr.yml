@@ -97,9 +97,15 @@ jobs:
       # ── ch5 1조 8항: 배포 반영 사실을 스모크 결과와 분리하여 기록한다.
       #    이 스텝이 실행됐다는 것 자체가 "배포는 라이브에 도달했다"는 뜻이다
       - name: 배포 반영 기록 (ch5 1조 8항)
+        env:
+          # ${{ }} 직접 치환 금지 — 표현식이 셸·마크다운에 그대로 박히면 주입·서식 붕괴가 난다. env 경유가 정본
+          REASON: ${{ inputs.reason }}
         run: |
           set -euo pipefail
           echo "DEPLOYED=1" >> "$GITHUB_ENV"
+          # 사유 서식의 구분자 "|"가 마크다운 표의 열 구분자로 먹혀 "작가님"만 남는다(09-26 run 36228467825 적발).
+          # 파이프를 이스케이프해 셀 안에 그대로 렌더한다.
+          REASON_MD=$(printf '%s' "$REASON" | sed 's/|/\\|/g')
           {
             echo "## ✅ 배포 반영됨"
             echo ""
@@ -107,7 +113,7 @@ jobs:
             echo "|---|---|"
             echo "| 커밋 SHA | \`$(git rev-parse HEAD)\` |"
             echo "| 배포 URL | $DEPLOY_URL |"
-            echo "| 사유 | ${{ inputs.reason }} |"
+            echo "| 사유 | ${REASON_MD} |"
             echo ""
             echo "> 이 표가 보이면 **배포는 이미 라이브에 도달**했다. 아래 스모크가 적색이어도 미배포가 아니다 (ch5 1조 8항)."
             echo "> monk.kr 최종 판정은 **승인자 기기의 2회 히트** (ch5 1조 7항) — 러너는 존 정책상 403."
