@@ -4,7 +4,7 @@ date: 2026-09-26
 device: iMac
 agent: 쌍아
 subject: "PETITION_20260924 삼권심사 종합 + 합의안 v2 (ch5 1조 monk.kr 버튼 배포)"
-status: "승인 완료 — 집행 중"
+status: "승인 완료 — 부칙 해소 (Part B 잔여)"
 petition: governance/constitution/petitions/PETITION_20260924_민아_ch5_1조_monk.kr_버튼배포.md
 portfolio: PF_KKU
 ---
@@ -238,7 +238,7 @@ SECRET_INVENTORY §3 GitHub Secrets 전수 보정 — 실측 26건 중 11건만 
 | 작가님 최종 승인 | ✅ 09-26 16:00 ("ㅇㅇ") |
 | 청구인 의견 (민아) | ⏳ 질의 응답 — 이의 시 반영 |
 | 집행 ① 문서·규정 (쌍아) | ✅ 09-26 16:02 — ch5·ch7·rules 3·deploy-cf·references·SERVICE_MAP·SECRET_INVENTORY §3·CLAUDE.md 이력·청구안 상태 |
-| 집행 ② 코드·워크플로·CI (막내3) | ⏳ `ORDER_20260926_iMac쌍아_막내3_KKU_monkkr버튼배포_v21구현.md` — 완료 시 ch5 1조 부칙 해소 |
+| 집행 ② 코드·워크플로·CI (막내3) | ✅ Part A 09-26 17:06 + 작가님 버튼 검증 2/2 → **ch5 1조 부칙 해소** (5항 sha 실사용 미실증) · ⏳ Part B 10-10 |
 
 동의 회신 형식: `동의` 또는 `이의 — {조항} {사유}`. 이의 조항은 쌍아가 재조정 후 해당 심사역 재동의.
 
