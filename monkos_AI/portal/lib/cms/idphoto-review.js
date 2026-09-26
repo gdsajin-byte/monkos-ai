@@ -1,6 +1,7 @@
 import { Storage } from '@google-cloud/storage';
 import { firestore, log } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
+import { resolveCreditSource } from '../credit-source.js';
 
 const CUSTOMER_GCS_BUCKET = process.env.CUSTOMER_GCS_BUCKET || 'monk-customer-photos';
 const storage = new Storage();
@@ -51,9 +52,13 @@ export async function handleIdphotoResults(req, res) {
     const sliced = docs.slice(0, limit);
 
     const results = await Promise.all(sliced.map(async (doc) => {
-      const [originalUrl, generatedUrl] = await Promise.all([
+      const [originalUrl, generatedUrl, creditSource] = await Promise.all([
         signUrl(doc.gcsOriginal),
         signUrl(doc.gcsGenerated),
+        // 기록 시점 스냅샷 우선. 09-26 이전 기록은 생성 시각 기준으로 읽기 시 판정(소급 없음)
+        doc.gate === 'credits'
+          ? (doc.creditSource || resolveCreditSource(doc.userId, doc.createdAt || null))
+          : Promise.resolve(null),
       ]);
       return {
         userId: doc.userId || 'unknown',
@@ -62,6 +67,7 @@ export async function handleIdphotoResults(req, res) {
         channel: doc.channel || '',
         created: doc.createdAt || '',
         gate: doc.gate || null,
+        creditSource: creditSource || null,
         authenticated: !!doc.authenticated,
         sessionId: doc.sessionId || null,
         originalUrl,

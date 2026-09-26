@@ -74,7 +74,13 @@ h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); margin-bottom
   background: var(--surface2); white-space: nowrap;
 }
 .pair-body .gate-paid { color: #22c55e; border-color: #22c55e55; }
+.pair-body .gate-welcome { color: #60a5fa; border-color: #60a5fa55; }
 .pair-body .gate-free { color: var(--muted); }
+.legend { font-size: 11px; color: var(--text-dim); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.legend .gate-tag { font-size: 10px; padding: 1px 6px; border-radius: 3px; border: 1px solid var(--border); background: var(--surface2); }
+.legend .gate-paid { color: #22c55e; border-color: #22c55e55; }
+.legend .gate-welcome { color: #60a5fa; border-color: #60a5fa55; }
+.legend .gate-free { color: var(--muted); }
 
 .loading, .empty { text-align: center; padding: 64px 0; color: var(--text-dim); font-size: 14px; }
 .error-msg { color: var(--danger); font-size: 13px; padding: 12px; background: #fef2f2; border-radius: 8px; }
@@ -168,11 +174,47 @@ function kst(iso) {
   return p.replace('T', ' ') + ' KST';
 }
 
-// 게이트 뱃지 — 유료(크레딧/토큰)와 무료 트랙을 화면에서 즉시 구분
+// 게이트 분류 — 돈이 오간 건(초록)과 아닌 건을 한눈에 가른다 (2026-09-26 배지 분리)
+//   free              → 무료
+//   credits + welcome → 웰컴 (가입 보너스 10c 소진, 매출 아님)
+//   credits + purchased → 구매크레딧 (충전 결제 후 사용)
+//   credits + 미상    → 크레딧 (판정 실패 폴백, 매출 단정 금지)
+//   token             → 즉시결제 (₩2,000 단건)
+//   gate 없음 + T1    → 유료(T1) (08-26 이전 구기록)
+const GATE_KINDS = {
+  free:      { label: '무료',      cls: 'gate-free' },
+  welcome:   { label: '웰컴',      cls: 'gate-welcome' },
+  purchased: { label: '구매크레딧', cls: 'gate-paid' },
+  credits:   { label: '크레딧',    cls: 'gate-welcome' },
+  token:     { label: '즉시결제',   cls: 'gate-paid' },
+  t1:        { label: '유료(T1)',  cls: 'gate-paid' },
+};
+function gateKind(p) {
+  if (p.gate === 'free') return 'free';
+  if (p.gate === 'token') return 'token';
+  if (p.gate === 'credits') {
+    if (p.creditSource === 'purchased') return 'purchased';
+    if (p.creditSource === 'welcome') return 'welcome';
+    return 'credits';
+  }
+  return p.hasT1 ? 't1' : null;
+}
 function gateBadge(p) {
-  if (p.gate === 'free') return '<span class="gate-tag gate-free">무료</span>';
-  if (p.gate === 'credits' || p.gate === 'token') return `<span class="gate-tag gate-paid">유료·${esc(p.gate)}</span>`;
-  return p.hasT1 ? '<span class="gate-tag gate-paid">유료(T1)</span>' : '';
+  const k = gateKind(p);
+  if (!k) return '';
+  const g = GATE_KINDS[k];
+  return `<span class="gate-tag ${g.cls}">${g.label}</span>`;
+}
+// 범례 집계 — 현재 로드된 카드 기준. 매출 건(구매크레딧+즉시결제)만 초록.
+const gateCounts = {};
+function countGates(results) {
+  for (const p of results) { const k = gateKind(p) || 'none'; gateCounts[k] = (gateCounts[k] || 0) + 1; }
+}
+function legendHtml() {
+  const order = ['token', 'purchased', 'welcome', 'credits', 'free', 't1'];
+  const parts = order.filter(k => gateCounts[k]).map(k => `<span class="gate-tag ${GATE_KINDS[k].cls}">${GATE_KINDS[k].label} ${gateCounts[k]}</span>`);
+  const paid = (gateCounts.token || 0) + (gateCounts.purchased || 0);
+  return `<span class="legend">매출 ${paid}건 · ${parts.join(' ')}</span>`;
 }
 
 function renderCard(p) {
@@ -207,6 +249,7 @@ async function load(service, append) {
     metaEl.textContent = '';
     lastCreated = null;
     totalLoaded = 0;
+    for (const k of Object.keys(gateCounts)) delete gateCounts[k];
   }
 
   try {
@@ -230,7 +273,8 @@ async function load(service, append) {
 
     grid.insertAdjacentHTML('beforeend', d.results.map(renderCard).join(''));
     totalLoaded += d.results.length;
-    metaEl.textContent = `${totalLoaded}건 (최신순)`;
+    countGates(d.results);
+    metaEl.innerHTML = `${totalLoaded}건 (최신순) — ${legendHtml()}`;
 
     if (d.results.length > 0) {
       lastCreated = d.results[d.results.length - 1].created;

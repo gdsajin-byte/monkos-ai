@@ -55,6 +55,7 @@ import { handleGalleryList, handleGalleryCreate, handleGalleryUpdate, handleGall
 import { handleBoardPublicList, handleBoardPublicGet, handleBoardPublicCreate, handleBoardReportCreate, handleBoardPublicDelete, handleBoardAdminList, handleBoardAdminReply, handleBoardAdminDelete, handleBoardAdminToggle } from './lib/cms/board.js';
 import { handleUpload, handleImageList, handleImageDelete } from './lib/cms/upload.js';
 import { handleIdphotoResults } from './lib/cms/idphoto-review.js';
+import { resolveCreditSource } from './lib/credit-source.js';
 import { handleAiImage, handleAiThumbnail, handleAiSuggest } from './lib/cms/ai.js';
 import { handleGwansangData, handleGwansangSaju } from './lib/cms/gwansang.js';
 import { handleTranslate } from './lib/cms/translate.js';
@@ -936,7 +937,9 @@ const httpServer = createServer(async (req, res) => {
       }
 
       try {
-        await saveImages('idphoto', gateUserId, slug || format || 'passport', norm.rawBase64, finalBase64, { ...(t1RawForSave && { t1Raw: t1RawForSave }), sessionId: req.sessionId, slug: slug || null, authUserId, gate: gateMode });
+        // 크레딧 출처 스냅샷 — 생성 시점 기준 웰컴/구매 판정 (어드민 배지 분리, 2026-09-26)
+        const creditSource = gateMode === 'credits' ? await resolveCreditSource(gateUserId) : null;
+        await saveImages('idphoto', gateUserId, slug || format || 'passport', norm.rawBase64, finalBase64, { ...(t1RawForSave && { t1Raw: t1RawForSave }), sessionId: req.sessionId, slug: slug || null, authUserId, gate: gateMode, creditSource });
       } catch (e) {
         log(`[IDPhoto] GCS 저장 실패 (무시): ${e.message}`, 'WARNING');
       }
