@@ -102,6 +102,7 @@ jest.unstable_mockModule('../lib/shared/config.js', () => ({
   LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL: '',
   LEMONSQUEEZY_STORE_ID: '',
   LEMONSQUEEZY_STORE_ID_JP: '',
+  LEMON_JP_VARIANTS: new Set(['1382355', '1382367', '1382348', '1382362', '1382436']), // JP 스토어 소속 variant (config.js 실형 미러)
   LEMONSQUEEZY_VARIANT_SPECS_SINGLE: '1',
   LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP: '2',
   SINGLE_DOWNLOAD_VARIANTS: new Set(['1', '2']),

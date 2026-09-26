@@ -63,6 +63,7 @@
 
 - 정본: `deploy.sh` (각 서비스 디렉토리). `gcloud run deploy` 직접 실행 금지 (ch5).
 - **CF 엣지 배포 정본: `monkos_AI/portal/edge/deploy.sh`** (SSG 빌드 선행 강제). 워커 로직 단독 변경 시에만 `wrangler deploy` 허용 (자산 불변 — 롤백 단위 분리, 08-24 쌍아 절차 기록). specs-data·렌더러·i18n·components 변경 → 엣지 재배포 의무.
+- **monk.kr 배포 정본 (ch5 1조, 09-26 개정)**: ① [기본] 버튼 `.github/workflows/deploy-monk-kr.yml`(workflow_dispatch, 작가님 승인) ② [예비] `wrangler pages deploy` 표준 명령(`/deploy-cf`). wrangler 버전 정본 = 루트 `package.json`.
 - 프로젝트: `monkos` (정본: deploy.sh:51)
 - 리전: `us-central1` (정본: deploy.sh:52). 하드코딩 금지.
 - prod rev 실측: `gcloud run services describe monkos-portal --region us-central1 --format='value(status.latestReadyRevisionName)'`
@@ -157,6 +158,8 @@
 | 콘텐츠 어서션 스모크 (G2) | 빌드/생성 | `edge/deploy.sh` 내장 (`edge/smoke_assert.txt` 존재 시) | live-verify.md 2회 히트 규칙의 코드화 |
 | specs-ssg (build.mjs/sh) | 빌드/생성 | `monkos_AI/portal/tools/specs-ssg/` | PF_SPECS + COMPLETION_20260824 CF엣지정적화 (렌더러 정본 캡처 — 포크 금지) |
 | edge/deploy.sh + worker.mjs | CLI | `monkos_AI/portal/edge/` | PF_PORTAL + 본 문서 §배포 (08-24 스모크: 컷오버 검증 10항목) |
+| deploy-monk-kr.yml (monk.kr 버튼 배포) | CLI/CI | `.github/workflows/` | `rules/deployment.md` + `/deploy-cf` + PF_KKU. **v2.1 구현 완료(09-26)** — 사유 서식 검증(배포 전 차단)·`sha` 입력+fetch-depth 0 롤백·콘텐츠 어서션 `MONK_kr/smoke_assert.txt`·STEP_SUMMARY 배포 반영 표기. 스모크: 어서션 7/7 + 음성 대조군 4종 차단 + 사유 서식 양성3/음성7 (로컬), 라이브 run 35954533890(v2.0). 실패 가시화: 서식 불일치·어서션 미통과·유효 0건·도달 불가 전부 exit≠0, 어서션 파일 부재는 스킵 명시 출력 |
+| notify-monk-kr-pending.yml (배포 대기 알림) | CLI/CI | `.github/workflows/` | `rules/deployment.md` + PF_KKU. ch5 1조 10항 — `MONK_kr/**`·`functions/**` main 푸시 시 텔레그램. **배포 스텝 없음**(1조 1항, governance-check C13이 내용 기준 감시). 스모크: 양성(1건 집계·메시지 생성)/음성(무변경 → 잡 스킵) |
 | edge-trust.js | 서비스 모듈 | `monkos_AI/portal/lib/shared/` | SECRET_INVENTORY #44 + REVIEW_20260824 P2-2 |
 | fetch/verify_solar_terms.mjs | 빌드/생성 | `monkos_AI/portal/tools/solar-terms/` | 동 폴더 README + PF_FACEREAD |
 | verify_saju.mjs | 빌드/생성 | `monkos_AI/portal/tools/saju/` | 동 폴더 README + PF_FACEREAD |

@@ -1,0 +1,31 @@
+# 콘텐츠 어서션 — .github/workflows/deploy-monk-kr.yml 이 배포 후 실행 (ch5 1조 7항)
+# 서식: /경로<TAB>+기대문구  또는  /경로<TAB>-부재문구
+#  - 경로는 배포 고유 URL 기준 절대 경로("/"로 시작). 구분자는 반드시 탭 1개.
+#  - 부호(+/-)·문구 누락은 실패로 계상된다. 서식 오류를 통과로 처리하지 않는다.
+#  - 판정은 2회 히트 규칙 — 1차는 버리고 2차로 판정한다. grep -F 고정 문자열 비교.
+#  - "#" 시작 행과 빈 행은 주석.
+#
+# ⚠️ 항목 선정 원칙 (2026-09-26, ch5 1조 7항 근거 사고):
+#    CF Pages는 미존재 경로에도 index.html 을 200 으로 반환한다(soft-404).
+#    따라서 "+" 문구는 **index.html 에 없는 문자열**이어야 한다 — 그렇지 않으면
+#    페이지가 사라져도 fallback 으로 통과한다. 선정 시 `grep -cF <문구> MONK_kr/index.html` = 0 확인.
+# ⚠️ 바이너리(이미지·폰트) 경로는 넣지 말 것 — 본문 grep 판정이 성립하지 않는다.
+#    미추적 이미지 결손은 governance-check C14(미추적 입력 자산)가 소스 단계에서 잡는다.
+
+# 루트 index 무결성 — 빈 배포·잘못된 루트 검출
+/	+<title>MONK | 몽크사진관
+
+# monk_studio 본문 — index.html 히트 0 확인분(2026-09-26). fallback 으로는 통과 불가
+/monk_studio/monk_studio	+v=20260924
+/monk_studio/monk_studio	+간편예약
+/monk_studio/monk_studio	+길찾기
+
+# 부재 어서션 — 09-19 전면 통일로 폐기된 구문구가 재유입되지 않았는지
+/monk_studio/monk_studio	-톡톡상담
+
+# 하위 디렉터리 라우팅 — 09-24 캐시 버스터가 하위 페이지까지 반영됐는지
+/monk_studio/family/family	+v=20260924
+
+# 대조군(soft-404 전제 검증) — 미존재 경로는 index fallback 이므로 monk_studio 고유 문구가 없어야 한다.
+# 이 행이 실패하면 fallback 동작이 바뀐 것이며, 위 "+" 어서션들의 전제가 무효가 된다.
+/zzz-monkos-assert-selftest	-v=20260924

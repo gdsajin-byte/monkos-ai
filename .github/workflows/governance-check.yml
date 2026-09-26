@@ -165,7 +165,82 @@ jobs:
             echo ""
             echo "비적용 사유 주석 서식: '# 게이트 3 비적용: {사유}' / '# 게이트 4 비적용: {사유}'"
           else
-            echo "✅ 배포 게이트 정적 검사 통과 (${TOTAL}본)"
+            echo "✅ 배포 게이트 정적 검사 통과 (deploy.sh ${TOTAL}본)"
+          fi
+
+          # ⚠️ 사각지대 명시 (ch5 6조 서문이 09-26 "배포 경로"로 확대됐으나 본 스텝은 deploy.sh만 순회한다.
+          #    확대분을 무검사로 두고 "통과"만 출력하면 무음 강등이다 — 막내1 입법심사 이의).
+          # 판정식은 C13과 동일 — 문자열 '언급'이 아니라 **실행 형태**를 본다 (명령 선두 또는 && ; || 뒤)
+          DEPLOY_CMD='(^|&&|\|\||;)[[:space:]]*((npx|pnpm|yarn)[[:space:]]+)?wrangler[[:space:]]+(pages[[:space:]]+)?deploy|(^|&&|\|\||;)[[:space:]]*(\./|bash[[:space:]]+|sh[[:space:]]+)[A-Za-z0-9_./-]*deploy\.sh'
+          WFL=$(grep -lE "$DEPLOY_CMD" .github/workflows/*.yml 2>/dev/null | tr '\n' ' ' || true)
+          WF=$(printf '%s' "$WFL" | wc -w | tr -d ' ')
+          echo "ℹ️ 배포 워크플로 ${WF}본은 본 스텝의 검사 대상이 아니다 (게이트 1·2·5는 셸 스크립트 형상 전용): ${WFL:-없음}"
+          echo "   워크플로의 push 트리거 금지는 C13이, 미추적 입력 자산은 C14가 담당한다."
+
+      - name: C13 — 배포 워크플로 자동 트리거 검사 (ch5 1조 1항, PETITION_20260924)
+        run: |
+          # 판정은 **내용 기준**이다. 파일명(deploy-*.yml) 매칭으로는 배포 명령을 가진 다른 이름의
+          # 워크플로를 놓친다 (막내3 사법심사 부대의견 ④). 알림 전용 워크플로는 배포 명령이 없어
+          # push 트리거를 가져도 정탐되지 않는다.
+          # 판정식 — 배포 명령의 **실행 형태**만 잡는다. 문자열 언급(grep 패턴·주석·find -name)은 제외한다.
+          # 이 구분이 없으면 governance-check 자신이 'deploy.sh'를 문자열로 포함해 자기 오탐한다 (09-26 스모크 적발).
+          DEPLOY_CMD='(^|&&|\|\||;)[[:space:]]*((npx|pnpm|yarn)[[:space:]]+)?wrangler[[:space:]]+(pages[[:space:]]+)?deploy|(^|&&|\|\||;)[[:space:]]*(\./|bash[[:space:]]+|sh[[:space:]]+)[A-Za-z0-9_./-]*deploy\.sh'
+          FOUND=0; VIOL=""; FLIST=""
+          for F in .github/workflows/*.yml; do
+            [ -f "$F" ] || continue
+            # 주석 행 제외 — 주석 속 예시·금지 고지를 배포 명령으로 오인하지 않는다
+            BODY=$(grep -vE '^[[:space:]]*#' "$F" || true)
+            printf '%s\n' "$BODY" | grep -qE "$DEPLOY_CMD" || continue
+            FOUND=$((FOUND+1)); FLIST="${FLIST} $(basename "$F")"
+            # on: 블록만 잘라낸다 (다음 최상위 키에서 종료)
+            TRIG=$(printf '%s\n' "$BODY" | awk '/^on:/{f=1;next} f&&/^[^[:space:]#]/{exit} f' \
+              | grep -oE '^[[:space:]]+(push|schedule|repository_dispatch):' | tr -d ' :' | sort -u || true)
+            if [ -n "$TRIG" ]; then
+              VIOL="${VIOL}
+              ${F} — 자동 트리거: $(printf '%s' "$TRIG" | tr '\n' ' ')"
+            fi
+          done
+
+          if [ "$FOUND" -eq 0 ]; then
+            echo "⚠️ 배포 명령 포함 워크플로 0건 — 탐지 패턴(wrangler pages deploy/deploy.sh) 변경 의심. 미검사 고지 (0건 ≠ 부재)"
+          elif [ -n "$VIOL" ]; then
+            echo "::warning::⚠️ 배포 워크플로에 자동 트리거 존재 (ch5 1조 1항 — 배포 ≠ push)"
+            echo "$VIOL"
+            echo ""
+            echo "배포는 workflow_dispatch(승인자 트리거)만 허용한다. 알림이 필요하면 배포 스텝 없는 별도 워크플로로 분리할 것."
+          else
+            echo "✅ 배포 명령 포함 워크플로 ${FOUND}본 — 자동 트리거 없음 (workflow_dispatch 전용):${FLIST}"
+          fi
+
+      - name: C14 — 배포 루트 미추적 입력 자산 검사 (ch5 6조 게이트 6, PETITION_20260924)
+        run: |
+          # ⚠️ 한계 (무음 강등 방지 — 매 실행 고지): 러너는 **clean checkout**이므로 작업 트리에
+          #    미추적·무시 파일이 애초에 존재하지 않는다. 본 스캔이 0건인 것은 "배포자 기기에
+          #    미추적 자산이 없다"는 증거가 **아니다**. 09-19 이미지 결손(전역 *.jpg 무시 +
+          #    예외 1줄)은 이 스캔으로 잡히지 않는다 — 실효 검사 방식은 미결(막내3 COMPLETION 보고).
+          # ⚠️ core.quotePath=false 필수 — 기본값이면 한글 경로가 이스케이프되어 무음 스킵된다 (C12 선례).
+          ROOTS="MONK_kr"
+          BUILD_OUT='(^|/)(dist|build|out|\.next|node_modules)/'
+          TOTAL=0; FINDINGS=""
+          for R in $ROOTS; do
+            [ -d "$R" ] || { echo "ℹ️ 배포 루트 $R 부재 — 스킵"; continue; }
+            HITS=$(git -c core.quotePath=false ls-files --others --ignored --exclude-standard -- "$R" 2>/dev/null \
+              | grep -vE "$BUILD_OUT" || true)
+            if [ -n "$HITS" ]; then
+              N=$(printf '%s\n' "$HITS" | wc -l | tr -d ' ')
+              TOTAL=$((TOTAL+N))
+              LIST=$(printf '%s\n' "$HITS" | head -20 | sed 's/^/    · /')
+              FINDINGS=$(printf '%s\n  %s — %s건\n%s' "$FINDINGS" "$R" "$N" "$LIST")
+            fi
+          done
+
+          if [ "$TOTAL" -gt 0 ]; then
+            echo "::warning::⚠️ 배포 루트에 미추적 입력 자산 ${TOTAL}건 (ch5 6조 게이트 6 — 배포자 기기 종속)"
+            echo "$FINDINGS"
+            echo ""
+            echo "빌드 산출물이면 제외 목록(BUILD_OUT)에 추가, 원본 자산이면 git 추적으로 편입할 것."
+          else
+            echo "ℹ️ 러너 스코프 미추적 입력 자산 0건 — **통과가 아니다**. 위 한계 주석 참조."
           fi
 
       - name: C12 — [예외] 태그 ↔ COMPLETION 대조 (ch1 2조 5항, PETITION_20260902)

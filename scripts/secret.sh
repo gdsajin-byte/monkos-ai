@@ -158,7 +158,9 @@ cmd_add() {
         --update-annotations="^@@@^purpose=${PURPOSE}" --update-labels=meta_src=secret_add >/dev/null 2>&1 \
         && echo -e "${GREEN}✓ 용도 기록(SM)${NC}" || echo -e "${YELLOW}⚠️ 용도 기록 실패 — secret annotate로 재시도${NC}"
     fi
-    echo -e "${YELLOW}[인벤토리]${NC} 자동 맵이 반영한다 — 수기 추가 불필요 (secret map $NAME 으로 확인)"
+    echo -e "${YELLOW}[인벤토리]${NC} SM 등록은 끝났다. ${RED}SECRET_INVENTORY.md 메타 1행은 수기 추가 필수${NC} (이 스크립트는 인벤토리를 쓰지 않는다)"
+    echo -e "   확인: secret map $NAME  ← SM 실측 + 인벤 등재 여부만 표시"
+    echo -e "   GitHub Actions에서 쓸 값이면 ${RED}gh secret set $NAME${NC} 별도 필요 (SM↔GitHub 자동 동기 없음)"
   else
     echo -e "${RED}❌ 등록 실패${NC} — gcloud 인증 상태를 확인하세요."
     exit 1
@@ -297,7 +299,7 @@ cmd_map() {
   fi
   # 3) 소비처 (레포 실측)
   echo "   소비처:"
-  (cd "$PROJECT_ROOT" 2>/dev/null && git grep -ln "$NAME" -- '*.sh' '*.js' '*.py' '*.yaml' '*.md' 2>/dev/null \
+  (cd "$PROJECT_ROOT" 2>/dev/null && git grep -ln "$NAME" -- '*.sh' '*.js' '*.py' '*.yaml' '*.yml' '*.md' 2>/dev/null \
     | grep -v -e node_modules -e SECRET_INVENTORY -e sessions/ -e reports/ -e briefings/ | head -6 \
     | sed 's/^/     - /')
 }

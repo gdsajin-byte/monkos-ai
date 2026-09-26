@@ -4,7 +4,7 @@ date: 2026-09-24
 petitioner: "iMac/민아"
 origin: 작가님 질의·승인 (2026-09-24 12:38 "제안대로 모두 처리해 승인한다")
 subject: 법률 ch5 1조 개정 — monk.kr 배포를 "wrangler 수동 실행만"에서 "승인자 트리거의 GitHub Actions 버튼 배포"로
-status: "심사 중"
+status: "승인 완료"
 procedure: "삼권심사 (법률 개정 사안 — 작가님 지시 09-26로 상향 적용)"
 ---
 
@@ -45,3 +45,8 @@ procedure: "삼권심사 (법률 개정 사안 — 작가님 지시 09-26로 상
 ## 5. 막내 영향평가 요청 (2명↑)
 
 - 워크플로 스모크(2회 히트)가 live-verify 규칙에 부합하는가 / 동시 실행 잠금(concurrency) 적정성 / 미추적 자산 금지 조항의 다른 서비스 파급
+
+
+---
+
+> **[2026-09-26] 승인 완료** — 삼권심사 막내 3인 만장일치(v2.1) + 작가님 승인. 본 청구의 조문안(§3)은 심사 반영으로 **합의안 v2.1로 대체**되었다: `monkos-ops/ops/reports/2026-09/REVIEW_20260926_iMac쌍아_심사종합_PETITION20260924.md`. 발효 조문 정본 = `governance/laws/ch5_deployment.md` 1조·6조.

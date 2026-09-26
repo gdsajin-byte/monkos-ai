@@ -1,13 +1,26 @@
 name: Deploy monk.kr (CF Pages)
 
-# 버튼 배포 — 푸시 자동 배포 아님 (법률 ch5 1조 개정 청구 PETITION_20260924 참조)
-# 실행: GitHub Actions 탭 → Run workflow, 또는 `gh workflow run deploy-monk-kr.yml -f reason="..."`
+# 버튼 배포 — 푸시 자동 배포 아님 (법률 ch5 1조 1항. push·schedule·repository_dispatch 트리거 금지)
+# 실행: Actions 탭 → Run workflow, 또는 `gh workflow run deploy-monk-kr.yml -f reason="..."`
+#       트리거 권한 = 작가님. 에이전트는 새 사용자 턴의 승인 수신 후에만 (ch5 1조 3항 · ch1 7조 2항)
+#
+# ch5 6조 게이트 비적용 사유 (6조 서문 — 성립하지 않는 게이트는 사유 1행):
+# 게이트 1 엄격모드 비적용: 각 run 스텝이 `set -euo pipefail`을 자체 선언한다 (단일 스크립트가 아님)
+# 게이트 2 미커밋 비적용: 러너는 clean checkout이므로 구조적으로 충족 — 예비 경로(로컬 wrangler)는 ch5 1조 5항이 규율
+# 게이트 3 드리프트 비적용: 정적 산출물을 별도 파이프라인으로 빌드하지 않는다 (MONK_kr/ 원본을 그대로 업로드)
+# 게이트 5 이중 소스 비적용: monk-kr 프로젝트로 배포하는 디렉터리는 MONK_kr/ 단일
+# → 적용 대상 = 게이트 4(사후 스모크 = 콘텐츠 어서션) · 게이트 6(미추적 입력 자산 — checkout 기반이라 구조적 충족, 원본 감시는 governance-check C14)
+
 on:
   workflow_dispatch:
     inputs:
       reason:
-        description: '배포 사유 (세션 로그·COMPLETION 대조용)'
+        description: '사유 — {주체} | {승인 수신 시각 YYYY-MM-DD HH:MM 또는 직접} | {사유}'
         required: true
+        type: string
+      sha:
+        description: '배포 커밋 SHA (비우면 선택 브랜치 HEAD). 롤백은 직전 정상 커밋 지정 — ch5 1조 9항'
+        required: false
         type: string
 
 concurrency:
@@ -17,46 +30,174 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      # ── ch5 1조 4항 흔적 의무: 사유 서식 검증. 배포 스텝보다 반드시 앞 — 불일치 시 배포하지 않는다
+      - name: 사유 서식 검증 (ch5 1조 4항)
+        env:
+          REASON: ${{ inputs.reason }}
+        run: |
+          set -euo pipefail
+          # {주체} | {승인 수신 시각 | 직접} | {사유}   — 구분자는 " | " (공백 포함)
+          FMT='^[^|]+ [|] (직접|[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}) [|] .+$'
+          if printf '%s' "$REASON" | grep -qE "$FMT"; then
+            echo "✅ 사유 서식 정합"
+            echo "   $REASON"
+          else
+            echo "::error::사유 서식 불일치 — 배포하지 않는다 (ch5 1조 4항)"
+            echo "받은 값 : $REASON"
+            echo "기대 서식: {주체} | {승인 수신 시각 또는 '직접'} | {사유}"
+            echo "예시     : 작가님 | 직접 | v2.1 첫 검증"
+            echo "예시     : iMac/막내3 | 2026-09-26 16:40 | 길찾기 버튼 반영"
+            exit 1
+          fi
 
-      # 정본 = 루트 functions/ (ch5 1조). MONK_kr/functions는 없어야 한다
+      # ── ch5 1조 5·9항: sha 지정 시 해당 커밋. fetch-depth 0 — 기본 shallow(1)면 임의 SHA가 러너에 없어 롤백이 실패한다
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.sha || github.ref }}
+          fetch-depth: 0
+
+      # 정본 = 루트 functions/ (ch5 1조 6항). MONK_kr/functions는 없어야 한다
       - name: 정본 확인
         run: |
-          test -d functions && test ! -L functions || { echo "루트 functions/ 부재 또는 symlink"; exit 1; }
-          test ! -e MONK_kr/functions || { echo "MONK_kr/functions 존재 — 정본 이중화"; exit 1; }
-          echo "사유: ${{ inputs.reason }}"
+          set -euo pipefail
+          test -d functions && test ! -L functions || { echo "::error::루트 functions/ 부재 또는 symlink"; exit 1; }
+          test ! -e MONK_kr/functions || { echo "::error::MONK_kr/functions 존재 — 정본 이중화"; exit 1; }
+          echo "배포 커밋: $(git rev-parse HEAD)"
 
-      # wrangler-action@v3는 러너의 npm 11에서 npx 자동 설치가 거부됨(첫 실행 실패 09-24) → 로컬과 동일하게 wrangler 직접 실행
       - uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: wrangler 설치 (로컬 정본과 동일 버전)
-        run: npm install -g wrangler@4.66.0
+      # ── ch5 1조 6항: wrangler 버전 정본 = package.json 정확 고정. 범위 지정(^ ~ * x)은 위반
+      - name: wrangler 설치 (버전 정본 = package.json)
+        run: |
+          set -euo pipefail
+          VER=$(node -p "require('./package.json').devDependencies.wrangler")
+          case "$VER" in
+            [0-9]*.[0-9]*.[0-9]*) ;;
+            *) echo "::error::package.json wrangler='$VER' — 정확 고정이 아니다 (ch5 1조 6항 범위 지정 금지)"; exit 1 ;;
+          esac
+          echo "wrangler 버전 정본: $VER"
+          npm install -g "wrangler@$VER"
+          wrangler --version
 
       - name: CF Pages 배포
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_DEPLOY_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
         run: |
+          set -euo pipefail
           wrangler pages deploy MONK_kr/ --project-name monk-kr --branch main --commit-dirty=true | tee deploy.log
           url=$(grep -oE 'https://[0-9a-f]+\.monk-kr\.pages\.dev' deploy.log | tail -1)
-          [ -n "$url" ] || { echo "배포 URL 미검출"; exit 1; }
+          [ -n "$url" ] || { echo "::error::배포 URL 미검출"; exit 1; }
           echo "DEPLOY_URL=$url" >> "$GITHUB_ENV"
 
-      # 스모크 — 배포 고유 URL(pages.dev)을 2회 히트, 2차로 판정. monk.kr 자체는 CF가 러너 IP를 403으로 막으므로(09-24 실측) 참고 출력만.
-      # 공개 도메인 최종 판정은 승인자 기기에서 2회 히트 (live-verify.md)
-      - name: 스모크
+      # ── ch5 1조 8항: 배포 반영 사실을 스모크 결과와 분리하여 기록한다.
+      #    이 스텝이 실행됐다는 것 자체가 "배포는 라이브에 도달했다"는 뜻이다
+      - name: 배포 반영 기록 (ch5 1조 8항)
         run: |
+          set -euo pipefail
+          echo "DEPLOYED=1" >> "$GITHUB_ENV"
+          {
+            echo "## ✅ 배포 반영됨"
+            echo ""
+            echo "| 항목 | 값 |"
+            echo "|---|---|"
+            echo "| 커밋 SHA | \`$(git rev-parse HEAD)\` |"
+            echo "| 배포 URL | $DEPLOY_URL |"
+            echo "| 사유 | ${{ inputs.reason }} |"
+            echo ""
+            echo "> 이 표가 보이면 **배포는 이미 라이브에 도달**했다. 아래 스모크가 적색이어도 미배포가 아니다 (ch5 1조 8항)."
+            echo "> monk.kr 최종 판정은 **승인자 기기의 2회 히트** (ch5 1조 7항) — 러너는 존 정책상 403."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ── ch5 1조 7항: 상태코드 단독 판정 금지. 도달 확인과 판정을 분리한다
+      - name: 도달 확인 + 콘텐츠 어서션 (ch5 1조 7항)
+        run: |
+          set -euo pipefail
           sleep 15
           UA="Mozilla/5.0 monkos-deploy-smoke"
-          for p in "" "monk_studio/monk_studio"; do
-            curl -s -o /dev/null -A "$UA" "$DEPLOY_URL/$p"
-            code=$(curl -s -o /dev/null -w '%{http_code}' -A "$UA" "$DEPLOY_URL/$p")
-            echo "$DEPLOY_URL/$p → $code"
-            [ "$code" = "200" ] || { echo "스모크 실패 (배포 URL)"; exit 1; }
-          done
-          echo "monk.kr (참고, 러너 IP 차단 가능): $(curl -s -o /dev/null -w '%{http_code}' -A "$UA" https://monk.kr/)"
-          echo "배포 커밋 $(git rev-parse --short HEAD) · $DEPLOY_URL · 사유: ${{ inputs.reason }}"
+
+          echo "── 도달 확인 (판정 아님 — CF Pages는 미존재 경로에도 200을 반환한다) ──"
+          code=$(curl -s -o /dev/null -w '%{http_code}' -A "$UA" "$DEPLOY_URL/")
+          echo "  $DEPLOY_URL/ → $code"
+          [ "$code" = "200" ] || { echo "::error::배포 URL 도달 불가 ($code)"; exit 1; }
+
+          ASSERT="MONK_kr/smoke_assert.txt"
+          if [ ! -f "$ASSERT" ]; then
+            echo "⚠ 콘텐츠 어서션 스킵(파일 부재) — 내용 검증 미실시. 서식: /경로<TAB>+기대문구 → $ASSERT" >&2
+            echo "- ⚠ 콘텐츠 어서션 스킵(파일 부재) — 내용 미검증" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo "── 콘텐츠 어서션 (판정) ──"
+          AFAIL=0; ALINE=0; ACHECKED=0
+          while IFS= read -r RAW || [ -n "$RAW" ]; do
+            ALINE=$((ALINE + 1))
+            RAW="${RAW%$'\r'}"
+            case "$RAW" in ''|'#'*) continue ;; esac
+            APATH="${RAW%%$'\t'*}"; APAT="${RAW#*$'\t'}"
+            # 서식 검증 — 서식 오류를 통과로 처리하지 않는다
+            if [ "$APAT" = "$RAW" ] || [ -z "$APATH" ]; then
+              echo "  ✗ 서식 오류 [${ALINE}행] 탭 구분자 없음: $RAW" >&2; AFAIL=1; continue
+            fi
+            case "$APATH" in /*) ;; *) echo "  ✗ 서식 오류 [${ALINE}행] 경로가 '/'로 시작하지 않음: $APATH" >&2; AFAIL=1; continue ;; esac
+            SIGN="${APAT%"${APAT#?}"}"; PAT="${APAT#?}"
+            if [ "$SIGN" != "+" ] && [ "$SIGN" != "-" ]; then
+              echo "  ✗ 서식 오류 [${ALINE}행] 부호가 +/- 가 아님('$SIGN'): $RAW" >&2; AFAIL=1; continue
+            fi
+            if [ -z "$PAT" ]; then
+              echo "  ✗ 서식 오류 [${ALINE}행] 기대 문구 공백: $RAW" >&2; AFAIL=1; continue
+            fi
+            AURL="${DEPLOY_URL}${APATH}"
+            curl -s -o /dev/null --max-time 20 -A "$UA" "$AURL" || true   # 1차: 버린다
+            sleep 1
+            BODY="$(curl -s --max-time 20 -A "$UA" "$AURL" || true)"      # 2차: 판정
+            if [ -z "$BODY" ]; then
+              echo "  ✗ 조회 실패 [${ALINE}행] 응답 본문 없음 — 판정 불가: $AURL" >&2; AFAIL=1; continue
+            fi
+            HIT=$(printf '%s' "$BODY" | grep -cF -- "$PAT" || true)
+            case "$HIT" in ''|*[!0-9]*) echo "  ✗ 판정 불가 [${ALINE}행] 히트 수 산출 실패(바이너리 응답 의심): $AURL" >&2; AFAIL=1; continue ;; esac
+            ACHECKED=$((ACHECKED + 1))
+            if { [ "$SIGN" = "+" ] && [ "$HIT" -gt 0 ]; } || { [ "$SIGN" = "-" ] && [ "$HIT" -eq 0 ]; }; then
+              echo "  ✓ [$SIGN] $APATH :: $PAT"
+            else
+              echo "  ✗ 어서션 실패 [$SIGN|히트 $HIT] $APATH :: $PAT" >&2; AFAIL=1
+            fi
+          done < "$ASSERT"
+
+          # 파일은 있는데 검사한 행이 0건이면 통과가 아니다 (0건 ≠ 부재)
+          if [ "$ACHECKED" -eq 0 ] && [ "$AFAIL" -eq 0 ]; then
+            echo "  ✗ 유효 어서션 0건 — 파일은 존재하나 검사된 행이 없다. 서식: /경로<TAB>+기대문구" >&2; AFAIL=1
+          fi
+          if [ "$AFAIL" -ne 0 ]; then
+            echo "::error::콘텐츠 어서션 미통과 — 변경 의도가 배포본에 반영되지 않았거나 어서션 서식이 잘못됐다"
+            exit 1
+          fi
+          echo "  ✅ 콘텐츠 어서션 ${ACHECKED}/${ACHECKED} 통과"
+          {
+            echo "- ✅ 콘텐츠 어서션 ${ACHECKED}/${ACHECKED} 통과 (2회 히트 · 1차 버리고 2차 판정)"
+            echo "- 참고(판정 아님): monk.kr 러너 조회 $(curl -s -o /dev/null -w '%{http_code}' -A "$UA" https://monk.kr/) — 존 정책상 403이 정상"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ── ch5 1조 8항: 실패 표기 ≠ 미배포. 배포 성공 후 실패한 경우 롤백 판단을 명시 요구한다
+      - name: 실패 시 롤백 고지 (ch5 1조 8항)
+        if: failure()
+        run: |
+          set -euo pipefail
+          if [ "${DEPLOYED:-0}" = "1" ]; then
+            echo "::error::배포는 완료됨 — 롤백 판단 필요. 이 run의 적색은 미배포를 뜻하지 않는다 (ch5 1조 8항)"
+            {
+              echo ""
+              echo "## ⛔ 배포는 완료됨 — 롤백 판단 필요"
+              echo ""
+              echo "배포 스텝은 성공했고 라이브에 도달했다. 이후 판정 스텝이 실패했다."
+              echo "재디스패치 전에 **스텝 단위로 배포 반영 여부를 확인**하고, 되돌릴 경우"
+              echo "\`sha\`에 직전 정상 커밋을 지정해 재배포한다 (ch5 1조 9항, 롤백 단위 = 커밋)."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "배포 스텝 이전에 실패 — 라이브 미반영 (ch5 1조 8항 적용 대상 아님)"
+            echo "- ✅ 배포 스텝 이전 실패 — **라이브 미반영**" >> "$GITHUB_STEP_SUMMARY"
+          fi

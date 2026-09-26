@@ -4,9 +4,23 @@ globs:
   - "**/deploy.sh"
   - "**/Dockerfile"
   - "**/cloudbuild.yaml"
+  - ".github/workflows/deploy-*.yml"
 ---
 
-> source: governance/laws/ch5_deployment.md@2026-09-02
+> source: governance/laws/ch5_deployment.md@2026-09-26
+
+# 배포 규칙 (monk.kr · Cloud Run)
+
+## monk.kr (CF Pages) — ch5 1조 (09-26 개정)
+
+- **배포 ≠ push.** 자동 배포 트리거(push·schedule·repository_dispatch) 금지.
+- **경로 2**: ① [기본] 버튼 — `.github/workflows/deploy-monk-kr.yml` workflow_dispatch / ② [예비] `wrangler pages deploy` — ① 불능 시만, 세션 로그 `[1조 예비경로: 사유]`.
+- **트리거 = 작가님.** 에이전트는 **새 사용자 턴의 작가님 승인 수신 후에만**(ch1 7조), 1승인 1회·당일 한정, 무인 맥락 금지. 기계 검증 불가 — 흔적이 유일한 식별 수단.
+- **흔적**: 사유 `{주체} | {승인 수신 시각} | {사유}`. 에이전트 트리거 시 세션 로그에 run ID·SHA·승인 시각. 미기재 = 무승인 배포.
+- **예비 경로 전 클린 확인**: `git status --porcelain MONK_kr/ functions/` 비어 있어야 함 (wrangler는 dirty여도 경고만 내고 배포한다).
+- **판정**: 200은 존재 증거 아님(CF Pages는 없는 경로도 200). 콘텐츠 어서션 + monk.kr은 승인자 기기 2회 히트. **run 실패 표기 ≠ 미배포** — 스텝 단위 확인.
+- **롤백**: 버튼 `sha`에 직전 정상 커밋 → 재배포. 롤백 단위 = 커밋.
+- 절차: `/deploy-cf`. 막내 자유 작업 범위 아님(ch7 2조).
 
 # Cloud Run 배포 규칙
 
