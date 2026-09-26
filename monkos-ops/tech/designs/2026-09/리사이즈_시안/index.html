@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>사진 리사이즈 | 몽크사진관</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  body{font-family:'Noto Sans KR',-apple-system,sans-serif}
+  .text-tiffany{color:#0ABAB5} .border-tiffany{border-color:#0ABAB5} .bg-tiffany{background-color:#0ABAB5}
+  .preset.on{border-color:#0ABAB5;background:rgba(10,186,181,.06);border-width:2px}
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+<header class="bg-white border-b border-gray-100 sticky top-0 z-40">
+  <div class="max-w-3xl mx-auto px-6 h-20 flex items-center justify-between">
+    <a href="#" class="flex items-center group">
+      <i data-lucide="arrow-left" class="h-6 w-6 text-gray-400 mr-2"></i>
+      <img src="monk-logo.png" alt="몽크사진관" class="h-9 w-auto translate-y-[7px]">
+    </a>
+    <a href="#" class="px-5 h-10 bg-black text-white font-bold rounded-full hover:bg-gray-800 transition-colors text-sm leading-none inline-flex items-center justify-center">간편예약</a>
+  </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-6 py-12">
+
+  <div class="text-center mb-10">
+    <h1 class="text-2xl font-bold mb-3">사진 리사이즈</h1>
+    <p class="text-gray-600 leading-relaxed break-keep">온라인 제출용 사진을 원하는 크기와 용량으로 맞춰드립니다.<br>
+      <b class="text-gray-900">사진은 서버에 올라가지 않습니다.</b> 내 컴퓨터 안에서만 처리되고, 창을 닫으면 사라집니다.</p>
+  </div>
+
+  <div class="bg-white rounded-3xl border border-gray-200 p-8 space-y-8">
+
+    <!-- 업로드 -->
+    <div>
+      <p class="font-bold mb-3">사진 올리기</p>
+      <label id="drop" class="block border-2 border-dashed border-gray-300 rounded-2xl py-14 text-center hover:border-tiffany transition-colors cursor-pointer">
+        <input id="file" type="file" accept="image/*" class="hidden">
+        <i data-lucide="image-up" class="w-10 h-10 mx-auto text-gray-300 mb-4"></i>
+        <p class="font-bold text-gray-700">여기를 눌러 사진을 고르세요</p>
+        <p class="text-sm text-gray-400 mt-1">JPG · PNG</p>
+      </label>
+      <p id="srcInfo" class="text-sm text-gray-500 mt-3 text-center" hidden></p>
+    </div>
+
+    <!-- 규격 고르기 -->
+    <div id="step2" hidden>
+      <p class="font-bold mb-1">어떤 크기로 만들까요</p>
+      <p class="text-sm text-gray-500 mb-4">온라인 제출용은 PX(픽셀)로 맞춰야 합니다. 자주 쓰는 규격을 고르시거나 직접 넣으세요.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <button class="preset on border border-gray-200 rounded-xl py-3 text-sm font-bold" data-w="413" data-h="531">413 × 531 PX<br><span class="font-normal text-gray-400 text-xs">여권 · 비자</span></button>
+        <button class="preset border border-gray-200 rounded-xl py-3 text-sm font-bold" data-w="354" data-h="472">354 × 472 PX<br><span class="font-normal text-gray-400 text-xs">반명함</span></button>
+        <button class="preset border border-gray-200 rounded-xl py-3 text-sm font-bold" data-w="600" data-h="600">600 × 600 PX<br><span class="font-normal text-gray-400 text-xs">미국 비자</span></button>
+        <button class="preset border border-gray-200 rounded-xl py-3 text-sm font-bold" data-w="390" data-h="567">390 × 567 PX<br><span class="font-normal text-gray-400 text-xs">중국</span></button>
+        <button class="preset border border-gray-200 rounded-xl py-3 text-sm font-bold" data-w="531" data-h="531">531 × 531 PX<br><span class="font-normal text-gray-400 text-xs">일본</span></button>
+        <button class="preset border border-gray-200 rounded-xl py-3 text-sm font-bold" data-w="" data-h="">직접 입력<br><span class="font-normal text-gray-400 text-xs">PX 직접 지정</span></button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 mt-4">
+        <div>
+          <label class="block text-sm text-gray-500 mb-2">가로 PX</label>
+          <input id="w" type="number" value="413" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
+        </div>
+        <div>
+          <label class="block text-sm text-gray-500 mb-2">세로 PX</label>
+          <input id="h" type="number" value="531" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <label class="block text-sm text-gray-500 mb-2">용량 제한 (선택)</label>
+        <div class="flex items-center gap-3">
+          <input id="kb" type="number" placeholder="예: 200" class="flex-1 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
+          <span class="text-sm text-gray-500 font-medium">KB 이하</span>
+        </div>
+        <p class="text-xs text-gray-400 mt-2">제출처에서 용량 제한이 있을 때만 넣으세요. 비워두면 원래 화질로 만듭니다.</p>
+      </div>
+    </div>
+
+    <!-- 결과 -->
+    <div id="step3" hidden>
+      <p class="font-bold mb-3">미리보기</p>
+      <div class="bg-gray-100 border border-gray-200 rounded-2xl p-6 flex justify-center">
+        <canvas id="cv" class="max-w-full rounded-lg shadow-sm bg-white"></canvas>
+      </div>
+      <p id="outInfo" class="text-sm text-gray-500 mt-3 text-center"></p>
+      <a id="dl" class="w-full mt-5 px-6 h-14 bg-black text-white font-bold rounded-full hover:bg-gray-800 transition-colors leading-none text-lg inline-flex items-center justify-center gap-2 cursor-pointer">
+        <i data-lucide="download" class="w-5 h-5"></i><span class="-translate-y-px">사진 내려받기</span>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- CTA -->
+  <div class="mt-8 bg-white border border-gray-200 rounded-3xl p-8 text-center">
+    <p class="font-bold mb-2">직접 하기 번거로우신가요?</p>
+    <p class="text-sm text-gray-600 leading-relaxed mb-6">나라와 용도만 알려주시면 규격에 맞춰 촬영·인화해 드립니다.</p>
+    <div class="flex flex-col sm:flex-row justify-center gap-2">
+      <a href="tel:031-791-5030" class="px-6 h-11 bg-black text-white font-bold rounded-full hover:bg-gray-800 transition-colors inline-flex items-center justify-center gap-2 leading-none text-sm"><i data-lucide="phone" class="w-4 h-4"></i><span class="-translate-y-px">031-791-5030</span></a>
+      <a href="https://talk.naver.com/W5UJ45" target="_blank" rel="noopener" class="px-6 h-11 bg-[#03C75A] text-white font-bold rounded-full hover:bg-[#02b351] transition-colors inline-flex items-center justify-center gap-2 leading-none text-sm"><i data-lucide="message-circle" class="w-4 h-4"></i><span class="-translate-y-px">네이버 톡톡 문의</span></a>
+    </div>
+  </div>
+
+</main>
+
+<script>
+lucide.createIcons();
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var img=null;
+
+  $('file').addEventListener('change', function(e){
+    var f=e.target.files[0]; if(!f) return;
+    var r=new FileReader();
+    r.onload=function(ev){
+      img=new Image();
+      img.onload=function(){
+        $('srcInfo').hidden=false;
+        $('srcInfo').textContent='올린 사진 ' + img.width + ' × ' + img.height + ' PX · ' + Math.round(f.size/1024) + 'KB';
+        $('step2').hidden=false; $('step3').hidden=false; draw();
+      };
+      img.src=ev.target.result;
+    };
+    r.readAsDataURL(f);
+  });
+
+  document.querySelectorAll('.preset').forEach(function(b){
+    b.onclick=function(){
+      document.querySelectorAll('.preset').forEach(function(x){x.classList.remove('on')});
+      b.classList.add('on');
+      if(b.dataset.w){ $('w').value=b.dataset.w; $('h').value=b.dataset.h; }
+      draw();
+    };
+  });
+  ['w','h','kb'].forEach(function(id){ $(id).addEventListener('input', draw); });
+
+  function draw(){
+    if(!img) return;
+    var W=parseInt($('w').value||0,10), H=parseInt($('h').value||0,10);
+    if(!(W>0&&H>0)) return;
+    var cv=$('cv'), ctx=cv.getContext('2d');
+    cv.width=W; cv.height=H;
+    ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
+    // 비율 유지 + 가운데 기준으로 꽉 채워 자르기
+    var s=Math.max(W/img.width, H/img.height);
+    var dw=img.width*s, dh=img.height*s;
+    ctx.drawImage(img,(W-dw)/2,(H-dh)/2,dw,dh);
+    // 미리보기 표시 크기
+    var maxw=340, scale=Math.min(1, maxw/W);
+    cv.style.width=Math.round(W*scale)+'px'; cv.style.height=Math.round(H*scale)+'px';
+
+    var limit=parseInt($('kb').value||0,10);
+    var q=0.92, url=cv.toDataURL('image/jpeg',q);
+    if(limit>0){
+      while(q>0.3 && (url.length*0.75/1024)>limit){ q-=0.06; url=cv.toDataURL('image/jpeg',q); }
+    }
+    var kb=Math.round(url.length*0.75/1024);
+    $('outInfo').textContent = W+' × '+H+' PX · 약 '+kb+'KB' + (limit>0 && kb>limit ? ' (요청 용량까지 줄이지 못했습니다)' : '');
+    var a=$('dl'); a.href=url; a.download='monk_'+W+'x'+H+'.jpg';
+  }
+})();
+</script>
+</body>
+</html>
