@@ -66,7 +66,7 @@
     </div>
 
     <!-- 보정 종류 -->
-    <div id="tiers" hidden>
+    <div id="tiers">
       <p class="font-bold mb-3">어떤 보정을 원하시나요</p>
       <div class="space-y-3">
         <button class="tier on w-full border border-gray-200 rounded-2xl p-5 text-left" data-price="0">
@@ -100,7 +100,7 @@
     </div>
 
     <!-- 요청사항 -->
-    <div id="memo" hidden>
+    <div id="memo">
       <p class="font-bold mb-2">요청사항</p>
       <p class="text-sm text-gray-500 mb-3">고치고 싶으신 부분을 적어주세요. 자세할수록 좋습니다.</p>
       <textarea rows="4" placeholder="예) 턱 주변 잡티만 지워주시고 피부 결은 그대로 두세요. 너무 하얗게는 하지 말아주세요." class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany text-sm leading-relaxed"></textarea>
@@ -148,8 +148,8 @@ lucide.createIcons();
 (function(){
   var $=function(id){return document.getElementById(id)};
   var dz=$('drop'), shots=$('shots'), del=$('shotDel'), tiers=$('tiers'), memo=$('memo');
-  dz.onclick=function(){ shots.hidden=false; tiers.hidden=false; memo.hidden=false; };
-  del.onclick=function(e){ e.stopPropagation(); shots.hidden=true; tiers.hidden=true; memo.hidden=true; };
+  dz.onclick=function(){ shots.hidden=false; };
+  del.onclick=function(e){ e.stopPropagation(); shots.hidden=true; };
   document.querySelectorAll('.tier').forEach(function(b){
     b.onclick=function(){ document.querySelectorAll('.tier').forEach(function(x){x.classList.remove('on')}); b.classList.add('on'); };
   });
