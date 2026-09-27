@@ -447,3 +447,16 @@
 > ## secret map (2026-09-26 09:30)
 ```
 - ⚠️ 경보 표식 4건 (스냅샷 /Users/jeong-kyushin/.monkos/patrol/snap_20260926.txt 참조)
+
+## [2026-09-27 09:30 KST] 순찰 감지
+```diff
+< ## secret map (2026-09-26 09:30)
+> ## secret map (2026-09-27 09:30)
+< CF_ACCOUNT_ID                        2026-09-24  ⚠️ 인벤 미등재
+> CF_ACCOUNT_ID                        2026-09-24  등재
+< CF_PAGES_DEPLOY_TOKEN                2026-09-24  ⚠️ 인벤 미등재
+> CF_PAGES_DEPLOY_TOKEN                2026-09-24  등재
+<   ⚠️ 인벤토리 미등재: CF_ACCOUNT_ID
+<   ⚠️ 인벤토리 미등재: CF_PAGES_DEPLOY_TOKEN
+>   전량 등재 ✓
+```
