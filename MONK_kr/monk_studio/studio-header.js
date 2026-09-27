@@ -5,7 +5,12 @@
   var BOOKING_URL = 'https://booking.naver.com/booking/13/bizes/1177662';
 
   var MENU = [
-    { label: '촬영 상품', href: BASE + 'monk_studio.html#service', match: ['id_photo/', 'profile/', 'family/', 'group/'] },
+    { label: '촬영 상품', href: BASE + 'monk_studio.html#service', match: ['id_photo/', 'profile/', 'family/', 'group/'],
+      children: [
+        { label: '증명사진', href: BASE + 'id_photo/id_photo.html', match: ['id_photo/'] },
+        { label: '프로필', href: BASE + 'profile/profile.html', match: ['profile/'] },
+        { label: '가족사진', href: BASE + 'family/family.html', match: ['family/'] }
+      ] },
     { label: '온라인 스토어', href: BASE + 'store/store.html', match: ['store/'] },
     { label: '출장촬영', href: BASE + 'biztrip/biztrip.html', match: ['biztrip/'] },
     { label: '후기', href: 'https://m.place.naver.com/place/1454242520/review/visitor', external: true },
@@ -23,12 +28,27 @@
 
   var desktop = MENU.map(function (item) {
     var cls = isActive(item) ? 'text-gray-900 font-semibold' : 'text-gray-600 hover:text-gray-900 font-medium';
-    return '<a ' + linkAttrs(item) + ' class="' + cls + ' transition-colors">' + item.label + '</a>';
+    var link = '<a ' + linkAttrs(item) + ' class="' + cls + ' transition-colors">' + item.label + '</a>';
+    if (!item.children) return link;
+    // 하위 메뉴 — 마우스를 올리거나 키보드로 들어오면 펼쳐진다
+    var sub = item.children.map(function (c) {
+      var ccls = isActive(c) ? 'text-gray-900 font-semibold bg-gray-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50';
+      return '<a href="' + c.href + '" class="block px-4 py-2.5 text-sm rounded-lg whitespace-nowrap ' + ccls + '">' + c.label + '</a>';
+    }).join('');
+    return '<div class="relative group">' + link +
+      '<div class="absolute left-1/2 -translate-x-1/2 top-full pt-3 hidden group-hover:block group-focus-within:block">' +
+        '<div class="bg-white border border-gray-100 rounded-xl shadow-lg p-2 min-w-[140px]">' + sub + '</div>' +
+      '</div></div>';
   }).join('');
 
   var mobile = MENU.map(function (item) {
     var cls = isActive(item) ? 'text-gray-900 font-semibold bg-gray-50' : 'text-gray-600 font-medium hover:text-gray-900 hover:bg-gray-50';
-    return '<a ' + linkAttrs(item) + ' class="block w-full px-3 py-3 text-base rounded-md ' + cls + '">' + item.label + '</a>';
+    var link = '<a ' + linkAttrs(item) + ' class="block w-full px-3 py-3 text-base rounded-md ' + cls + '">' + item.label + '</a>';
+    if (!item.children) return link;
+    return link + '<div class="flex flex-wrap gap-2 px-3 pb-2">' + item.children.map(function (c) {
+      var ccls = isActive(c) ? 'border-gray-900 text-gray-900 font-semibold' : 'border-gray-200 text-gray-600';
+      return '<a href="' + c.href + '" class="px-3 py-1.5 text-sm border rounded-lg ' + ccls + '">' + c.label + '</a>';
+    }).join('') + '</div>';
   }).join('');
 
   var header = document.getElementById('header');
