@@ -294,46 +294,73 @@
 
         <!-- Location & Contact (네비게이션 바로 위로 배치) -->
         <section id="contact" class="py-20 bg-white border-t border-gray-100">
-            <div class="max-w-4xl mx-auto px-6 text-center">
+            <div class="max-w-5xl mx-auto px-6">
                 <div class="text-center mb-10">
                     <span class="text-gray-300 font-bold tracking-widest text-sm uppercase">Location</span>
                     <h2 class="font-serif text-3xl md:text-4xl font-semibold text-gray-900 mt-2">오시는 길</h2>
+                    <p class="text-gray-500 mt-3 break-keep">미사역 지하 연결 · 그랑파사쥬 B1층 다이소 바로 옆</p>
                 </div>
 
-                <div class="bg-gray-50 rounded-3xl p-10 md:p-14 shadow-sm border border-gray-100">
-                    <img src="/images/monk-logo.png" alt="몽크사진관" class="h-8 w-auto mb-6">
-                    <p class="text-gray-600 text-lg leading-relaxed mb-6 break-keep">
-                        경기도 하남시 미사강변동로 95<br>
-                        그랑파사쥬 B1029호 (미사역 연결)
-                    </p>
+                <!-- 지도 -->
+                <div class="w-full aspect-[4/3] md:aspect-[16/7] bg-gray-100 border border-gray-200 overflow-hidden">
+                    <iframe src="https://www.google.com/maps/embed?origin=mfe&pb=!1m3!2m1!1s37.5642342,127.1917733!6i17!3m1!1sko!5m1!1sko" title="몽크사진관 위치 지도" class="w-full h-full" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
 
-                    <!-- 네이버 지도 길찾기 -->
-                    <div class="mb-12">
-                        <a href="https://map.naver.com/p/entry/place/1454242520" target="_blank" rel="noopener" class="px-6 h-11 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors duration-300 inline-flex items-center justify-center gap-2 leading-none">
-                            <i data-lucide="map-pin" class="w-4 h-4"></i><span>네이버 지도로 길찾기</span>
-                        </a>
+                <!-- 지도 앱 버튼 -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
+                    <a href="https://map.naver.com/p/entry/place/1454242520" target="_blank" rel="noopener" class="h-12 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors inline-flex items-center justify-center gap-2 leading-none">
+                        <i data-lucide="navigation" class="w-4 h-4"></i><span>네이버 지도 길찾기</span>
+                    </a>
+                    <a href="https://m.place.naver.com/place/1454242520/home" target="_blank" rel="noopener" class="h-12 bg-white border border-gray-300 text-gray-800 font-bold rounded-xl hover:border-gray-500 transition-colors inline-flex items-center justify-center gap-2 leading-none">
+                        <i data-lucide="bookmark" class="w-4 h-4"></i><span>네이버 지도에 저장</span>
+                    </a>
+                    <a href="https://map.kakao.com/link/to/몽크사진관,37.5642342,127.1917733" target="_blank" rel="noopener" class="h-12 bg-white border border-gray-300 text-gray-800 font-bold rounded-xl hover:border-gray-500 transition-colors inline-flex items-center justify-center gap-2 leading-none">
+                        <i data-lucide="map" class="w-4 h-4"></i><span>카카오맵 길찾기</span>
+                    </a>
+                </div>
+                <p class="text-center text-xs text-gray-400 mt-3 break-keep">'네이버 지도에 저장'을 누른 뒤 열리는 화면에서 저장 버튼을 누르면 다음에 바로 찾으실 수 있어요.</p>
+
+                <!-- 기본 정보 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+                    <div class="border border-gray-200 rounded-2xl p-6 md:p-8">
+                        <div class="flex items-center gap-2 mb-4 text-gray-900 font-semibold"><i data-lucide="map-pin" class="w-5 h-5 text-gray-500"></i>주소 · 연락처</div>
+                        <p class="text-gray-700 leading-relaxed break-keep">경기도 하남시 미사강변동로 95<br>그랑파사쥬 B1029호 (미사역 연결)</p>
+                        <a href="tel:031-791-5030" class="inline-flex items-center gap-2 mt-4 text-gray-900 font-semibold hover:underline"><i data-lucide="phone" class="w-4 h-4 text-gray-500"></i>031-791-5030</a>
+                        <p class="flex items-center gap-2 mt-3 text-gray-700"><i data-lucide="square-parking" class="w-4 h-4 text-gray-500"></i>건물 지하 2층 주차 · 90분 무료</p>
                     </div>
+                    <div class="border border-gray-200 rounded-2xl p-6 md:p-8">
+                        <div class="flex items-center gap-2 mb-4 text-gray-900 font-semibold"><i data-lucide="clock" class="w-5 h-5 text-gray-500"></i>영업시간</div>
+                        <ul id="hours-list" class="text-gray-700 divide-y divide-gray-100">
+                            <li data-day="1" class="flex justify-between py-2"><span>월요일</span><span>11:00 – 19:30</span></li>
+                            <li data-day="2" class="flex justify-between py-2 text-gray-400"><span>화요일</span><span>정기휴무</span></li>
+                            <li data-day="3" class="flex justify-between py-2"><span>수요일</span><span>11:00 – 19:30</span></li>
+                            <li data-day="4" class="flex justify-between py-2"><span>목요일</span><span>11:00 – 19:30</span></li>
+                            <li data-day="5" class="flex justify-between py-2"><span>금요일</span><span>11:00 – 19:30</span></li>
+                            <li data-day="6" class="flex justify-between py-2"><span>토요일</span><span>11:00 – 19:00</span></li>
+                            <li data-day="0" class="flex justify-between py-2"><span>일요일</span><span>11:00 – 19:00</span></li>
+                        </ul>
+                        <p class="text-sm text-gray-500 mt-3">매주 화요일은 쉽니다.</p>
+                    </div>
+                </div>
 
-                    <div class="flex flex-col md:flex-row justify-center gap-8 md:gap-16 text-gray-600">
-                        <div class="flex flex-col items-center group">
-                            <div class="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center mb-4 text-tiffany group-hover:bg-tiffany group-hover:text-white transition-colors shadow-sm">
-                                <i data-lucide="phone" class="w-5 h-5"></i>
-                            </div>
-                            <span class="text-lg font-medium group-hover:text-tiffany transition-colors">031-791-5030</span>
-                        </div>
-                        <div class="flex flex-col items-center group">
-                            <div class="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center mb-4 text-tiffany group-hover:bg-tiffany group-hover:text-white transition-colors shadow-sm">
-                                <i data-lucide="clock" class="w-5 h-5"></i>
-                            </div>
-                            <span class="text-lg font-medium group-hover:text-tiffany transition-colors">11:00 - 19:30</span>
-                            <span class="text-sm text-gray-400 mt-1">매주 화요일 휴무</span>
-                        </div>
-                        <div class="flex flex-col items-center group">
-                            <div class="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center mb-4 text-tiffany group-hover:bg-tiffany group-hover:text-white transition-colors shadow-sm">
-                                <i data-lucide="car" class="w-5 h-5"></i>
-                            </div>
-                            <span class="text-lg font-medium group-hover:text-tiffany transition-colors">건물 내 무료 주차 지원</span>
-                        </div>
+                <!-- 찾아오는 길 -->
+                <h3 class="text-xl font-semibold text-gray-900 mt-12 mb-4">찾아오는 길</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gray-50 rounded-2xl p-6 md:p-8">
+                        <div class="flex items-center gap-2 mb-4 text-gray-900 font-semibold"><i data-lucide="train-front" class="w-5 h-5 text-gray-500"></i>지하철로 오실 때</div>
+                        <p class="text-gray-700 leading-relaxed break-keep">미사역 <strong class="font-semibold text-gray-900">1번 출구</strong> 지하 1층, 지상으로 올라가는 에스컬레이터 오른쪽에 그랑파사쥬 건물로 들어오는 연결통로가 있습니다.</p>
+                        <p class="text-gray-700 leading-relaxed break-keep mt-3">그랑파사쥬로 들어와 앞으로 1분 정도 걸으시면 다이소가 보이고, <strong class="font-semibold text-gray-900">왼쪽에 몽크사진관</strong>이 있습니다.</p>
+                        <p class="text-sm text-gray-500 leading-relaxed break-keep mt-3">미사역 지하 1층과 그랑파사쥬 지하 1층이 연결되어 있어 역에서 1분이면 오실 수 있어요.</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-2xl p-6 md:p-8">
+                        <div class="flex items-center gap-2 mb-4 text-gray-900 font-semibold"><i data-lucide="car" class="w-5 h-5 text-gray-500"></i>자동차로 오실 때</div>
+                        <p class="text-gray-700 leading-relaxed break-keep"><strong class="font-semibold text-gray-900">지하 2층 다이소 쪽</strong>에 주차하시고 고메스퀘어 쪽 에스컬레이터로 올라오시면 몽크사진관이 있습니다.</p>
+                        <p class="text-gray-700 leading-relaxed break-keep mt-3">주차는 <strong class="font-semibold text-gray-900">90분 무료</strong>입니다.</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-2xl p-6 md:p-8">
+                        <div class="flex items-center gap-2 mb-4 text-gray-900 font-semibold"><i data-lucide="map-pinned" class="w-5 h-5 text-gray-500"></i>강동구에서 오실 때</div>
+                        <p class="text-gray-700 leading-relaxed break-keep">5호선 강일역에서 한 정거장, 상일동역에서 두 정거장, 고덕역에서 세 정거장, 명일역에서 네 정거장입니다. 미사역 1번 출구로 나오시면 그랑파사쥬로 바로 연결됩니다.</p>
+                        <p class="text-gray-700 leading-relaxed break-keep mt-3">차로는 고덕·상일동에서 10분 거리예요. 주차가 90분 무료라 아이나 부모님과 함께 오셔도 여유가 있습니다.</p>
                     </div>
                 </div>
             </div>
@@ -372,6 +399,9 @@
 
     <script>
         lucide.createIcons();
+
+        // 오시는 길 — 오늘 요일 강조
+        document.querySelector('#hours-list li[data-day="' + new Date().getDay() + '"]')?.classList.add('font-semibold', 'text-gray-900');
 
         // Header Scroll Effect
         const header = document.getElementById('header');
