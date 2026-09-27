@@ -133,6 +133,7 @@
     <style>
         .map-pin { display:flex; align-items:center; gap:6px; white-space:nowrap; font-family:Pretendard,sans-serif; font-size:13px; font-weight:600; }
         .map-pin b { width:28px; height:28px; border-radius:9999px; display:inline-flex; align-items:center; justify-content:center; color:#fff; font-size:13px; box-shadow:0 2px 6px rgba(0,0,0,.3); border:2px solid #fff; }
+        .map-pin-logo b { width:38px; height:38px; padding:0; overflow:hidden; }
         .map-pin span { background:#fff; padding:3px 8px; border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,.2); color:#111; }
     </style>
 </head>
@@ -420,7 +421,7 @@
         // 오시는 길 지도 — 사진관 + 주차장 입구 (OpenFreeMap, 키 불필요)
         (function () {
             if (!window.maplibregl) return;
-            var MAP_STYLE = 'bright'; // 브라이트(컬러). 화이트로 바꾸려면 'positron'
+            var MAP_STYLE = 'positron'; // 화이트 + 지하철 노선·역 직접 표시
             var STUDIO = [127.1917733, 37.5642342];
             var PARKING = [127.1913909, 37.5643338]; // 스타벅스 미사역그랑파사쥬점 옆 (꾸 확인)
             var map = new maplibregl.Map({
@@ -437,14 +438,27 @@
                 map.getStyle().layers.forEach(function (l) {
                     if (l.layout && l.layout['text-field']) map.setLayoutProperty(l.id, 'text-field', ['coalesce', ['get', 'name:ko'], ['get', 'name']]);
                 });
+                // 지하철 5호선 — 화이트 스타일은 지하 구간을 그리지 않으므로 직접 추가 (보라색 점선)
+                var beforeLabel = map.getStyle().layers.find(function (l) { return l.type === 'symbol'; });
+                map.addLayer({
+                    id: 'studio-subway-line', type: 'line', source: 'openmaptiles', 'source-layer': 'transportation',
+                    filter: ['==', ['get', 'class'], 'transit'],
+                    paint: { 'line-color': '#996CAC', 'line-width': 4, 'line-opacity': 0.55, 'line-dasharray': [2, 1] }
+                }, beforeLabel && beforeLabel.id);
+                map.addLayer({
+                    id: 'studio-subway-station', type: 'symbol', source: 'openmaptiles', 'source-layer': 'poi',
+                    filter: ['==', ['get', 'class'], 'railway'],
+                    layout: { 'text-field': ['coalesce', ['get', 'name:ko'], ['get', 'name']], 'text-font': ['Noto Sans Bold'], 'text-size': 12, 'text-offset': [0, 1.2] },
+                    paint: { 'text-color': '#6B4C7A', 'text-halo-color': '#fff', 'text-halo-width': 1.5 }
+                });
             });
-            function pin(lngLat, bg, mark, label) {
+            function pin(lngLat, bg, mark, label, extra) {
                 var el = document.createElement('div');
-                el.className = 'map-pin';
+                el.className = 'map-pin' + (extra ? ' ' + extra : '');
                 el.innerHTML = '<b style="background:' + bg + '">' + mark + '</b><span>' + label + '</span>';
-                new maplibregl.Marker({ element: el, anchor: 'left', offset: [-14, 0] }).setLngLat(lngLat).addTo(map);
+                new maplibregl.Marker({ element: el, anchor: 'left', offset: [extra ? -19 : -14, 0] }).setLngLat(lngLat).addTo(map);
             }
-            pin(STUDIO, '#111', 'M', '몽크사진관 (B1)');
+            pin(STUDIO, '#fff', '<img src="/images/studio-icon-192.png" alt="" class="w-full h-full rounded-full">', '몽크사진관 (B1)', 'map-pin-logo');
             pin(PARKING, '#2563EB', 'P', '주차장 입구 · 스타벅스 옆');
             pin([127.1928, 37.5633], '#996CAC', '5', '미사역'); // 5호선 역 위치(대략) — 1번 출구와 지하 연결
 
