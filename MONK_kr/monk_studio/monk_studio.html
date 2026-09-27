@@ -421,7 +421,7 @@
         // 오시는 길 지도 — 사진관 + 주차장 입구 (OpenFreeMap, 키 불필요)
         (function () {
             if (!window.maplibregl) return;
-            var MAP_STYLE = 'positron'; // 화이트 + 지하철 노선·역 직접 표시
+            var MAP_STYLE = 'bright'; // 브라이트(컬러)
             var STUDIO = [127.1917733, 37.5642342];
             var PARKING = [127.1913909, 37.5643338]; // 스타벅스 미사역그랑파사쥬점 옆 (꾸 확인)
             var map = new maplibregl.Map({
@@ -437,19 +437,6 @@
             map.on('load', function () {
                 map.getStyle().layers.forEach(function (l) {
                     if (l.layout && l.layout['text-field']) map.setLayoutProperty(l.id, 'text-field', ['coalesce', ['get', 'name:ko'], ['get', 'name']]);
-                });
-                // 지하철 5호선 — 화이트 스타일은 지하 구간을 그리지 않으므로 직접 추가 (보라색 점선)
-                var beforeLabel = map.getStyle().layers.find(function (l) { return l.type === 'symbol'; });
-                map.addLayer({
-                    id: 'studio-subway-line', type: 'line', source: 'openmaptiles', 'source-layer': 'transportation',
-                    filter: ['==', ['get', 'class'], 'transit'],
-                    paint: { 'line-color': '#996CAC', 'line-width': 4, 'line-opacity': 0.55, 'line-dasharray': [2, 1] }
-                }, beforeLabel && beforeLabel.id);
-                map.addLayer({
-                    id: 'studio-subway-station', type: 'symbol', source: 'openmaptiles', 'source-layer': 'poi',
-                    filter: ['==', ['get', 'class'], 'railway'],
-                    layout: { 'text-field': ['coalesce', ['get', 'name:ko'], ['get', 'name']], 'text-font': ['Noto Sans Bold'], 'text-size': 12, 'text-offset': [0, 1.2] },
-                    paint: { 'text-color': '#6B4C7A', 'text-halo-color': '#fff', 'text-halo-width': 1.5 }
                 });
             });
             function pin(lngLat, bg, mark, label, extra) {
