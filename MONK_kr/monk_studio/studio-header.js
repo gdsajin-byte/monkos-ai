@@ -57,7 +57,7 @@
     '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">' +
       '<div class="flex justify-between items-center h-20">' +
         '<a href="' + BASE + 'monk_studio.html" class="flex-shrink-0 flex items-center group">' +
-          '<img src="/images/monk-logo.png" alt="몽크사진관" class="h-9 w-auto translate-y-[7px] group-hover:opacity-80 transition-opacity duration-300">' +
+          '<img src="/images/monk-logo.png" alt="몽크사진관" class="h-[25px] w-auto translate-y-[5px] group-hover:opacity-80 transition-opacity duration-300">' +
         '</a>' +
         '<nav class="hidden md:flex space-x-6 items-center">' + desktop +
           '<a href="' + BOOKING_URL + '" target="_blank" rel="noopener" class="px-6 h-11 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors duration-300 inline-flex items-center justify-center leading-none">간편예약</a>' +
