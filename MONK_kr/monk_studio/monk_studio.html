@@ -311,6 +311,7 @@
                 <!-- 지도 -->
                 <div class="relative z-0 w-full aspect-[4/3] md:aspect-[16/7] bg-gray-100 border border-gray-200 overflow-hidden">
                     <div id="studio-map" class="w-full h-full" role="img" aria-label="몽크사진관과 주차장 입구 위치 지도"></div>
+                    <div id="studio-map-hint" class="hidden md:block pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 z-[1000] px-3 py-1.5 rounded-lg bg-black/70 text-white text-xs transition-opacity duration-300">지도를 클릭하면 마우스 휠로 확대·축소할 수 있어요</div>
                 </div>
 
                 <!-- 지도 앱 버튼 -->
@@ -428,6 +429,11 @@
             }
             pin(STUDIO, '#111', 'M', '몽크사진관 (B1)');
             pin(PARKING, '#2563EB', 'P', '주차장 입구 · 스타벅스 옆');
+
+            // 마우스 휠 확대·축소: 지도를 한 번 클릭하면 켜지고, 지도 밖으로 나가면 꺼진다 (페이지 스크롤 방해 방지)
+            var hint = document.getElementById('studio-map-hint');
+            map.on('click focus', function () { map.scrollWheelZoom.enable(); if (hint) hint.classList.add('opacity-0'); });
+            map.getContainer().addEventListener('mouseleave', function () { map.scrollWheelZoom.disable(); if (hint) hint.classList.remove('opacity-0'); });
         })();
 
         // Header Scroll Effect
