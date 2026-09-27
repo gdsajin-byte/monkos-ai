@@ -128,6 +128,13 @@
         .shadow-sapphire { box-shadow: 0 10px 15px -3px rgba(26, 67, 124, 0.5), 0 4px 6px -2px rgba(26, 67, 124, 0.05); }
         .hover\:shadow-sapphire-dark:hover { box-shadow: 0 20px 25px -5px rgba(42, 87, 155, 0.7), 0 10px 10px -5px rgba(42, 87, 155, 0.1); }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <style>
+        .map-pin { display:flex; align-items:center; gap:6px; white-space:nowrap; font-family:Pretendard,sans-serif; font-size:13px; font-weight:600; transform:translate(-14px,-14px); }
+        .map-pin b { width:28px; height:28px; border-radius:9999px; display:inline-flex; align-items:center; justify-content:center; color:#fff; font-size:13px; box-shadow:0 2px 6px rgba(0,0,0,.3); border:2px solid #fff; }
+        .map-pin span { background:#fff; padding:3px 8px; border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,.2); color:#111; }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-[#FBBF24] selection:text-white">
 
@@ -302,8 +309,8 @@
                 </div>
 
                 <!-- 지도 -->
-                <div class="w-full aspect-[4/3] md:aspect-[16/7] bg-gray-100 border border-gray-200 overflow-hidden">
-                    <iframe src="https://www.google.com/maps/embed?origin=mfe&pb=!1m3!2m1!1s37.5642342,127.1917733!6i17!3m1!1sko!5m1!1sko" title="몽크사진관 위치 지도" class="w-full h-full" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <div class="relative z-0 w-full aspect-[4/3] md:aspect-[16/7] bg-gray-100 border border-gray-200 overflow-hidden">
+                    <div id="studio-map" class="w-full h-full" role="img" aria-label="몽크사진관과 주차장 입구 위치 지도"></div>
                 </div>
 
                 <!-- 지도 앱 버튼 -->
@@ -408,6 +415,20 @@
 
         // 오시는 길 — 오늘 요일 강조
         document.querySelector('#hours-list li[data-day="' + new Date().getDay() + '"]')?.classList.add('font-semibold', 'text-gray-900');
+
+        // 오시는 길 지도 — 사진관 + 주차장 입구
+        (function () {
+            if (!window.L) return;
+            var STUDIO = [37.5642342, 127.1917733];
+            var PARKING = [37.5643338, 127.1913909]; // 스타벅스 미사역그랑파사쥬점 옆 (꾸 확인)
+            var map = L.map('studio-map', { scrollWheelZoom: false, attributionControl: true }).setView([37.56428, 127.19158], 18);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map);
+            function pin(latlng, bg, mark, label) {
+                return L.marker(latlng, { icon: L.divIcon({ className: '', iconSize: null, html: '<div class="map-pin"><b style="background:' + bg + '">' + mark + '</b><span>' + label + '</span></div>' }) }).addTo(map);
+            }
+            pin(STUDIO, '#111', 'M', '몽크사진관 (B1)');
+            pin(PARKING, '#2563EB', 'P', '주차장 입구 · 스타벅스 옆');
+        })();
 
         // Header Scroll Effect
         const header = document.getElementById('header');
