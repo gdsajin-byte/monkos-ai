@@ -232,19 +232,50 @@
     </div>
   </section>
 
-  <!-- 견적 -->
+  <!-- 견적 문의 -->
   <section id="quote" class="py-20">
-    <div class="max-w-2xl mx-auto px-6 text-center">
-      <h2 class="font-serif text-2xl md:text-3xl font-semibold mb-4">견적 문의</h2>
-      <p class="text-gray-600 leading-relaxed break-keep mb-2">
-        인원, 촬영 종류, 방문 횟수, 보정 범위에 따라 달라집니다.<br>
-        <b class="text-gray-900">인원과 희망 날짜</b>만 알려주시면 견적서를 보내드리겠습니다.
-      </p>
-      <p class="text-sm text-gray-500 mb-10">출장비는 지역에 따라 별도 협의하며, 헤어메이크업은 추가 옵션입니다.</p>
+    <div class="max-w-2xl mx-auto px-6">
+      <div class="text-center mb-10">
+        <h2 class="font-serif text-2xl md:text-3xl font-semibold mb-4">견적 문의</h2>
+        <p class="text-gray-600 leading-relaxed break-keep">
+          인원, 촬영 종류, 방문 횟수, 보정 범위에 따라 달라집니다.<br>
+          아래 내용을 남겨 주시면 <b class="text-gray-900">견적서를 보내드립니다.</b>
+        </p>
+        <p class="text-sm text-gray-500 mt-2">출장비는 지역에 따라 별도 협의하며, 헤어메이크업은 추가 옵션입니다.</p>
+      </div>
+
+      <form id="quote-form" class="bg-white border border-gray-200 rounded-3xl p-6 md:p-8 space-y-5" novalidate>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="block text-sm font-bold mb-2">회사 · 단체명 <span class="text-red-500">*</span></label><input name="company" required class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-gray-900" placeholder="예) 몽크상사"></div>
+          <div><label class="block text-sm font-bold mb-2">담당자 · 직책 <span class="text-red-500">*</span></label><input name="manager" required class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-gray-900" placeholder="예) 홍길동 과장"></div>
+          <div><label class="block text-sm font-bold mb-2">연락처 <span class="text-red-500">*</span></label><input name="phone" type="tel" required class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-gray-900" placeholder="010-0000-0000"></div>
+          <div><label class="block text-sm font-bold mb-2">이메일</label><input name="email" type="email" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-gray-900" placeholder="견적서 받으실 주소"></div>
+        </div>
+        <div>
+          <p class="text-sm font-bold mb-2">촬영 종류</p>
+          <div class="flex flex-wrap gap-2"><label class="cursor-pointer"><input type="radio" name="kind" value="사원증 프로필" data-tab="idcard" class="peer sr-only" checked><span class="inline-block px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 peer-checked:border-gray-900 peer-checked:text-gray-900 peer-checked:font-semibold">사원증 프로필</span></label><label class="cursor-pointer"><input type="radio" name="kind" value="CEO 프로필" data-tab="ceo" class="peer sr-only"><span class="inline-block px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 peer-checked:border-gray-900 peer-checked:text-gray-900 peer-checked:font-semibold">CEO 프로필</span></label><label class="cursor-pointer"><input type="radio" name="kind" value="취업사진" data-tab="job" class="peer sr-only"><span class="inline-block px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 peer-checked:border-gray-900 peer-checked:text-gray-900 peer-checked:font-semibold">취업사진</span></label><label class="cursor-pointer"><input type="radio" name="kind" value="행사 촬영" data-tab="event" class="peer sr-only"><span class="inline-block px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 peer-checked:border-gray-900 peer-checked:text-gray-900 peer-checked:font-semibold">행사 촬영</span></label><label class="cursor-pointer"><input type="radio" name="kind" value="인테리어" data-tab="interior" class="peer sr-only"><span class="inline-block px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 peer-checked:border-gray-900 peer-checked:text-gray-900 peer-checked:font-semibold">인테리어</span></label><label class="cursor-pointer"><input type="radio" name="kind" value="기타" data-tab="" class="peer sr-only"><span class="inline-block px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 peer-checked:border-gray-900 peer-checked:text-gray-900 peer-checked:font-semibold">기타</span></label></div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="block text-sm font-bold mb-2">예상 인원</label><input name="people" inputmode="numeric" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-gray-900" placeholder="예) 40명"></div>
+          <div><label class="block text-sm font-bold mb-2">희망 날짜</label><input name="date" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-gray-900" placeholder="예) 11월 둘째 주 / 미정"></div>
+        </div>
+        <div><label class="block text-sm font-bold mb-2">촬영 장소</label><input name="place" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-gray-900" placeholder="예) 서울 강남구 ○○빌딩 (여러 곳이면 모두 적어주세요)"></div>
+        <div><label class="block text-sm font-bold mb-2">생각하시는 예산 <span class="font-normal text-gray-400">선택</span></label><input name="budget" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-gray-900" placeholder="예) 1인당 ○만원 / 전체 ○○만원"></div>
+        <div><label class="block text-sm font-bold mb-2">요청사항</label><textarea name="memo" rows="4" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-gray-900 text-sm leading-relaxed" placeholder="회사 규격·배경색, 단체사진 여부, 참고 자료 등"></textarea></div>
+
+        <label class="flex items-start gap-2 text-sm text-gray-500 cursor-pointer">
+          <input name="agree" type="checkbox" class="mt-1 accent-black">
+          <span class="break-keep">견적 안내를 위해 위 정보를 받는 데 동의합니다. 견적 상담에만 쓰고, 상담이 끝나면 지웁니다.</span>
+        </label>
+        <p id="quote-error" class="hidden text-sm text-red-500"></p>
+        <button type="submit" class="w-full h-14 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors text-lg inline-flex items-center justify-center leading-none">견적 문의 보내기</button>
+        <p class="text-xs text-gray-400 text-center break-keep">버튼을 누르면 작성하신 내용이 담긴 메일 창이 열립니다. 참고 파일은 그 메일에 첨부해 주세요.</p>
+      </form>
+
+      <p class="text-center text-sm text-gray-500 mt-10 mb-4">전화나 톡톡으로 바로 물어보셔도 됩니다</p>
       <div class="flex flex-col sm:flex-row justify-center gap-2">
-        <a href="tel:031-791-5030" class="px-6 h-12 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors inline-flex items-center justify-center gap-2 leading-none text-sm"><i data-lucide="phone" class="w-4 h-4"></i><span class="-translate-y-px">031-791-5030</span></a>
+        <a href="tel:031-791-5030" class="px-6 h-12 bg-white border border-gray-300 text-gray-700 font-bold rounded-xl hover:border-gray-500 transition-colors inline-flex items-center justify-center gap-2 leading-none text-sm"><i data-lucide="phone" class="w-4 h-4"></i><span class="-translate-y-px">031-791-5030</span></a>
         <a href="https://talk.naver.com/W5UJ45" target="_blank" rel="noopener" class="px-6 h-12 bg-[#03C75A] text-white font-bold rounded-xl hover:bg-[#02b351] transition-colors inline-flex items-center justify-center gap-2 leading-none text-sm"><i data-lucide="message-circle" class="w-4 h-4"></i><span class="-translate-y-px">네이버 톡톡</span></a>
-        <a href="mailto:smuse73@naver.com" class="px-6 h-12 bg-white border border-gray-300 text-gray-700 font-bold rounded-xl hover:border-gray-500 transition-colors inline-flex items-center justify-center gap-2 leading-none text-sm"><i data-lucide="mail" class="w-4 h-4"></i><span class="-translate-y-px">메일 보내기</span></a>
       </div>
     </div>
   </section>
@@ -279,6 +310,35 @@
       t.addEventListener('click', function (e) { e.preventDefault(); history.replaceState(null, '', '#' + t.dataset.tab); show(t.dataset.tab); });
     });
     show(location.hash.slice(1));
+  })();
+
+  // 견적 문의 — 서버 접수 전까지는 작성 내용을 담은 메일 창을 연다
+  (function () {
+    var form = document.getElementById('quote-form'), err = document.getElementById('quote-error');
+    var TO = 'smuse73@naver.com';
+    // 지금 보고 있는 탭에 맞춰 촬영 종류를 미리 골라 둔다
+    document.querySelectorAll('.biz-tab').forEach(function (t) {
+      t.addEventListener('click', function () {
+        var r = form.querySelector('input[name="kind"][data-tab="' + t.dataset.tab + '"]'); if (r) r.checked = true;
+      });
+    });
+    var start = form.querySelector('input[name="kind"][data-tab="' + location.hash.slice(1) + '"]'); if (start) start.checked = true;
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = function (n) { return (form.elements[n].value || '').trim(); };
+      var miss = [['company', '회사 · 단체명'], ['manager', '담당자'], ['phone', '연락처']].filter(function (x) { return !v(x[0]); }).map(function (x) { return x[1]; });
+      var msg = miss.length ? miss.join(', ') + '을(를) 적어 주세요.' : (!form.elements.agree.checked ? '정보 이용 동의에 체크해 주세요.' : '');
+      err.textContent = msg; err.classList.toggle('hidden', !msg);
+      if (msg) return;
+      var kind = (form.querySelector('input[name="kind"]:checked') || {}).value || '';
+      var body = [
+        '[몽크사진관 출장촬영 견적 문의]', '',
+        '회사·단체명: ' + v('company'), '담당자·직책: ' + v('manager'), '연락처: ' + v('phone'), '이메일: ' + v('email'),
+        '촬영 종류: ' + kind, '예상 인원: ' + v('people'), '희망 날짜: ' + v('date'), '촬영 장소: ' + v('place'), '예산: ' + v('budget'),
+        '', '요청사항:', v('memo')
+      ].join('\n');
+      location.href = 'mailto:' + TO + '?subject=' + encodeURIComponent('[출장촬영 견적] ' + v('company') + ' · ' + kind) + '&body=' + encodeURIComponent(body);
+    });
   })();
 </script>
 </body>
