@@ -127,7 +127,8 @@
 
 | 도구 | 분류 | 위치 | 인지 경로 |
 |------|------|------|----------|
-| monk_search | MCP | `scripts/retrieval/` | `rules/mcp-tools.md` |
+| monk_search | MCP | `scripts/retrieval/` | `rules/mcp-tools.md` — 헬스: 빈/부재 인덱스는 `❌ retrieval 인덱스 비정상`+재빌드 명령 반환(raw SQLite 에러 금지). 스모크 `node scripts/retrieval/search.js --smoke`(mk-push.sh 빌드 직후 자동, PASS/FAIL). 다어절 0건→OR 폴백, 헤더에 `[모드]` 표기 (09-27) |
+| record-explorer | 서브에이전트 | `.claude/agents/record-explorer.md` | `rules/mcp-tools.md` §과거 기록 — 기록 탐색 위임, 결론 20줄·근거 경로:행·인덱스 비정상 시 🔴 명시 (09-27 신설) |
 | monk_relations | MCP | `scripts/retrieval/` | `rules/mcp-tools.md` |
 | monk_stats | MCP | `scripts/retrieval/` | `rules/mcp-tools.md` |
 | cdp.sh + cdp_utils.py | 인프라 | `scripts/tools/` | `skills/cdp-browser.md` |

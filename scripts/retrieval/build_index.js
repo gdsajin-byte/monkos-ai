@@ -22,6 +22,24 @@ const CHUNK_MAX = 4000;
 
 const embedMode = process.argv.includes('--embed');
 
+// 출력 경로 재정의: --out <path> 또는 MONK_INDEX_OUT. 기본은 정본 monk_index.db.
+// 빌드는 항상 <out>.building.tmp 스테이징 파일에 쓰고 성공 시에만 rename → 중단(kill)돼도 기존 DB가 빈 파일로 대체되지 않는다.
+function resolveOutPath() {
+  const idx = process.argv.indexOf('--out');
+  if (idx >= 0 && process.argv[idx + 1]) return path.resolve(process.argv[idx + 1]);
+  if (process.env.MONK_INDEX_OUT) return path.resolve(process.env.MONK_INDEX_OUT);
+  return DB_PATH;
+}
+const OUT_PATH = resolveOutPath();
+const STAGING_PATH = `${OUT_PATH}.building.tmp`;
+
+function unlinkQuiet(p) {
+  try { fs.unlinkSync(p); } catch {}
+}
+function removeSqliteSet(p) {
+  unlinkQuiet(p); unlinkQuiet(`${p}-wal`); unlinkQuiet(`${p}-shm`);
+}
+
 function scanMarkdownFiles(dir) {
   const results = [];
   function walk(current) {
@@ -258,12 +276,16 @@ function loadExistingEmbeddings() {
 // --- Main build ---
 
 async function buildIndex() {
-  const embeddingCache = embedMode ? loadExistingEmbeddings() : new Map();
+  // 임베딩 캐시는 항상 정본 DB(DB_PATH)에서 읽는다 — --embed 없이도 해시 일치 벡터는 로컬 이월(네트워크 불요)
+  const embeddingCache = loadExistingEmbeddings();
+  const carryOver = !embedMode && embeddingCache.size > 0;
 
-  if (fs.existsSync(DB_PATH)) fs.unlinkSync(DB_PATH);
+  removeSqliteSet(STAGING_PATH);
 
-  const db = new Database(DB_PATH);
-  db.pragma('journal_mode = WAL');
+  const db = new Database(STAGING_PATH);
+  // 스테이징은 rename 전까지 폐기 가능한 파일 — 저널을 메모리에 두어 kill 시 -wal/-shm/-journal 잔재(gitignore 밖)를 남기지 않는다
+  db.pragma('journal_mode = MEMORY');
+  db.pragma('synchronous = OFF');
 
   db.exec(`
     CREATE TABLE documents (
@@ -317,7 +339,7 @@ async function buildIndex() {
     CREATE INDEX idx_chunk_doc ON chunks(doc_id);
   `);
 
-  if (embedMode) {
+  if (embedMode || carryOver) {
     db.exec(`
       CREATE TABLE chunk_embeddings (
         chunk_id INTEGER PRIMARY KEY REFERENCES chunks(id),
@@ -388,7 +410,7 @@ async function buildIndex() {
         const chunk = chunks[i];
         const hash = contentHash(chunk.content);
         const chunkResult = insertChunk.run(docId, i, chunk.anchor, chunk.content, hash);
-        if (embedMode) {
+        if (embedMode || carryOver) {
           const cacheKey = chunk.anchor ? `${relPath}#${chunk.anchor}` : relPath;
           chunkRecords.push({ chunkId: Number(chunkResult.lastInsertRowid), cacheKey, content: chunk.content, hash });
         }
@@ -417,8 +439,27 @@ async function buildIndex() {
   console.log(`   PF 링크: ${pfLinks}건 (${uniquePFs}개 PF)`);
   console.log(`   축 매핑: ${axisCount}건`);
 
+  let embedError = null;
   if (embedMode) {
-    await buildEmbeddings(db, chunkRecords, embeddingCache);
+    try {
+      await buildEmbeddings(db, chunkRecords, embeddingCache);
+    } catch (e) {
+      // 임베딩 실패는 BM25 테이블을 훼손하지 않는다 — 부분 삽입분은 그대로 두고 명시 경고
+      embedError = e;
+      console.error(`\n🔴 임베딩 실패 — BM25 인덱스는 유지, 벡터는 부분/0건: ${e.message}`);
+    }
+  } else if (carryOver) {
+    const insertEmb = db.prepare(
+      `INSERT INTO chunk_embeddings (chunk_id, embedding, content_hash) VALUES (?, ?, ?)`
+    );
+    let reused = 0;
+    db.transaction(() => {
+      for (const rec of chunkRecords) {
+        const cached = embeddingCache.get(rec.cacheKey);
+        if (cached && cached.contentHash === rec.hash) { insertEmb.run(rec.chunkId, cached.embedding, rec.hash); reused++; }
+      }
+    })();
+    console.log(`   임베딩 캐시 이월: ${reused}건 (네트워크 미사용)`);
   }
 
   const hasEmbTable = db.prepare(
@@ -427,12 +468,19 @@ async function buildIndex() {
   const totalEmb = hasEmbTable
     ? db.prepare('SELECT COUNT(*) as cnt FROM chunk_embeddings').get().cnt
     : 0;
-  if (totalEmb === 0) {
-    console.error('⚠️ 임베딩 0건 — --embed 플래그 확인 필요');
+  if (totalEmb === 0 && embedMode) {
+    console.error('⚠️ 임베딩 0건 — --embed 요청했으나 벡터 없음');
   }
 
-  console.log(`   DB: ${DB_PATH}`);
+  // 마무리: 단일 파일 상태로 close → 원자적 rename. 구 정본의 -wal/-shm 잔재도 제거.
   db.close();
+  fs.renameSync(STAGING_PATH, OUT_PATH);
+  unlinkQuiet(`${OUT_PATH}-wal`); unlinkQuiet(`${OUT_PATH}-shm`);
+
+  const embedLabel = embedMode ? (embedError ? '임베딩 실패' : '임베딩 완료') : (carryOver ? '임베딩 캐시 이월' : 'BM25 전용');
+  console.log(`📊 인덱스 요약: 문서 ${docCount} · 청크 ${chunkCount} · 임베딩 ${totalEmb} · ${embedLabel} · DB ${OUT_PATH}`);
+
+  if (embedError) process.exitCode = 2; // 2 = BM25 정상·임베딩 실패 (호출측이 구분 가능)
 }
 
 async function buildEmbeddings(db, chunkRecords, cache) {
@@ -485,4 +533,11 @@ async function buildEmbeddings(db, chunkRecords, cache) {
   console.log(`   임베딩 벡터: ${embCount}건`);
 }
 
-buildIndex();
+// 주의: SIGTERM 핸들러를 달지 않는다 — 동기 빌드 구간(~14s)에서 Node는 시그널을 이벤트루프까지 지연시켜
+// 타임아웃 kill이 무효화된다(09-27 실측). 기본 처분(즉시 종료)을 유지하고, 스테이징 잔재는 다음 빌드 시작 시 제거한다.
+
+buildIndex().catch(err => {
+  console.error(`🔴 인덱스 빌드 실패 — 기존 DB 미변경 (스테이징 파일 폐기): ${err.message}`);
+  removeSqliteSet(STAGING_PATH);
+  process.exit(1);
+});

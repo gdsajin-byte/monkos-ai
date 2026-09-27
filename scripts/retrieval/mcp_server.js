@@ -5,10 +5,15 @@ const { McpServer } = require('@modelcontextprotocol/sdk/server/mcp.js');
 const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio.js');
 const { z } = require('zod');
 const {
-  DB_PATH, openDB, hasEmbeddings,
-  searchBM25, searchVector, rrfFusion,
+  DB_PATH, openHealthyDB, indexErrorMessage, hasEmbeddings,
+  searchBM25WithFallback, searchVector, rrfFusion,
   searchByFilters, searchRelations,
 } = require('./lib');
+
+// 인덱스 부재·빈 DB → SQLite 원문("no such table") 대신 재빌드 명령을 담은 한국어 에러 (도구 3요건 #3 실패 가시화)
+function indexError(health) {
+  return { content: [{ type: 'text', text: indexErrorMessage(health) }], isError: true };
+}
 
 const PROJECT_ROOT = path.resolve(__dirname, '../..');
 
@@ -31,8 +36,8 @@ server.tool(
     limit: z.number().optional().describe('결과 수 (기본 10, 최대 20)'),
   },
   async ({ query, mode, pf, type, from, to, axis, limit }) => {
-    const db = openDB();
-    if (!db) return { content: [{ type: 'text', text: '❌ 인덱스 없음. build_index.js를 먼저 실행하세요.' }] };
+    const { db, health } = openHealthyDB();
+    if (!db) return indexError(health);
 
     try {
       const embAvailable = hasEmbeddings(db);
@@ -47,29 +52,34 @@ server.tool(
         return { content: [{ type: 'text', text: '❌ 임베딩 없음. build_index.js --embed를 먼저 실행하세요.' }] };
       }
 
+      const bm25Label = (r) => r.mode === 'strict' ? '' : ` [BM25 모드: ${r.mode}]`;
+
       if (effectiveMode === 'bm25') {
-        results = searchBM25(db, query, args).slice(0, effectiveLimit);
+        const r = searchBM25WithFallback(db, query, args);
+        results = r.results.slice(0, effectiveLimit);
+        usedMode = `bm25${bm25Label(r)}`;
       } else if (effectiveMode === 'vector') {
-        results = await searchVector(db, query, effectiveLimit);
+        results = await searchVector(db, query, args, effectiveLimit);
       } else {
         if (!embAvailable) {
-          results = searchBM25(db, query, args).slice(0, effectiveLimit);
-          usedMode = 'bm25 (폴백)';
+          const r = searchBM25WithFallback(db, query, args);
+          results = r.results.slice(0, effectiveLimit);
+          usedMode = `bm25 (임베딩 없음 폴백)${bm25Label(r)}`;
         } else {
-          let vectorResults;
+          const r = searchBM25WithFallback(db, query, args);
           try {
-            const bm25Results = searchBM25(db, query, args);
-            vectorResults = await searchVector(db, query, args);
-            results = rrfFusion(bm25Results, vectorResults).slice(0, effectiveLimit);
+            const vectorResults = await searchVector(db, query, args);
+            results = rrfFusion(r.results, vectorResults).slice(0, effectiveLimit);
+            usedMode = `hybrid${bm25Label(r)}`;
           } catch (vecErr) {
-            results = searchBM25(db, query, args).slice(0, effectiveLimit);
-            usedMode = 'bm25 (벡터 실패 폴백)';
+            results = r.results.slice(0, effectiveLimit);
+            usedMode = `bm25 (벡터 실패 폴백: ${vecErr.message})${bm25Label(r)}`;
           }
         }
       }
 
       const output = results.map(r => ({
-        path: r.anchor ? `${r.path}#${r.anchor}` : r.path,
+        path: r.anchor ? `${r.path}${r.anchor.startsWith('#') ? '' : '#'}${r.anchor}` : r.path,
         type: r.type || null,
         date: r.date || null,
         subject: r.subject || null,
@@ -116,8 +126,8 @@ server.tool(
     pf: z.string().describe('PF명 (예: PF_CITADEL)'),
   },
   async ({ pf }) => {
-    const db = openDB();
-    if (!db) return { content: [{ type: 'text', text: '❌ 인덱스 없음. build_index.js를 먼저 실행하세요.' }] };
+    const { db, health } = openHealthyDB();
+    if (!db) return indexError(health);
 
     try {
       const relations = searchRelations(db, pf);
@@ -135,13 +145,12 @@ server.tool(
   '현재 인덱스 상태 — 문서 수, 청크 수, PF 수, 임베딩 수, 축 매핑 수, 최종 빌드 시각.',
   {},
   async () => {
-    const db = openDB();
-    if (!db) return { content: [{ type: 'text', text: '❌ 인덱스 없음. build_index.js를 먼저 실행하세요.' }] };
+    const { db, health } = openHealthyDB();
+    if (!db) return indexError(health);
 
     try {
-      const documents = db.prepare('SELECT COUNT(*) as cnt FROM documents').get().cnt;
-      const hasChunks = db.prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='chunks'`).get();
-      const chunks = hasChunks ? db.prepare('SELECT COUNT(*) as cnt FROM chunks').get().cnt : 0;
+      const documents = health.documents;
+      const chunks = health.chunks;
       const pfLinks = db.prepare('SELECT COUNT(*) as cnt FROM doc_portfolios').get().cnt;
       const uniquePfs = db.prepare('SELECT COUNT(DISTINCT portfolio) as cnt FROM doc_portfolios').get().cnt;
       const hasAxis = db.prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='pf_axis'`).get();
@@ -155,7 +164,7 @@ server.tool(
       const stat = fs.statSync(DB_PATH);
       const dbUpdated = stat.mtime.toISOString();
 
-      const stats = { documents, chunks, pf_links: pfLinks, unique_pfs: uniquePfs, axis_mappings: axisCount, embeddings, db_updated: dbUpdated };
+      const stats = { health: 'ok', documents, chunks, pf_links: pfLinks, unique_pfs: uniquePfs, axis_mappings: axisCount, embeddings, search_mode: embeddings > 0 ? 'hybrid' : 'bm25 전용', db_updated: dbUpdated };
       return { content: [{ type: 'text', text: JSON.stringify(stats, null, 2) }] };
     } finally {
       db.close();
