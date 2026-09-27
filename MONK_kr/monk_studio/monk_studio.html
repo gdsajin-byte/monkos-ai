@@ -339,16 +339,11 @@
                     </div>
                     <div class="border border-gray-200 rounded-2xl p-6 md:p-8">
                         <div class="flex items-center gap-2 mb-4 text-gray-900 font-semibold"><i data-lucide="clock" class="w-5 h-5 text-gray-500"></i>영업시간</div>
-                        <ul id="hours-list" class="text-gray-700 divide-y divide-gray-100">
-                            <li data-day="1" class="flex justify-between py-2"><span>월요일</span><span>11:00 – 19:30</span></li>
-                            <li data-day="2" class="flex justify-between py-2 text-gray-400"><span>화요일</span><span>정기휴무</span></li>
-                            <li data-day="3" class="flex justify-between py-2"><span>수요일</span><span>11:00 – 19:30</span></li>
-                            <li data-day="4" class="flex justify-between py-2"><span>목요일</span><span>11:00 – 19:30</span></li>
-                            <li data-day="5" class="flex justify-between py-2"><span>금요일</span><span>11:00 – 19:30</span></li>
-                            <li data-day="6" class="flex justify-between py-2"><span>토요일</span><span>11:00 – 19:00</span></li>
-                            <li data-day="0" class="flex justify-between py-2"><span>일요일</span><span>11:00 – 19:00</span></li>
+                        <ul class="text-gray-700 divide-y divide-gray-100">
+                            <li class="flex justify-between py-2.5"><span>평일 <span class="text-gray-400 text-sm">월·수·목·금</span></span><span>11:00 – 19:30</span></li>
+                            <li class="flex justify-between py-2.5"><span>주말 <span class="text-gray-400 text-sm">토·일</span></span><span>11:00 – 19:00</span></li>
+                            <li class="flex justify-between py-2.5"><span>화요일</span><span class="font-semibold text-gray-900">정기휴무</span></li>
                         </ul>
-                        <p class="text-sm text-gray-500 mt-3">매주 화요일은 쉽니다.</p>
                     </div>
                 </div>
 
@@ -414,9 +409,6 @@
 
     <script>
         lucide.createIcons();
-
-        // 오시는 길 — 오늘 요일 강조
-        document.querySelector('#hours-list li[data-day="' + new Date().getDay() + '"]')?.classList.add('font-semibold', 'text-gray-900');
 
         // 오시는 길 지도 — 사진관 + 주차장 입구 (OpenFreeMap, 키 불필요)
         (function () {
