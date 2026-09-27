@@ -641,3 +641,10 @@
 
 ## 2026-09-26 17:38 KST iMac/쌍아
 - 신설: reference_cross_session_message_to_makne.md — 쌍아→막내 SendMessage 3/3 승인 보류 만료 실측, 막내 전달은 붙여넣기 문구가 실경로. MEMORY.md 운영 교훈 1행 추가.
+
+## 2026-09-27 12:14 KST iMac/민아
+- 신설: feedback_report_brevity_decision_first.md (보고=결론1줄+결정≤3+닫힌 대안 / 인지 한계 재진단 / 결정 요청 3원칙—축 분리·결과로 질문·닫히는 것 되읽기)
+- 신설: project_approval_bottleneck_scope_gate.md (행위 승인→범위 승인, 하네스 자기 잉태 진단, 폰 채널 요인)
+- 신설: project_process_as_curriculum_continuity.md (과정=교육, 연속성 커널, 커리큘럼=GitHub·CF·GCP 신원/권한/비밀, 사람 소유 고리)
+- 갱신: project_model_placement.md (Opus 5.5 체감·판정 지표=작가님 정정 횟수·잠정 배분)
+- MEMORY.md 인덱스 +3행
