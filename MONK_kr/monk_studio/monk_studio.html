@@ -128,10 +128,10 @@
         .shadow-sapphire { box-shadow: 0 10px 15px -3px rgba(26, 67, 124, 0.5), 0 4px 6px -2px rgba(26, 67, 124, 0.05); }
         .hover\:shadow-sapphire-dark:hover { box-shadow: 0 20px 25px -5px rgba(42, 87, 155, 0.7), 0 10px 10px -5px rgba(42, 87, 155, 0.1); }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+    <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
     <style>
-        .map-pin { display:flex; align-items:center; gap:6px; white-space:nowrap; font-family:Pretendard,sans-serif; font-size:13px; font-weight:600; transform:translate(-14px,-14px); }
+        .map-pin { display:flex; align-items:center; gap:6px; white-space:nowrap; font-family:Pretendard,sans-serif; font-size:13px; font-weight:600; }
         .map-pin b { width:28px; height:28px; border-radius:9999px; display:inline-flex; align-items:center; justify-content:center; color:#fff; font-size:13px; box-shadow:0 2px 6px rgba(0,0,0,.3); border:2px solid #fff; }
         .map-pin span { background:#fff; padding:3px 8px; border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,.2); color:#111; }
     </style>
@@ -311,7 +311,7 @@
                 <!-- 지도 -->
                 <div class="relative z-0 w-full aspect-[4/3] md:aspect-[16/7] bg-gray-100 border border-gray-200 overflow-hidden">
                     <div id="studio-map" class="w-full h-full" role="img" aria-label="몽크사진관과 주차장 입구 위치 지도"></div>
-                    <div id="studio-map-hint" class="hidden md:block pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 z-[1000] px-3 py-1.5 rounded-lg bg-black/70 text-white text-xs transition-opacity duration-300">지도를 클릭하면 마우스 휠로 확대·축소할 수 있어요</div>
+                    <div id="studio-map-hint" class="hidden md:block pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 z-10 px-3 py-1.5 rounded-lg bg-black/70 text-white text-xs transition-opacity duration-300">지도를 클릭하면 마우스 휠로 확대·축소할 수 있어요</div>
                 </div>
 
                 <!-- 지도 앱 버튼 -->
@@ -417,23 +417,40 @@
         // 오시는 길 — 오늘 요일 강조
         document.querySelector('#hours-list li[data-day="' + new Date().getDay() + '"]')?.classList.add('font-semibold', 'text-gray-900');
 
-        // 오시는 길 지도 — 사진관 + 주차장 입구
+        // 오시는 길 지도 — 사진관 + 주차장 입구 (OpenFreeMap, 키 불필요)
         (function () {
-            if (!window.L) return;
-            var STUDIO = [37.5642342, 127.1917733];
-            var PARKING = [37.5643338, 127.1913909]; // 스타벅스 미사역그랑파사쥬점 옆 (꾸 확인)
-            var map = L.map('studio-map', { scrollWheelZoom: false, attributionControl: true }).setView([37.56428, 127.19158], 18);
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map);
-            function pin(latlng, bg, mark, label) {
-                return L.marker(latlng, { icon: L.divIcon({ className: '', iconSize: null, html: '<div class="map-pin"><b style="background:' + bg + '">' + mark + '</b><span>' + label + '</span></div>' }) }).addTo(map);
+            if (!window.maplibregl) return;
+            var MAP_STYLE = 'positron'; // 화이트. 컬러로 바꾸려면 'bright'
+            var STUDIO = [127.1917733, 37.5642342];
+            var PARKING = [127.1913909, 37.5643338]; // 스타벅스 미사역그랑파사쥬점 옆 (꾸 확인)
+            var map = new maplibregl.Map({
+                container: 'studio-map',
+                style: 'https://tiles.openfreemap.org/styles/' + MAP_STYLE,
+                center: [127.19158, 37.56428],
+                zoom: 17,
+                scrollZoom: false,
+                attributionControl: { compact: true }
+            });
+            map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
+            // 지명은 한글로만
+            map.on('load', function () {
+                map.getStyle().layers.forEach(function (l) {
+                    if (l.layout && l.layout['text-field']) map.setLayoutProperty(l.id, 'text-field', ['coalesce', ['get', 'name:ko'], ['get', 'name']]);
+                });
+            });
+            function pin(lngLat, bg, mark, label) {
+                var el = document.createElement('div');
+                el.className = 'map-pin';
+                el.innerHTML = '<b style="background:' + bg + '">' + mark + '</b><span>' + label + '</span>';
+                new maplibregl.Marker({ element: el, anchor: 'left', offset: [-14, 0] }).setLngLat(lngLat).addTo(map);
             }
             pin(STUDIO, '#111', 'M', '몽크사진관 (B1)');
             pin(PARKING, '#2563EB', 'P', '주차장 입구 · 스타벅스 옆');
 
             // 마우스 휠 확대·축소: 지도를 한 번 클릭하면 켜지고, 지도 밖으로 나가면 꺼진다 (페이지 스크롤 방해 방지)
             var hint = document.getElementById('studio-map-hint');
-            map.on('click focus', function () { map.scrollWheelZoom.enable(); if (hint) hint.classList.add('opacity-0'); });
-            map.getContainer().addEventListener('mouseleave', function () { map.scrollWheelZoom.disable(); if (hint) hint.classList.remove('opacity-0'); });
+            map.on('click', function () { map.scrollZoom.enable(); if (hint) hint.classList.add('opacity-0'); });
+            map.getContainer().addEventListener('mouseleave', function () { map.scrollZoom.disable(); if (hint) hint.classList.remove('opacity-0'); });
         })();
 
         // Header Scroll Effect
