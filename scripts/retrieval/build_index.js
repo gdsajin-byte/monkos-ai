@@ -243,42 +243,67 @@ function loadAxisMapping() {
   return mapping;
 }
 
-// --- Embedding cache (chunks-based) ---
+// --- Embedding cache (영속 사이드카 DB, content_hash 키) ---
+// 09-27 교정: 캐시가 인덱스 DB 안에만 있으면 타임아웃 kill 시 스테이징과 함께 진행분이 폐기되어
+// [B]가 매 회차 처음부터 재시작 → 영구 미완. 배치마다 사이드카에 커밋해 중단돼도 진행분이 남고 다음 회차가 이어간다.
+// 키 = content_hash + model: 경로·앵커가 바뀌어도(이동·개명) 내용이 같으면 재임베딩하지 않는다.
 
-function loadExistingEmbeddings() {
-  if (!fs.existsSync(DB_PATH)) return new Map();
+const EMBED_CACHE_PATH = process.env.MONK_EMBED_CACHE
+  ? path.resolve(process.env.MONK_EMBED_CACHE)
+  : path.join(__dirname, 'embed_cache.db');
+const { MODEL: EMBED_MODEL } = require('./embeddings');
+
+function openEmbedCache() {
+  const cache = new Database(EMBED_CACHE_PATH);
+  cache.pragma('journal_mode = WAL');
+  cache.pragma('busy_timeout = 5000');
+  cache.exec(`
+    CREATE TABLE IF NOT EXISTS embed_cache (
+      content_hash TEXT NOT NULL,
+      model TEXT NOT NULL,
+      embedding BLOB NOT NULL,
+      created_at TEXT NOT NULL,
+      PRIMARY KEY (content_hash, model)
+    );
+  `);
+  seedCacheFromIndex(cache);
+  return cache;
+}
+
+// 구 방식(인덱스 DB 내 chunk_embeddings)에 벡터가 있으면 사이드카로 1회 이관 — INSERT OR IGNORE라 반복 실행 무해
+function seedCacheFromIndex(cache) {
+  if (!fs.existsSync(DB_PATH)) return;
+  let oldDb;
   try {
-    const oldDb = new Database(DB_PATH, { readonly: true });
+    oldDb = new Database(DB_PATH, { readonly: true });
     const hasTable = oldDb.prepare(
       `SELECT name FROM sqlite_master WHERE type='table' AND name='chunk_embeddings'`
     ).get();
-    if (!hasTable) { oldDb.close(); return new Map(); }
-
-    const rows = oldDb.prepare(`
-      SELECT d.path, c.anchor, ce.embedding, ce.content_hash
-      FROM chunk_embeddings ce
-      JOIN chunks c ON c.id = ce.chunk_id
-      JOIN documents d ON d.id = c.doc_id
-    `).all();
-    oldDb.close();
-
-    const cache = new Map();
-    for (const row of rows) {
-      const key = row.anchor ? `${row.path}#${row.anchor}` : row.path;
-      cache.set(key, { embedding: row.embedding, contentHash: row.content_hash });
-    }
-    return cache;
-  } catch {
-    return new Map();
+    if (!hasTable) return;
+    const rows = oldDb.prepare('SELECT content_hash, embedding FROM chunk_embeddings').all();
+    const ins = cache.prepare(
+      `INSERT OR IGNORE INTO embed_cache (content_hash, model, embedding, created_at) VALUES (?, ?, ?, ?)`
+    );
+    const now = new Date().toISOString();
+    let added = 0;
+    cache.transaction(() => {
+      for (const r of rows) added += ins.run(r.content_hash, EMBED_MODEL, r.embedding, now).changes;
+    })();
+    if (added > 0) console.log(`   임베딩 캐시 이관: 인덱스 DB → 사이드카 ${added}건`);
+  } catch (e) {
+    console.error(`⚠️ 임베딩 캐시 이관 실패(무시하고 진행): ${e.message}`);
+  } finally {
+    if (oldDb) oldDb.close();
   }
 }
 
 // --- Main build ---
 
 async function buildIndex() {
-  // 임베딩 캐시는 항상 정본 DB(DB_PATH)에서 읽는다 — --embed 없이도 해시 일치 벡터는 로컬 이월(네트워크 불요)
-  const embeddingCache = loadExistingEmbeddings();
-  const carryOver = !embedMode && embeddingCache.size > 0;
+  // 임베딩 캐시는 사이드카에서 읽는다 — --embed 없이도 해시 일치 벡터는 로컬 이월(네트워크 불요)
+  const embedCache = openEmbedCache();
+  const cacheSize = embedCache.prepare('SELECT COUNT(*) AS cnt FROM embed_cache WHERE model = ?').get(EMBED_MODEL).cnt;
+  const carryOver = !embedMode && cacheSize > 0;
 
   removeSqliteSet(STAGING_PATH);
 
@@ -411,8 +436,7 @@ async function buildIndex() {
         const hash = contentHash(chunk.content);
         const chunkResult = insertChunk.run(docId, i, chunk.anchor, chunk.content, hash);
         if (embedMode || carryOver) {
-          const cacheKey = chunk.anchor ? `${relPath}#${chunk.anchor}` : relPath;
-          chunkRecords.push({ chunkId: Number(chunkResult.lastInsertRowid), cacheKey, content: chunk.content, hash });
+          chunkRecords.push({ chunkId: Number(chunkResult.lastInsertRowid), content: chunk.content, hash });
         }
       }
     }
@@ -442,25 +466,27 @@ async function buildIndex() {
   let embedError = null;
   if (embedMode) {
     try {
-      await buildEmbeddings(db, chunkRecords, embeddingCache);
+      await buildEmbeddings(db, chunkRecords, embedCache);
     } catch (e) {
-      // 임베딩 실패는 BM25 테이블을 훼손하지 않는다 — 부분 삽입분은 그대로 두고 명시 경고
+      // 임베딩 실패는 BM25 테이블을 훼손하지 않는다 — 부분 삽입분은 그대로 두고 명시 경고. 완료 배치는 사이드카에 적립됨
       embedError = e;
-      console.error(`\n🔴 임베딩 실패 — BM25 인덱스는 유지, 벡터는 부분/0건: ${e.message}`);
+      console.error(`\n🔴 임베딩 실패 — BM25 인덱스는 유지, 벡터는 부분/0건 (완료 배치는 캐시 적립): ${e.message}`);
     }
   } else if (carryOver) {
     const insertEmb = db.prepare(
       `INSERT INTO chunk_embeddings (chunk_id, embedding, content_hash) VALUES (?, ?, ?)`
     );
+    const getCached = embedCache.prepare('SELECT embedding FROM embed_cache WHERE content_hash = ? AND model = ?');
     let reused = 0;
     db.transaction(() => {
       for (const rec of chunkRecords) {
-        const cached = embeddingCache.get(rec.cacheKey);
-        if (cached && cached.contentHash === rec.hash) { insertEmb.run(rec.chunkId, cached.embedding, rec.hash); reused++; }
+        const cached = getCached.get(rec.hash, EMBED_MODEL);
+        if (cached) { insertEmb.run(rec.chunkId, cached.embedding, rec.hash); reused++; }
       }
     })();
-    console.log(`   임베딩 캐시 이월: ${reused}건 (네트워크 미사용)`);
+    console.log(`   임베딩 캐시 이월: ${reused}/${chunkRecords.length}건 (네트워크 미사용)`);
   }
+  embedCache.close();
 
   const hasEmbTable = db.prepare(
     `SELECT name FROM sqlite_master WHERE type='table' AND name='chunk_embeddings'`
@@ -488,25 +514,31 @@ async function buildEmbeddings(db, chunkRecords, cache) {
   const insertEmb = db.prepare(
     `INSERT INTO chunk_embeddings (chunk_id, embedding, content_hash) VALUES (?, ?, ?)`
   );
+  const getCached = cache.prepare('SELECT embedding FROM embed_cache WHERE content_hash = ? AND model = ?');
+  const putCache = cache.prepare(
+    `INSERT OR REPLACE INTO embed_cache (content_hash, model, embedding, created_at) VALUES (?, ?, ?, ?)`
+  );
 
-  const needEmbed = [];
-  const reused = [];
+  // 동일 내용 청크는 1회만 임베딩 (hash → 해당 chunkId 목록)
+  const needByHash = new Map();
+  let reusedCount = 0;
 
-  for (const rec of chunkRecords) {
-    const cached = cache.get(rec.cacheKey);
-    if (cached && cached.contentHash === rec.hash) {
-      reused.push({ chunkId: rec.chunkId, embedding: cached.embedding, hash: rec.hash });
-    } else {
-      needEmbed.push({ chunkId: rec.chunkId, text: rec.content, hash: rec.hash });
+  db.transaction(() => {
+    for (const rec of chunkRecords) {
+      const cached = getCached.get(rec.hash, EMBED_MODEL);
+      if (cached) {
+        insertEmb.run(rec.chunkId, cached.embedding, rec.hash);
+        reusedCount++;
+      } else if (needByHash.has(rec.hash)) {
+        needByHash.get(rec.hash).chunkIds.push(rec.chunkId);
+      } else {
+        needByHash.set(rec.hash, { text: rec.content, hash: rec.hash, chunkIds: [rec.chunkId] });
+      }
     }
-  }
+  })();
 
-  console.log(`\n🧠 임베딩 진행: ${chunkRecords.length}건 (신규/변경 ${needEmbed.length}건, 캐시 ${reused.length}건)`);
-
-  const insertCached = db.transaction(() => {
-    for (const r of reused) insertEmb.run(r.chunkId, r.embedding, r.hash);
-  });
-  insertCached();
+  const needEmbed = [...needByHash.values()];
+  console.log(`\n🧠 임베딩 진행: ${chunkRecords.length}건 (캐시 ${reusedCount}건, 신규/변경 고유 ${needEmbed.length}건) · 캐시 ${EMBED_CACHE_PATH}`);
 
   if (needEmbed.length > 0) {
     const BATCH = 20;
@@ -514,14 +546,20 @@ async function buildEmbeddings(db, chunkRecords, cache) {
       const batch = needEmbed.slice(i, i + BATCH);
       const texts = batch.map(b => b.text);
       const embeddings = await embedTexts(texts);
+      const now = new Date().toISOString();
 
-      const insertBatch = db.transaction(() => {
+      // 사이드카 커밋을 먼저 — 이 직후 kill돼도 이 배치는 다음 회차에 재사용된다
+      cache.transaction(() => {
+        for (let j = 0; j < batch.length; j++) {
+          putCache.run(batch[j].hash, EMBED_MODEL, Buffer.from(embeddings[j].buffer), now);
+        }
+      })();
+      db.transaction(() => {
         for (let j = 0; j < batch.length; j++) {
           const buf = Buffer.from(embeddings[j].buffer);
-          insertEmb.run(batch[j].chunkId, buf, batch[j].hash);
+          for (const chunkId of batch[j].chunkIds) insertEmb.run(chunkId, buf, batch[j].hash);
         }
-      });
-      insertBatch();
+      })();
 
       const done = Math.min(i + BATCH, needEmbed.length);
       process.stdout.write(`   임베딩: ${done}/${needEmbed.length}\r`);

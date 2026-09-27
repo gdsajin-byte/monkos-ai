@@ -8,6 +8,8 @@
 #   - 임시 DB에 빌드 → 스모크 PASS → 원자적 mv. 중단된 빌드가 정본 DB를 빈 파일로 바꾸는 일이 없다.
 #   - 2단계: [A] BM25 전용(네트워크 불요, ~15s)로 신선한 인덱스 확보 → [B] --embed(네트워크)는 별도 타임아웃. B 실패해도 A 결과는 남는다.
 #   - 모든 실패는 🔴 한 줄로 가시화. 무음 강등 금지 (도구 3요건 #3).
+#   - 09-27 임베딩 캐시 사이드카(scripts/retrieval/embed_cache.db): [B]가 배치마다 커밋 → 타임아웃돼도 진행분 적립, 회차마다 이어서 완주.
+#     [B] 미완 시 [A'] 재실행으로 적립분을 정본에 이월한다 (이전: 임시 DB와 함께 진행분 폐기 → 매번 처음부터, 영구 미완).
 #
 # 옵션/환경변수:
 #   --index-only            push 없이 인덱스 단계만 실행 (검증용)
@@ -116,8 +118,10 @@ else
   if [ "$EMBED_ENABLED" = "1" ]; then
     build_and_swap "B·임베딩" "$EMBED_TIMEOUT" --embed
     B_RC=$?
-    if [ "$B_RC" -eq 1 ] && [ "$A_RC" -eq 0 ]; then
-      echo "ℹ️ 임베딩 단계 실패했으나 [A] BM25 인덱스는 최신 상태로 유지됨"
+    if [ "$B_RC" -eq 1 ]; then
+      # [B] 중단돼도 완료 배치는 사이드카 캐시(embed_cache.db)에 적립돼 있다 → [A] 재실행으로 적립분을 정본에 이월 (네트워크 불요)
+      echo "ℹ️ [B] 미완 — 적립된 임베딩 캐시를 정본에 이월하기 위해 [A] 재실행. 잔여분은 다음 회차가 이어간다"
+      build_and_swap "A'·캐시 이월" "$INDEX_TIMEOUT"
     fi
   else
     echo "⏭️ [B·임베딩] 건너뜀 (MK_INDEX_EMBED=$EMBED_ENABLED) — 벡터 검색 갱신 없음"

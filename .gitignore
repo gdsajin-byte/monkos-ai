@@ -167,6 +167,9 @@ apps/crop-app/benchmark/refine_outputs/
 scripts/retrieval/monk_index.db
 scripts/retrieval/monk_index.db-shm
 scripts/retrieval/monk_index.db-wal
+scripts/retrieval/embed_cache.db
+scripts/retrieval/embed_cache.db-shm
+scripts/retrieval/embed_cache.db-wal
 
 # poc-20260707 대용량·바이너리 (ORDER_20260707: ONNX git 커밋 금지)
 apps/crop-app/benchmark/poc-20260707/BiRefNet-portrait.onnx
