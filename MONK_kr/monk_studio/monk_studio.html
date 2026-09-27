@@ -420,13 +420,13 @@
         // 오시는 길 지도 — 사진관 + 주차장 입구 (OpenFreeMap, 키 불필요)
         (function () {
             if (!window.maplibregl) return;
-            var MAP_STYLE = 'positron'; // 화이트. 컬러로 바꾸려면 'bright'
+            var MAP_STYLE = 'bright'; // 브라이트(컬러). 화이트로 바꾸려면 'positron'
             var STUDIO = [127.1917733, 37.5642342];
             var PARKING = [127.1913909, 37.5643338]; // 스타벅스 미사역그랑파사쥬점 옆 (꾸 확인)
             var map = new maplibregl.Map({
                 container: 'studio-map',
                 style: 'https://tiles.openfreemap.org/styles/' + MAP_STYLE,
-                center: [127.19158, 37.56428],
+                center: [127.1921, 37.5638],
                 zoom: 17,
                 scrollZoom: false,
                 attributionControl: { compact: true }
@@ -446,6 +446,7 @@
             }
             pin(STUDIO, '#111', 'M', '몽크사진관 (B1)');
             pin(PARKING, '#2563EB', 'P', '주차장 입구 · 스타벅스 옆');
+            pin([127.1928, 37.5633], '#996CAC', '5', '미사역'); // 5호선 역 위치(대략) — 1번 출구와 지하 연결
 
             // 마우스 휠 확대·축소: 지도를 한 번 클릭하면 켜지고, 지도 밖으로 나가면 꺼진다 (페이지 스크롤 방해 방지)
             var hint = document.getElementById('studio-map-hint');
