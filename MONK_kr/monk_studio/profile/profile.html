@@ -81,32 +81,44 @@
         .group:hover .card-img-grayscale {
             transform: scale(1.05);
         }
+        /* ── 팔레트 TEAL/GRAY (꾸 지정 2026-09-26) ───────────── */
+        :root{
+            --ink:#263238;      /* 본문·제목 */
+            --ink-2:#455A64;    /* 보조 텍스트 */
+            --accent:#80CBC4;   /* 포인트 */
+            --line:#CFD8DC;     /* 테두리·구분선 */
+            --bg:#ECEFF1;       /* 옅은 배경 */
+        }
+        body { font-family:'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif !important; color:var(--ink); }
+        .font-serif { font-family:'Pretendard', sans-serif !important; letter-spacing:-0.02em; }
+
+        /* 기존 클래스명을 유지한 채 색만 새 팔레트로 */
+        /* 포인트색(80CBC4)은 최소한으로: Deluxe 테두리 · BEST 배지 · 목록 점에만 (꾸 09-26) */
+        .text-tiffany { color:var(--ink-2) !important; }
+        .bg-tiffany   { background-color:var(--accent) !important; }
+        .border-tiffany { border-color:var(--accent) !important; }
+        .text-amber   { color:var(--ink-2) !important; }
+        .bg-amber     { background-color:var(--ink) !important; }
+        .border-amber { border-color:var(--line) !important; }
+        .hover\:text-amber:hover { color:var(--ink) !important; }
+        .hover\:bg-tiffany:hover { background-color:var(--ink) !important; }
+
+        .text-gray-900 { color:var(--ink) !important; }
+        .text-gray-800, .text-gray-700, .text-gray-600 { color:var(--ink-2) !important; }
+        .text-gray-500, .text-gray-400 { color:#78909C !important; }
+        .border-gray-100, .border-gray-200, .border-gray-300 { border-color:var(--line) !important; }
+        .bg-gray-50   { background-color:var(--bg) !important; }
+        .bg-gray-100  { background-color:var(--bg) !important; }
+        .chk li::before { background:var(--accent) !important; }
+        .chk li { position: relative; padding-left: 20px; }
+        .chk li::before { content: ""; position: absolute; left: 2px; top: 8px; width: 6px; height: 6px; border-radius: 99px; background: #0ABAB5; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-[#FBBF24] selection:text-white">
 
     <!-- Header -->
-    <header class="sticky top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <!-- Logo -->
-                <a href="../monk_studio.html" class="flex-shrink-0 flex items-center cursor-pointer group">
-                    <img src="/images/monk-logo.png" alt="몽크사진관" class="h-9 w-auto translate-y-[7px] group-hover:opacity-80 transition-opacity duration-300">
-                </a>
-                
-                <!-- Desktop Navigation -->
-                <nav class="hidden md:flex space-x-8 items-center">
-                    <a href="#portfolio-gallery" class="text-gray-600 hover:text-amber font-medium transition-colors border-b-2 border-transparent hover:border-amber pb-1">Portfolio</a>
-                    <a href="#packages" class="text-gray-600 hover:text-amber font-medium transition-colors border-b-2 border-amber pb-1">상품 선택</a>
-                    
-                    <!-- 간편예약 (블랙 통일) -->
-                    <a href="https://booking.naver.com/booking/13/bizes/1177662" target="_blank" class="px-6 h-11 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors duration-300 inline-flex items-center justify-center leading-none shadow-md hover:shadow-lg">
-                        <span>간편예약</span>
-                    </a>
-                </nav>
-            </div>
-        </div>
-    </header>
+    <header id="header"></header>
+    <script src="/monk_studio/studio-header.js"></script>
 
     <main>
         <!-- Hero Section -->
@@ -125,6 +137,62 @@
                     직업적 진정성과 퍼스널 브랜딩을 위한<br class="md:hidden"> **몽크사진관**만의<br> 전문적인 프로필 포트레이트
                 </p>
             </div>
+        </section>
+
+        <!-- 가격 — 증명사진 페이지와 같은 카드 형식 (09-27) -->
+        <section id="pricing" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-gray-100">
+            <div class="text-center mb-16">
+                <span class="text-tiffany font-bold tracking-widest text-sm uppercase">Price List</span>
+                <h2 class="font-serif text-3xl md:text-4xl font-semibold text-gray-900 mt-2">프로필 촬영 안내</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+                <div class="bg-white border border-gray-200 rounded-3xl p-8 flex flex-col">
+                    <div class="flex items-baseline justify-between gap-3 mb-2">
+                        <h3 class="font-bold text-lg text-gray-900">프로필사진 A</h3>
+                        <p class="font-bold text-2xl text-gray-900 whitespace-nowrap">70,000<span class="text-base font-normal">원</span></p>
+                    </div>
+                    <p class="text-sm text-tiffany font-bold mb-6 break-keep">전문직·사원증·SNS용 단품</p>
+                    <ul class="chk space-y-2.5 text-sm text-gray-600 leading-relaxed flex-1">
+                        <li>30분 촬영</li>
+                        <li>의상 1벌 / 1컨셉</li>
+                        <li>정밀보정 1컷 (파일 제공)</li>
+                        <li>원본 미제공 (별도 구매)</li>
+                    </ul>
+                    <a href="https://booking.naver.com/booking/13/bizes/1177662" target="_blank" rel="noopener" class="mt-8 w-full h-12 border border-gray-300 text-gray-700 font-bold rounded-xl hover:border-gray-500 transition-colors inline-flex items-center justify-center leading-none">예약하기</a>
+                </div>
+                <div class="bg-white border-2 border-tiffany rounded-3xl p-8 flex flex-col relative">
+                    <span class="absolute -top-3 left-8 bg-tiffany text-white text-xs font-bold px-3 py-1 rounded-full">BEST SELLER</span>
+                    <div class="flex items-baseline justify-between gap-3 mb-2">
+                        <h3 class="font-bold text-lg text-gray-900">프로필사진 B</h3>
+                        <p class="font-bold text-2xl text-gray-900 whitespace-nowrap">150,000<span class="text-base font-normal">원</span></p>
+                    </div>
+                    <p class="text-sm text-tiffany font-bold mb-6 break-keep">포트폴리오·퍼스널 브랜딩</p>
+                    <ul class="chk space-y-2.5 text-sm text-gray-600 leading-relaxed flex-1">
+                        <li>준비 포함 60분 이내</li>
+                        <li>의상 2벌 / 2컨셉 가능</li>
+                        <li><b class="text-gray-900">정밀보정 3컷</b> (파일 제공)</li>
+                        <li>원본 미제공 (별도 구매)</li>
+                    </ul>
+                    <a href="https://booking.naver.com/booking/13/bizes/1177662" target="_blank" rel="noopener" class="mt-8 w-full h-12 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors inline-flex items-center justify-center leading-none">예약하기</a>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-3xl p-8 flex flex-col">
+                    <div class="flex items-baseline justify-between gap-3 mb-2">
+                        <h3 class="font-bold text-lg text-gray-900">작가 프리미어</h3>
+                        <p class="font-bold text-2xl text-gray-900 whitespace-nowrap">300,000<span class="text-base font-normal">원</span></p>
+                    </div>
+                    <p class="text-sm text-tiffany font-bold mb-6 break-keep">배우·모델·전문가 비주얼 스토리텔링</p>
+                    <ul class="chk space-y-2.5 text-sm text-gray-600 leading-relaxed flex-1">
+                        <li><b class="text-gray-900">사전 상담 필수</b></li>
+                        <li>120분 독점 촬영 (프라이버시 보장)</li>
+                        <li>의상 3벌 / 3컨셉</li>
+                        <li>웹용 원본 전체 선발송</li>
+                        <li>셀렉 5컷 작가 정밀보정</li>
+                        <li>온·오프라인 모니터링 후 출고</li>
+                    </ul>
+                    <a href="https://talk.naver.com/W5UJ45" target="_blank" rel="noopener" class="mt-8 w-full h-12 border border-gray-300 text-gray-700 font-bold rounded-xl hover:border-gray-500 transition-colors inline-flex items-center justify-center leading-none">상담하기</a>
+                </div>
+            </div>
+            <p class="text-center text-sm text-gray-500 break-keep">모든 상품은 1:1 작가 보정이 포함되며, 추가 보정본은 따로 구매하실 수 있습니다.</p>
         </section>
 
         <!-- Service Description -->
@@ -171,136 +239,6 @@
         </section>
 
         <!-- Profile Packages & Pricing -->
-        <section id="packages" class="py-24 bg-gray-100">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16">
-                    <span class="text-tiffany font-bold tracking-widest text-sm uppercase">Pricing</span>
-                    <h2 class="font-serif text-3xl md:text-4xl font-semibold text-gray-900 mt-2">프로필 패키지</h2>
-                    <p class="text-gray-500 mt-4">목적과 필요에 맞게 선택하세요.</p>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    
-                    <!-- 1. 프로필사진 A (card1.jpg) - Image Overlay Card -->
-                    <div class="group relative rounded-2xl shadow-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 overflow-hidden border-t-4 border-amber/0 hover:border-tiffany flex flex-col min-h-[500px] cursor-pointer" onclick="flashColor(this)">
-                        <!-- Background Image (Grayscale by default, Color on click flash) -->
-                        <img src="./images/card1.jpg?v=20260924" alt="Basic Profile" class="absolute inset-0 w-full h-full object-cover card-img-grayscale">
-                        
-                        <!-- Dark Overlay for Readability -->
-                        <div class="absolute inset-0 bg-black/50 group-hover:bg-black/20 transition-all duration-300"></div>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 to-black/10 transition-all duration-300"></div>
-
-                        <!-- Content (Z-indexed and White) -->
-                        <div class="p-6 md:p-8 flex-grow flex flex-col relative z-10 text-white">
-                            <div class="flex flex-col items-start mb-4">
-                                <span class="text-xs md:text-sm font-bold text-tiffany bg-tiffany/20 px-3 py-1 rounded-full whitespace-nowrap mb-2 inline-block">STANDARD</span>
-                                <h3 class="font-serif text-2xl font-bold break-keep">프로필사진 A</h3>
-                            </div>
-                            <p class="text-gray-200 mb-6 text-sm break-keep">전문직, 상반신 사원증, 홈피 SNS 게시용 단품 상품</p>
-                            <p class="font-serif text-4xl font-bold mb-8">
-                                <span class="text-2xl font-normal mr-1">₩</span>70,000
-                            </p>
-                            
-                            <ul class="space-y-3 text-gray-200 text-sm md:text-base flex-grow">
-                                <li class="flex items-center"><i data-lucide="check" class="w-5 h-5 text-tiffany mr-3 flex-shrink-0"></i> 30분 촬영</li>
-                                <li class="flex items-center"><i data-lucide="check" class="w-5 h-5 text-tiffany mr-3 flex-shrink-0"></i> 의상 1벌 / 1컨셉</li>
-                                <li class="flex items-center"><i data-lucide="check" class="w-5 h-5 text-tiffany mr-3 flex-shrink-0"></i> 정밀보정 1컷 (파일 제공)</li>
-                                <li class="flex items-center"><i data-lucide="check" class="w-5 h-5 text-tiffany mr-3 flex-shrink-0"></i> 원본 미제공 (별도구매)</li>
-                            </ul>
-                            
-                            <!-- Booking button: Stop propagation to prevent flash effect on click -->
-                            <a href="https://booking.naver.com/booking/13/bizes/1177662" target="_blank" onclick="event.stopPropagation()" class="mt-8 block w-full text-center py-3 bg-tiffany text-white font-bold rounded-full hover:bg-amber transition-colors duration-300">
-                                A 상품 예약하기
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <!-- 2. 프로필사진 B (card2.jpg) - Image Overlay Card -->
-                    <div class="group relative rounded-2xl shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border-t-4 border-amber/0 hover:border-amber flex flex-col min-h-[500px] cursor-pointer" onclick="flashColor(this)">
-                        <!-- BEST SELLER 띠 유지 -->
-                        <div class="absolute top-4 right-4 z-20 bg-amber text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-md whitespace-nowrap">
-                            BEST SELLER
-                        </div>
-                        
-                        <!-- Background Image -->
-                        <img src="./images/card2.jpg?v=20260924" alt="Recommended Profile" class="absolute inset-0 w-full h-full object-cover card-img-grayscale">
-                        
-                        <!-- Dark Overlay for Readability -->
-                        <div class="absolute inset-0 bg-black/50 group-hover:bg-black/20 transition-all duration-300"></div>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 to-black/10 transition-all duration-300"></div>
-
-                        <!-- Content (Z-indexed and White) -->
-                        <div class="p-6 md:p-8 flex-grow flex flex-col relative z-10 text-white">
-                            <div class="flex flex-col items-start mb-4">
-                                <!-- STANDARD와 동일한 구조의 텍스트 박스 유지 -->
-                                <span class="text-xs md:text-sm font-bold text-amber bg-amber/20 px-3 py-1 rounded-full whitespace-nowrap mb-2 inline-block">RECOMMENDED</span>
-                                <h3 class="font-serif text-2xl font-bold break-keep">프로필사진 B</h3>
-                            </div>
-                            <p class="text-gray-200 mb-6 text-sm break-keep">전문직, 강사, 모델 등 포트폴리오 및 브랜딩</p>
-                            <p class="font-serif text-5xl font-bold mb-8">
-                                <span class="text-3xl font-normal mr-1">₩</span>150,000
-                            </p>
-                            
-                            <ul class="space-y-3 text-gray-200 text-sm md:text-base flex-grow">
-                                <li class="flex items-center"><i data-lucide="check" class="w-5 h-5 text-tiffany mr-3 flex-shrink-0"></i> 준비 포함 60분 이내</li>
-                                <li class="flex items-center"><i data-lucide="check" class="w-5 h-5 text-tiffany mr-3 flex-shrink-0"></i> 의상 2벌 / 2컨셉 가능</li>
-                                <li class="flex items-center"><i data-lucide="check" class="w-5 h-5 text-tiffany mr-3 flex-shrink-0"></i> 정밀보정 3컷 (파일 제공)</li>
-                                <li class="flex items-center"><i data-lucide="check" class="w-5 h-5 text-tiffany mr-3 flex-shrink-0"></i> 원본 미제공 (별도구매)</li>
-                            </ul>
-                            
-                            <!-- Booking button: Stop propagation to prevent flash effect on click -->
-                            <a href="https://booking.naver.com/booking/13/bizes/1177662" target="_blank" onclick="event.stopPropagation()" class="mt-8 block w-full text-center py-3 bg-amber text-white font-bold rounded-full hover:bg-amber/90 transition-colors duration-300 shadow-lg">
-                                B 상품 예약하기
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- 3. 작가 프리미어 상품 (card3.jpg) - Image Overlay Card -->
-                    <div class="group relative rounded-2xl shadow-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 overflow-hidden border-t-4 border-amber/0 hover:border-amber flex flex-col min-h-[500px] cursor-pointer" onclick="flashColor(this)">
-                        <!-- Background Image -->
-                        <img src="./images/card3.jpg?v=20260924" alt="Luxury Profile" class="absolute inset-0 w-full h-full object-cover card-img-grayscale">
-                        
-                        <!-- Dark Overlay for Readability -->
-                        <div class="absolute inset-0 bg-black/50 group-hover:bg-black/20 transition-all duration-300"></div>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 to-black/10 transition-all duration-300"></div>
-                        
-                        <!-- Content (Z-indexed and White) -->
-                        <div class="p-6 md:p-8 flex-grow flex flex-col relative z-10 text-white">
-                            <div class="flex flex-col items-start mb-4">
-                                <!-- 라벨 색상을 버튼 색상과 통일 (딥 사파이어 블루) -->
-                                <span class="text-xs md:text-sm font-bold text-white bg-deep-sapphire px-3 py-1 rounded-full whitespace-nowrap mb-2 inline-block shadow-lg">PREMIER</span>
-                                <h3 class="font-serif text-2xl font-bold break-keep">작가 프리미어</h3>
-                            </div>
-                            <p class="text-gray-200 mb-6 text-sm break-keep">배우/모델 포트폴리오, 전문가 및 정치인의 비주얼 스토리텔링</p>
-                            <!-- 가격에 골드 색상 적용 -->
-                            <p class="font-serif text-4xl font-bold mb-8 text-gold">
-                                <span class="text-2xl font-normal mr-1 text-gold">₩</span>300,000
-                            </p>
-                            
-                            <ul class="space-y-3 text-gray-200 text-sm md:text-base flex-grow">
-                                <li class="flex items-center font-bold text-white"><i data-lucide="check" class="w-5 h-5 text-tiffany mr-3 flex-shrink-0"></i> 사전 상담 필수</li>
-                                <li class="flex items-center"><i data-lucide="check" class="w-5 h-5 text-tiffany mr-3 flex-shrink-0"></i> 120분 독점촬영 (프라이버시 보장)</li>
-                                <li class="flex items-center"><i data-lucide="check" class="w-5 h-5 text-tiffany mr-3 flex-shrink-0"></i> 의상 3벌 / 3컨셉</li>
-                                <li class="flex items-center"><i data-lucide="check" class="w-5 h-5 text-tiffany mr-3 flex-shrink-0"></i> 웹용 원본 전체 선발송</li>
-                                <li class="flex items-center"><i data-lucide="check" class="w-5 h-5 text-tiffany mr-3 flex-shrink-0"></i> 셀렉 5컷 작가 정밀보정</li>
-                                <li class="flex items-center"><i data-lucide="check" class="w-5 h-5 text-tiffany mr-3 flex-shrink-0"></i> 온/오프라인 모니터링 후 출고</li>
-                            </ul>
-                            
-                            <!-- Booking button: 문구 '작가 프리미어 상담'으로 변경, 색상 통일 유지 -->
-                            <a href="https://talk.naver.com/W5UJ45" target="_blank" onclick="event.stopPropagation()" class="mt-8 block w-full text-center py-3 bg-deep-sapphire text-white font-bold rounded-full hover:bg-deep-sapphire-light transition-colors duration-300 shadow-sapphire hover:shadow-sapphire-dark">
-                                작가 프리미어 상담
-                            </a>
-                        </div>
-                    </div>
-
-                </div>
-                
-                <p class="text-center text-gray-500 text-sm mt-12 break-keep">
-                    * 모든 패키지는 **1:1 작가 보정** 포함, 추가 보정본 별도 구매 가능.
-                </p>
-            </div>
-        </section>
-
         <!-- Profile Portfolio Examples -->
         <section id="portfolio-gallery" class="py-24 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -309,37 +247,223 @@
                     <h2 class="font-serif text-3xl md:text-4xl font-semibold text-gray-900 mt-2">프로필 갤러리</h2>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <!-- Port 1 (port1.jpg) -->
-                    <div class="aspect-[3/4] overflow-hidden">
-                        <img src="./images/port1.jpg?v=20260924" alt="Creative Profile" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500 filter grayscale hover:grayscale-0">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="sample-grid">
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port1.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 1" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                     </div>
-                    <!-- Port 2 (port2.jpg) -->
-                    <div class="aspect-[3/4] overflow-hidden">
-                        <img src="./images/port2.jpg?v=20260924" alt="Business Profile" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500 filter grayscale hover:grayscale-0">
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port2.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 2" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                     </div>
-                    <!-- Port 3 (port3.jpg) -->
-                    <div class="aspect-[3/4] overflow-hidden">
-                        <img src="./images/port3.jpg?v=20260924" alt="Lecturer Profile" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500 filter grayscale hover:grayscale-0">
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port3.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 3" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                     </div>
-                    <!-- Port 4 (port4.jpg) -->
-                    <div class="aspect-[3/4] overflow-hidden">
-                        <img src="./images/port4.jpg?v=20260924" alt="Simple Headshot" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500 filter grayscale hover:grayscale-0">
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port4.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 4" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port5.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 5" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port6.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 6" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port7.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 7" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port8.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 8" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port9.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 9" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port10.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 10" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port11.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 11" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port12.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 12" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port13.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 13" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port14.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 14" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port15.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 15" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port16.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 16" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port17.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 17" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port18.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 18" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port19.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 19" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port20.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 20" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port21.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 21" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port22.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 22" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port23.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 23" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port24.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 24" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port25.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 25" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port26.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 26" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port27.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 27" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port28.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 28" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port29.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 29" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port30.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 30" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port31.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 31" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port32.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 32" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port33.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 33" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port34.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 34" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port35.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 35" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port36.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 36" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port37.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 37" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port38.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 38" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port39.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 39" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port40.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 40" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port41.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 41" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port42.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 42" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port43.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 43" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port44.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 44" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port45.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 45" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port46.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 46" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port47.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 47" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port48.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 48" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port49.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 49" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port50.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 50" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port51.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 51" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port52.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 52" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port53.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 53" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port54.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 54" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port55.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 55" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port56.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 56" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port57.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 57" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port58.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 58" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port59.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 59" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port60.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 60" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port61.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 61" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port62.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 62" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port63.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 63" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="./images/port64.jpg?v=20260927" alt="몽크사진관 프로필 사진 샘플 64" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                     </div>
                 </div>
+                <div class="text-center mt-10">
+                    <button id="sample-more" type="button" class="px-8 h-12 border border-gray-300 text-gray-700 font-bold rounded-xl hover:border-gray-500 transition-colors inline-flex items-center justify-center leading-none">프로필 더 보기</button>
+                </div>
+                <script>
+                    // 갤러리 — 방문할 때마다 순서를 섞고 처음엔 8장만 보여준다
+                    (function () {
+                        var grid = document.getElementById('sample-grid'), more = document.getElementById('sample-more'), FIRST = 8;
+                        var cells = Array.prototype.slice.call(grid.children);
+                        for (var i = cells.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = cells[i]; cells[i] = cells[j]; cells[j] = t; }
+                        cells.forEach(function (c, i) { grid.appendChild(c); c.hidden = i >= FIRST; });
+                        if (cells.length <= FIRST) { more.hidden = true; return; }
+                        more.addEventListener('click', function () { cells.forEach(function (c) { c.hidden = false; }); more.hidden = true; });
+                    })();
+                </script>
             </div>
         </section>
 
-        <!-- CTA Section -->
-        <section class="bg-amber py-20">
+        <!-- CTA -->
+        <section class="bg-gray-50 border-t border-gray-200 py-20">
             <div class="max-w-7xl mx-auto px-4 text-center">
-                <!-- 메인 문구 수정: 쉼표 제거 및 폰트 크기 조정 (text-3xl -> text-2xl) -->
-                <h3 class="font-serif text-2xl font-bold text-gray-900 mb-4 md:text-3xl">지금 당신을 브랜딩하세요</h3>
-                <!-- 보조 문구 수정: 붙여쓰기 적용 -->
-                <p class="text-gray-900 text-lg mb-8">가장 나다운 사진 한장으로 시작됩니다.</p>
-                <a href="https://booking.naver.com/booking/13/bizes/1177662" target="_blank" class="px-10 py-4 bg-white border-2 border-white text-amber font-bold rounded-full hover:bg-gray-100 transition-all duration-300 shadow-xl inline-flex items-center gap-2">
-                    <i data-lucide="calendar" class="w-5 h-5"></i> 프로필 촬영 간편 예약
-                </a>
+                <h3 class="font-serif text-2xl md:text-3xl font-semibold text-gray-900 mb-4 break-keep">지금 당신을 브랜딩하세요</h3>
+                <p class="text-gray-600 text-lg mb-8 break-keep">가장 나다운 사진 한 장으로 시작됩니다.</p>
+                <a href="https://booking.naver.com/booking/13/bizes/1177662" target="_blank" rel="noopener" class="px-10 h-14 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors inline-flex items-center justify-center leading-none">프로필 촬영 예약하기</a>
             </div>
         </section>
 

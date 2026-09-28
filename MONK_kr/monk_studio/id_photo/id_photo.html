@@ -155,28 +155,10 @@
 <body class="bg-gray-50 text-gray-900 antialiased selection:bg-[#FBBF24] selection:text-white">
 
     <!-- Header (Navigation links removed for funnel optimization) -->
-    <header class="fixed w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all duration-300" id="header">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <!-- Logo: Moves to Main Page -->
-                <a href="../monk_studio.html" class="flex-shrink-0 flex items-center cursor-pointer group">
-                    <i data-lucide="arrow-left" class="h-6 w-6 text-gray-400 mr-2 group-hover:text-amber transition-colors"></i>
-                    <img src="/images/monk-logo.png" alt="몽크사진관" class="h-9 w-auto translate-y-[7px] group-hover:opacity-80 transition-opacity duration-300">
-                </a>
-                
-                <!-- Contact Button (visible on all screens) -->
-                <nav class="flex space-x-4 items-center">
-                    <a href="https://booking.naver.com/booking/13/bizes/1177662" target="_blank" class="px-6 h-11 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors duration-300 inline-flex items-center justify-center leading-none">
-                        <span>간편예약</span>
-                    </a>
-                </nav>
-            </div>
-        </div>
+    <header id="header"></header>
+    <script src="/monk_studio/studio-header.js"></script>
 
-        <!-- Mobile Menu (Removed) -->
-    </header>
-
-    <main class="pt-20"> <!-- Padding for fixed header -->
+    <main> <!-- Padding for fixed header -->
         
         <!-- Hero Section (Studio Atmosphere + Dual Color Wash) -->
         <section class="studio-bg border-b border-gray-200 py-20 md:py-32 overflow-hidden flex items-center justify-center min-h-[60vh]">
@@ -290,6 +272,18 @@
             </div>
         </section>
 
+        <!-- 면접 의상 대여 -->
+        <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <img src="./images/dress_rental.jpg?v=20260927" alt="면접 의상 대여 — 자켓, 스커트, 블라우스" loading="lazy" class="w-full border border-gray-200">
+                <div>
+                    <span class="text-tiffany font-bold tracking-widest text-sm uppercase">Dress</span>
+                    <h2 class="font-serif text-3xl md:text-4xl font-semibold text-gray-900 mt-2 mb-5">면접 의상 대여</h2>
+                    <p class="text-gray-600 leading-relaxed break-keep">정장이 없어도 괜찮습니다. 매장에 자켓·스커트·블라우스와 셔츠·넥타이가 준비되어 있어 오셔서 갈아입고 바로 촬영하실 수 있습니다.</p>
+                </div>
+            </div>
+        </section>
+
         <!-- Sample Gallery (Lightbox Enabled) -->
         <section id="gallery" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
             <div class="flex flex-col md:flex-row justify-between items-end mb-10">
@@ -299,25 +293,134 @@
                 </div>
             </div>
             
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                <!-- Sample 1 -->
-                <div class="aspect-[3/4] overflow-hidden cursor-pointer group relative bg-gray-100">
-                    <img src="./images/port1.jpg?v=20260924" onerror="this.src='https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80'" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3" id="sample-grid">
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port1.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 1" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
                 </div>
-                <!-- Sample 2 -->
-                <div class="aspect-[3/4] overflow-hidden cursor-pointer group relative bg-gray-100">
-                    <img src="./images/port2.jpg?v=20260924" onerror="this.src='https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80'" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port2.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 2" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
                 </div>
-                <!-- Sample 3 -->
-                <div class="aspect-[3/4] overflow-hidden cursor-pointer group relative bg-gray-100">
-                    <img src="./images/port3.jpg?v=20260924" onerror="this.src='https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=400&q=80'" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port3.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 3" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
                 </div>
-                <!-- Sample 4 -->
-                <div class="aspect-[3/4] overflow-hidden cursor-pointer group relative bg-gray-100">
-                    <img src="./images/port4.jpg?v=20260924" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port4.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 4" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port5.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 5" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port6.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 6" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port7.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 7" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port8.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 8" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port9.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 9" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port10.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 10" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port11.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 11" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port12.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 12" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port13.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 13" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port14.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 14" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port15.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 15" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port16.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 16" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port17.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 17" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port18.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 18" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port19.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 19" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port20.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 20" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port21.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 21" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port22.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 22" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port23.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 23" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port24.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 24" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port25.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 25" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port26.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 26" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port27.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 27" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port28.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 28" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port29.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 29" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port30.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 30" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port31.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 31" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port32.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 32" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port33.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 33" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port34.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 34" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port35.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 35" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port36.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 36" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="aspect-[3/4] overflow-hidden group relative bg-gray-100">
+                    <img src="./images/port37.jpg?v=20260927" alt="몽크사진관 증명사진 샘플 37" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
                 </div>
             </div>
-            
+            <div class="text-center mt-8">
+                <button id="sample-more" type="button" class="px-8 h-12 border border-gray-300 text-gray-700 font-bold rounded-xl hover:border-gray-500 transition-colors inline-flex items-center justify-center leading-none">샘플 더 보기</button>
+            </div>
+            <script>
+                // 샘플 — 방문할 때마다 순서를 섞고 처음엔 12장만 보여준다
+                (function () {
+                    var grid = document.getElementById('sample-grid'), more = document.getElementById('sample-more'), FIRST = 12;
+                    var cells = Array.prototype.slice.call(grid.children);
+                    for (var i = cells.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = cells[i]; cells[i] = cells[j]; cells[j] = t; }
+                    cells.forEach(function (c, i) { grid.appendChild(c); c.hidden = i >= FIRST; });
+                    if (cells.length <= FIRST) { more.hidden = true; return; }
+                    more.addEventListener('click', function () { cells.forEach(function (c) { c.hidden = false; }); more.hidden = true; });
+                })();
+            </script>
+
         </section>
 
         <!-- Rules Section -->

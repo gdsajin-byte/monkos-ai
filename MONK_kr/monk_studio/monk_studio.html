@@ -128,58 +128,22 @@
         .shadow-sapphire { box-shadow: 0 10px 15px -3px rgba(26, 67, 124, 0.5), 0 4px 6px -2px rgba(26, 67, 124, 0.05); }
         .hover\:shadow-sapphire-dark:hover { box-shadow: 0 20px 25px -5px rgba(42, 87, 155, 0.7), 0 10px 10px -5px rgba(42, 87, 155, 0.1); }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+    <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+    <style>
+        .map-pin { display:flex; align-items:center; gap:6px; white-space:nowrap; font-family:Pretendard,sans-serif; font-size:13px; font-weight:600; }
+        .map-pin b { width:28px; height:28px; border-radius:9999px; display:inline-flex; align-items:center; justify-content:center; color:#fff; font-size:13px; box-shadow:0 2px 6px rgba(0,0,0,.3); border:2px solid #fff; }
+        .map-pin-logo b { width:38px; height:38px; padding:0; overflow:hidden; }
+        .map-pin span { background:#fff; padding:3px 8px; border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,.2); color:#111; }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-[#FBBF24] selection:text-white">
 
     <!-- Header -->
-    <header class="fixed w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all duration-300" id="header">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <!-- Logo: Reloads current page as per rules -->
-                <a href="monk_studio.html" class="flex-shrink-0 flex items-center cursor-pointer group">
-                    <img src="/images/monk-logo.png" alt="몽크사진관" class="h-9 w-auto translate-y-[7px] group-hover:opacity-80 transition-opacity duration-300">
-                </a>
-                
-                <!-- Desktop Navigation -->
-                <nav class="hidden md:flex space-x-6 items-center">
-                    <a href="#service" class="text-gray-600 hover:text-tiffany font-medium transition-colors">촬영 상품</a>
-                    <a href="./store/store.html" class="text-gray-600 hover:text-tiffany font-medium transition-colors">온라인 스토어</a>
-                    <a href="./biztrip/biztrip.html" class="text-gray-600 hover:text-tiffany font-medium transition-colors">출장촬영</a>
-                    <a href="https://m.place.naver.com/place/1454242520/review/visitor" target="_blank" rel="noopener" class="text-gray-600 hover:text-tiffany font-medium transition-colors">후기</a>
-                    <a href="https://m.blog.naver.com/studio_monk" target="_blank" rel="noopener" class="text-gray-600 hover:text-tiffany font-medium transition-colors">블로그</a>
-                    <a href="#contact" class="text-gray-600 hover:text-tiffany font-medium transition-colors">오시는 길</a>
+    <header id="header"></header>
+    <script src="/monk_studio/studio-header.js"></script>
 
-                    <a href="https://booking.naver.com/booking/13/bizes/1177662" target="_blank" class="px-6 h-11 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors duration-300 inline-flex items-center justify-center leading-none">
-                        <span>간편예약</span>
-                    </a>
-                </nav>
-
-                <!-- Mobile Menu Button -->
-                <div class="md:hidden flex items-center">
-                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-tiffany focus:outline-none p-2">
-                        <i data-lucide="menu" class="h-6 w-6"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full shadow-xl">
-            <div class="px-4 pt-2 pb-6 space-y-1">
-                <a href="#service" class="block w-full text-left px-3 py-3 text-base font-medium text-gray-600 hover:text-tiffany hover:bg-gray-50 rounded-md">촬영 상품</a>
-                <a href="./store/store.html" class="block w-full text-left px-3 py-3 text-base font-medium text-gray-600 hover:text-tiffany hover:bg-gray-50 rounded-md">온라인 스토어</a>
-                <a href="./biztrip/biztrip.html" class="block w-full text-left px-3 py-3 text-base font-medium text-gray-600 hover:text-tiffany hover:bg-gray-50 rounded-md">출장촬영</a>
-                <a href="https://m.place.naver.com/place/1454242520/review/visitor" target="_blank" rel="noopener" class="block w-full text-left px-3 py-3 text-base font-medium text-gray-600 hover:text-tiffany hover:bg-gray-50 rounded-md">후기</a>
-                <a href="https://m.blog.naver.com/studio_monk" target="_blank" rel="noopener" class="block w-full text-left px-3 py-3 text-base font-medium text-gray-600 hover:text-tiffany hover:bg-gray-50 rounded-md">블로그</a>
-                <a href="#contact" class="block w-full text-left px-3 py-3 text-base font-medium text-gray-600 hover:text-tiffany hover:bg-gray-50 rounded-md">오시는 길</a>
-                <a href="https://booking.naver.com/booking/13/bizes/1177662" target="_blank" class="w-full h-[52px] px-3 mt-4 text-base font-bold text-white bg-black hover:bg-gray-800 rounded-xl leading-none inline-flex items-center justify-center">
-                    간편예약
-                </a>
-            </div>
-        </div>
-    </header>
-
-    <main class="pt-20">
+    <main>
         
         <!-- Service Section (전면 배치) -->
         <section id="service" class="py-16 bg-white">
@@ -299,6 +263,19 @@
                         </p>
                     </div>
                 </div>
+
+                <!-- 스튜디오 둘러보기 -->
+                <div class="mt-20">
+                    <p class="text-center text-gray-500 text-sm tracking-widest uppercase mb-6">Studio</p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <div class="aspect-square overflow-hidden bg-gray-100"><img src="./images/studio/studio_1.jpg?v=20260927b" alt="몽크사진관 매장 입구" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"></div>
+                    <div class="aspect-square overflow-hidden bg-gray-100"><img src="./images/studio/studio_2.jpg?v=20260927b" alt="메이크업 공간" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"></div>
+                    <div class="aspect-square overflow-hidden bg-gray-100"><img src="./images/studio/studio_3.jpg?v=20260927b" alt="촬영 모니터" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"></div>
+                    <div class="aspect-square overflow-hidden bg-gray-100"><img src="./images/studio/studio_4.jpg?v=20260927b" alt="스트로브 조명" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"></div>
+                    <div class="aspect-square overflow-hidden bg-gray-100"><img src="./images/studio/studio_5.jpg?v=20260927b" alt="인화 프린터" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"></div>
+                    <div class="aspect-square overflow-hidden bg-gray-100"><img src="./images/studio/studio_6.jpg?v=20260927b" alt="면접 의상" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"></div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -338,45 +315,74 @@
 
         <!-- Location & Contact (네비게이션 바로 위로 배치) -->
         <section id="contact" class="py-20 bg-white border-t border-gray-100">
-            <div class="max-w-4xl mx-auto px-6 text-center">
+            <div class="max-w-5xl mx-auto px-6">
                 <div class="text-center mb-10">
                     <span class="text-gray-300 font-bold tracking-widest text-sm uppercase">Location</span>
                     <h2 class="font-serif text-3xl md:text-4xl font-semibold text-gray-900 mt-2">오시는 길</h2>
+                    <p class="text-gray-500 mt-3 break-keep">미사역 지하 연결 · 그랑파사쥬 B1층 다이소 바로 옆</p>
                 </div>
 
-                <div class="bg-gray-50 rounded-3xl p-10 md:p-14 shadow-sm border border-gray-100">
-                    <img src="/images/monk-logo.png" alt="몽크사진관" class="h-8 w-auto mb-6">
-                    <p class="text-gray-600 text-lg leading-relaxed mb-6 break-keep">
-                        경기도 하남시 미사강변동로 95<br>
-                        그랑파사쥬 B1029호 (미사역 연결)
-                    </p>
+                <!-- 지도 -->
+                <div class="relative z-0 w-full aspect-[4/3] md:aspect-[16/7] bg-gray-100 border border-gray-200 overflow-hidden">
+                    <div id="studio-map" class="w-full h-full" role="img" aria-label="몽크사진관과 주차장 입구 위치 지도"></div>
+                    <div id="studio-map-hint" class="hidden md:block pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 z-10 px-3 py-1.5 rounded-lg bg-black/70 text-white text-xs transition-opacity duration-300">지도를 클릭하면 마우스 휠로 확대·축소할 수 있어요</div>
+                </div>
 
-                    <!-- 네이버 지도 길찾기 -->
-                    <div class="mb-12">
-                        <a href="https://map.naver.com/p/entry/place/1454242520" target="_blank" rel="noopener" class="px-6 h-11 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors duration-300 inline-flex items-center justify-center gap-2 leading-none">
-                            <i data-lucide="map-pin" class="w-4 h-4"></i><span>네이버 지도로 길찾기</span>
-                        </a>
+                <!-- 지도 앱 버튼 -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
+                    <a href="https://map.naver.com/p/entry/place/1454242520" target="_blank" rel="noopener" class="h-12 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors inline-flex items-center justify-center gap-2 leading-none">
+                        <i data-lucide="navigation" class="w-4 h-4"></i><span>네이버 지도 길찾기</span>
+                    </a>
+                    <a href="https://m.place.naver.com/place/1454242520/home" target="_blank" rel="noopener" class="h-12 bg-white border border-gray-300 text-gray-800 font-bold rounded-xl hover:border-gray-500 transition-colors inline-flex items-center justify-center gap-2 leading-none">
+                        <i data-lucide="star" class="w-4 h-4"></i><span>네이버 지도에 저장</span>
+                    </a>
+                    <a href="https://map.kakao.com/link/to/몽크사진관,37.5642342,127.1917733" target="_blank" rel="noopener" class="h-12 bg-white border border-gray-300 text-gray-800 font-bold rounded-xl hover:border-gray-500 transition-colors inline-flex items-center justify-center gap-2 leading-none">
+                        <i data-lucide="map" class="w-4 h-4"></i><span>카카오맵 길찾기</span>
+                    </a>
+                </div>
+                <p class="text-center text-xs text-gray-400 mt-3 break-keep">'네이버 지도에 저장'을 누른 뒤 열리는 화면에서 <b class="text-gray-600">☆ 저장</b>(별표)을 누르면 다음에 바로 찾으실 수 있어요.</p>
+
+                <!-- 기본 정보 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+                    <div class="border border-gray-200 rounded-2xl p-6 md:p-8">
+                        <div class="flex items-center gap-2 mb-4 text-gray-900 font-semibold"><i data-lucide="map-pin" class="w-5 h-5 text-gray-500"></i>주소 · 연락처</div>
+                        <p class="text-gray-700 leading-relaxed break-keep">경기도 하남시 미사강변동로 95<br>그랑파사쥬 B1029호 (미사역 연결)</p>
+                        <a href="tel:031-791-5030" class="inline-flex items-center gap-2 mt-4 text-gray-900 font-semibold hover:underline"><i data-lucide="phone" class="w-4 h-4 text-gray-500"></i>031-791-5030</a>
+                        <p class="flex items-center gap-2 mt-3 text-gray-700"><i data-lucide="square-parking" class="w-4 h-4 text-gray-500"></i>건물 지하 2층 주차 · 90분 무료</p>
                     </div>
+                    <div class="border border-gray-200 rounded-2xl p-6 md:p-8">
+                        <div class="flex items-center gap-2 mb-4 text-gray-900 font-semibold"><i data-lucide="clock" class="w-5 h-5 text-gray-500"></i>영업시간</div>
+                        <ul class="text-gray-700 divide-y divide-gray-100">
+                            <li class="flex justify-between py-2.5"><span>월·수·목·금·토</span><span>11:00 – 19:30</span></li>
+                            <li class="flex justify-between py-2.5"><span>일요일</span><span>11:00 – 19:00</span></li>
+                            <li class="flex justify-between py-2.5"><span>화요일</span><span class="font-semibold text-gray-900">정기휴무</span></li>
+                        </ul>
+                    </div>
+                </div>
 
-                    <div class="flex flex-col md:flex-row justify-center gap-8 md:gap-16 text-gray-600">
-                        <div class="flex flex-col items-center group">
-                            <div class="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center mb-4 text-tiffany group-hover:bg-tiffany group-hover:text-white transition-colors shadow-sm">
-                                <i data-lucide="phone" class="w-5 h-5"></i>
-                            </div>
-                            <span class="text-lg font-medium group-hover:text-tiffany transition-colors">031-791-5030</span>
+                <!-- 찾아오는 길 -->
+                <h3 class="text-xl font-semibold text-gray-900 mt-12 mb-4">찾아오는 길</h3>
+                <div class="flex flex-col gap-3">
+                    <div class="bg-gray-50 rounded-2xl p-6 md:px-8 md:py-6 md:flex md:gap-10">
+                        <div class="flex items-center gap-2 mb-4 md:mb-0 md:w-40 md:flex-shrink-0 md:items-start leading-6 text-gray-900 font-semibold"><i data-lucide="train-front" class="w-5 h-5 text-gray-500"></i>지하철로 오실 때</div>
+                        <div class="flex-1 space-y-0.5">
+                        <p class="text-gray-700 leading-6 break-keep">미사역 <strong class="font-semibold text-gray-900">1번 출구</strong> 지하 1층, 지상으로 올라가는 에스컬레이터 오른쪽에 그랑파사쥬 건물로 들어오는 연결통로가 있습니다.</p>
+                        <p class="text-gray-700 leading-6 break-keep">그랑파사쥬로 들어와 앞으로 1분 정도 걸으시면 다이소가 보이고, <strong class="font-semibold text-gray-900">왼쪽에 몽크사진관</strong>이 있습니다.</p>
+                        <p class="text-gray-500 leading-6 break-keep">미사역 지하 1층과 그랑파사쥬 지하 1층이 연결되어 있어 역에서 1분이면 오실 수 있어요.</p>
                         </div>
-                        <div class="flex flex-col items-center group">
-                            <div class="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center mb-4 text-tiffany group-hover:bg-tiffany group-hover:text-white transition-colors shadow-sm">
-                                <i data-lucide="clock" class="w-5 h-5"></i>
-                            </div>
-                            <span class="text-lg font-medium group-hover:text-tiffany transition-colors">11:00 - 19:30</span>
-                            <span class="text-sm text-gray-400 mt-1">매주 화요일 휴무</span>
+                    </div>
+                    <div class="bg-gray-50 rounded-2xl p-6 md:px-8 md:py-6 md:flex md:gap-10">
+                        <div class="flex items-center gap-2 mb-4 md:mb-0 md:w-40 md:flex-shrink-0 md:items-start leading-6 text-gray-900 font-semibold"><i data-lucide="car" class="w-5 h-5 text-gray-500"></i>자동차로 오실 때</div>
+                        <div class="flex-1 space-y-0.5">
+                        <p class="text-gray-700 leading-6 break-keep"><strong class="font-semibold text-gray-900">지하 2층 다이소 쪽</strong>에 주차하시고 고메스퀘어 쪽 에스컬레이터로 올라오시면 몽크사진관이 있습니다.</p>
+                        <p class="text-gray-700 leading-6 break-keep">주차는 <strong class="font-semibold text-gray-900">90분 무료</strong>입니다.</p>
                         </div>
-                        <div class="flex flex-col items-center group">
-                            <div class="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center mb-4 text-tiffany group-hover:bg-tiffany group-hover:text-white transition-colors shadow-sm">
-                                <i data-lucide="car" class="w-5 h-5"></i>
-                            </div>
-                            <span class="text-lg font-medium group-hover:text-tiffany transition-colors">건물 내 무료 주차 지원</span>
+                    </div>
+                    <div class="bg-gray-50 rounded-2xl p-6 md:px-8 md:py-6 md:flex md:gap-10">
+                        <div class="flex items-center gap-2 mb-4 md:mb-0 md:w-40 md:flex-shrink-0 md:items-start leading-6 text-gray-900 font-semibold"><i data-lucide="map-pinned" class="w-5 h-5 text-gray-500"></i>강동구에서 오실 때</div>
+                        <div class="flex-1 space-y-0.5">
+                        <p class="text-gray-700 leading-6 break-keep">5호선 강일역에서 한 정거장, 상일동역에서 두 정거장, 고덕역에서 세 정거장, 명일역에서 네 정거장입니다. 미사역 1번 출구로 나오시면 그랑파사쥬로 바로 연결됩니다.</p>
+                        <p class="text-gray-700 leading-6 break-keep">차로는 고덕·상일동에서 10분 거리예요. 주차가 90분 무료라 아이나 부모님과 함께 오셔도 여유가 있습니다.</p>
                         </div>
                     </div>
                 </div>
@@ -417,6 +423,43 @@
     <script>
         lucide.createIcons();
 
+        // 오시는 길 지도 — 사진관 + 주차장 입구 (OpenFreeMap, 키 불필요)
+        (function () {
+            if (!window.maplibregl) return;
+            var MAP_STYLE = 'bright'; // 브라이트(컬러)
+            var STUDIO = [127.1917733, 37.5642342];
+            var PARKING = [127.1913909, 37.5643338]; // 스타벅스 미사역그랑파사쥬점 옆 (꾸 확인)
+            var map = new maplibregl.Map({
+                container: 'studio-map',
+                style: 'https://tiles.openfreemap.org/styles/' + MAP_STYLE,
+                center: [127.1921, 37.5638],
+                zoom: 17,
+                scrollZoom: false,
+                attributionControl: { compact: true }
+            });
+            map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
+            // 지명은 한글로만
+            map.on('load', function () {
+                map.getStyle().layers.forEach(function (l) {
+                    if (l.layout && l.layout['text-field']) map.setLayoutProperty(l.id, 'text-field', ['coalesce', ['get', 'name:ko'], ['get', 'name']]);
+                });
+            });
+            function pin(lngLat, bg, mark, label, extra) {
+                var el = document.createElement('div');
+                el.className = 'map-pin' + (extra ? ' ' + extra : '');
+                el.innerHTML = '<b style="background:' + bg + '">' + mark + '</b><span>' + label + '</span>';
+                new maplibregl.Marker({ element: el, anchor: 'left', offset: [extra ? -19 : -14, 0] }).setLngLat(lngLat).addTo(map);
+            }
+            pin(STUDIO, '#fff', '<img src="/images/studio-icon-192.png" alt="" class="w-full h-full rounded-full">', '몽크사진관 (B1)', 'map-pin-logo');
+            pin(PARKING, '#2563EB', 'P', '주차장 입구 · 스타벅스 옆');
+            pin([127.1928, 37.5633], '#996CAC', '5', '미사역'); // 5호선 역 위치(대략) — 1번 출구와 지하 연결
+
+            // 마우스 휠 확대·축소: 지도를 한 번 클릭하면 켜지고, 지도 밖으로 나가면 꺼진다 (페이지 스크롤 방해 방지)
+            var hint = document.getElementById('studio-map-hint');
+            map.on('click', function () { map.scrollZoom.enable(); if (hint) hint.classList.add('opacity-0'); });
+            map.getContainer().addEventListener('mouseleave', function () { map.scrollZoom.disable(); if (hint) hint.classList.remove('opacity-0'); });
+        })();
+
         // Header Scroll Effect
         const header = document.getElementById('header');
         window.addEventListener('scroll', () => {
@@ -428,20 +471,6 @@
             }
         });
 
-        // Mobile Menu Toggle
-        const btn = document.getElementById('mobile-menu-btn');
-        const menu = document.getElementById('mobile-menu');
-        
-        btn.addEventListener('click', () => {
-            menu.classList.toggle('hidden');
-        });
-
-        // Close mobile menu on link click
-        menu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                menu.classList.add('hidden');
-            });
-        });
 
         // --- Lightbox Functions ---
         const modal = document.getElementById('lightbox-modal');

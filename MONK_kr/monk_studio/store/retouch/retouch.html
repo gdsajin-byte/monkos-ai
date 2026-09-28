@@ -19,17 +19,26 @@
 <body class="bg-gray-50 text-gray-900">
 
 
-<header class="bg-white border-b border-gray-100">
-  <div class="max-w-xl mx-auto px-6 h-20 flex items-center justify-between">
-    <a href="../../monk_studio.html" class="flex items-center group"><i data-lucide="arrow-left" class="h-6 w-6 text-gray-400 mr-2"></i><img src="/images/monk-logo.png" alt="몽크사진관" class="h-9 w-auto translate-y-[7px]"></a>
-    <a href="#" class="px-5 h-10 border border-gray-300 text-gray-600 font-bold rounded-xl hover:border-gray-500 transition-colors text-sm leading-none inline-flex items-center justify-center">처음으로</a>
-  </div>
-</header>
+<header id="header"></header>
+<script src="/monk_studio/studio-header.js"></script>
 
 <main class="max-w-xl mx-auto px-6 py-12">
 
   <h1 class="text-2xl font-semibold text-center mb-2">온라인 사진 보정</h1>
   <p class="text-center text-sm text-gray-500 mb-10">가지고 계신 사진을 보정해 파일로 보내드립니다</p>
+
+  <!-- 보정 전후 예시 -->
+  <section class="mb-12">
+    <p class="font-bold text-center mb-1">이렇게 다듬어 드립니다</p>
+    <p class="text-center text-sm text-gray-500 mb-5">원래 얼굴은 그대로, 눈·헤어·치아·자세만 자연스럽게</p>
+    <div class="space-y-3">
+      <img src="./images/before_after_1.jpg?v=20260927" alt="보정 전후 예시 1" loading="lazy" class="w-full border border-gray-200 bg-white">
+      <img src="./images/before_after_2.jpg?v=20260927" alt="보정 전후 예시 2" loading="lazy" class="w-full border border-gray-200 bg-white">
+      <img src="./images/before_after_3.jpg?v=20260927" alt="보정 전후 예시 3" loading="lazy" class="w-full border border-gray-200 bg-white">
+      <img src="./images/before_after_4.jpg?v=20260927" alt="보정 전후 예시 4" loading="lazy" class="w-full border border-gray-200 bg-white">
+      <img src="./images/before_after_5.jpg?v=20260927" alt="보정 전후 예시 5" loading="lazy" class="w-full border border-gray-200 bg-white">
+    </div>
+  </section>
 
   <div class="bg-white rounded-3xl border border-gray-200 p-8 space-y-8">
 
@@ -70,7 +79,7 @@
     </div>
 
     <!-- 보정 종류 -->
-    <div id="tiers" hidden>
+    <div id="tiers">
       <p class="font-bold mb-3">어떤 보정을 원하시나요</p>
       <div class="space-y-3">
         <button class="tier on w-full border border-gray-200 rounded-2xl p-5 text-left" data-price="0">
@@ -104,7 +113,7 @@
     </div>
 
     <!-- 요청사항 -->
-    <div id="memo" hidden>
+    <div id="memo">
       <p class="font-bold mb-2">요청사항</p>
       <p class="text-sm text-gray-500 mb-3">고치고 싶으신 부분을 적어주세요. 자세할수록 좋습니다.</p>
       <textarea rows="4" placeholder="예) 턱 주변 잡티만 지워주시고 피부 결은 그대로 두세요. 너무 하얗게는 하지 말아주세요." class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany text-sm leading-relaxed"></textarea>
@@ -152,8 +161,8 @@ lucide.createIcons();
 (function(){
   var $=function(id){return document.getElementById(id)};
   var dz=$('drop'), shots=$('shots'), del=$('shotDel'), tiers=$('tiers'), memo=$('memo');
-  dz.onclick=function(){ shots.hidden=false; tiers.hidden=false; memo.hidden=false; };
-  del.onclick=function(e){ e.stopPropagation(); shots.hidden=true; tiers.hidden=true; memo.hidden=true; };
+  dz.onclick=function(){ shots.hidden=false; };
+  del.onclick=function(e){ e.stopPropagation(); shots.hidden=true; };
   document.querySelectorAll('.tier').forEach(function(b){
     b.onclick=function(){ document.querySelectorAll('.tier').forEach(function(x){x.classList.remove('on')}); b.classList.add('on'); };
   });

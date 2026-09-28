@@ -27,21 +27,10 @@
 <body class="bg-white text-gray-800 antialiased">
 
     <!-- Header -->
-    <header class="fixed w-full z-50 bg-white/90 backdrop-blur border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
-            <!-- Back to Monk Studio Lobby -->
-            <a href="../monk_studio.html" class="flex items-center gap-2 group cursor-pointer">
-                <i data-lucide="arrow-left" class="h-6 w-6 text-gray-400 group-hover:text-tiffany transition-colors"></i>
-                <span class="font-bold text-lg text-gray-600 group-hover:text-gray-900">우정/단체관</span>
-            </a>
-            <!-- Home Button -->
-            <a href="../../index.html" class="text-gray-400 hover:text-gray-900 transition">
-                <i data-lucide="home" class="h-6 w-6"></i>
-            </a>
-        </div>
-    </header>
+    <header id="header"></header>
+    <script src="/monk_studio/studio-header.js"></script>
 
-    <main class="pt-20">
+    <main>
         <!-- Content restored from original #page-group -->
         <div class="bg-gradient-to-r from-gray-50 to-tiffany/10 py-16">
             <div class="max-w-4xl mx-auto px-4 text-center">
@@ -56,7 +45,7 @@
         <div class="max-w-7xl mx-auto px-4 py-16">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                 <!-- 이미지 경로: 현재 폴더 안의 images 폴더 참조 -->
-                <img src="./images/main.jpg?v=20260924" onerror="this.src='https://placehold.co/800x600/f3f4f6/0ABAB5?text=Friends+Forever'" alt="Group Photo Detail" class="rounded-xl shadow-lg w-full h-full object-cover">
+                <img src="./images/group_5.jpg?v=20260927" alt="졸업 가운을 입은 친구들 단체사진" class="w-full h-full max-h-[640px] object-cover">
                 <div class="flex flex-col justify-center">
                     <h3 class="text-3xl font-serif font-bold mb-6">Be Real, Be Fun.</h3>
                     <p class="text-gray-600 mb-8 leading-relaxed">
@@ -73,13 +62,28 @@
                     </div>
                     <div class="flex gap-4">
                         <!-- CTA: 네이버 예약으로 연결 -->
-                        <a href="https://map.naver.com/p/entry/place/1356616788" target="_blank" class="px-8 py-3 bg-tiffany text-white font-bold rounded-lg hover:bg-tiffany-dark transition-colors">우정사진 예약하기</a>
+                        <a href="https://booking.naver.com/booking/13/bizes/1177662" target="_blank" rel="noopener" class="px-8 py-3 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors">우정사진 예약하기</a>
                         <!-- Back Button: 몽크사진관 로비로 연결 -->
                         <a href="../monk_studio.html" class="px-8 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">메인으로</a>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- 단체 샘플 -->
+        <section class="max-w-7xl mx-auto px-4 pb-20">
+            <h3 class="text-2xl font-serif font-semibold text-center mb-10">함께 찍은 순간들</h3>
+            <div class="columns-2 md:columns-4 gap-4">
+                <div class="mb-4 break-inside-avoid overflow-hidden bg-gray-100"><img src="./images/group_1.jpg?v=20260927" width="661" height="472" alt="몽크사진관 단체사진 샘플 1" loading="lazy" class="w-full h-auto block"></div>
+                <div class="mb-4 break-inside-avoid overflow-hidden bg-gray-100"><img src="./images/group_2.jpg?v=20260927" width="661" height="472" alt="몽크사진관 단체사진 샘플 2" loading="lazy" class="w-full h-auto block"></div>
+                <div class="mb-4 break-inside-avoid overflow-hidden bg-gray-100"><img src="./images/group_3.jpg?v=20260927" width="700" height="500" alt="몽크사진관 단체사진 샘플 3" loading="lazy" class="w-full h-auto block"></div>
+                <div class="mb-4 break-inside-avoid overflow-hidden bg-gray-100"><img src="./images/group_4.jpg?v=20260927" width="472" height="661" alt="몽크사진관 단체사진 샘플 4" loading="lazy" class="w-full h-auto block"></div>
+                <div class="mb-4 break-inside-avoid overflow-hidden bg-gray-100"><img src="./images/group_5.jpg?v=20260927" width="472" height="661" alt="몽크사진관 단체사진 샘플 5" loading="lazy" class="w-full h-auto block"></div>
+                <div class="mb-4 break-inside-avoid overflow-hidden bg-gray-100"><img src="./images/group_6.jpg?v=20260927" width="472" height="661" alt="몽크사진관 단체사진 샘플 6" loading="lazy" class="w-full h-auto block"></div>
+                <div class="mb-4 break-inside-avoid overflow-hidden bg-gray-100"><img src="./images/group_7.jpg?v=20260927" width="591" height="827" alt="몽크사진관 단체사진 샘플 7" loading="lazy" class="w-full h-auto block"></div>
+                <div class="mb-4 break-inside-avoid overflow-hidden bg-gray-100"><img src="./images/group_8.jpg?v=20260927" width="472" height="661" alt="몽크사진관 단체사진 샘플 8" loading="lazy" class="w-full h-auto block"></div>
+            </div>
+        </section>
     </main>
 
     <!-- Footer (간소화) -->
