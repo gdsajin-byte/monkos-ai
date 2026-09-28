@@ -34,7 +34,7 @@
     <div class="flex justify-center gap-6 sm:gap-10" role="tablist">
       <a href="#wedding" data-tab="wedding" role="tab" class="rt-tab py-4 border-b-2 border-transparent text-gray-500 hover:text-gray-900 transition-colors whitespace-nowrap">웨딩 보정·인화</a>
       <a href="#restore" data-tab="restore" role="tab" class="rt-tab py-4 border-b-2 border-transparent text-gray-500 hover:text-gray-900 transition-colors whitespace-nowrap">옛날사진 복원</a>
-      <a href="#id" data-tab="id" role="tab" class="rt-tab py-4 border-b-2 border-transparent text-gray-500 hover:text-gray-900 transition-colors whitespace-nowrap">취업·증명 보정</a>
+      <a href="#id" data-tab="id" role="tab" class="rt-tab py-4 border-b-2 border-transparent text-gray-500 hover:text-gray-900 transition-colors whitespace-nowrap">증명사진 보정</a>
     </div>
   </nav>
 
@@ -84,8 +84,8 @@
   </div>
   <div data-panel="id" class="space-y-4" hidden>
     <div class="text-center mb-6">
-      <h2 class="text-xl font-semibold mb-2">취업·증명사진 보정</h2>
-      <p class="text-sm text-gray-600 leading-relaxed break-keep">이력서에 붙일 <b class="text-gray-900">취업사진</b>, 인상은 깔끔하게 얼굴은 그대로.<br>가지고 계신 증명사진의 <b class="text-gray-900">얼굴을 보정</b>하거나 <b class="text-gray-900">옷을 정장으로 바꿔</b> 드립니다. 원래 얼굴은 그대로 두고, 흠이 되는 부분만 정리합니다.</p>
+      <h2 class="text-xl font-semibold mb-2">증명사진 보정</h2>
+      <p class="text-sm text-gray-600 leading-relaxed break-keep">가지고 계신 <b class="text-gray-900">증명사진</b>, 인상은 깔끔하게 얼굴은 그대로.<br>가지고 계신 증명사진의 <b class="text-gray-900">얼굴을 보정</b>하거나 <b class="text-gray-900">옷을 정장으로 바꿔</b> 드립니다. 원래 얼굴은 그대로 두고, 흠이 되는 부분만 정리합니다.</p>
     </div>
     <div class="space-y-3">
       <img src="./images/before_after_1.jpg?v=20260927" alt="증명사진 보정 전후 — 눈" loading="lazy" class="w-full border border-gray-200 bg-white">
@@ -94,7 +94,7 @@
       <img src="./images/before_after_4.jpg?v=20260927" alt="증명사진 보정 전후 — 코" loading="lazy" class="w-full border border-gray-200 bg-white">
       <img src="./images/before_after_5.jpg?v=20260927" alt="증명사진 보정 전후 — 자세·의상" loading="lazy" class="w-full border border-gray-200 bg-white">
     </div>
-    <div class="bg-white border border-gray-200 rounded-2xl p-6"><p class="font-bold mb-3">이런 걸 해 드립니다</p><ul class="chk space-y-2 text-sm text-gray-700 leading-relaxed"><li class="break-keep"><b class="text-gray-900">얼굴 보정</b> — 피부 톤, 잡티, 눈, 치아를 깔끔하게</li><li class="break-keep"><b class="text-gray-900">의상 변경</b> — 티셔츠·니트를 정장으로</li><li class="break-keep"><b class="text-gray-900">헤어 변경</b> — 잔머리 정리, 단정한 머리로</li><li class="break-keep"><b class="text-gray-900">규격 맞추기</b> — 이력서·자격증·사원증 크기와 배경색으로</li></ul></div>
+    <div class="bg-white border border-gray-200 rounded-2xl p-6"><p class="font-bold mb-3">이런 걸 해 드립니다</p><ul class="chk space-y-2 text-sm text-gray-700 leading-relaxed"><li class="break-keep"><b class="text-gray-900">얼굴 보정</b> — 피부 톤, 잡티, 눈, 치아를 깔끔하게</li><li class="break-keep"><b class="text-gray-900">의상 변경</b> — 티셔츠·니트를 정장으로</li><li class="break-keep"><b class="text-gray-900">헤어 변경</b> — 잔머리 정리, 단정한 머리로</li><li class="break-keep"><b class="text-gray-900">규격 맞추기</b> — 필요한 크기와 배경색으로</li></ul></div>
     <div class="bg-white border border-gray-200 rounded-2xl p-6 flex items-center justify-between gap-4">
       <p class="font-bold">가격</p>
       <p class="text-right"><span class="font-semibold text-gray-900">얼굴 보정 또는 의상 변경 10,000원</span></p>
@@ -157,7 +157,7 @@
         <button class="tier w-full border border-gray-200 rounded-2xl p-5 text-left" data-kind="id">
           <div class="flex justify-between items-start gap-3">
             <div>
-              <p class="font-bold mb-1">취업·증명사진 보정</p>
+              <p class="font-bold mb-1">증명사진 보정</p>
               <p class="text-xs text-gray-600 leading-relaxed break-keep">얼굴 보정(피부·잡티·눈·치아), 의상 변경(정장으로), 헤어 변경을 해 드립니다. 원래 얼굴은 그대로 지킵니다.</p>
             </div>
             <span class="font-bold text-sm whitespace-nowrap text-gray-900">10,000원</span>
@@ -220,7 +220,7 @@ lucide.createIcons();
   // 보정 항목에 따라 요청사항 예시를 바꾼다
   var EX={
     wedding:'예) 예식일 11월 15일, 포토테이블용 5장입니다. 액자는 8x10 2개, 5x7 3개예요. 피부 톤 정리하고 색감은 따뜻하게 맞춰 주세요.',
-    id:'예) 취업용입니다. 티셔츠를 검은 정장으로 바꿔 주시고, 피부 잡티와 잔머리 정리해 주세요.',
+    id:'예) 티셔츠를 검은 정장으로 바꿔 주시고, 피부 잡티와 잔머리 정리해 주세요.',
     restore:'예) 부모님 결혼사진입니다. 가운데 접힌 자국과 얼룩을 지워 주시고, 색이 바랜 부분을 살려 주세요. 납골당용 작은 사진 1장 인화해 주세요.'
   };
   // 보정 항목 탭 — 주소 #wedding / #id / #restore 로 바로 열린다. 탭과 주문 항목을 함께 맞춘다
