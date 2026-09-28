@@ -31,8 +31,8 @@
 
   <!-- 보정 항목 탭 -->
   <nav class="sticky top-20 z-40 bg-gray-50/95 backdrop-blur-md -mx-6 px-6 mb-8 border-b border-gray-200">
-    <div class="flex justify-center gap-6 sm:gap-10" role="tablist">
-      <a href="#wedding" data-tab="wedding" role="tab" class="rt-tab py-4 border-b-2 border-transparent text-gray-500 hover:text-gray-900 transition-colors whitespace-nowrap">웨딩 보정·인화</a>
+    <div class="flex justify-start sm:justify-center gap-6 sm:gap-10 overflow-x-auto" role="tablist">
+      <a href="#wedding" data-tab="wedding" role="tab" class="rt-tab py-4 border-b-2 border-transparent text-gray-500 hover:text-gray-900 transition-colors whitespace-nowrap">웨딩 보정·인화·배송</a>
       <a href="#restore" data-tab="restore" role="tab" class="rt-tab py-4 border-b-2 border-transparent text-gray-500 hover:text-gray-900 transition-colors whitespace-nowrap">옛날사진 복원</a>
       <a href="#id" data-tab="id" role="tab" class="rt-tab py-4 border-b-2 border-transparent text-gray-500 hover:text-gray-900 transition-colors whitespace-nowrap">증명사진 보정</a>
     </div>
@@ -40,17 +40,23 @@
 
   <div data-panel="wedding" class="space-y-4">
     <div class="text-center mb-6">
-      <h2 class="text-xl font-semibold mb-2">웨딩사진 보정 + 인화</h2>
-      <p class="text-sm text-gray-600 leading-relaxed break-keep">예식장 <b class="text-gray-900">포토테이블</b>에 올릴 사진, 보정부터 인화까지 한 번에 준비해 드립니다.<br>하객이 가까이서 보는 사진이라 작은 흠도 눈에 띕니다.</p>
+      <h2 class="text-xl font-semibold mb-2">웨딩사진 보정 · 인화 · 배송</h2>
+      <p class="text-sm text-gray-600 leading-relaxed break-keep">예식장 <b class="text-gray-900">포토테이블</b>에 올릴 사진, 보정부터 인화, 배송까지 한 번에 맡기세요.<br>하객이 가까이서 보는 사진이라 작은 흠도 눈에 띕니다.</p>
     </div>
+    <div class="grid grid-cols-3 gap-2">
+      <div class="bg-white border-2 border-gray-900 rounded-2xl py-5 text-center"><i data-lucide="wand-2" class="w-7 h-7 mx-auto mb-2"></i><p class="font-bold">보정</p><p class="text-xs text-gray-500 mt-0.5">장당 3,000원</p></div>
+      <div class="bg-white border-2 border-gray-900 rounded-2xl py-5 text-center"><i data-lucide="printer" class="w-7 h-7 mx-auto mb-2"></i><p class="font-bold">인화</p><p class="text-xs text-gray-500 mt-0.5">액자 크기 맞춤</p></div>
+      <div class="bg-white border-2 border-gray-900 rounded-2xl py-5 text-center"><i data-lucide="truck" class="w-7 h-7 mx-auto mb-2"></i><p class="font-bold">배송</p><p class="text-xs text-gray-500 mt-0.5">집으로 보내드립니다</p></div>
+    </div>
+    <p class="text-center text-sm font-semibold text-gray-900 -mt-1">파일만 보내시면, 인화된 사진이 집으로 옵니다</p>
     <div class="bg-gray-900 text-white rounded-2xl px-6 py-5 flex items-center gap-4">
       <i data-lucide="calendar-check" class="w-8 h-8 flex-none text-[#80CBC4]"></i>
       <div>
         <p class="font-bold text-lg">예식 날짜에 100% 맞춰 드립니다</p>
-        <p class="text-sm text-gray-300 break-keep">날짜만 알려 주시면 보정부터 인화까지 그 전에 끝내 드립니다.</p>
+        <p class="text-sm text-gray-300 break-keep">날짜만 알려 주시면 보정·인화·배송까지 그 전에 끝내 드립니다.</p>
       </div>
     </div>
-    <div class="bg-white border border-gray-200 rounded-2xl p-6"><p class="font-bold mb-3">보정과 인화를 한 곳에서</p><ol class="space-y-2 text-sm text-gray-700"><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">1</span><span class="break-keep pt-0.5"><b class="text-gray-900">사진 보내기</b> — 스냅·셀프웨딩 원본 파일과 올릴 장수를 알려 주세요</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">2</span><span class="break-keep pt-0.5"><b class="text-gray-900">보정</b> — 피부 톤, 잡티, 라인, 배경을 다듬고 여러 장의 색감을 하나로 맞춥니다</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">3</span><span class="break-keep pt-0.5"><b class="text-gray-900">확인</b> — 보정본을 먼저 보여드리고 고칠 곳을 반영합니다</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">4</span><span class="break-keep pt-0.5"><b class="text-gray-900">인화</b> — 포토테이블 액자 크기에 맞춰 인화합니다</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">5</span><span class="break-keep pt-0.5"><b class="text-gray-900">받기</b> — 예식 전에 매장에서 받으시거나 우편으로 받습니다</span></li></ol></div>
+    <div class="bg-white border border-gray-200 rounded-2xl p-6"><p class="font-bold mb-3">진행 순서</p><ol class="space-y-2 text-sm text-gray-700"><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">1</span><span class="break-keep pt-0.5"><b class="text-gray-900">사진 보내기</b> — 스냅·셀프웨딩 원본 파일과 올릴 장수를 알려 주세요</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">2</span><span class="break-keep pt-0.5"><b class="text-gray-900">보정</b> — 피부 톤, 잡티, 라인, 배경을 다듬고 여러 장의 색감을 하나로 맞춥니다</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">3</span><span class="break-keep pt-0.5"><b class="text-gray-900">확인</b> — 보정본을 먼저 보여드리고 고칠 곳을 반영합니다</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">4</span><span class="break-keep pt-0.5"><b class="text-gray-900">인화</b> — 포토테이블 액자 크기에 맞춰 인화합니다</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">5</span><span class="break-keep pt-0.5"><b class="text-gray-900">배송</b> — 예식 전에 집으로 보내드립니다. 매장에서 받으셔도 됩니다</span></li></ol></div>
     <div class="bg-white border border-gray-200 rounded-2xl p-6"><p class="font-bold mb-3">이런 걸 다듬어 드립니다</p><ul class="chk space-y-2 text-sm text-gray-700 leading-relaxed"><li class="break-keep">피부 톤과 잡티 — 결은 살리고 얼룩만 정리합니다</li><li class="break-keep">팔·허리·턱선 — 티 나지 않게 자연스럽게</li><li class="break-keep">배경 정리 — 지나가는 사람, 전선 같은 방해물 지우기</li><li class="break-keep">색감 통일 — 테이블에 나란히 놓여도 한 세트처럼 보이게</li><li class="break-keep">드레스·턱시도 — 주름, 얼룩, 들뜬 부분 정리</li></ul></div>
     <div class="bg-white border border-gray-200 rounded-2xl p-6"><p class="font-bold mb-3">주문하실 때 알려 주세요</p><ul class="chk space-y-2 text-sm text-gray-700 leading-relaxed"><li class="break-keep"><b class="text-gray-900">예식 날짜</b> — 이 날짜에 100% 맞춰 드립니다</li><li class="break-keep">올릴 장수와 액자 크기 (액자를 갖고 계시면 안쪽 크기)</li><li class="break-keep">원하시는 분위기 (따뜻하게, 맑게 등)</li><li class="break-keep">받으신 <b class="text-gray-900">원본 파일</b>로 보내 주세요. 카카오톡으로 받은 사진은 화질이 떨어집니다</li></ul></div>
     <div class="bg-white border border-gray-200 rounded-2xl p-6">
@@ -139,8 +145,8 @@
         <button class="tier on w-full border border-gray-200 rounded-2xl p-5 text-left" data-kind="wedding">
           <div class="flex justify-between items-start gap-3">
             <div>
-              <p class="font-bold mb-1">웨딩사진 보정 + 인화</p>
-              <p class="text-xs text-gray-600 leading-relaxed break-keep">예식장 포토테이블에 올릴 사진을 보정하고, 액자 크기에 맞춰 인화까지 해 드립니다.</p>
+              <p class="font-bold mb-1">웨딩사진 보정 · 인화 · 배송</p>
+              <p class="text-xs text-gray-600 leading-relaxed break-keep">포토테이블에 올릴 사진을 보정하고, 액자 크기에 맞춰 인화해 집으로 보내드립니다.</p>
             </div>
             <span class="font-bold text-sm whitespace-nowrap text-gray-900">보정 장당 3,000원</span>
           </div>
