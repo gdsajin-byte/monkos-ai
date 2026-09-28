@@ -648,3 +648,8 @@
 - 신설: project_process_as_curriculum_continuity.md (과정=교육, 연속성 커널, 커리큘럼=GitHub·CF·GCP 신원/권한/비밀, 사람 소유 고리)
 - 갱신: project_model_placement.md (Opus 5.5 체감·판정 지표=작가님 정정 횟수·잠정 배분)
 - MEMORY.md 인덱스 +3행
+
+## [2026-09-28 14:19 KST] iMac/민아
+- 신설: project_platform_vs_single_identity.md (포털 비전 vs 단일 정체성 — 작가님 09-28 자기진단, 입구/뒷단 분리 해법 미결)
+- MEMORY.md 인덱스 +1행
+- [2026-09-28 19:14 KST] 신설: project_tier_parallel_visibility.md (티어 동시 제시 원칙, GA4 30일 퍼널 근거) · MEMORY.md +1행
