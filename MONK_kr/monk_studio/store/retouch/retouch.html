@@ -13,7 +13,9 @@
 <style>
   body{font-family:'Pretendard',-apple-system,sans-serif !important}
   .text-tiffany{color:#0ABAB5} .border-tiffany{border-color:#0ABAB5}
-  .tier.on{border-color:#0ABAB5;background:rgba(10,186,181,.06);border-width:2px}
+  .tier.on{border-color:#111827;background:#F9FAFB;border-width:2px}
+  .chk li{position:relative;padding-left:18px}
+  .chk li::before{content:"";position:absolute;left:2px;top:9px;width:6px;height:6px;border-radius:99px;background:#80CBC4}
 </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -25,21 +27,65 @@
 <main class="max-w-xl mx-auto px-6 py-12">
 
   <h1 class="text-2xl font-semibold text-center mb-2">온라인 사진 보정</h1>
-  <p class="text-center text-sm text-gray-500 mb-10">가지고 계신 사진을 보정해 파일로 보내드립니다</p>
+  <p class="text-center text-sm text-gray-500 mb-8">가지고 계신 사진을 작가가 직접 손봐 파일로 보내드립니다</p>
 
-  <!-- 보정 전후 예시 -->
-  <section class="mb-12">
-    <p class="font-bold text-center mb-1">이렇게 다듬어 드립니다</p>
-    <p class="text-center text-sm text-gray-500 mb-5">원래 얼굴은 그대로, 눈·헤어·치아·자세만 자연스럽게</p>
-    <div class="space-y-3">
-      <img src="./images/before_after_1.jpg?v=20260927" alt="보정 전후 예시 1" loading="lazy" class="w-full border border-gray-200 bg-white">
-      <img src="./images/before_after_2.jpg?v=20260927" alt="보정 전후 예시 2" loading="lazy" class="w-full border border-gray-200 bg-white">
-      <img src="./images/before_after_3.jpg?v=20260927" alt="보정 전후 예시 3" loading="lazy" class="w-full border border-gray-200 bg-white">
-      <img src="./images/before_after_4.jpg?v=20260927" alt="보정 전후 예시 4" loading="lazy" class="w-full border border-gray-200 bg-white">
-      <img src="./images/before_after_5.jpg?v=20260927" alt="보정 전후 예시 5" loading="lazy" class="w-full border border-gray-200 bg-white">
+  <!-- 보정 항목 탭 -->
+  <nav class="sticky top-20 z-40 bg-gray-50/95 backdrop-blur-md -mx-6 px-6 mb-8 border-b border-gray-200">
+    <div class="flex justify-center gap-6 sm:gap-10" role="tablist">
+      <a href="#wedding" data-tab="wedding" role="tab" class="rt-tab py-4 border-b-2 border-transparent text-gray-500 hover:text-gray-900 transition-colors whitespace-nowrap">웨딩 보정·인화</a>
+      <a href="#id" data-tab="id" role="tab" class="rt-tab py-4 border-b-2 border-transparent text-gray-500 hover:text-gray-900 transition-colors whitespace-nowrap">증명사진 보정</a>
+      <a href="#restore" data-tab="restore" role="tab" class="rt-tab py-4 border-b-2 border-transparent text-gray-500 hover:text-gray-900 transition-colors whitespace-nowrap">옛날사진 복원</a>
     </div>
-  </section>
+  </nav>
 
+  <div data-panel="wedding" class="space-y-4">
+    <div class="text-center mb-6">
+      <h2 class="text-xl font-semibold mb-2">웨딩사진 보정 + 인화</h2>
+      <p class="text-sm text-gray-600 leading-relaxed break-keep">예식장 <b class="text-gray-900">포토테이블</b>에 올릴 사진, 보정부터 인화까지 한 번에 준비해 드립니다.<br>하객이 가까이서 보는 사진이라 작은 흠도 눈에 띕니다.</p>
+    </div>
+    <div class="bg-gray-900 text-white rounded-2xl px-6 py-5 flex items-center gap-4">
+      <i data-lucide="calendar-check" class="w-8 h-8 flex-none text-[#80CBC4]"></i>
+      <div>
+        <p class="font-bold text-lg">예식 날짜에 100% 맞춰 드립니다</p>
+        <p class="text-sm text-gray-300 break-keep">날짜만 알려 주시면 보정부터 인화까지 그 전에 끝내 드립니다.</p>
+      </div>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-2xl p-6"><p class="font-bold mb-3">보정과 인화를 한 곳에서</p><ol class="space-y-2 text-sm text-gray-700"><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">1</span><span class="break-keep pt-0.5"><b class="text-gray-900">사진 보내기</b> — 스냅·셀프웨딩 원본 파일과 올릴 장수를 알려 주세요</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">2</span><span class="break-keep pt-0.5"><b class="text-gray-900">보정</b> — 피부 톤, 잡티, 라인, 배경을 다듬고 여러 장의 색감을 하나로 맞춥니다</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">3</span><span class="break-keep pt-0.5"><b class="text-gray-900">확인</b> — 보정본을 먼저 보여드리고 고칠 곳을 반영합니다</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">4</span><span class="break-keep pt-0.5"><b class="text-gray-900">인화</b> — 포토테이블 액자 크기에 맞춰 인화합니다</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">5</span><span class="break-keep pt-0.5"><b class="text-gray-900">받기</b> — 예식 전에 매장에서 받으시거나 우편으로 받습니다</span></li></ol></div>
+    <div class="bg-white border border-gray-200 rounded-2xl p-6"><p class="font-bold mb-3">이런 걸 다듬어 드립니다</p><ul class="chk space-y-2 text-sm text-gray-700 leading-relaxed"><li class="break-keep">피부 톤과 잡티 — 결은 살리고 얼룩만 정리합니다</li><li class="break-keep">팔·허리·턱선 — 티 나지 않게 자연스럽게</li><li class="break-keep">배경 정리 — 지나가는 사람, 전선 같은 방해물 지우기</li><li class="break-keep">색감 통일 — 테이블에 나란히 놓여도 한 세트처럼 보이게</li><li class="break-keep">드레스·턱시도 — 주름, 얼룩, 들뜬 부분 정리</li></ul></div>
+    <div class="bg-white border border-gray-200 rounded-2xl p-6"><p class="font-bold mb-3">주문하실 때 알려 주세요</p><ul class="chk space-y-2 text-sm text-gray-700 leading-relaxed"><li class="break-keep"><b class="text-gray-900">예식 날짜</b> — 이 날짜에 100% 맞춰 드립니다</li><li class="break-keep">올릴 장수와 액자 크기 (액자를 갖고 계시면 안쪽 크기)</li><li class="break-keep">원하시는 분위기 (따뜻하게, 맑게 등)</li><li class="break-keep">받으신 <b class="text-gray-900">원본 파일</b>로 보내 주세요. 카카오톡으로 받은 사진은 화질이 떨어집니다</li></ul></div>
+    <p class="text-sm text-gray-500 text-center break-keep">장수와 크기를 보고 보정·인화 견적을 함께 알려드립니다. 예식이 가까우면 먼저 전화 주세요.</p>
+  </div>
+  <div data-panel="id" class="space-y-4" hidden>
+    <div class="text-center mb-6">
+      <h2 class="text-xl font-semibold mb-2">증명사진 보정</h2>
+      <p class="text-sm text-gray-600 leading-relaxed break-keep">증명사진은 예쁘게보다 <b class="text-gray-900">정확하게</b>가 먼저입니다.<br>원래 얼굴은 그대로 두고, 흠이 되는 부분만 정리합니다.</p>
+    </div>
+    <div class="space-y-3">
+      <img src="./images/before_after_1.jpg?v=20260927" alt="증명사진 보정 전후 — 눈" loading="lazy" class="w-full border border-gray-200 bg-white">
+      <img src="./images/before_after_2.jpg?v=20260927" alt="증명사진 보정 전후 — 헤어" loading="lazy" class="w-full border border-gray-200 bg-white">
+      <img src="./images/before_after_3.jpg?v=20260927" alt="증명사진 보정 전후 — 치아" loading="lazy" class="w-full border border-gray-200 bg-white">
+      <img src="./images/before_after_4.jpg?v=20260927" alt="증명사진 보정 전후 — 코" loading="lazy" class="w-full border border-gray-200 bg-white">
+      <img src="./images/before_after_5.jpg?v=20260927" alt="증명사진 보정 전후 — 자세·의상" loading="lazy" class="w-full border border-gray-200 bg-white">
+    </div>
+    <div class="bg-white border border-gray-200 rounded-2xl p-6"><p class="font-bold mb-3">용도에 따라 보정 범위가 다릅니다</p><table class="w-full text-sm"><thead><tr class="text-left text-gray-400"><th class="pb-2 font-normal">용도</th><th class="pb-2 font-normal">보정 범위</th></tr></thead><tbody><tr class="border-t border-gray-100"><td class="py-2.5 pr-4 text-gray-700">여권 · 주민등록증 · 운전면허</td><td class="py-2.5 text-gray-500 break-keep">피부 톤·잡티·잔머리 정도만. 얼굴형·눈 크기는 건드리지 않습니다</td></tr><tr class="border-t border-gray-100"><td class="py-2.5 pr-4 text-gray-700">취업 · 자격증 · 사원증</td><td class="py-2.5 text-gray-500 break-keep">인상이 깔끔해 보이도록 조금 더 다듬습니다</td></tr><tr class="border-t border-gray-100"><td class="py-2.5 pr-4 text-gray-700">규격 맞추기</td><td class="py-2.5 text-gray-500 break-keep">용도에 맞는 크기·배경색으로 맞춰 드립니다</td></tr></tbody></table></div>
+    <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 text-sm text-gray-600 leading-relaxed break-keep">
+      <b class="text-gray-900">여권사진은 과하게 보정하면 반려됩니다.</b> 외교부 규정상 앱으로 다듬은 사진, AI로 만든 사진, 배경만 지운 사진은 접수되지 않습니다. 저희는 실물과 같아 보이는 선에서만 손봅니다.
+    </div>
+  </div>
+  <div data-panel="restore" class="space-y-4" hidden>
+    <div class="text-center mb-6">
+      <h2 class="text-xl font-semibold mb-2">옛날사진 복원</h2>
+      <p class="text-sm text-gray-600 leading-relaxed break-keep">색이 바랬거나, 접혔거나, 여러 명이 같이 찍혀 있어도 됩니다.<br>납골당 사진, 제사용 액자, 장수사진으로 다시 만들어 드립니다.</p>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-2xl p-6"><p class="font-bold mb-3">이렇게 되살립니다</p><ol class="space-y-2 text-sm text-gray-700"><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">1</span><span class="break-keep pt-0.5"><b class="text-gray-900">스캔</b> — 사진을 파일로 옮깁니다. 앨범에서 떼지 않아도 됩니다</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">2</span><span class="break-keep pt-0.5"><b class="text-gray-900">색 되살리기</b> — 누렇게 바랜 색을 원래대로 돌립니다</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">3</span><span class="break-keep pt-0.5"><b class="text-gray-900">흠집 정리</b> — 접힌 자국, 찢어진 곳, 얼룩, 긁힘을 지웁니다</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">4</span><span class="break-keep pt-0.5"><b class="text-gray-900">한 분만 남기기</b> — 여러 명이 찍힌 사진이면 한 분만 남기고 배경을 정리합니다</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">5</span><span class="break-keep pt-0.5"><b class="text-gray-900">선명하게</b> — 흐린 부분을 정돈합니다</span></li><li class="flex gap-3"><span class="w-6 h-6 flex-none rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center">6</span><span class="break-keep pt-0.5"><b class="text-gray-900">인화</b> — 필요한 크기로 뽑고 파일도 함께 드립니다</span></li></ol></div>
+    <div class="bg-white border border-gray-200 rounded-2xl p-6"><p class="font-bold mb-3">어떤 사진이든 되나요</p><table class="w-full text-sm"><thead><tr class="text-left text-gray-400"><th class="pb-2 font-normal">사진 상태</th><th class="pb-2 font-normal">되나요</th></tr></thead><tbody><tr class="border-t border-gray-100"><td class="py-2.5 pr-4 text-gray-700">색이 누렇게 바램</td><td class="py-2.5 text-gray-900 font-semibold break-keep">됩니다. 색을 되살립니다</td></tr><tr class="border-t border-gray-100"><td class="py-2.5 pr-4 text-gray-700">접힌 자국 · 찢어짐 · 얼룩</td><td class="py-2.5 text-gray-900 font-semibold break-keep">됩니다. 정리합니다</td></tr><tr class="border-t border-gray-100"><td class="py-2.5 pr-4 text-gray-700">흑백 사진</td><td class="py-2.5 text-gray-900 font-semibold break-keep">됩니다. 흑백 그대로 선명하게 합니다</td></tr><tr class="border-t border-gray-100"><td class="py-2.5 pr-4 text-gray-700">여러 명이 찍힌 사진</td><td class="py-2.5 text-gray-900 font-semibold break-keep">됩니다. 한 분만 남기고 배경을 정리합니다</td></tr><tr class="border-t border-gray-100"><td class="py-2.5 pr-4 text-gray-700">얼굴이 아주 작게 나온 사진</td><td class="py-2.5 text-gray-500 break-keep">한계가 있습니다. 작은 얼굴을 키우면 흐려집니다</td></tr><tr class="border-t border-gray-100"><td class="py-2.5 pr-4 text-gray-700">초점이 안 맞은 사진</td><td class="py-2.5 text-gray-500 break-keep">한계가 있습니다. 없는 정보를 만들 수는 없습니다</td></tr></tbody></table></div>
+    <div class="bg-white border border-gray-200 rounded-2xl p-6"><p class="font-bold mb-3">사진 고르는 법</p><ul class="chk space-y-2 text-sm text-gray-700 leading-relaxed"><li class="break-keep">얼굴이 크게 나온 사진 — 얼굴이 클수록 살릴 수 있는 게 많습니다</li><li class="break-keep">초점이 맞은 사진 — 흔들린 사진은 복원해도 한계가 있습니다</li><li class="break-keep">같은 사진이 여러 장이면 큰 것으로</li><li class="break-keep">고르기 어려우면 몇 장 가져오세요. 같이 보고 골라 드립니다</li></ul></div>
+    <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 text-sm text-gray-600 leading-relaxed break-keep">
+      <b class="text-gray-900">"약간의 복원"이 기준입니다.</b> 상한 부분을 정리하는 것이지 다른 얼굴을 만드는 게 아닙니다. 주름을 다 펴거나 얼굴형을 바꾸지 않습니다. 앨범째 매장에 가져오셔도 되고, 파일이 있으면 아래 주문으로 보내 주세요.
+    </div>
+  </div>
+
+  <h2 id="order" class="text-xl font-semibold text-center mt-16 mb-6">보정 주문하기</h2>
   <div class="bg-white rounded-3xl border border-gray-200 p-8 space-y-8">
 
     <!-- 주문자 -->
@@ -47,76 +93,69 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-bold mb-2">이름</label>
-          <input type="text" placeholder="주문자 성함" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
+          <input name="name" type="text" placeholder="주문자 성함" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
         </div>
         <div>
           <label class="block text-sm font-bold mb-2">연락처</label>
-          <input type="text" placeholder="010-0000-0000" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
+          <input name="phone" type="tel" placeholder="010-0000-0000" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
         </div>
       </div>
       <div>
         <label class="block text-sm font-bold mb-2">이메일 <span class="font-normal text-gray-400">보정본 받으실 곳</span></label>
-        <input type="text" placeholder="name@example.com" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
+        <input name="email" type="email" placeholder="name@example.com" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
       </div>
     </div>
 
-    <!-- 업로드 -->
+    <!-- 사진 보내기 — 서버 접수 전까지는 메일 첨부 -->
     <div>
-      <p class="font-bold mb-3">보정할 사진 올리기</p>
-      <label id="drop" class="block border-2 border-dashed border-gray-300 rounded-2xl py-14 text-center hover:border-tiffany transition-colors cursor-pointer">
-        <i data-lucide="image-up" class="w-10 h-10 mx-auto text-gray-300 mb-4"></i>
-        <p class="font-bold text-gray-700">여기를 누르거나 파일을 끌어다 놓으세요</p>
-        <p class="text-sm text-gray-400 mt-1">화질이 좋을수록 결과가 좋습니다. <b class="text-gray-600">원본 파일</b>을 올려주세요</p>
-      </label>
-      <div id="shots" class="mt-4" hidden>
-        <div class="relative inline-block">
-          <div class="w-24 h-32 rounded-xl bg-gray-100 border border-gray-200 flex flex-col items-center justify-center">
-            <i data-lucide="image" class="w-7 h-7 text-gray-300 mb-1"></i><span class="text-[10px] text-gray-400">사진1.jpg</span>
-          </div>
-          <button id="shotDel" class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center hover:bg-black">✕</button>
-        </div>
+      <p class="font-bold mb-3">보정할 사진</p>
+      <div class="border-2 border-dashed border-gray-300 rounded-2xl px-6 py-8 text-center">
+        <i data-lucide="mail" class="w-9 h-9 mx-auto text-gray-300 mb-3"></i>
+        <p class="font-bold text-gray-700 break-keep">주문하기를 누르면 메일 창이 열립니다</p>
+        <p class="text-sm text-gray-500 mt-1 break-keep">보정할 <b class="text-gray-700">원본 사진</b>을 그 메일에 첨부해 보내 주세요. 화질이 좋을수록 결과가 좋습니다.</p>
       </div>
     </div>
 
     <!-- 보정 종류 -->
     <div id="tiers">
-      <p class="font-bold mb-3">어떤 보정을 원하시나요</p>
+      <p class="font-bold mb-3">어떤 보정이 필요하신가요</p>
       <div class="space-y-3">
-        <button class="tier on w-full border border-gray-200 rounded-2xl p-5 text-left" data-price="0">
+        <button class="tier on w-full border border-gray-200 rounded-2xl p-5 text-left" data-kind="wedding">
           <div class="flex justify-between items-start gap-3">
             <div>
-              <p class="font-bold mb-1">기본 보정</p>
-              <p class="text-xs text-gray-600 leading-relaxed">피부 톤·밝기·잡티 정도를 정리합니다. 빠르게 받아보실 수 있습니다.</p>
+              <p class="font-bold mb-1">웨딩사진 보정 + 인화</p>
+              <p class="text-xs text-gray-600 leading-relaxed break-keep">예식장 포토테이블에 올릴 사진을 보정하고, 액자 크기에 맞춰 인화까지 해 드립니다.</p>
             </div>
             <span class="font-bold text-sm whitespace-nowrap text-gray-400">가격 미정</span>
           </div>
         </button>
-        <button class="tier w-full border border-gray-200 rounded-2xl p-5 text-left" data-price="0">
+        <button class="tier w-full border border-gray-200 rounded-2xl p-5 text-left" data-kind="id">
           <div class="flex justify-between items-start gap-3">
             <div>
-              <p class="font-bold mb-1">정밀 보정</p>
-              <p class="text-xs text-gray-600 leading-relaxed">작가가 직접 한 장씩 손봅니다. 원래 얼굴을 지키면서 세심하게 다듬습니다.</p>
+              <p class="font-bold mb-1">증명사진 보정</p>
+              <p class="text-xs text-gray-600 leading-relaxed break-keep">여권·취업·자격증 사진을 규격에 맞게 다듬습니다. 원래 얼굴은 그대로 지킵니다.</p>
             </div>
             <span class="font-bold text-sm whitespace-nowrap text-gray-400">가격 미정</span>
           </div>
         </button>
-        <button class="tier w-full border border-gray-200 rounded-2xl p-5 text-left" data-price="0">
+        <button class="tier w-full border border-gray-200 rounded-2xl p-5 text-left" data-kind="restore">
           <div class="flex justify-between items-start gap-3">
             <div>
-              <p class="font-bold mb-1">화면 보며 함께 수정</p>
-              <p class="text-xs text-gray-600 leading-relaxed">작가와 화면을 같이 보면서 원하시는 대로 그 자리에서 고칩니다. 예약 시간이 필요합니다.</p>
+              <p class="font-bold mb-1">옛날사진 복원</p>
+              <p class="text-xs text-gray-600 leading-relaxed break-keep">빛바랜 색, 긁힘, 접히거나 찢어진 부분을 되살립니다. 사진이 종이뿐이라면 스캔해서 보내 주세요.</p>
             </div>
             <span class="font-bold text-sm whitespace-nowrap text-gray-400">가격 미정</span>
           </div>
         </button>
       </div>
+      <p id="kind-note" class="mt-3 text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 break-keep"><b class="text-gray-900">예식 날짜</b>, 올릴 장수, 액자 크기를 요청사항에 적어 주세요. 보정·인화 견적을 함께 알려드립니다.</p>
     </div>
 
     <!-- 요청사항 -->
     <div id="memo">
       <p class="font-bold mb-2">요청사항</p>
       <p class="text-sm text-gray-500 mb-3">고치고 싶으신 부분을 적어주세요. 자세할수록 좋습니다.</p>
-      <textarea rows="4" placeholder="예) 턱 주변 잡티만 지워주시고 피부 결은 그대로 두세요. 너무 하얗게는 하지 말아주세요." class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany text-sm leading-relaxed"></textarea>
+      <textarea name="memo" id="memo-text" rows="4" placeholder="예) 턱 주변 잡티만 지워주시고 피부 결은 그대로 두세요. 너무 하얗게는 하지 말아주세요." class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany text-sm leading-relaxed"></textarea>
     </div>
 
     <!-- 결제 -->
@@ -125,10 +164,11 @@
         <span class="font-bold">총 결제 금액</span>
         <span class="font-bold text-xl text-gray-400">가격 협의 중</span>
       </div>
-      <button class="w-full px-6 h-14 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors leading-none text-lg inline-flex items-center justify-center">주문하기</button>
+      <p id="order-error" class="hidden text-sm text-red-500 mb-3"></p>
+      <button id="order-btn" type="button" class="w-full px-6 h-14 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors leading-none text-lg inline-flex items-center justify-center">주문하기</button>
       <label class="flex items-start gap-2 mt-5 text-sm text-gray-500 cursor-pointer">
-        <input type="checkbox" class="mt-1 accent-black">
-        <span>올린 사진은 보정 작업에만 사용하며, 작업 후 자동 삭제되는 데 동의합니다.</span>
+        <input id="agree" type="checkbox" class="mt-1 accent-black">
+        <span>보내 주신 사진은 보정 작업에만 사용하며, 작업 후 자동 삭제되는 데 동의합니다.</span>
       </label>
     </div>
 
@@ -137,7 +177,7 @@
   <div class="mt-8 space-y-2">
     <details class="bg-white rounded-2xl border border-gray-200 px-5 py-4 group">
       <summary class="font-bold text-sm cursor-pointer list-none flex justify-between items-center"><span>얼마나 걸리나요?</span><span class="text-gray-300 group-open:rotate-180 transition-transform">⌄</span></summary>
-      <p class="text-sm text-gray-600 leading-relaxed mt-3">보정 종류에 따라 다릅니다. <span class="text-gray-400">(소요 시간 협의 중)</span></p>
+      <p class="text-sm text-gray-600 leading-relaxed mt-3">사진 상태와 장수에 따라 다릅니다. 보내 주신 사진을 보고 말씀드립니다. 명절·행사 전에 필요하시면 미리 전화 주세요.</p>
     </details>
     <details class="bg-white rounded-2xl border border-gray-200 px-5 py-4 group">
       <summary class="font-bold text-sm cursor-pointer list-none flex justify-between items-center"><span>마음에 안 들면 다시 해주시나요?</span><span class="text-gray-300 group-open:rotate-180 transition-transform">⌄</span></summary>
@@ -145,7 +185,7 @@
     </details>
     <details class="bg-white rounded-2xl border border-gray-200 px-5 py-4 group">
       <summary class="font-bold text-sm cursor-pointer list-none flex justify-between items-center"><span>보정본은 어떻게 받나요?</span><span class="text-gray-300 group-open:rotate-180 transition-transform">⌄</span></summary>
-      <p class="text-sm text-gray-600 leading-relaxed mt-3">적어주신 이메일로 파일을 보내드립니다. 인화까지 원하시면 주문할 때 말씀해 주세요.</p>
+      <p class="text-sm text-gray-600 leading-relaxed mt-3">적어주신 이메일로 파일을 보내드립니다. 인화까지 원하시면 주문할 때 말씀해 주세요. 인화는 엡손 정품 인화지와 잉크를 씁니다.</p>
     </details>
   </div>
 
@@ -160,12 +200,42 @@
 lucide.createIcons();
 (function(){
   var $=function(id){return document.getElementById(id)};
-  var dz=$('drop'), shots=$('shots'), del=$('shotDel'), tiers=$('tiers'), memo=$('memo');
-  dz.onclick=function(){ shots.hidden=false; };
-  del.onclick=function(e){ e.stopPropagation(); shots.hidden=true; };
-  document.querySelectorAll('.tier').forEach(function(b){
-    b.onclick=function(){ document.querySelectorAll('.tier').forEach(function(x){x.classList.remove('on')}); b.classList.add('on'); };
-  });
+  var TO='smuse73@naver.com';
+  // 보정 항목에 따라 요청사항 예시를 바꾼다
+  var EX={
+    wedding:'예) 예식일 11월 15일, 포토테이블용 5장입니다. 액자는 8x10 2개, 5x7 3개예요. 피부 톤 정리하고 색감은 따뜻하게 맞춰 주세요.',
+    id:'예) 여권용입니다. 턱 주변 잡티만 지워 주시고 피부 결은 그대로 두세요. 너무 하얗게는 하지 말아 주세요.',
+    restore:'예) 부모님 결혼사진입니다. 가운데 접힌 자국과 얼룩을 지워 주시고, 색이 바랜 부분을 살려 주세요.'
+  };
+  // 보정 항목 탭 — 주소 #wedding / #id / #restore 로 바로 열린다. 탭과 주문 항목을 함께 맞춘다
+  var tabs=document.querySelectorAll('.rt-tab'), panels=document.querySelectorAll('[data-panel]');
+  function showTab(k, fromTier){
+    if(!document.querySelector('[data-panel="'+k+'"]')) k='wedding';
+    panels.forEach(function(p){ p.hidden=p.dataset.panel!==k; });
+    tabs.forEach(function(t){ var on=t.dataset.tab===k;
+      t.classList.toggle('border-gray-900',on); t.classList.toggle('text-gray-900',on); t.classList.toggle('font-semibold',on);
+      t.classList.toggle('border-transparent',!on); t.classList.toggle('text-gray-500',!on); });
+    if(!fromTier){ var tb=document.querySelector('.tier[data-kind="'+k+'"]'); if(tb) pick(tb, true); }
+  }
+  tabs.forEach(function(t){ t.addEventListener('click',function(e){ e.preventDefault(); history.replaceState(null,'','#'+t.dataset.tab); showTab(t.dataset.tab); }); });
+  function pick(b, fromTab){
+    document.querySelectorAll('.tier').forEach(function(x){x.classList.remove('on')}); b.classList.add('on');
+    if(!fromTab) showTab(b.dataset.kind, true);
+    $('memo-text').placeholder=EX[b.dataset.kind];
+    $('kind-note').classList.toggle('hidden', b.dataset.kind!=='wedding');
+  }
+  document.querySelectorAll('.tier').forEach(function(b){ b.onclick=function(){ pick(b); }; });
+  showTab(location.hash.slice(1));
+  $('order-btn').onclick=function(){
+    var v=function(n){var el=document.querySelector('[name="'+n+'"]');return el?(el.value||'').trim():'';};
+    var miss=[['name','이름'],['phone','연락처'],['email','이메일']].filter(function(x){return !v(x[0]);}).map(function(x){return x[1];});
+    var msg=miss.length?miss.join(', ')+'을(를) 적어 주세요.':(!$('agree').checked?'사진 이용 동의에 체크해 주세요.':'');
+    $('order-error').textContent=msg; $('order-error').classList.toggle('hidden',!msg);
+    if(msg) return;
+    var tier=(document.querySelector('.tier.on p.font-bold')||{}).textContent||'';
+    var body=['[몽크사진관 온라인 사진 보정 주문]','','이름: '+v('name'),'연락처: '+v('phone'),'보정본 받을 이메일: '+v('email'),'보정 항목: '+tier,'','요청사항:',v('memo'),'','※ 보정할 원본 사진을 이 메일에 첨부해 주세요.'].join('\n');
+    location.href='mailto:'+TO+'?subject='+encodeURIComponent('[보정 주문] '+v('name')+' · '+tier)+'&body='+encodeURIComponent(body);
+  };
 })();
 </script>
 </body>
