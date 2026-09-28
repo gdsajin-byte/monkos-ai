@@ -161,9 +161,12 @@
     <main> <!-- Padding for fixed header -->
         
         <!-- Hero Section (Studio Atmosphere + Dual Color Wash) -->
-        <section class="studio-bg border-b border-gray-200 py-20 md:py-32 overflow-hidden flex items-center justify-center min-h-[60vh]">
-            <!-- Subtle Color Wash for Ambience -->
-            <div class="color-wash"></div>
+        <!-- 첫 화면 — 프로필 페이지와 같은 높이(화면의 60%), 배경은 증명사진 모음(꾸 제작) -->
+        <section class="relative h-[60vh] border-b border-gray-200 overflow-hidden flex items-center justify-center">
+            <div class="absolute inset-0 z-0">
+                <img src="./images/hero.jpg?v=20260928" alt="몽크사진관 증명사진 모음" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-white/80"></div>
+            </div>
             
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
                 <!-- Top Accent: Tiffany Blue for Trust -->
