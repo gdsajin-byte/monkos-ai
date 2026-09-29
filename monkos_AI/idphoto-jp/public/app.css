@@ -833,6 +833,30 @@ body {
 }
 .btn-autoshot-start:active { transform: scale(0.98); }
 
+/* 수동 셔터 (2026-09-29) — 카메라 화면 하단 중앙, 항상 노출 */
+.btn-manual-shot {
+    position: absolute;
+    left: 50%; bottom: 28px; transform: translateX(-50%);
+    z-index: 12;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    background: none; border: none; padding: 0;
+    cursor: pointer; font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+}
+.btn-manual-shot-ring {
+    width: 64px; height: 64px; border-radius: 50%;
+    border: 4px solid rgba(255,255,255,0.95);
+    background: rgba(255,255,255,0.25);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    transition: transform 0.1s, background 0.2s;
+}
+.btn-manual-shot:active .btn-manual-shot-ring { transform: scale(0.92); background: rgba(255,255,255,0.6); }
+.btn-manual-shot-label {
+    font-size: 12px; font-weight: 700; color: #fff;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+}
+
+
 /* 카운트다운 오버레이 */
 #countdown-overlay {
     position: absolute;
