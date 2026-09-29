@@ -3,7 +3,7 @@ type: completion
 date: 2026-09-29
 device: 4060
 agent: 민아
-status: 진행
+status: 마감(실기기 검증·고객 메일 보류 대기)
 subject: idphoto-kr/jp 촬영 준비 판정 코드화 (Gemini Live 코칭 제거) + 환불 처리 + 처리 로드맵
 related:
   - INCIDENT_20260929_monkos-idphoto-kr_촬영불가_Live모델
@@ -77,3 +77,9 @@ path: 작가님 직접 지시 → 민아 실행 (ch1 2조 ③, 프로덕션 표�
 - [ ] 쌍아 사후 추인 REVIEW (민아 경로 [예외])
 - [ ] `ws` 패키지 의존성 제거 (package.json·lock 동시 — 별도 커밋)
 - [ ] 촬영 후 사전분석 `gemini-2.5-flash(-lite)` 모델 정본화 (§3-2에 포함)
+
+## 6. prod 배포 결과 (추가 — 2026-09-29 20:30 KST)
+- 승인: 작가님 새 턴 20:27 "디브는 오스가 안돼 프로드로 올려". 트리거: 4060/민아 `./deploy.sh prod --yes`.
+- KR rev `monkos-idphoto-kr-00209-xg4` · JP rev `monkos-idphoto-jp-00130-njn` (100%).
+- 라이브 판정 방법: URL당 2회 히트 후 2차로 판정 — 자산 5종 전건 200 + 콘텐츠 어서션(수동 셔터·capture-gate import·WS 코드 0·MediaPipe 1.0.1). 대조군: 배포 전 404 → 후 200. "Gemini Live" 로그 배포 후 0건(전 485건).
+- 고객 복구 안내 메일: **작가님 지시로 보류**(실촬영 검증 후).
