@@ -107,9 +107,11 @@ def check_commit_format(seg: str) -> str | None:
 
 
 def check_commit_heredoc(cmd: str) -> str | None:
-    if not re.search(r"git\s+commit\b", cmd):
+    """git commit 이후에 나오는 첫 히어독만 커밋 메시지로 본다 (앞선 세션 로그 어펜드 히어독 오탐 방지 — 09-30 실사고)."""
+    gc = re.search(r"git\s+commit\b", cmd)
+    if not gc:
         return None
-    m = HEREDOC.search(cmd)
+    m = HEREDOC.search(cmd, gc.end())
     if not m:
         return None
     first = m.group(2).strip().splitlines()[0] if m.group(2).strip() else ""
@@ -159,7 +161,8 @@ def main() -> int:
 
     # 3) E9 커밋 형식 — 히어독 커밋은 원문에서만 판정(세그먼트 분해 시 따옴표가 깨진다)
     msg = None
-    if re.search(r"git\s+commit\b", cmd) and HEREDOC.search(cmd):
+    gc = re.search(r"git\s+commit\b", cmd)
+    if gc and HEREDOC.search(cmd, gc.end()):
         msg = check_commit_heredoc(cmd)
     else:
         for seg in segs:
