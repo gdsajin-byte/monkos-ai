@@ -1,6 +1,6 @@
 ---
 description: 막내 에이전트 행동 가이드
-globs:
+paths:
   - "monkos-ops/ops/orders/**"
   - "monkos-ops/ops/completions/**"
 ---

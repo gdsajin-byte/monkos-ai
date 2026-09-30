@@ -1,6 +1,6 @@
 ---
 description: 크레딧/고객 데이터 접근 + 시크릿 운용 규칙
-globs:
+paths:
   - "scripts/credits.sh"
   - "monkos_AI/portal/lib/credits.js"
   - "monkos-ops/ops/audit/**"

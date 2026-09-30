@@ -1,9 +1,9 @@
 ---
 description: 브랜딩 규칙 (ch8 발췌)
-globs:
-  - "*.html"
-  - "*.js"
-  - "*.json"
+paths:
+  - "**/*.html"
+  - "**/*.js"
+  - "**/*.json"
 ---
 
 > source: governance/laws/ch8_branding.md@2026-03-25

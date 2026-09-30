@@ -1,6 +1,6 @@
 ---
 description: 배포 관련 파일 접근 시 적용
-globs:
+paths:
   - "**/deploy.sh"
   - "**/Dockerfile"
   - "**/cloudbuild.yaml"

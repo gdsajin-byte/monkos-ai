@@ -1,6 +1,6 @@
 ---
 description: 문서 생성/수정 시 적용 — 파일명·배치·서식 규칙
-globs:
+paths:
   - "monkos-ops/ops/sessions/**"
   - "monkos-ops/ops/reports/**"
   - "monkos-ops/ops/orders/**"

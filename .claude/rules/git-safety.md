@@ -1,7 +1,5 @@
 ---
 description: git 명령 실행 시 적용
-globs:
-  - "**"
 ---
 
 > source: governance/laws/ch6_git.md@2026-07-16

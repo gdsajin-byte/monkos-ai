@@ -1,6 +1,6 @@
 ---
 description: PF(포트폴리오) 파일 접근 시 적용
-globs:
+paths:
   - "monkos-ops/ops/portfolios/**"
 ---
 

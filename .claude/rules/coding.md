@@ -1,12 +1,12 @@
 ---
 description: 코딩 규칙 (ch2 발췌)
-globs:
-  - "*.js"
-  - "*.html"
-  - "*.css"
-  - "*.ts"
-  - "*.jsx"
-  - "*.tsx"
+paths:
+  - "**/*.js"
+  - "**/*.html"
+  - "**/*.css"
+  - "**/*.ts"
+  - "**/*.jsx"
+  - "**/*.tsx"
 ---
 
 > source: governance/laws/ch2_coding.md@2026-07-16

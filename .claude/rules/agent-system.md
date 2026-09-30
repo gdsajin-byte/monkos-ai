@@ -1,7 +1,5 @@
 ---
 description: 에이전트 역할·흐름·디바이스 맵 (ch1 발췌)
-globs:
-  - "**"
 ---
 
 > source: governance/laws/ch1_agent_system.md@2026-09-02
