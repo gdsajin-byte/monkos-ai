@@ -574,10 +574,13 @@ ${hreflangTags}
   const tabSpecLabel = i.specsTabLabel;
   const sourceLabel = i.sourceLabel;
   const sourceHtml = (() => {
+    // 2026-10-01: officialSource는 객체({url,label}) 1건 / 문자열 URL 402건 — 문자열도 렌더 (BRIEFING_E2E 09-24~30 §🔴 출처 링크 368면 미표시)
     const os = specData.officialSource;
-    const url = (os && os.url) || (typeof specData.source === 'string' && /^https?:/i.test(specData.source) ? specData.source : null);
+    const osObj = os && typeof os === 'object' ? os : null;
+    const osStr = typeof os === 'string' && /^https?:/i.test(os.trim()) ? os.trim() : null;
+    const url = (osObj && osObj.url) || osStr || (typeof specData.source === 'string' && /^https?:/i.test(specData.source) ? specData.source : null);
     if (!url) return '';
-    let label = os && os.label && (os.label[lang] || os.label.ko);
+    let label = osObj && osObj.label && (osObj.label[lang] || osObj.label.ko);
     if (!label) { try { label = new URL(url).hostname.replace(/^www\./, ''); } catch { return ''; } }
     return `<div class="v2-source">${escapeHtml(sourceLabel)}: <a href="${escapeHtml(url)}" target="_blank" rel="noopener nofollow">${escapeHtml(label)} &#8599;</a></div>`;
   })();
