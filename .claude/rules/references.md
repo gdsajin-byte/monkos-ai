@@ -164,6 +164,8 @@
 | edge-trust.js | 서비스 모듈 | `monkos_AI/portal/lib/shared/` | SECRET_INVENTORY #44 + REVIEW_20260824 P2-2 |
 | fetch/verify_solar_terms.mjs | 빌드/생성 | `monkos_AI/portal/tools/solar-terms/` | 동 폴더 README + PF_FACEREAD |
 | verify_saju.mjs | 빌드/생성 | `monkos_AI/portal/tools/saju/` | 동 폴더 README + PF_FACEREAD |
+| **집행 훅 6종** (guard_bash·guard_write·prompt_submit·session_start·_common·smoke) | 인프라 | `scripts/hooks/` + `.claude/settings.json` hooks 블록 | DESIGN_20260930_집행코드화_hooks_deny.md. **09-30 구현(민아, 작가님 직접 지시·쌍아 추인 대기)**: PreToolUse Bash=헌법 4조 파괴·ch5 2조 배포·ch4 10조 Firestore·시크릿 직접·ch6 커밋 형식·E10 승인 게이트 / Edit·Write=세션로그 append-only·.env/secrets/deploy.sh ask / UserPromptSubmit=KST 시각 주입+채팅 '배포 승인'→세션 토큰 / SessionStart=디바이스·git·세션로그 실측. 스모크 `python3 scripts/hooks/smoke.py` 59/59 + 실세션(bypass, haiku) 차단 1·통과 1 실측. 실패 가시화 `[HOOK-ERR]`. 킬스위치 `MONK_HOOKS_OFF=1`(작가님 셸만) |
+| approve.sh (E10 예비 경로) | 인프라 | `scripts/approve.sh` | 작가님 전용 — 원격·무인에서 의도적으로 열 때. 에이전트 실행은 deny+훅 이중 차단 |
 
 ## 모델 배치
 

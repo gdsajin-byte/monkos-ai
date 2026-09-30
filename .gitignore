@@ -183,3 +183,6 @@ monkos_AI/portal/tools/t1-tuning/
 # monk.kr 정적 자산 — 배포자 기기 종속 방지 (2026-09-24, 작가님 승인). 웹 크기 리사이즈본만 커밋
 !MONK_kr/monk_studio/images/*.jpg
 !MONK_kr/monk_studio/family/images/*.jpg
+
+# E10 승인 토큰 (세션 바인딩·1h·1회용) — 커밋 금지
+.claude/approvals/
