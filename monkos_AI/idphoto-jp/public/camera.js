@@ -10,6 +10,9 @@ import {
 } from './shared.js';
 import { GateModule } from './modules/gate.js';
 import { initChatbot } from './modules/chatbot.js';
+import { evaluateGate, createStabilityCounter, GATE_THRESHOLDS, GATE_MESSAGES } from './modules/capture-gate.js';
+
+let captureMode = 'auto'; // 'auto' | 'manual' — 計測用
 
 // ─── Media 생성 (카메라 페이지 전용) ───
 const media = Monk.media({
@@ -42,113 +45,94 @@ function showCoaching(text, ready = false) {
   }, COACHING_DISPLAY_MS);
 }
 
-// ─── WebSocket 코칭 ───
-let wsCoaching = null;
-let frameTimer = null;
+// ─── 촬영 준비 게이트 (코드 판정 — 2026-09-29 Gemini Live 코칭 대체) ───
+// 준비 판정은 capture-gate.js 순수 함수. 외부 호출 없음. 판정 불가(MediaPipe 미적재) 시 수동 촬영 모드.
+let gateTimer = null;
 let countdownTimer = null;
-let readyCount = 0;
-const READY_THRESHOLD = 1;
+let gateBusy = false;
+let gateMode = 'auto';          // 'auto' | 'manual'
+let lastGateReason = 'unavailable';
+const stability = createStabilityCounter(GATE_THRESHOLDS.stableFrames);
 
-function getWsUrl() {
-  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-  return `${proto}//${location.host}`;
+function getCameraArea() {
+  const el = document.querySelector('#camera-area');
+  return el ? { w: el.clientWidth, h: el.clientHeight } : { w: 0, h: 0 };
 }
 
-function startCoachingWS() {
-  const wsUrl = getWsUrl();
-  wsCoaching = new WebSocket(wsUrl);
+function setManualMode(reason) {
+  if (gateMode === 'manual') return;
+  gateMode = 'manual';
+  lastGateReason = reason || 'unavailable';
+  stopGateLoop();
+  showCoaching(GATE_MESSAGES.unavailable, false);
+  Monk.log('自動案内不可 → 手動撮影モード (' + lastGateReason + ')');
+}
 
-  wsCoaching.onopen = () => {
-    Monk.log('コーチングWS接続');
-    wsCoaching.send(JSON.stringify({
-      type: 'set-format',
-      format: store.format || 'passport',
-    }));
-    startFrameLoop();
-  };
-
-  wsCoaching.onmessage = (event) => {
-    try {
-      const msg = JSON.parse(event.data);
-      if (msg.type === 'ai-coaching' && msg.text) {
-        const isReady = msg.ready === true;
-        showCoaching(msg.text, isReady);
-
-        if (isReady && !countdownTimer) {
-          readyCount++;
-          if (readyCount >= READY_THRESHOLD) {
-            startCountdown();
-          }
-        } else if (!isReady) {
-          readyCount = 0;
-        }
-      }
-    } catch (e) {
-      Monk.log('コーチングメッセージパース失敗: ' + e.message);
+async function gateTick() {
+  if (gateBusy || countdownTimer || store.step !== 1) return;
+  gateBusy = true;
+  try {
+    const det = await media.detectFace();
+    if (!det.available) { setManualMode('mediapipe_unavailable'); return; }
+    const area = getCameraArea();
+    if (!det.videoW || !area.w) return; // 아직 크기 미확정 — 다음 틱
+    const verdict = evaluateGate({ faces: det.faces, videoW: det.videoW, videoH: det.videoH, areaW: area.w, areaH: area.h });
+    lastGateReason = verdict.reason;
+    showCoaching(GATE_MESSAGES[verdict.reason] || GATE_MESSAGES.no_face, verdict.ready);
+    if (stability.push(verdict.ready)) {
+      Monk.log('準備判定OK → カウントダウン ' + JSON.stringify(verdict.metrics));
+      stability.reset();
+      startCountdown();
     }
-  };
-
-  wsCoaching.onerror = () => {
-    Monk.log('コーチングWSエラー');
-  };
-
-  wsCoaching.onclose = () => {
-    Monk.log('コーチングWS終了');
-    stopFrameLoop();
-  };
-}
-
-function startFrameLoop() {
-  stopFrameLoop();
-  frameTimer = setInterval(() => {
-    if (!wsCoaching || wsCoaching.readyState !== WebSocket.OPEN) return;
-
-    const frame = media.capture();
-    if (!frame) return;
-
-    const base64 = frame.includes(',') ? frame.split(',')[1] : frame;
-    const binary = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-    wsCoaching.send(binary.buffer);
-  }, FRAME_INTERVAL_MS);
-}
-
-function stopFrameLoop() {
-  if (frameTimer) {
-    clearInterval(frameTimer);
-    frameTimer = null;
+  } catch (e) {
+    Monk.log('ゲート判定エラー: ' + e.message);
+    setManualMode('gate_error');
+  } finally {
+    gateBusy = false;
   }
 }
 
-function stopCoachingWS() {
-  if (wsCoaching) {
-    if (wsCoaching.readyState === WebSocket.OPEN) {
-      wsCoaching.send(JSON.stringify({ type: 'stop-coaching' }));
-    }
-    wsCoaching.close();
-    wsCoaching = null;
+function startGateLoop() {
+  stopGateLoop();
+  if (gateMode === 'manual') return;
+  stability.reset();
+  gateTimer = setInterval(gateTick, FRAME_INTERVAL_MS);
+}
+
+function stopGateLoop() {
+  if (gateTimer) {
+    clearInterval(gateTimer);
+    gateTimer = null;
   }
-  stopFrameLoop();
-  if (countdownTimer) {
-    clearInterval(countdownTimer);
-    countdownTimer = null;
-  }
-  readyCount = 0;
-  hideCountdownOverlay();
-  store.coaching = { text: '', ready: false, active: false };
 }
 
 function startCoachingLoop() {
   showCoaching(TX.coachingCheck);
-  startCoachingWS();
+  startGateLoop();
 }
 
 function stopCoachingLoop() {
-  stopCoachingWS();
+  stopGateLoop();
+  if (countdownTimer) {
+    clearInterval(countdownTimer);
+    countdownTimer = null;
+  }
+  stability.reset();
+  hideCountdownOverlay();
+  store.coaching = { text: '', ready: false, active: false };
 }
+
+// 수동 셔터 — 판정과 무관하게 항상 동작 (최후 수단)
+document.getElementById('btn-manual-shot')?.addEventListener('click', () => {
+  if (store.step !== 1 || countdownTimer) return;
+  Monk.log('手動撮影リクエスト (最終判定=' + lastGateReason + ')');
+  captureMode = 'manual';
+  startCountdown();
+});
 
 // ─── 카운트다운 + 자동 촬영 ───
 function startCountdown() {
-  stopFrameLoop();
+  stopGateLoop();
   showCountdownOverlay(3);
 
   let n = 3;
@@ -169,9 +153,9 @@ function cancelCountdown() {
     clearInterval(countdownTimer);
     countdownTimer = null;
   }
-  readyCount = 0;
+  stability.reset();
   hideCountdownOverlay();
-  startFrameLoop();
+  startGateLoop();
 }
 
 function doAutoCapture() {
@@ -233,7 +217,7 @@ function capturePhoto() {
   // sessionStorage에 저장
   saveSessionData('captured', captured);
 
-  if (typeof gtag === 'function') gtag('event', 'photo_upload', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ja', service: 'idphoto-jp' });
+  if (typeof gtag === 'function') gtag('event', 'photo_upload', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ja', service: 'idphoto-jp', capture_mode: captureMode, gate_reason: lastGateReason });
 
   // 카메라 정리
   media.offFrame();

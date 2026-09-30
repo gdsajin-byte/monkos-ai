@@ -129,6 +129,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 05/18 | 막내 | **PhotoMonk PoC 완성** — Vision 실시간 코칭 + 촬영 시퀀스 iPhone 실기기 구동 확인 | `apps/PhotoMonk/` | ✅ |
 | 05/18 | 작가님 | **TestFlight 실기기 테스트** — 촬영 코칭 플로우 동작 확인 | — | ✅ |
 | 06/15 | 작가님 | **TestFlight 재검증** — 촬영실 새 버전 iPhone 실기기 확인 진행 중 | — | ⏳ |
+| 09/29 | 4060/민아 | **[웹 idphoto-kr/jp] 촬영 불능 인시던트 → 판정 코드화** — 결제 고객 환불 요청(₩9,900)으로 발견. 원인: 코칭 Live 모델 `gemini-2.0-flash-live-preview-04-09` 퇴역(Vertex 404) → 1008 즉시 종료 485회 → READY 부재 → 촬영 전면 불능(09-08 이후). 환불(토스 취소→웹훅 −80c)·회신(Resend info@) 완료. 작가님 결정 "뻔한 패턴을 모델에 위탁한 것이 원인, 코드화" → Gemini Live·WS 전부 제거, MediaPipe 얼굴 박스+키포인트 순수 판정(capture-gate.js, portal precheck 임계값 재사용) + 수동 셔터 상시. prod KR 00209-xg4 · JP 00130-njn. 실기기 검증·고객 복구 메일 보류 중 | [INCIDENT](../../incidents/2026-09/INCIDENT_20260929_monkos-idphoto-kr_촬영불가_Live모델.md) · [DESIGN](../../../tech/designs/2026-09/DESIGN_20260929_idphoto_촬영게이트_코드화.md) · [COMPLETION](../../reports/2026-09/COMPLETION_20260929_4060민아_idphoto_촬영게이트_코드화.md) | ✅ 배포 / ⏳ 실기기 |
 
 > 📄 PhotoMonk PoC 상세: [PHOTOMONK_POC.md](PHOTOMONK_POC.md)
 

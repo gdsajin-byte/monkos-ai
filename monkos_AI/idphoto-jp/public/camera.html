@@ -196,16 +196,22 @@
         <!-- 셔터 플래시 -->
         <div id="shutter-flash"></div>
 
-        <!-- 코칭 오버레이 -->
+        <!-- 案内オーバーレイ (コード判定 — capture-gate.js) -->
         <div id="coaching-overlay" data-class="coaching.active:active">
             <div class="coaching-inner">
                 <div id="coaching-label">
                     <span class="coaching-pulse"></span>
-                    <span>AIコーチング中</span>
+                    <span>自動案内</span>
                 </div>
                 <div id="coaching-text" data-bind="coaching.text">姿勢をチェックしています...</div>
             </div>
         </div>
+
+        <!-- 手動シャッター — 判定と無関係に常に撮影可能 -->
+        <button id="btn-manual-shot" class="btn-manual-shot" type="button" aria-label="手動で撮影">
+            <span class="btn-manual-shot-ring"></span>
+            <span class="btn-manual-shot-label">手動で撮影</span>
+        </button>
     </div>
 
     <canvas id="capture-canvas" style="display:none;"></canvas>
@@ -213,6 +219,6 @@
     <div id="log"></div>
 
     <!-- 앱 스크립트 -->
-    <script type="module" src="camera.js?v=fix03"></script>
+    <script type="module" src="camera.js?v=gate01"></script>
 </body>
 </html>

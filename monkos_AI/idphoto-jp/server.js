@@ -2,7 +2,7 @@
  * MONKOS AI 証明写真 — idphoto-jp.monkos.ai
  *
  * 日本市場特化 AI 証明写真サービス
- *   a) Gemini Live コーチング — 撮影前リアルタイムガイド (日本語)
+ *   a) 撮影準備判定 — クライアントコード(capture-gate.js). Gemini Live コーチングは 2026-09-29 撤去
  *   b) Imagen I2I 生成 — 証明写真変換 (gemini-3-pro-image)
  *
  * 認証: ハイブリッド (Vertex AI ADC + Google AI Studio API Key)
@@ -12,7 +12,7 @@
 
 import express from 'express';
 import cors from 'cors';
-import { WebSocketServer } from 'ws';
+// (2026-09-29) WebSocket コーチング撤去 — 撮影準備判定はクライアント capture-gate.js. DESIGN_20260929 参照
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { createHmac, timingSafeEqual } from 'crypto';
@@ -131,64 +131,6 @@ async function refundCredits(userId, type, cookieHeader) {
     return { success: false, error: 'Portal API接続失敗' };
   }
 }
-
-// === コーチング システムプロンプト (日本語ネイティブ) ===
-const COACHING_INSTRUCTIONS = {
-  passport: `証明写真撮影のAIコーチです。パスポート・証明写真撮影をサポートします。
-
-[コーチングルール]
-- 日本語1文、15文字以内
-- 問題は1つだけ指摘（角度、表情、照明など）
-- ポジティブ表現：「〜すれば完璧です」
-- 完璧なら：「いいですね！今撮影してください」
-
-[チェック順序]
-1. 正面を向く（傾き、視線）
-2. 照明均一（顔に影がない）
-3. 表情（無表情または自然な微笑み）
-4. 眉毛が見える（前髪で隠さない）
-5. フェイスラインが見える（髪で覆わない）
-6. 耳が見える（髪で両耳が隠れないように）
-
-[セッション規律]
-- 挨拶しないでください。すぐにコーチングだけ始めてください。
-- 以前の会話を記憶したり言及しないでください。
-- 3秒以内に同じ指摘を繰り返さないでください。
-- フレームが良好なら沈黙してください。言うべきことがある時だけ発話してください。
-- 撮影準備が完了したら必ず「いいですね！今撮影してください」を含めてください。
-- 「今撮影してください」はシステムが自動撮影を実行するトリガーです。確実な時だけ使用してください。
-
-[禁止]
-- 自己紹介、雑談、感想、質問
-- 「こんにちは」「はじめまして」「お手伝いしましょうか」類の発話`,
-
-  id: `履歴書写真撮影のAIコーチです。
-
-[コーチングルール]
-- 日本語1文、15文字以内
-- 問題は1つだけ指摘（角度、表情、照明など）
-- ポジティブ表現：「〜すれば完璧です」
-- 完璧なら：「いいですね！今撮影してください」
-
-[チェック順序]
-1. 正面を向く（傾き、視線）
-2. 照明均一（顔に影がない）
-3. 表情（自然で親しみやすい微笑み）
-4. 姿勢（背筋を伸ばし、肩を平行に）
-5. 髪と服装がきちんと整っているか
-
-[セッション規律]
-- 挨拶しないでください。すぐにコーチングだけ始めてください。
-- 以前の会話を記憶したり言及しないでください。
-- 3秒以内に同じ指摘を繰り返さないでください。
-- フレームが良好なら沈黙してください。言うべきことがある時だけ発話してください。
-- 撮影準備が完了したら必ず「いいですね！今撮影してください」を含めてください。
-- 「今撮影してください」はシステムが自動撮影を実行するトリガーです。確実な時だけ使用してください。
-
-[禁止]
-- 自己紹介、雑談、感想、質問
-- 「こんにちは」「はじめまして」「お手伝いしましょうか」類の発話`,
-};
 
 // === Imagen プロンプト (CF idgen.js 正本) ===
 const IDENTITY_PRESERVATION = `IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
@@ -346,66 +288,6 @@ function buildPromptV5(body) {
 
   return `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM]\n${parts.join('\n')}`;
 }
-
-
-// === クライアントセッション管理 ===
-const sessions = new Map();
-
-async function connectGeminiLive(session, clientId, style = 'passport') {
-  function flushBuffer() {
-    if (session.responseBuffer.trim() && session.ws?.readyState === 1) {
-      const text = session.responseBuffer.trim();
-      const isReady = /今\s*撮影してください|完璧|いいですね/.test(text);
-      session.ws.send(JSON.stringify({
-        type: 'ai-coaching',
-        text,
-        ready: isReady,
-        timestamp: Date.now(),
-      }));
-      log(`[コーチング][${clientId}] ${text}${isReady ? ' [READY]' : ''}`);
-    }
-    session.responseBuffer = '';
-    session.bufferFlushTimer = null;
-  }
-
-  try {
-    session.gemini = await ai.live.connect({
-      model: 'gemini-2.0-flash-live-preview-04-09',
-      config: {
-        responseModalities: ['TEXT'],
-        systemInstruction: { parts: [{ text: COACHING_INSTRUCTIONS[style] || COACHING_INSTRUCTIONS.passport }] },
-      },
-      callbacks: {
-        onopen: () => log(`[Gemini Live][${clientId}] 接続完了`),
-        onclose: (e) => {
-          log(`[Gemini Live][${clientId}] 切断: ${e?.code || 'unknown'}`);
-          session.gemini = null;
-        },
-        onerror: (e) => log(`[Gemini Live][${clientId}] エラー: ${e?.message || e}`),
-        onmessage: (msg) => {
-          if (msg?.serverContent?.turnComplete) {
-            if (session.bufferFlushTimer) clearTimeout(session.bufferFlushTimer);
-            flushBuffer();
-            return;
-          }
-          const parts = msg?.serverContent?.modelTurn?.parts;
-          if (parts) {
-            const text = parts.filter(p => p.text).map(p => p.text).join('');
-            if (text) {
-              session.responseBuffer += text;
-              if (session.bufferFlushTimer) clearTimeout(session.bufferFlushTimer);
-              session.bufferFlushTimer = setTimeout(flushBuffer, 600);
-            }
-          }
-        },
-      },
-    });
-    log(`[Gemini Live][${clientId}] セッション初期化完了`);
-  } catch (err) {
-    log(`[Gemini Live][${clientId}] セッション失敗: ${err.message}`);
-  }
-}
-
 // === Base64 抽出ヘルパー ===
 function extractBase64(base64Input) {
   return base64Input.includes(',') ? base64Input.split(',')[1] : base64Input;
@@ -826,92 +708,6 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log('  GET  /camera              — 撮影 (MPA)');
   log('  GET  /result              — 結果 (MPA)');
   log('  GET  /thankyou            — 受取 (MPA)');
-  log('  WS   /                    — WebSocket (コーチング専用)');
   log('='.repeat(60));
 });
 
-// === WebSocket (コーチング専用 — 撮影室でのみ接続) ===
-const wss = new WebSocketServer({ server: httpServer });
-let clientCounter = 0;
-
-wss.on('connection', async (ws) => {
-  const clientId = `c${++clientCounter}`;
-  log(`[WS][${clientId}] コーチングセッション接続`);
-
-  const session = { gemini: null, frameCount: 0, responseBuffer: '', bufferFlushTimer: null, ws, photoStyle: 'passport' };
-  sessions.set(clientId, session);
-
-  ws.on('message', async (data, isBinary) => {
-    // バイナリ = JPEG フレーム → Gemini Live コーチング
-    if (isBinary) {
-      if (!session.gemini) {
-        await connectGeminiLive(session, clientId, session.photoStyle);
-        log(`[コーチング][${clientId}] Gemini Live 遅延生成 (style=${session.photoStyle})`);
-      }
-      try {
-        const base64 = Buffer.from(data).toString('base64');
-        await session.gemini.sendRealtimeInput({
-          media: { data: base64, mimeType: 'image/jpeg' },
-        });
-        session.frameCount++;
-        if (session.frameCount % 5 === 1) {
-          log(`[フレーム][${clientId}] #${session.frameCount} (${data.length}B)`);
-        }
-        if (session.frameCount % 5 === 0) {
-          await session.gemini.sendClientContent({ turnComplete: true });
-        }
-      } catch (err) {
-        log(`[フレーム送信エラー][${clientId}] ${err.message}`);
-      }
-      return;
-    }
-
-    // テキスト = JSON コマンド (コーチング関連のみ)
-    let msg;
-    try {
-      const raw = Buffer.isBuffer(data) ? data.toString() : data;
-      msg = JSON.parse(raw);
-    } catch { return; }
-
-    if (msg.type === 'set-format') {
-      const val = msg.format;
-      session.photoStyle = val === 'id' ? 'id' : 'passport';
-      log(`[フォーマット][${clientId}] ${session.photoStyle}`);
-      return;
-    }
-
-    if (msg.type === 'stop-coaching') {
-      log(`[コーチング][${clientId}] セッション停止`);
-      if (session.gemini) {
-        try { session.gemini.close(); } catch {}
-        session.gemini = null;
-      }
-      if (session.bufferFlushTimer) {
-        clearTimeout(session.bufferFlushTimer);
-        session.bufferFlushTimer = null;
-      }
-      session.responseBuffer = '';
-      return;
-    }
-
-    if (msg.type === 'restart-coaching') {
-      log(`[コーチング][${clientId}] セッション再起動`);
-      session.frameCount = 0;
-      if (session.gemini) {
-        try { session.gemini.close(); } catch {}
-        session.gemini = null;
-      }
-      await connectGeminiLive(session, clientId, session.photoStyle);
-      return;
-    }
-  });
-
-  ws.on('close', () => {
-    log(`[WS][${clientId}] コーチングセッション終了`);
-    if (session.gemini) {
-      try { session.gemini.close(); } catch {}
-    }
-    if (session.bufferFlushTimer) clearTimeout(session.bufferFlushTimer);
-    sessions.delete(clientId);
-  });
-});

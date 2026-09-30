@@ -364,10 +364,11 @@ const Monk = (() => {
       if (!faceDetection) return null;
 
       try {
-        const vision = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest');
+        // 버전 고정 (2026-09-29): @latest 는 무음 파손 벡터 — 1.0.1 은 FaceDetector API 브라우저 실측 통과
+        const vision = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1');
         const { FaceDetector, FilesetResolver } = vision;
         const filesetResolver = await FilesetResolver.forVisionTasks(
-          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
+          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/wasm'
         );
         mediapipeDetector = await FaceDetector.createFromOptions(filesetResolver, {
           baseOptions: {
@@ -441,6 +442,25 @@ const Monk = (() => {
       }
 
       return canvasEl.toDataURL('image/jpeg', captureQuality);
+    };
+
+    // 촬영 전 준비 판정용 얼굴 검출 (2026-09-29, capture-gate 와 짝)
+    // 반환: { available, faces:[{box:{x,y,width,height}, keypoints:[{x,y}(정규화)]}], videoW, videoH }
+    // MediaPipe 미적재·실패 시 available=false — 호출부는 수동 촬영 모드로 전환한다 (무음 폴백 금지)
+    const detectFace = async () => {
+      const detector = await initMediaPipe();
+      if (!detector || !videoEl || videoEl.videoWidth === 0) return { available: !!detector, faces: [], videoW: 0, videoH: 0 };
+      try {
+        const result = detector.detect(videoEl);
+        const faces = (result.detections || []).map((d) => ({
+          box: { x: d.boundingBox.originX, y: d.boundingBox.originY, width: d.boundingBox.width, height: d.boundingBox.height },
+          keypoints: (d.keypoints || []).map((p) => ({ x: p.x, y: p.y })),
+        }));
+        return { available: true, faces, videoW: videoEl.videoWidth, videoH: videoEl.videoHeight };
+      } catch (e) {
+        log('얼굴 검출 에러: ' + e.message);
+        return { available: false, faces: [], videoW: videoEl.videoWidth, videoH: videoEl.videoHeight };
+      }
     };
 
     // 주기 캡처 콜백 등록
@@ -588,6 +608,7 @@ const Monk = (() => {
       start,
       stop,
       capture,
+      detectFace,
       onFrame,
       offFrame,
       crop,

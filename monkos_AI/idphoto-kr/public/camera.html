@@ -215,16 +215,22 @@
         <!-- 셔터 플래시 -->
         <div id="shutter-flash"></div>
 
-        <!-- 코칭 오버레이 -->
+        <!-- 안내 오버레이 (코드 판정 — capture-gate.js) -->
         <div id="coaching-overlay" data-class="coaching.active:active">
             <div class="coaching-inner">
                 <div id="coaching-label">
                     <span class="coaching-pulse"></span>
-                    <span>AI 코칭 중</span>
+                    <span>자동 안내</span>
                 </div>
                 <div id="coaching-text" data-bind="coaching.text">자세를 체크하고 있습니다...</div>
             </div>
         </div>
+
+        <!-- 수동 셔터 — 판정과 무관하게 항상 촬영 가능 -->
+        <button id="btn-manual-shot" class="btn-manual-shot" type="button" aria-label="직접 촬영">
+            <span class="btn-manual-shot-ring"></span>
+            <span class="btn-manual-shot-label">직접 촬영</span>
+        </button>
     </div>
 
     <canvas id="capture-canvas" style="display:none;"></canvas>
@@ -232,6 +238,6 @@
     <div id="log"></div>
 
     <!-- 앱 스크립트 -->
-    <script type="module" src="camera.js?v=fix03"></script>
+    <script type="module" src="camera.js?v=gate01"></script>
 </body>
 </html>

@@ -101,7 +101,7 @@ export const pipe = Monk.pipe({
   generate: { type: 'post', path: API.GENERATE },
   creditUse: { type: 'post', path: API.CREDIT_USE },
   creditRefund: { type: 'post', path: API.CREDIT_REFUND },
-  coaching: { type: 'ws', url: '' },  // WebSocket — url은 camera.js에서 동적 생성
+  // coaching WS 제거 (2026-09-29) — 촬영 준비 판정은 클라이언트 capture-gate.js
 }, {
   baseUrl: '',
   onCreditShort: (err) => showCreditModal(err.required || 10, err.credits || 0, 'generate'),
