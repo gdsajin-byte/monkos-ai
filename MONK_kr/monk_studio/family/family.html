@@ -124,29 +124,21 @@
     <script src="/monk_studio/studio-header.js"></script>
 
     <main>
-        <!-- Hero Section — 거실 액자 목업(꾸 제공) -->
-        <section class="bg-[#dcdcdc] border-b border-gray-200 overflow-hidden">
-            <!-- PC: 벽 왼쪽 빈 곳에 글자, 액자는 그대로 보이게 -->
-            <div class="relative hidden md:block h-[60vh]">
-                <img src="./images/hero_frame.jpg?v=20260930" alt="거실 벽에 걸린 가족사진 액자" class="absolute inset-0 w-full h-full object-cover object-top">
-                <div class="absolute inset-y-0 left-0 w-[34%] flex items-center pl-[5%]">
-                    <div>
-                        <h1 class="font-serif font-semibold text-gray-900 leading-tight">
-                            <span class="text-5xl lg:text-6xl block break-keep">MONK Family</span>
-                            <span class="text-gray-600 italic text-xl lg:text-2xl font-light mt-3 block">Warmth, Captured.</span>
-                        </h1>
-                        <p class="text-gray-700 text-lg mt-5 break-keep">우리 가족의 이 순간을<br>영원의 기록으로 담습니다.</p>
-                    </div>
-                </div>
+        <!-- Hero Section -->
+        <section class="relative h-[60vh] flex items-center justify-center overflow-hidden bg-gray-900">
+            <div class="absolute inset-0 z-0">
+                <!-- 이미지 경로: hero.jpg -->
+                <img src="./images/hero.jpg?v=20260924" onerror="this.src='https://placehold.co/1000x600/1A437C/FFFFFF?text=Hero+Image'" alt="Warm Family Portrait Background" class="w-full h-full object-cover filter brightness-[0.4] transition-all duration-1000">
             </div>
-            <!-- 휴대폰: 글자 위, 액자 아래 -->
-            <div class="md:hidden">
-                <div class="text-center px-6 pt-12 pb-6">
-                    <p class="font-serif font-semibold text-gray-900 text-4xl">MONK Family</p>
-                    <p class="text-gray-600 italic text-lg font-light mt-2">Warmth, Captured.</p>
-                    <p class="text-gray-700 mt-4 break-keep">우리 가족의 이 순간을 영원의 기록으로 담습니다.</p>
-                </div>
-                <img src="./images/hero_frame.jpg?v=20260930" alt="" class="w-full h-auto block">
+
+            <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
+                <h1 class="font-serif font-semibold text-white mb-4 leading-tight fade-in">
+                    <span class="text-5xl sm:text-6xl md:text-7xl block break-keep">MONK Family</span>
+                    <span class="text-tiffany italic text-xl sm:text-2xl md:text-3xl font-light mt-4 block">Warmth, Captured.</span>
+                </h1>
+                <p class="text-gray-300 text-lg md:text-xl font-light max-w-2xl mx-auto fade-in delay-100">
+                    우리 가족의 이 순간을 영원의 기록으로 담습니다.
+                </p>
             </div>
         </section>
 
