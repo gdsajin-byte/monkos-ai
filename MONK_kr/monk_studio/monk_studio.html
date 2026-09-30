@@ -324,7 +324,7 @@
 
                 <!-- 지도 -->
                 <div class="relative z-0 w-full aspect-[4/3] md:aspect-[16/7] bg-gray-100 border border-gray-200 overflow-hidden">
-                    <div id="studio-map" class="w-full h-full" role="img" aria-label="몽크사진관과 주차장 입구 위치 지도"></div>
+                    <div id="studio-map" class="w-full h-full" role="img" aria-label="몽크사진관과 주차장 위치 지도"></div>
                     <div id="studio-map-hint" class="hidden md:block pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 z-10 px-3 py-1.5 rounded-lg bg-black/70 text-white text-xs transition-opacity duration-300">지도를 클릭하면 마우스 휠로 확대·축소할 수 있어요</div>
                 </div>
 
@@ -375,7 +375,7 @@
                         <div class="flex items-center gap-2 mb-4 md:mb-0 md:w-40 md:flex-shrink-0 md:items-start leading-6 text-gray-900 font-semibold"><i data-lucide="car" class="w-5 h-5 text-gray-500"></i>자동차로 오실 때</div>
                         <div class="flex-1 space-y-0.5">
                         <p class="text-gray-700 leading-6 break-keep"><strong class="font-semibold text-gray-900">지하 2층 다이소 쪽</strong>에 주차하시고 고메스퀘어 쪽 에스컬레이터로 올라오시면 몽크사진관이 있습니다.</p>
-                        <p class="text-gray-700 leading-6 break-keep">주차는 <strong class="font-semibold text-gray-900">90분 무료</strong>입니다.</p>
+                        <p class="text-gray-700 leading-6 break-keep">주차장 입구는 스타벅스 옆이 아니라 그 <strong class="font-semibold text-gray-900">오른쪽 PARKING IN</strong> 표지 쪽입니다(스타벅스 옆은 출구). 주차는 <strong class="font-semibold text-gray-900">90분 무료</strong>입니다.</p>
                         </div>
                     </div>
                     <div class="bg-gray-50 rounded-2xl p-6 md:px-8 md:py-6 md:flex md:gap-10">
@@ -428,7 +428,7 @@
             if (!window.maplibregl) return;
             var MAP_STYLE = 'bright'; // 브라이트(컬러)
             var STUDIO = [127.1917733, 37.5642342];
-            var PARKING = [127.1913909, 37.5643338]; // 스타벅스 미사역그랑파사쥬점 옆 (꾸 확인)
+            var PARKING = [127.1913909, 37.5643338]; // 스타벅스 미사역그랑파사쥬점 옆 = 주차장 출구. 입구는 그 오른쪽 PARKING IN (꾸 확인 09-27). 입구 좌표는 꾸 실측 후 별도 핀 예정
             var map = new maplibregl.Map({
                 container: 'studio-map',
                 style: 'https://tiles.openfreemap.org/styles/' + MAP_STYLE,
@@ -451,7 +451,7 @@
                 new maplibregl.Marker({ element: el, anchor: 'left', offset: [extra ? -19 : -14, 0] }).setLngLat(lngLat).addTo(map);
             }
             pin(STUDIO, '#fff', '<img src="/images/studio-icon-192.png" alt="" class="w-full h-full rounded-full">', '몽크사진관 (B1)', 'map-pin-logo');
-            pin(PARKING, '#2563EB', 'P', '주차장 입구 · 스타벅스 옆');
+            pin(PARKING, '#2563EB', 'P', '주차장 출구 · 스타벅스 옆 (입구는 오른쪽 PARKING IN)');
             pin([127.1928, 37.5633], '#996CAC', '5', '미사역'); // 5호선 역 위치(대략) — 1번 출구와 지하 연결
 
             // 마우스 휠 확대·축소: 지도를 한 번 클릭하면 켜지고, 지도 밖으로 나가면 꺼진다 (페이지 스크롤 방해 방지)
