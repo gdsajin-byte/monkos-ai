@@ -37,4 +37,9 @@ status: draft | active | blocked | paused | completed
 - 메타 PF = 흐름·연결·KPI 정본. 하위 PF = 실측·실행 정본.
 - 메타 PF Phase는 하위 PF와 독립.
 
+## 원장 도구 (2026-09-30 신설 — DESIGN_20260930_PF원장화)
+- 히스토리 어펜드는 **`scripts/pf.sh append PF_X "내용" --agent {디바이스}/{에이전트} [--artifact 경로] [--status ✅]`** 경유. 표 열·날짜 형식·링크·중복을 도구가 맞춘다. 수동 행 삽입 금지.
+- `portfolio:` 필드를 가진 공식 문서(reports·orders·incidents·proposals·designs·specs)는 **Write 시 훅이 PF 히스토리에 자동 링크**한다 — 같은 문서를 수동으로 또 붙이지 않는다.
+- 현황: `scripts/pf.sh query [--status active] [--stale 14]` / 누락 검사: `scripts/pf.sh check [--days 3]` (Stop 훅·CI C15가 같은 검사를 자동 실행).
+
 > 상세: governance/laws/ch4_docs_structure.md 9조

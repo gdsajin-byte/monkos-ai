@@ -113,6 +113,9 @@ domain: "governance/infrastructure"
 | 2026-09-30 | iMac/민아 | **하네스 vs 업계 표준 거리·방향 보고** — 12축 매트릭스(앞섬 3·동등 3·뒤짐 5·독자 1). 판정: 업계가 우리 구조로 수렴, 갭은 집행 코드화·런타임 기능 미사용·자기 평가 부재. 발견: rules `globs:` 키 오기로 조건부 로딩 무효(전량 로딩). 결정 5건 대기(D4 = Phase 1 "묶음 A/B/C" 본 보고로 대체 종결 제안) | [REPORT_20260930](../../reports/2026-09/REPORT_20260930_iMac민아_하네스_업계표준_거리와방향.md) | ⏳ |
 | 2026-09-30 | iMac/민아 | **D2 집행 + D1 집행코드화 설계** — rules `globs:`→`paths:` 교정(작가님 승인, 상시 로딩 12→5). 집행 코드화 설계서: 14조항 4층(deny·PreToolUse·git hook·CI) 배치, P0 5·P1 5·P2 4, E10 승인 논스 훅(ch1 7조 예고분) 포함. **작가님 15:09 승인** — E10은 채팅 승인 문구→세션 바인딩 토큰(터미널은 예비). 구현 지시서는 쌍아 | [DESIGN_집행코드화](../../../tech/designs/2026-09/DESIGN_20260930_집행코드화_hooks_deny.md) | ✅ 설계 / ⏳ 구현 |
 | 2026-09-30 | iMac/민아 | **집행 코드화 P0·P1 구현 [예외·추인 대기]** — deny 16 통일 + 훅 3이벤트(guard_bash·guard_write·prompt_submit·session_start) + E10 채팅 승인→세션 토큰 + approve.sh 예비. 스모크 59/59, 실세션 bypass 차단 실측. GAP_MATRIX 7행(Hooks) 부분→**해소**, ch1 7조 "논스 훅 전까지 한계" 해소 조건 충족(법률 개정 후속) | [COMPLETION](../../reports/2026-09/COMPLETION_20260930_iMac민아_집행코드화_훅_P0P1.md) | ✅ |
+| 2026-09-30 | iMac/민아 | **DESIGN** PF 수기 노트 → 원장(ledger) 체계 — 마크다운 정본 유지 + 쓰기 자동화·파생 뷰·교차 링크 검사·구조화 질의 4단 | [DESIGN_20260930_PF원장화_pf_ledger](../../../tech/designs/2026-09/DESIGN_20260930_PF원장화_pf_ledger.md) | ⏳ |
+| 2026-09-30 | iMac/민아 | **PF 원장 1단계 구현** — pf.sh append/query/check/show + PostToolUse 자동 링크 훅 + Stop 경고 훅 + CI C15 + pf-ops 규칙. 스모크 17/17. 실레포 check 5/5, 활성 PF 30일+ 정체 20건 첫 가시화. 자동 링크 훅이 본 설계서 Write에 라이브로 걸려 수동 중복을 pf.py가 거부(dogfood 실증) [예외·추인 대기] | [pf](../../../../scripts/pf.py) | ✅ |
+| 2026-09-30 | iMac/민아 | **COMPLETION** PF 원장화 1단계 — pf.sh CLI + 자동 링크 훅 + Stop 경고 + CI C15 | [COMPLETION_20260930_iMac민아_PF원장화_1단계](../../reports/2026-09/COMPLETION_20260930_iMac민아_PF원장화_1단계.md) | ✅ |
 
 ---
 

@@ -282,3 +282,9 @@ jobs:
           else
             echo "✅ 이번 변경분에 [예외] 기록 없음"
           fi
+
+      - name: C15 — PF 교차 링크 검사 (헌법 3조 2항 PF 갱신 의무, DESIGN_20260930_PF원장화)
+        run: |
+          # portfolio: 필드를 가진 최근 문서가 해당 PF 히스토리에 링크됐는지. 경고 전용(차단 아님).
+          # mtime 기준이라 체크아웃 직후엔 전 파일이 '최근'이 된다 → 변경분 커밋 날짜로 좁히기 위해 --days 3 유지.
+          python3 scripts/pf.py check --days 3 || echo "::warning::⚠️ PF 교차 링크 누락 — 위 목록 참조 (scripts/pf.sh append 로 보정)"
