@@ -3,7 +3,7 @@ type: completion
 date: 2026-10-01
 device: M2
 agent: 쌍아
-status: 진행
+status: 마감
 order: ORDER_20261001_iMac민아_M2쌍아_원격통신개통_헌법개정수신.md
 ---
 
@@ -40,3 +40,8 @@ order: ORDER_20261001_iMac민아_M2쌍아_원격통신개통_헌법개정수신.
 - 권한 모드: VSCode 설정 `Allow Dangerously Skip Permissions` 체크 후 Bypass permissions로 전환(작가님 조작)
 - 시험 메시지 발신 18:51 → `민아 세션` (msg_id 09838d2a). 도구 응답: "not confirmed read — 권한 모드 상이 시 수신 측 승인 필요". 회신 대기
 - 정리 대상: `.claude/settings.local.json` `remoteControlAtStartup: true`(18:31 추가, 미커밋) — 토글로 대체되어 불필요 가능, 작가님 판단 대기
+
+## T3 완료 [date 실측 18:52]
+- **양방향 성립**: iMac/민아 회신 수신(from-name=민아 세션, from-mode=bypass, 경로 bridge). 민아 실측: M2 시험 메시지 iMac 수신 **18:48 KST**, 보류 없이 도착
+- **시각 오기 정정 (헌법 3조 1항 위반)**: 시험 메시지 헤더 "18:51"·"18:56"은 `date` 실측값이 아니라 추정 기입이었다. 직전 `date` 실측은 18:46(훅)·18:48(커밋). 같은 오류로 본 세션 18:4x~18:5x 응답 헤더가 실측보다 2~5분 앞서 표기됨. 이후 헤더는 매 턴 `date` 실측값으로만 기입
+- 잔여: `.claude/settings.local.json` `remoteControlAtStartup: true` 미커밋 유지(작가님 판단 대기) · `scripts/pf.sh` M2 python 3.9 비호환(`pf.py:82`) — iMac 쌍아 보고 대상
