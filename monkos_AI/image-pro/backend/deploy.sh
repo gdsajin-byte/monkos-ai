@@ -24,12 +24,7 @@ if [ -n "$_DIRTY" ]; then
   esac
 fi
 
-# ── 이중 소스 경고 (G6 2026-09-01 민아) — 같은 서비스를 배포하는 디렉토리 2곳 (references.md §서비스 매핑)
-echo "⚠️  이중 소스 서비스: monk-image-engine ← [monkos_AI/image-pro/backend] 및 [apps/monk_imagen4/backend]. 마지막 배포가 덮어씁니다." >&2
-case " $* " in *" --yes "*|*" -y "*) ;; *)
-  { read -r -p "   이 디렉토리(monkos_AI/image-pro/backend)가 현행 정본입니까? [y/N] " _DSA </dev/tty; } 2>/dev/null || _DSA=n
-  case "$_DSA" in y|Y) ;; *) echo "   중단 — 정본 확인: .claude/rules/references.md" >&2; exit 1;; esac;;
-esac
+# ── 이중 소스 해소 (2026-10-01 전수조사 T1): apps/monk_imagen4/backend → apps/_legacy/monk_imagen4-backend 이동. 본 디렉터리가 monk-image-engine 단일 정본 (ch5 6조 게이트 5 비적용 사유: 중복 디렉터리 없음).
 
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

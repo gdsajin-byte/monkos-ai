@@ -27,12 +27,7 @@ if [ -n "$_DIRTY" ]; then
   esac
 fi
 
-# ── 이중 소스 경고 (G6 2026-09-01 민아) — 같은 서비스를 배포하는 디렉토리 2곳 (references.md §서비스 매핑)
-echo "⚠️  이중 소스 서비스: monkos-idphoto-jp ← [monkos_AI/idphoto-jp] 및 [apps/idphoto-jp-v079]. 마지막 배포가 덮어씁니다." >&2
-case " $* " in *" --yes "*|*" -y "*) ;; *)
-  { read -r -p "   이 디렉토리(monkos_AI/idphoto-jp)가 현행 정본입니까? [y/N] " _DSA </dev/tty; } 2>/dev/null || _DSA=n
-  case "$_DSA" in y|Y) ;; *) echo "   중단 — 정본 확인: .claude/rules/references.md" >&2; exit 1;; esac;;
-esac
+# ── 이중 소스 해소 (2026-10-01 전수조사 T1): apps/idphoto-jp-v079 → apps/_legacy/idphoto-jp-v079 이동. 본 디렉터리가 monkos-idphoto-jp 단일 정본 (ch5 6조 게이트 5 비적용 사유: 중복 디렉터리 없음).
 
 
 RED='\033[0;31m'

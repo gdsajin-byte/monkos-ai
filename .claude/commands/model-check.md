@@ -8,7 +8,7 @@ allowed-tools:
 
 ## 사용 중인 모델 추출
 
-!`grep -oP 'models/[a-z0-9._-]+' apps/monk_imagen4/backend/server.js | sort -u`
+!`grep -oP 'models/[a-z0-9._-]+' monkos_AI/image-pro/backend/server.js | sort -u`
 !`grep -oP 'models/[a-z0-9._-]+' monkos_AI/portal/lib/shared/config.js 2>/dev/null | sort -u`
 
 ## 점검 절차

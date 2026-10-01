@@ -63,7 +63,7 @@ MONK.KR / MONKOS.AI
 | 증명(KR)·촬영앱 | `monkos_AI/idphoto-kr/` | `monkos-idphoto-kr` | idphoto-kr.monkos.ai | 🟢 | 실물 사진관 연계 KR 시장용. 카메라 코칭(Gemini Live)+idgen(`gemini-3-pro-image`)+토스 충전 | PF_IDPHOTO |
 | 증명(JP) | `monkos_AI/idphoto-jp/` | `monkos-idphoto-jp` | idphoto-jp.monkos.ai | 🟡 | JP 레거시(엔화 레몬 스토어#290457). JP 본대는 monkos.ai(ja)로 재편 권고(07-21) — 결정 대기 | PF_IDPHOTO |
 | specs·무료 증명 | (포털 내장) `lib/cms/render-specs.js` | — | monkos.ai/specs/* | 🟢 | T0 무료 전언어 개방 — 트래픽·DA 확보가 목적, 캡 300/일 (매팅=BiRefNet 트랙) | PF_SPECS |
-| 이미지프로 | `monkos_AI/image-pro/backend/` ⚠️+`apps/monk_imagen4/backend/` | **`monk-image-engine`** | image.monkos.ai | 🟢 | 이미지 편집·생성 엔진(Imagen4 T2I·Gemini I2I). 꾸 마케팅 에셋 제작 상시 사용. 어드민 EXTERNAL 링크 | PF_IMAGE_PRO |
+| 이미지프로 | `monkos_AI/image-pro/backend/` (단일 정본 10-01 — 구 apps 측은 `apps/_legacy/`) | **`monk-image-engine`** | image.monkos.ai | 🟢 | 이미지 편집·생성 엔진(Imagen4 T2I·Gemini I2I). 꾸 마케팅 에셋 제작 상시 사용. 어드민 EXTERNAL 링크 | PF_IMAGE_PRO |
 | 스튜디오 | `monkos_AI/studio/` | `monkos-studio`(+dev) | studio.monkos.ai | 🟢❓(가동 실측 필요) | AI 증명사진 내부 생성 도구 (어드민 INTERNAL) | PF_STUDIO |
 | 크롭 엔진 | `monkos_AI/crop-engine/` | ⬜ `monkos-crop-engine` 미생성 | — | ⬜ | 규격 안착 크롭(FaceMesh) 설계 — 서비스 미생성, 폴더·deploy.sh만 실재 | PF_CROP |
 | 매팅·4060 | `monkos_AI/matte-server/` | (Cloud Run 아님) | matte.monkos.ai | 🟡 | 무료 매팅 원가 방어용 자가 GPU(BiRefNet). 4060 가정 사정 오프 빈발 — RunPod 폴백이 전량 흡수(07-25 체계) | PF_INFRA |

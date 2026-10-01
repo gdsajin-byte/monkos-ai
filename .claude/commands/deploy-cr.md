@@ -28,7 +28,7 @@ allowed-tools:
 | idphoto-kr | `monkos_AI/idphoto-kr/deploy.sh` |
 | idphoto-jp | `monkos_AI/idphoto-jp/deploy.sh` |
 | studio | `monkos_AI/studio/deploy.sh` |
-| image-engine | `apps/monk_imagen4/backend/deploy.sh` |
+| image-engine | `monkos_AI/image-pro/backend/deploy.sh` (10-01 정본 확정 — 구 apps 측은 _legacy) |
 
 3. dev 배포: 막내 허용. 배포 후 동작 확인 필수.
 4. prod 배포: **작가님/쌍아만 실행**. 막내는 지시서에 `[특별법]` 명기 시에만.
