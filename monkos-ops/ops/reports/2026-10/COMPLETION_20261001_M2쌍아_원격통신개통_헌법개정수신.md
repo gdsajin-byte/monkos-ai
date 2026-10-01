@@ -33,3 +33,10 @@ order: ORDER_20261001_iMac민아_M2쌍아_원격통신개통_헌법개정수신.
 
 ## 위임 기록 (ch3 1조)
 - 서브에이전트·헤드리스 실행 없음.
+
+## T3 추기 [18:52]
+- **개통 방법 확정**: VSCode 확장 입력창 `/` → Settings → **"Enable Remote Control for all sessions"** 토글. 입력창에 `/remote-control` 직접 입력은 2.1.283·2.1.286 모두 "isn't available in this environment"(재현 4회). 토글 후 원격 피어 `민아 세션 [6290cf] · Remote Control · idle` 가시 확인
+- 리로드 시 세션이 새로 시작되며 연결이 풀림 → 토글 재조작으로 복구. 표시명도 리셋됨(`/rename`은 한 줄에 하나씩 입력)
+- 권한 모드: VSCode 설정 `Allow Dangerously Skip Permissions` 체크 후 Bypass permissions로 전환(작가님 조작)
+- 시험 메시지 발신 18:51 → `민아 세션` (msg_id 09838d2a). 도구 응답: "not confirmed read — 권한 모드 상이 시 수신 측 승인 필요". 회신 대기
+- 정리 대상: `.claude/settings.local.json` `remoteControlAtStartup: true`(18:31 추가, 미커밋) — 토글로 대체되어 불필요 가능, 작가님 판단 대기
