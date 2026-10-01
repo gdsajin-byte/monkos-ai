@@ -663,3 +663,4 @@
 - 갱신 1: project_model_placement(쌍아 Opus 5.5·민아 Fable 차등은 작가님 의도, 모델 비종속)
 - MEMORY.md 인덱스 +6행 (149 → 155줄, 캡 200 이내)
 - 같은 날 쌍아 변경분(feedback_korean_only_replies 신설, reference_cross_session_message_to_makne 갱신)은 쌍아 기록 소관
+- [2026-10-01 19:20 KST] iMac/민아 (마감 후 추가): reference_cross_machine_session_messaging 갱신 — isolatePeerMachines 제거(8cdd26d2)·기기 간 왕복 실측·웹에서 허용 버튼 불가
