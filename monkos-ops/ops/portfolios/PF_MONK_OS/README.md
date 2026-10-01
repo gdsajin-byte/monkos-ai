@@ -136,6 +136,7 @@ domain: "governance/infrastructure"
 | 2026-10-01 | iMac/민아 | **REPORT** 원격 편제 개정 집행(09ae2c30) 실물 대조 — 묶음 A·B 반영 확인, 잔존 불일치 2건 | [REVIEW_20261001_iMac민아_원격편제_집행대조](../../reports/2026-10/REVIEW_20261001_iMac민아_원격편제_집행대조.md) | 📁 |
 | 2026-10-01 | iMac/민아 | **ORDER** M2 Remote Control 개통(iMac↔M2 세션 간 통신) + 10-01 헌법 개정 수신·위성 헌법 동기화 + 미푸시 커밋 정리 | [ORDER_20261001_iMac민아_M2쌍아_원격통신개통_헌법개정수신](../../orders/2026-10/ORDER_20261001_iMac민아_M2쌍아_원격통신개통_헌법개정수신.md) | ⏳ |
 | 2026-10-01 | iMac/쌍아 | **[개헌] 집행** 원격 편제 정식화 — 헌법 1조 2항(꾸 현장 책임자·경로①④) + ch1·ch3 개정, 5인 만장일치 + 작가님 승인. 묶음 C 조건부·⑥b 차회 | [PETITION_20261001_쌍아민아_원격편제_서브에이전트_위임기록](../../../../governance/constitution/petitions/PETITION_20261001_쌍아민아_원격편제_서브에이전트_위임기록.md) | ✅ |
+| 2026-10-01 | iMac/민아 | **COMPLETION** 기기 간 발신 승인 설정(isolatePeerMachines) 제거 — 웹 원격에서 버튼 병목 해소 | [COMPLETION_20261001_iMac민아_기기간발신승인설정_제거](../../reports/2026-10/COMPLETION_20261001_iMac민아_기기간발신승인설정_제거.md) | ✅ |
 
 ---
 
