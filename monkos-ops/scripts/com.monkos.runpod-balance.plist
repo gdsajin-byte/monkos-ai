@@ -9,7 +9,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/developer/monk_project/monkos-ops/scripts/runpod_balance_check.sh</string>
+        <string>/Users/jeong-kyushin/developer/monk_project/monkos-ops/scripts/runpod_balance_check.sh</string>
     </array>
 
     <key>StartCalendarInterval</key>

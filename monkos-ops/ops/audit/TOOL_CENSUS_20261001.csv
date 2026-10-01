@@ -1,0 +1,144 @@
+path,layer,purpose,last_commit,refs_docs,refs_code,registered,smoke,wired,class,reason
+scripts/ads-oauth-manual.sh,CLI,Google Ads OAuth — 수동 코드 입력 모드,2026-07-19,0,0,N,N,-,중복,scripts/ads-oauth.sh 와 동일 기능(Google Ads OAuth， 자동/수동 모드)
+scripts/ads-oauth.sh,CLI,Google Ads API OAuth — 브라우저 인증 → Refresh Token → SM 등록 원스톱,2026-07-19,2,0,N,N,-,중복,scripts/ads-oauth-manual.sh 와 동일 기능(Google Ads OAuth， 자동/수동 모드)
+scripts/ads.sh,CLI,Google Ads API 래퍼 — credits.sh 패턴 준용,2026-09-15,72,2,Y,N,-,정상,registered=Y
+scripts/approve.sh,CLI,E10 승인 토큰 — 작가님 전용 예비 경로 (원격·무인 맥락에서 의도적으로 열 때만).,2026-09-30,16,6,Y,Y,settings.json,정상,registered=Y
+scripts/audit_secrets.sh,CLI,SECRET_INVENTORY.md vs GCP Secret Manager 대사 스크립트,2026-07-14,10,0,N,N,-,중복,SM↔SECRET_INVENTORY 대조가 scripts/tools/sa_audit.sh ⑥ 및 secret.sh map 과 중복. skills/secret-audit.md 가 이 파일을 지목
+scripts/chrome-devtools.sh,CLI,Chrome DevTools MCP 전용 실행 스크립트,2026-03-31,8,0,N,N,-,레거시후보,last_commit=2026-03-31<07-01; refs_code=0; wired=-; refs_docs=8 / Chrome DevTools MCP 기동용 — .mcp.json 에 해당 서버 없음， cdp.sh 와 기능 중첩
+scripts/credits.sh,CLI,credits.sh — MONKOS 크레딧/고객 데이터 접근 전용 스크립트,2026-08-13,217,8,Y,Y,CI:signups-report.yml,정상,registered=Y
+scripts/firestore_ttl_activate.sh,CLI,Firestore TTL 정책 활성화 명령,2026-03-08,5,0,N,N,-,레거시후보,last_commit=2026-03-08<07-01; refs_code=0; wired=-; refs_docs=5
+scripts/gcr_cleanup.sh,CLI,GCR 레거시 이미지 삭제 스크립트,2026-02-28,4,0,N,N,-,레거시후보,last_commit=2026-02-28<07-01; refs_code=0; wired=-; refs_docs=4
+scripts/gcs_migrate.sh,CLI,GCS 버킷 마이그레이션 스크립트,2026-01-15,16,0,N,N,-,레거시후보,last_commit=2026-01-15<07-01; refs_code=0; wired=-; refs_docs=16
+scripts/md_to_pdf.py,CLI,MD → PDF 변환 스크립트,2026-01-17,4,0,N,N,-,레거시후보,last_commit=2026-01-17<07-01; refs_code=0; wired=-; refs_docs=4
+scripts/migrate-gcs-paths.sh,CLI,GCS 경로 마이그레이션: service/idphoto/kr/ → idphoto/ & headshot/,2026-06-22,2,0,N,N,-,레거시후보,last_commit=2026-06-22<07-01; refs_code=0; wired=-; refs_docs=2
+scripts/mk-pull.sh,CLI,mk-pull: monk_project main pull,2026-08-13,31,0,N,N,-,등재필요,registered=N; last_commit≥07-01
+scripts/mk-push.sh,CLI,mk-push: monk_project main push,2026-09-27,167,2,Y,Y,-,정상,registered=Y
+scripts/pf.py,CLI,pf — PF(포트폴리오) 원장 CLI. 마크다운 README가 정본， 이 도구는 쓰기·질의·검사를 기계화한다.,2026-09-30,15,11,Y,Y,CI:governance-check.yml,정상,registered=Y
+scripts/pf.sh,CLI,pf — PF 원장 CLI 래퍼. 본체는 scripts/pf.py (표준 라이브러리만).,2026-09-30,18,3,Y,N,CI:governance-check.yml,정상,registered=Y
+scripts/pf_frontmatter_backfill.sh,CLI,pf_frontmatter_backfill.sh — portfolio: frontmatter 소급 보강,2026-06-14,5,0,N,Y,-,레거시후보,last_commit=2026-06-14<07-01; refs_code=0; wired=-; refs_docs=5
+scripts/secret.sh,CLI,secret.sh — MONKOS 시크릿 등록/조회/목록 단일 스크립트,2026-09-26,101,5,Y,Y,-,정상,registered=Y
+scripts/sync-dev-test.sh,CLI,dev T1 테스트 이미지를 로컬 MONKOS_ASSETS/테스트이미지/dev_t1_sync/로 동기화,2026-07-12,0,0,N,N,-,등재필요,registered=N; last_commit≥07-01
+scripts/철창이_watcher.sh,CLI,철창이 폴더 워처 — 자동 정리 + 입력용 이미지 생성,2026-02-28,9,1,N,N,launchd:com.monkos.철창이-watcher.plist,중복,monkos-ops/scripts/cheolchang_watcher.sh 와 동일 기능(~/Desktop/철창이 감시). 설치된 launchd는 이 파일을 호출
+scripts/tools/cdp.sh,인프라,CDP (Chrome DevTools Protocol) 직접 제어 스크립트,2026-04-21,156,3,Y,N,-,정상,registered=Y
+scripts/tools/cdp_setup.sh,인프라,CDP 환경 셋업 스크립트,2026-03-27,63,3,N,N,-,등재필요,registered=N; refs_code=3 / 도구 맵 cdp 행은 cdp.sh+cdp_utils.py 만 명기
+scripts/tools/cdp_utils.py,인프라,CDP Utils — Chrome DevTools Protocol 직접 제어 유틸리티,2026-09-05,150,6,Y,N,-,정상,registered=Y
+scripts/tools/cloudflare_mcp.sh,MCP,Cloudflare MCP 래퍼 — wrangler OAuth 세션 활용,2026-04-05,10,1,N,N,.mcp.json,등재필요,registered=N; refs_code=1 wired=.mcp.json
+scripts/tools/debate.sh,인프라,MONK 에이전트 토론 엔진 — POC v1,2026-05-11,4,0,N,N,-,레거시후보,last_commit=2026-05-11<07-01; refs_code=0; wired=-; refs_docs=4
+scripts/tools/ga4_mcp.sh,MCP,GA4 MCP 서버 — Secret Manager에서 SA 키 주입 (iMac 경로 종속 해소),2026-08-02,9,2,N,N,.mcp.json,등재필요,registered=N; refs_code=2 wired=.mcp.json last_commit≥07-01
+scripts/tools/gdocs_mcp.sh,MCP,Google Docs MCP 서버 — Secret Manager에서 인증 정보 주입,2026-06-02,19,1,N,N,.mcp.json,등재필요,registered=N; refs_code=1 wired=.mcp.json
+scripts/tools/gitleaks-precommit.sh,인프라,gitleaks pre-commit hook — staged 파일에서 시크릿 탐지 시 커밋 차단,2026-07-24,10,0,Y,N,git-hook:pre-commit,정상,registered=Y
+scripts/tools/gsc_mcp.sh,MCP,GSC MCP 서버 — 인증 우선순위 (2026-07-14 18:18 작가님·쌍아·민아 합의 확정),2026-07-16,12,1,N,N,.mcp.json,등재필요,registered=N; refs_code=1 wired=.mcp.json last_commit≥07-01
+scripts/tools/gsc_submit.sh,인프라,GSC 사이트맵 제출/상태 CLI — 소유자 SA 임퍼소네이션 경유 (2026-07-24 신설),2026-07-24,19,0,Y,N,-,정상,registered=Y
+scripts/tools/img_clip.py,인프라,클립보드 이미지를 파일로 저장하고 경로 출력,2026-01-31,7,0,N,N,-,레거시후보,last_commit=2026-01-31<07-01; refs_code=0; wired=-; refs_docs=7
+scripts/tools/img_pick.py,인프라,파일 선택 다이얼로그로 이미지 선택하고 경로 출력,2026-01-31,6,0,N,N,-,레거시후보,last_commit=2026-01-31<07-01; refs_code=0; wired=-; refs_docs=6
+scripts/tools/kimi.sh,인프라,Kimi API 대화 모드 (OpenAI 호환) + 턴당 사용량/비용/잔액 표시,2026-07-19,12,0,N,N,-,등재필요,registered=N; last_commit≥07-01
+scripts/tools/matte_loadtest.py,인프라,matte_loadtest.py — 4060 매팅 서버 동시성/부하 측정기,2026-07-25,8,0,Y,N,-,정상,registered=Y
+scripts/tools/playwright_mcp.sh,MCP,Playwright MCP 래퍼 — CDP 디버그 크롬에 동적 연결,2026-04-05,8,1,N,N,.mcp.json,등재필요,registered=N; refs_code=1 wired=.mcp.json
+scripts/tools/sa_audit.sh,인프라,"SA·시크릿 감사 스냅샷 — 읽기 전용 (2026-07-24 신설， 작가님 지시 ""종합 시크릿 관리 수준 체크"")",2026-07-24,19,2,Y,N,-,정상,registered=Y
+scripts/tools/secret_meta_backfill.py,인프라,SM 메타 백필 — SECRET_INVENTORY 수기 메타(용도·서비스·비고)를 SM annotations로 이전.,2026-07-24,3,0,Y,N,-,정상,registered=Y
+scripts/tools/secret_patrol.sh,인프라,시크릿·SA 일간 순찰 — P2 (2026-07-24 작가님 승인),2026-08-13,34,1,Y,N,launchd:ai.monkos.secret-patrol.plist,정상,registered=Y
+scripts/tools/seo_collect.sh,인프라,SEO 데이터 수집 통합 래퍼 — SM 키 주입 + seo_collectors.py 실행,2026-08-02,51,0,Y,N,-,정상,registered=Y
+scripts/tools/seo_collectors.py,인프라,SEO 데이터 수집 독립 모듈 — daily_briefing.py에서 분리.,2026-09-15,60,5,Y,Y,-,정상,registered=Y
+scripts/tools/specs-preview.sh,인프라,주석 없음,2026-06-19,6,0,N,N,-,레거시후보,last_commit=2026-06-19<07-01; refs_code=0; wired=-; refs_docs=6 / /Users/kku 경로 하드코딩(M2 전용)
+scripts/tools/specs_drift.sh,인프라,specs_drift.sh — specs 소스 ↔ 엣지 배포본 드리프트 감지 (G1， 2026-09-01 민아),2026-09-02,48,3,Y,N,deploy:monkos_AI/portal/edge/deploy.sh;deploy:monkos_AI/portal/deploy.sh;git-hook:pre-push,정상,registered=Y
+scripts/collectors/_loader.js,수집기,BQ 공통 로더 — market_eye 테이블에 행 삽입,2026-07-21,5,0,Y,N,-,정상,registered=Y
+scripts/collectors/_notify.js,수집기,텔레그램 경고 발신 — 수집기 실패/빈 응답 시 호출,2026-07-21,5,0,Y,N,-,정상,registered=Y
+scripts/collectors/collect_ga4.js,수집기,GA4 Data API 일배치 수집기,2026-07-21,9,1,Y,N,CI:daily-briefing.yml,정상,registered=Y
+scripts/collectors/collect_gsc.js,수집기,GSC Search Analytics 일배치 수집기,2026-07-21,10,1,Y,N,CI:daily-briefing.yml,정상,registered=Y
+scripts/collectors/collect_keywords.js,수집기,키워드 월배치 수집기,2026-09-15,13,2,Y,Y,CI:daily-briefing.yml,정상,registered=Y
+scripts/collectors/collect_trends.js,수집기,트렌드 월배치 수집기,2026-07-21,10,1,Y,N,CI:daily-briefing.yml,정상,registered=Y
+scripts/collectors/keyword_sets.json,수집기,주석 없음,2026-07-21,2,1,Y,N,-,정상,registered=Y
+scripts/hooks/_common.py,훅,MONK 하네스 훅 공통 모듈.,2026-09-30,1,0,Y,N,-,정상,registered=Y
+scripts/hooks/guard_bash.py,훅,PreToolUse(Bash) 집행 훅 — E1·E2·E3·E4·E5(Bash)·E9·E10.,2026-09-30,7,3,Y,Y,settings.json,정상,registered=Y
+scripts/hooks/guard_write.py,훅,PreToolUse(Edit|Write) 집행 훅 — E5(파일)·E8·승인 디렉터리 보호.,2026-09-30,5,2,Y,Y,settings.json,정상,registered=Y
+scripts/hooks/pf_autolink.py,훅,PostToolUse(Write) 훅 — portfolio: 필드를 가진 공식 문서가 생성되면 해당 PF 히스토리에 자동 어펜드.,2026-09-30,5,4,Y,Y,settings.json,정상,registered=Y
+scripts/hooks/prompt_submit.py,훅,UserPromptSubmit 훅 — E6(KST 시각 주입) + E10(채팅 승인 → 세션 토큰 발급).,2026-09-30,1,2,Y,Y,settings.json,정상,registered=Y
+scripts/hooks/session_start.sh,훅,SessionStart 훅 — E7: 디바이스·시각·git 상태·세션 로그 존재를 하네스가 실측해 주입.,2026-09-30,4,2,Y,Y,settings.json,정상,registered=Y
+scripts/hooks/smoke.py,훅,집행 훅 스모크 — 양성/음성 픽스처를 훅 스크립트에 직접 흘려 판정을 검증한다 (Claude 세션 불요).,2026-09-30,3,0,Y,Y,-,정상,registered=Y
+scripts/hooks/smoke_pf.py,훅,pf.py + pf_autolink + stop_check 스모크 — 임시 PF_SMOKE 를 만들어 검증 후 삭제. exit 1 = FAIL.,2026-09-30,4,0,Y,Y,-,정상,registered=Y
+scripts/hooks/stop_check.py,훅,Stop 훅 — E11 세션 로그 어펜드 의무 + PF 교차 링크 누락 경고 (비차단).,2026-09-30,7,3,Y,Y,settings.json,정상,registered=Y
+scripts/retrieval/mcp_server.js,MCP,"인덱스 부재·빈 DB → SQLite 원문(""no such table"") 대신 재빌드 명령을 담은 한국어 에러 (도구 3요건 #3 실패 가시화)",2026-09-27,19,1,N,N,.mcp.json,등재필요,registered=N; refs_code=1 wired=.mcp.json last_commit≥07-01
+scripts/retrieval/search.js,MCP,--db <path>는 lib 로드 전에 환경변수로 반영해야 한다 (DB_PATH는 모듈 로드 시 고정),2026-09-27,69,3,Y,Y,-,정상,registered=Y
+scripts/retrieval/build_index.js,MCP,주석 없음,2026-09-27,88,7,N,N,-,등재필요,registered=N; refs_code=7 last_commit≥07-01
+monkos-ops/scripts/ads_sync.py,CLI,MONKOS Ads Sync — 로컬 폴더 → GCS 자동 밀어내기 (FIFO 6장),2026-03-06,14,0,N,N,-,레거시후보,last_commit=2026-03-06<07-01; refs_code=0; wired=-; refs_docs=14
+monkos-ops/scripts/ads_upload.sh,CLI,MONKOS Ads Auto-Upload — launchd WatchPaths 트리거,2026-03-06,26,1,N,N,launchd:com.monkos.ads-sync.plist,등재필요,registered=N; refs_code=1 wired=launchd:com.monkos.ads-sync.plist
+monkos-ops/scripts/cheolchang_watcher.sh,CLI,cheolchang_watcher.sh — ~/Desktop/철창이/ 폴더 감시 → 프로젝트 inbox 자동 수거,2026-02-23,4,1,N,N,-,중복,scripts/철창이_watcher.sh 와 동일 기능(~/Desktop/철창이 감시). 레포 plist(cheolchang-sync)만 참조·미설치. last_commit=2026-02-23
+monkos-ops/scripts/collect_saga.sh,CLI,MONK.KR Saga Collector,2026-02-22,36,0,N,N,-,레거시후보,last_commit=2026-02-22<07-01; refs_code=0; wired=-; refs_docs=36
+monkos-ops/scripts/com.monkos.cheolchang-sync.plist,launchd,Label=com.monkos.cheolchang-sync,2026-02-23,6,0,N,N,-,중복,설치본 ~/Library/LaunchAgents/com.monkos.철창이-watcher.plist 와 역할 중복. 레포 사본 미설치(launchctl 부재)
+monkos-ops/scripts/com.monkos.runpod-balance.plist,launchd,Label=com.monkos.runpod-balance,2026-07-07,4,1,N,N,-,등재필요,registered=N; refs_code=1 last_commit≥07-01 / ProgramArguments 경로 오기(/Users/developer/…)·~/Library/LaunchAgents 미설치
+monkos-ops/scripts/command_bridge.js,CLI,MONKOS Command Bridge,2026-02-22,24,0,N,N,-,중복,command_bridge_simple.js 와 동일 기능(Firestore 리스너 vs HTTP 폴링). last_commit=2026-02-22 refs_code=0
+monkos-ops/scripts/command_bridge_simple.js,CLI,MONKOS Command Bridge (Simple - HTTP Polling),2026-02-22,7,0,N,N,-,중복,command_bridge.js 와 동일 기능. last_commit=2026-02-22 refs_code=0
+monkos-ops/scripts/command_watcher.js,CLI,MONKOS Command Watcher,2026-02-22,10,0,N,N,-,레거시후보,last_commit=2026-02-22<07-01; refs_code=0; wired=-; refs_docs=10
+monkos-ops/scripts/mailbox_watcher.sh,CLI,우체통 워처 — 와이프(kku) 맥미니 M2 ↔ 우리 쪽 파일 자동 전달,2026-02-22,61,1,N,N,launchd:com.monk.mailbox-watcher.plist,등재필요,registered=N; refs_code=1 wired=launchd:com.monk.mailbox-watcher.plist
+monkos-ops/scripts/n8n,CLI,n8n,2026-02-27,434,0,N,N,-,레거시후보,last_commit=2026-02-27<07-01; refs_code=0; wired=-; refs_docs=434
+monkos-ops/scripts/night_operator.py,CLI,MONKOS Night Operator,2026-02-22,17,0,N,N,-,레거시후보,last_commit=2026-02-22<07-01; refs_code=0; wired=-; refs_docs=17
+monkos-ops/scripts/notify.ps1,CLI,주석 없음,2026-02-22,29,0,N,N,-,레거시후보,last_commit=2026-02-22<07-01; refs_code=0; wired=-; refs_docs=29
+monkos-ops/scripts/queue_sync.js,CLI,MONKOS Queue Sync,2026-02-22,10,0,N,N,-,레거시후보,last_commit=2026-02-22<07-01; refs_code=0; wired=-; refs_docs=10
+monkos-ops/scripts/runpod_balance_check.sh,CLI,runpod_balance_check.sh — RunPod 서버리스 잔액 모니터링,2026-07-25,14,1,N,Y,-,등재필요,registered=N; refs_code=1 last_commit≥07-01 / 레포 plist com.monkos.runpod-balance.plist 가 참조하나 경로 오기(/Users/developer/…)·launchctl 미설치
+monkos-ops/scripts/session_append.sh,CLI,session_append.sh - 세션 로그에 타임스탬프 자동 삽입,2026-02-22,10,0,N,N,-,레거시후보,last_commit=2026-02-22<07-01; refs_code=0; wired=-; refs_docs=10
+monkos-ops/scripts/session_watcher.sh,CLI,session_watcher.sh — 소넷이 아카이브 데몬 (세션 로그 자동 분석),2026-02-22,36,0,N,N,-,레거시후보,last_commit=2026-02-22<07-01; refs_code=0; wired=-; refs_docs=36
+monkos-ops/scripts/soul_sync.sh,CLI,MONK.KR Soul-Sync Script,untracked,60,1,N,N,-,등재필요,registered=N; refs_code=1 / .gitignore:109 로 미추적(의도적)
+.claude/commands/4060.md,스킬,4060 GPU 서버 접속·헬스체크·명령 실행 래퍼,2026-07-21,15,1,Y,N,-,정상,registered=Y
+.claude/commands/cdp-browser.md,스킬,CDP 브라우저 제어 규칙 + 장애 진단 통합. 멀티에이전트 동시 브라우저 제어의 기본 인프라 및 예외 발생 시 PF_CDP 케이스·골든패스·에디터 어댑터 순차 점검.,2026-09-05,97,0,Y,N,-,업데이트,도구 맵 cdp.sh 행 인지 경로가 `skills/cdp-browser.md` — 실제 위치 .claude/commands/cdp-browser.md (불일치)
+.claude/commands/deploy-cf.md,스킬,monk.kr CF Pages 배포 절차를 수행한다,2026-09-26,44,0,Y,N,-,정상,registered=Y
+.claude/commands/deploy-cr.md,스킬,monkos.ai Cloud Run 배포 절차를 수행한다,2026-09-02,20,0,N,N,-,등재필요,registered=N; last_commit≥07-01
+.claude/commands/escalation.md,스킬,에러 반복， 모호한 지시， 충돌 등 7가지 상황별 대응 절차를 수행한다,2026-09-02,23,0,N,N,-,등재필요,registered=N; last_commit≥07-01
+.claude/commands/health-check.md,스킬,전 서비스 상태를 점검하고 이상 여부를 보고한다,2026-07-07,8,0,N,Y,-,등재필요,registered=N; last_commit≥07-01
+.claude/commands/kku-blog.md,스킬,네이버 블로그 원본 생성 가이드 — PSSR 공식， SEO/AIO， specs 연동 CTA， 7채널 변환,2026-06-12,3,0,N,N,-,레거시후보,last_commit=2026-06-12<07-01; refs_code=0; wired=-; refs_docs=3
+.claude/commands/kku-context.md,스킬,꾸(와이프) 콘텐츠/마케팅 작업 시 PF_KKU·채널 상태·지침·권한을 로딩한다.,2026-06-12,7,0,N,N,-,레거시후보,last_commit=2026-06-12<07-01; refs_code=0; wired=-; refs_docs=7
+.claude/commands/kku-specs.md,스킬,specs 페이지 콘텐츠 보강 + 디자인 방향 — 블로그↔specs 연동， 경쟁사 벤치마크 기반,2026-06-12,3,0,N,N,-,레거시후보,last_commit=2026-06-12<07-01; refs_code=0; wired=-; refs_docs=3
+.claude/commands/makne-finish.md,스킬,막내 작업 완료 시 보고 파일 생성， 커밋， 푸시 절차를 수행한다,2026-06-11,21,0,N,N,-,레거시후보,last_commit=2026-06-11<07-01; refs_code=0; wired=-; refs_docs=21
+.claude/commands/market-eye.md,스킬,시장 데이터 즉시 조회 — 키워드 검색량·트렌드·경쟁도를 다국어·다지역으로 실측,2026-07-21,17,0,Y,N,-,정상,registered=Y
+.claude/commands/model-check.md,스킬,프로덕션에서 사용 중인 Gemini/Imagen 모델의 유효성을 점검한다,2026-06-11,6,0,N,N,-,레거시후보,last_commit=2026-06-11<07-01; refs_code=0; wired=-; refs_docs=6
+.claude/commands/order-write.md,스킬,지시서 작성 시 YAML， 준수 조항， 링크 제시 절차를 수행한다,2026-08-13,16,0,N,N,-,등재필요,registered=N; last_commit≥07-01
+.claude/commands/pf-declare.md,스킬,세션 시작 후 작업 대상 PF를 선언하고 관련 컨텍스트를 선택 로딩한다,2026-06-11,4,0,N,N,-,레거시후보,last_commit=2026-06-11<07-01; refs_code=0; wired=-; refs_docs=4
+.claude/commands/pf-status.md,스킬,활성 PF 현황을 스캔하여 대시보드 형태로 보고한다,2026-06-11,2,0,N,N,-,레거시후보,last_commit=2026-06-11<07-01; refs_code=0; wired=-; refs_docs=2
+.claude/commands/portal-context.md,스킬,포털/증명사진 서비스 작업 시 현재 구조·서비스 맵·소유권 계층·미해결 이슈를 로딩한다.,2026-07-16,7,0,N,N,-,등재필요,registered=N; last_commit≥07-01
+.claude/commands/registry-add.md,스킬,에이전트， 디바이스， 서비스 등 6종 편입 절차를 수행한다,2026-06-11,10,0,N,N,-,레거시후보,last_commit=2026-06-11<07-01; refs_code=0; wired=-; refs_docs=10
+.claude/commands/session-checkpoint.md,스킬,"세션 도중 커밋+PF 갱신+상태 보고를 수행한다. 작가님이 ""정산""， ""중간 커밋"" 등 요청 시 호출.",2026-06-11,2,0,N,N,-,레거시후보,last_commit=2026-06-11<07-01; refs_code=0; wired=-; refs_docs=2
+.claude/commands/session-end.md,스킬,세션 마감 시 로그 완료， 커밋， 푸시， CHANGELOG 갱신을 수행한다,2026-08-13,24,0,N,N,-,등재필요,registered=N; last_commit≥07-01
+.claude/commands/session-start.md,스킬,세션 시작 시 역할 판별， git 동기화， 보고를 수행한다,2026-08-13,44,0,N,N,-,등재필요,registered=N; last_commit≥07-01
+.claude/commands/specs-context.md,스킬,specs 관련 작업 시 URL 정본·데이터 구조·파일 맵·금지 사항·V1 함정·배포 체크리스트를 로딩한다.,2026-07-16,3,0,N,N,-,등재필요,registered=N; last_commit≥07-01
+.claude/skills/secret-audit.md,스킬,GCP Secret Manager vs SECRET_INVENTORY.md 대사 — 미등재 시크릿 보고,2026-07-14,5,0,N,N,-,등재필요,registered=N; last_commit≥07-01
+.claude/skills/seo-query.md,스킬,SEO 데이터 즉시 조회 — 네이버/GSC/GA4/Bing/CWV 전 채널 수집,2026-07-15,18,0,N,N,-,등재필요,registered=N; last_commit≥07-01
+.claude/agents/record-explorer.md,에이전트,"MONK 과거 기록 탐색 전담. 세션 로그·보고서·지시서·심사·PF 히스토리·앱 변천사·""그때 왜 그렇게 결정했나"" 같은 이력 질문에 사용. 메인 세션이 기록을 직접 읽지 않고 결론만 받도록 한다. 코드 구조 탐색은",2026-09-27,24,0,Y,N,-,정상,registered=Y
+.github/workflows/blog-draft-publish.yml,CI,Blog Draft Publish,2026-06-11,7,0,N,N,-,레거시후보,last_commit=2026-06-11<07-01; refs_code=0; wired=-; refs_docs=7
+.github/workflows/daily-briefing.yml,CI,Daily Briefing,2026-07-22,57,0,N,N,-,등재필요,registered=N; last_commit≥07-01
+.github/workflows/deploy-monk-kr.yml,CI,Deploy monk.kr (CF Pages),2026-09-26,69,1,Y,Y,CI:deploy-monk-kr.yml;CI:notify-monk-kr-pending.yml,정상,registered=Y
+.github/workflows/e2e-briefing-notify.yml,CI,E2E Briefing Telegram,2026-07-05,24,0,N,N,-,등재필요,registered=N; last_commit≥07-01
+.github/workflows/governance-check.yml,CI,Governance Check,2026-09-30,77,0,Y,Y,-,정상,registered=Y
+.github/workflows/notify-monk-kr-pending.yml,CI,monk.kr 배포 대기 알림,2026-09-26,9,0,Y,N,-,정상,registered=Y
+.github/workflows/notify.yml,CI,Telegram Notify,2026-05-11,16,1,N,N,CI:notify-monk-kr-pending.yml,등재필요,registered=N; refs_code=1 wired=CI:notify-monk-kr-pending.yml
+.github/workflows/secret-scan.yml,CI,Secret Scan,2026-05-11,18,0,N,N,-,레거시후보,last_commit=2026-05-11<07-01; refs_code=0; wired=-; refs_docs=18
+.github/workflows/signups-report.yml,CI,Signups Report,2026-05-17,3,0,N,N,-,레거시후보,last_commit=2026-05-17<07-01; refs_code=0; wired=-; refs_docs=3
+.github/workflows/weekly-dashboard.yml,CI,Weekly Dashboard,2026-06-10,13,0,N,N,-,레거시후보,last_commit=2026-06-10<07-01; refs_code=0; wired=-; refs_docs=13
+/Users/jeong-kyushin/Library/LaunchAgents/ai.monkos.secret-patrol.plist,launchd,Label=ai.monkos.secret-patrol,untracked,0,0,Y,N,-,보류,레포 외 설치본(git 미추적). 판정은 ProgramArguments 대상 스크립트 행에서 — launchctl list 로드 확인됨
+/Users/jeong-kyushin/Library/LaunchAgents/com.monk.mailbox-watcher.plist,launchd,Label=com.monk.mailbox-watcher,untracked,0,0,N,N,-,보류,레포 외 설치본(git 미추적). 판정은 ProgramArguments 대상 스크립트 행에서 — launchctl list 로드 확인됨
+/Users/jeong-kyushin/Library/LaunchAgents/com.monkos.ads-sync.plist,launchd,Label=com.monkos.ads-sync,untracked,1,0,N,N,-,보류,레포 외 설치본(git 미추적). 판정은 ProgramArguments 대상 스크립트 행에서 — launchctl list 로드 확인됨
+/Users/jeong-kyushin/Library/LaunchAgents/com.monkos.철창이-watcher.plist,launchd,Label=com.monkos.철창이-watcher,untracked,3,0,N,N,-,보류,레포 외 설치본(git 미추적). 판정은 ProgramArguments 대상 스크립트 행에서 — launchctl list 로드 확인됨
+apps/idphoto-jp-v079/deploy.sh,deploy,MONKOS ID Photo JP Service — Cloud Run 배포,2026-09-01,7,0,Y,Y,-,중복,monkos_AI/idphoto-jp/deploy.sh 와 SERVICE_NAME=monkos-idphoto-jp 동일 (이중 소스)
+apps/jangsam/deploy.sh,deploy,장삼이사(張三李四) — Cloud Run 배포,2026-09-01,0,0,Y,Y,-,정상,registered=Y
+apps/monk_imagen4/backend/deploy.sh,deploy,MONKOS Image Engine - Cloud Run 배포 스크립트,2026-09-01,26,0,Y,Y,-,중복,monkos_AI/image-pro/backend/deploy.sh 와 SERVICE_NAME=monk-image-engine 동일 (이중 소스)
+apps/monkos-matte/deploy.sh,deploy,MONKOS matte 배포 (ch5 2조 — deploy.sh 경유 정본),2026-09-01,0,0,Y,Y,-,정상,registered=Y
+monkos_AI/crop-engine/deploy.sh,deploy,── ⚠️ 좀비 가드 (G6 2026-09-01 민아): 대상 서비스 GCP 미생성 (2026-08-13 실측),2026-09-01,10,0,Y,Y,-,정상,registered=Y
+monkos_AI/idphoto-jp/deploy.sh,deploy,MONKOS ID Photo JP Service — Cloud Run 배포,2026-09-01,40,0,Y,Y,-,중복,apps/idphoto-jp-v079/deploy.sh 와 SERVICE_NAME=monkos-idphoto-jp 동일 (이중 소스)
+monkos_AI/idphoto-kr/deploy.sh,deploy,MONKOS ID Photo KR Service — Cloud Run 배포,2026-09-01,43,0,Y,Y,-,정상,registered=Y
+monkos_AI/image-pro/backend/deploy.sh,deploy,MONKOS Image Engine - Cloud Run 배포 스크립트,2026-09-01,26,0,Y,Y,-,중복,apps/monk_imagen4/backend/deploy.sh 와 SERVICE_NAME=monk-image-engine 동일 (이중 소스)
+monkos_AI/matte-server/deploy.sh,deploy,4060 매팅 서버 배포 — 레포 정본을 4060에 반영한다.,2026-09-01,2,0,Y,Y,-,정상,registered=Y
+monkos_AI/portal/deploy.sh,deploy,MONKOS Portal — Cloud Run 배포,2026-09-03,155,2,Y,Y,CI:governance-check.yml,정상,registered=Y
+monkos_AI/portal/edge/deploy.sh,deploy,monkos-portal-edge 배포 — SSG 빌드 → Worker 배포 (ch5 배포 규칙 준용),2026-09-02,101,7,Y,Y,deploy:monkos_AI/portal/deploy.sh,정상,registered=Y
+monkos_AI/studio/deploy.sh,deploy,MONKOS Studio — Cloud Run 배포,2026-09-01,23,0,Y,Y,-,정상,registered=Y
+monkos_AI/portal/tools/attire-assets,빌드,의상 프리셋 상품컷 생성기 — 고스트 마네킹 t2i (나노2),2026-07-16,10,0,Y,N,-,정상,registered=Y
+monkos_AI/portal/tools/blog-publish,빌드,블로그 발행 파이프라인 — 원본 md → Firestore blog_posts 발행 (2026-08-25 파일럿),2026-08-26,13,0,N,N,-,등재필요,registered=N; last_commit≥07-01
+monkos_AI/portal/tools/matte-probe,빌드,폴백 실측 — runMatteChain 정본을 그대로 태워 4060 503 → RunPod 성공 시간을 잰다.,2026-07-25,13,0,Y,N,-,정상,registered=Y
+monkos_AI/portal/tools/saju,빌드,사주 4주 엔진 검증 도구 — PF_FACEREAD,2026-08-02,12,18,Y,N,-,정상,registered=Y
+monkos_AI/portal/tools/solar-terms,빌드,절기(24절기) 테이블 도구 — PF_FACEREAD,2026-08-01,4,2,Y,N,-,정상,registered=Y
+monkos_AI/portal/tools/specs-diagrams,빌드,specs 도해 생성기,2026-07-20,26,0,Y,N,-,정상,registered=Y
+monkos_AI/portal/tools/specs-ssg,빌드,specs SSG 빌드 — CF 엣지 정적화 (2026-08-24),2026-08-24,20,7,Y,N,deploy:monkos_AI/portal/edge/deploy.sh;deploy:monkos_AI/portal/deploy.sh,정상,registered=Y
+monkos_AI/portal/tools/t1-tuning,빌드,주석 없음,2026-07-19,12,0,N,N,-,보류,스크립트 0건(프롬프트 txt·샘플 이미지 33파일) — 빌드/생성 도구 아님
+.mcp.json#playwright,MCP,MCP 서버 playwright → scripts/tools/playwright_mcp.sh,2026-07-14,86,1,N,N,.mcp.json,등재필요,registered=N; refs_code=1 wired=.mcp.json last_commit≥07-01
+.mcp.json#google-analytics,MCP,MCP 서버 google-analytics → scripts/tools/ga4_mcp.sh,2026-07-14,60,4,N,N,.mcp.json,등재필요,registered=N; refs_code=4 wired=.mcp.json last_commit≥07-01
+.mcp.json#google-search-console,MCP,MCP 서버 google-search-console → scripts/tools/gsc_mcp.sh,2026-07-14,57,0,N,N,.mcp.json,등재필요,registered=N; wired=.mcp.json last_commit≥07-01
+.mcp.json#cloudflare,MCP,MCP 서버 cloudflare → scripts/tools/cloudflare_mcp.sh,2026-07-14,76,8,N,N,.mcp.json,등재필요,registered=N; refs_code=8 wired=.mcp.json last_commit≥07-01
+.mcp.json#google-docs,MCP,MCP 서버 google-docs → scripts/tools/gdocs_mcp.sh,2026-07-14,55,0,N,N,.mcp.json,등재필요,registered=N; wired=.mcp.json last_commit≥07-01
+.mcp.json#monk-retrieval,MCP,MCP 서버 monk-retrieval → scripts/retrieval/mcp_server.js,2026-07-14,55,2,N,N,.mcp.json,등재필요,registered=N; refs_code=2 wired=.mcp.json last_commit≥07-01 / 도구명(monk_search·relations·stats)은 등재， 서버명·mcp_server.js 는 미등재

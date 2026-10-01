@@ -127,11 +127,12 @@
 
 | 도구 | 분류 | 위치 | 인지 경로 |
 |------|------|------|----------|
+| **MCP 서버 6 + 래퍼** (monk-retrieval=`scripts/retrieval/mcp_server.js`·build_index.js / playwright·ga4·gsc·cloudflare·gdocs=`scripts/tools/*_mcp.sh`) | MCP | `.mcp.json` 정본 | `rules/mcp-tools.md`. 10-01 전수조사 등재 — 래퍼는 시크릿을 SM에서 주입(값 미노출). 헬스: `monk_stats` health 필드 / 타 서버는 세션 연결 여부 |
 | monk_search | MCP | `scripts/retrieval/` | `rules/mcp-tools.md` — 헬스: 빈/부재 인덱스는 `❌ retrieval 인덱스 비정상`+재빌드 명령 반환(raw SQLite 에러 금지). 스모크 `node scripts/retrieval/search.js --smoke`(mk-push.sh 빌드 직후 자동, PASS/FAIL). 다어절 0건→OR 폴백, 헤더에 `[모드]` 표기 (09-27) |
 | record-explorer | 서브에이전트 | `.claude/agents/record-explorer.md` | `rules/mcp-tools.md` §과거 기록 — 기록 탐색 위임, 결론 20줄·근거 경로:행·인덱스 비정상 시 🔴 명시 (09-27 신설) |
 | monk_relations | MCP | `scripts/retrieval/` | `rules/mcp-tools.md` |
 | monk_stats | MCP | `scripts/retrieval/` | `rules/mcp-tools.md` |
-| cdp.sh + cdp_utils.py | 인프라 | `scripts/tools/` | `skills/cdp-browser.md` |
+| cdp.sh + cdp_utils.py (+cdp_setup.sh) | 인프라 | `scripts/tools/` | `commands/cdp-browser.md` (10-01 경로 교정 — 06-11 skills→commands 이동 미반영) |
 | secret | 인프라 | `scripts/secret.sh` (07-24 위치 오기 교정) | `rules/data-access.md` |
 | credits.sh | CLI | `scripts/` | `rules/data-access.md` |
 | mk-push.sh | CLI | `scripts/` | — |
