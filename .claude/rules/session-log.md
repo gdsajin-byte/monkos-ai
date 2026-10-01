@@ -11,7 +11,8 @@ paths:
   - "governance/constitution/petitions/**"
 ---
 
-> source: governance/laws/ch3_session_log.md@2026-03-29
+> source: governance/laws/ch3_session_log.md@2026-10-01
+> 위임 기록(ch3 1조, 10-01): 세션은 띄운 모든 실행 주체(서브에이전트·헤드리스·백그라운드)를 세션 로그 1행(식별자·모델·목적·결과)으로 남긴다.
 
 # 문서 규칙 (ch3·ch4 발췌)
 
