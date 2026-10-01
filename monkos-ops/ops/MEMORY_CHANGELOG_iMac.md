@@ -653,3 +653,7 @@
 - 신설: project_platform_vs_single_identity.md (포털 비전 vs 단일 정체성 — 작가님 09-28 자기진단, 입구/뒷단 분리 해법 미결)
 - MEMORY.md 인덱스 +1행
 - [2026-09-28 19:14 KST] 신설: project_tier_parallel_visibility.md (티어 동시 제시 원칙, GA4 30일 퍼널 근거) · MEMORY.md +1행
+
+## [2026-10-01 18:55 KST] iMac/쌍아
+- 신설: feedback_korean_only_replies.md (작가님 대면 출력 한국어 전용 — 10-01 영어 응답 지적) · MEMORY.md +1행
+- 갱신: reference_cross_session_message_to_makne.md (세션 간 메시지 = 권한 모드 일치 시 무보류 양방향, 불일치 시 무음 5분 만료, 이름 새로고침마다 변경) · MEMORY.md 포인터 교체
