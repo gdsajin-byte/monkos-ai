@@ -99,6 +99,5 @@
       "Bash(./scripts/approve.sh *)"
     ]
   },
-  "crossSessionInbound": "accept",
-  "isolatePeerMachines": true
+  "crossSessionInbound": "accept"
 }
