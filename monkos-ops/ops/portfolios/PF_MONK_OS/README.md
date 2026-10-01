@@ -117,6 +117,7 @@ domain: "governance/infrastructure"
 | 2026-09-30 | iMac/민아 | **PF 원장 1단계 구현** — pf.sh append/query/check/show + PostToolUse 자동 링크 훅 + Stop 경고 훅 + CI C15 + pf-ops 규칙. 스모크 17/17. 실레포 check 5/5, 활성 PF 30일+ 정체 20건 첫 가시화. 자동 링크 훅이 본 설계서 Write에 라이브로 걸려 수동 중복을 pf.py가 거부(dogfood 실증) [예외·추인 대기] | [pf](../../../../scripts/pf.py) | ✅ |
 | 2026-09-30 | iMac/민아 | **COMPLETION** PF 원장화 1단계 — pf.sh CLI + 자동 링크 훅 + Stop 경고 + CI C15 | [COMPLETION_20260930_iMac민아_PF원장화_1단계](../../reports/2026-09/COMPLETION_20260930_iMac민아_PF원장화_1단계.md) | ✅ |
 | 2026-10-01 | iMac/민아 | **REPORT** 도구 전수조사 143건 — 등재·업데이트·레거시·중복 분류와 처분안 | [REPORT_20261001_iMac민아_도구전수조사_분류](../../reports/2026-10/REPORT_20261001_iMac민아_도구전수조사_분류.md) | 📁 |
+| 2026-10-01 | iMac/민아 | **COMPLETION** 도구 전수조사 처분 집행 — 레거시 21 이동 · 이중 소스 2쌍 해소 · 도구 맵 범위 규칙 · 등재 20 | [COMPLETION_20261001_iMac민아_도구전수조사_처분집행](../../reports/2026-10/COMPLETION_20261001_iMac민아_도구전수조사_처분집행.md) | ✅ |
 
 ---
 
