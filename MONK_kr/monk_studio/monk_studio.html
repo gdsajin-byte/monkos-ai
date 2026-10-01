@@ -317,8 +317,13 @@
                 </div>
 
                 <!-- 지도 (누르면 네이버 지도) -->
-                <a href="https://map.naver.com/p/entry/place/1454242520" target="_blank" rel="noopener" class="block border border-gray-200 overflow-hidden bg-gray-100">
-                    <img src="./images/location_map.jpg?v=20261001" alt="몽크사진관 위치 — 미사역 1·2·3번 출구 근처 힐스테이트미사역 12-1BL 지하 1층" loading="lazy" class="w-full h-auto block">
+                <a href="https://map.naver.com/p/entry/place/1454242520" target="_blank" rel="noopener" class="relative block border border-gray-200 overflow-hidden bg-gray-100">
+                    <img src="./images/location_map.jpg?v=20261001b" alt="몽크사진관 위치 — 미사역 1·2·3번 출구 근처 힐스테이트미사역 12-1BL 지하 1층" loading="lazy" class="w-full h-auto block">
+                    <!-- 지도 속 작은 표시를 덮는 큰 핀 (원본 위치 x 50% · y 28.3%) -->
+                    <span class="absolute left-[50%] top-[28.3%] -translate-x-1/2 -translate-y-[18px] sm:-translate-y-[24px] flex flex-col items-center pointer-events-none bg-white rounded-2xl px-2 py-1.5 shadow-lg">
+                        <img src="/images/studio-icon-192.png" alt="" class="w-9 h-9 sm:w-14 sm:h-14 rounded-full">
+                        <span class="mt-1 bg-gray-900 text-white text-xs sm:text-base font-bold px-2.5 py-1 rounded-lg shadow-lg whitespace-nowrap">몽크사진관 B1</span>
+                    </span>
                 </a>
                 <p class="text-right text-[11px] text-gray-400 mt-1">지도 © NAVER Corp.</p>
 
