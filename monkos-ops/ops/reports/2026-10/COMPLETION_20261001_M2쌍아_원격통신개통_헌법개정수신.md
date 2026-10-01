@@ -27,6 +27,8 @@ order: ORDER_20261001_iMac민아_M2쌍아_원격통신개통_헌법개정수신.
 ## T3. Remote Control 개통 — ⏳
 - `/remote-control M2-쌍아`는 슬래시 명령이라 세션 안에서 **사람이 입력**해야 한다. 에이전트가 대신 실행할 수 없음 → 작가님(또는 꾸) 입력 요청함.
 - 결과(성공/명령 불가/로그인 필요)와 시험 메시지 왕복은 입력 후 본 문서에 추기한다.
+- **[18:23 추기] 결과: 명령 불가.** 작가님이 VSCode 업데이트 후 본 세션에 `/remote-control M2-쌍아` 입력 → 출력 `/remote-control isn't available in this environment.` (VSCode 확장 세션 미지원). 최초 1회는 zsh에 슬래시 없이 입력되어 `command not found`.
+- 대안: 터미널 `claude` 세션에서 개통. 현 버전 `/opt/homebrew/bin/claude` **2.1.50**(18:23 실측) — 요건 2.1.224 미달. CLI 업데이트는 ch1 7조 2항 승인 대상 → 작가님 승인 요청함. 시험 메시지 왕복 미실시.
 - CLI 업데이트(터미널 claude 2.1.50) 미실행 — 승인 대상(ch1 7조 2항).
 
 ## 위임 기록 (ch3 1조)
