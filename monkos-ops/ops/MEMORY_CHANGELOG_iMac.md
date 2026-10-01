@@ -657,3 +657,9 @@
 ## [2026-10-01 18:55 KST] iMac/쌍아
 - 신설: feedback_korean_only_replies.md (작가님 대면 출력 한국어 전용 — 10-01 영어 응답 지적) · MEMORY.md +1행
 - 갱신: reference_cross_session_message_to_makne.md (세션 간 메시지 = 권한 모드 일치 시 무보류 양방향, 불일치 시 무음 5분 만료, 이름 새로고침마다 변경) · MEMORY.md 포인터 교체
+
+## [2026-10-01 18:55 KST] iMac/민아 (2차 세션 마감)
+- 신설 6: project_frontier_first_security_behind(권한 개방 기조·차단 3선·에이전트 별도 계좌 계획) · project_kku_role_position(꾸 = 현장 책임자, 10-01 정식화) · project_subagent_three_tier_design(리드·라이트·판단, 얇은 일꾼) · project_agent_identity_by_interface(구분은 접점·관점, 쌍아·민아 통합 안 함) · project_remote_org_amendment_monitoring(PETITION_20261001 승인·민아 모니터 7항목) · reference_cross_machine_session_messaging(iMac↔M2 세션 메시지 개통)
+- 갱신 1: project_model_placement(쌍아 Opus 5.5·민아 Fable 차등은 작가님 의도, 모델 비종속)
+- MEMORY.md 인덱스 +6행 (149 → 155줄, 캡 200 이내)
+- 같은 날 쌍아 변경분(feedback_korean_only_replies 신설, reference_cross_session_message_to_makne 갱신)은 쌍아 기록 소관
