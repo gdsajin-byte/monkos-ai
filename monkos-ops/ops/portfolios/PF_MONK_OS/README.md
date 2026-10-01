@@ -122,6 +122,7 @@ domain: "governance/infrastructure"
 | 2026-10-01 | iMac/민아 | **PROPOSAL** 서브에이전트 설계 최적안 — 얇은 일꾼, 두꺼운 지시서 (시작 적재 72k → 5k 실측) | [PROPOSAL_20261001_iMac민아_서브에이전트설계_최적안](../../proposals/PROPOSAL_20261001_iMac민아_서브에이전트설계_최적안.md) | ⏳ |
 | 2026-10-01 | iMac/쌍아-막내1 | 서브에이전트 정의 2장(reader·writer) 신설 + record-explorer 헌법 제외 + agent-system 운용 규범 — 시작 적재 5.4k/5.2k/4.9k, 모델 sonnet-5-5, 훅 차단 실측 | [COMPLETION_20261001_iMac쌍아-막내1_서브에이전트정의](../../reports/2026-10/COMPLETION_20261001_iMac쌍아-막내1_서브에이전트정의.md) | ✅ |
 | 2026-10-01 | iMac/민아 | **REPORT** 서브에이전트 정의 2장(reader·writer) 집행 감사 + 통신 체계 시험 ①~⑦ 결과 | [REVIEW_20261001_iMac민아_서브에이전트정의_감사](../../reports/2026-10/REVIEW_20261001_iMac민아_서브에이전트정의_감사.md) | 📁 |
+| 2026-10-01 | iMac/민아 | **REPORT** 10-01 새 편제 논의 — 작가님 결정·실측·정정·미결 정리 (통신·보안·서브에이전트) | [REPORT_20261001_iMac민아_새편제_결정실측_정리](../../reports/2026-10/REPORT_20261001_iMac민아_새편제_결정실측_정리.md) | 📁 |
 
 ---
 
