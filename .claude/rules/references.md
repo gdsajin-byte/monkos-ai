@@ -15,7 +15,7 @@
 | `monkos-ops/` | 운영 체계 정본 (ops/tech/contents/marketing) |
 | `governance/` | 법률+역사+철학 (정본) |
 | `docs/` | 참고문헌+아카이브 (동결 — 과거 버전, 현행 설계 기준 금지) |
-| `apps/` | 프로토타입/PoC ⚠️ **단 프로덕션 이중 소스 2건 보유** (`idphoto-jp-v079`·`monk_imagen4/backend` — §서비스 매핑 이중 소스 경고 참조. 실험장으로 오인 금지) |
+| `apps/` | 프로토타입/PoC. 구 프로덕션 이중 소스 2건은 10-01 `apps/_legacy/`로 이동(§서비스 매핑) |
 | `functions/` | CF Workers |
 | `scripts/` | 범용 유틸 (막내 소관) |
 | ~~`monkos-ops/works/`~~ | **채널 폐지 (2026-08-13)** — 이력은 원격 `monkos-works` 레포 (ch4 4조) |
@@ -31,18 +31,18 @@
 | `monkos_AI/portal/` | `monkos-portal` (+`-dev`) | monkos.ai, preview.monkos.ai | ⚠️ 08-24부터 monkos.ai DNS는 CF 프록시 — 전 트래픽이 CF Worker `monkos-portal-edge` 경유 후 run.app 폴백. 웜 0 |
 | `monkos_AI/portal/edge/` | (CF Worker) `monkos-portal-edge` | monkos.ai 존 라우트 `monkos.ai/*` | specs 정적 2,574p + CMS 캐시(10분 SWR). 배포 `edge/deploy.sh`. specs 변경 시 재배포 필수 (누락=무음 구본) |
 | `monkos_AI/idphoto-kr/` | `monkos-idphoto-kr` (+`-dev`) | idphoto-kr.monkos.ai | |
-| `monkos_AI/idphoto-jp/` | `monkos-idphoto-jp` (+`-dev`) | idphoto-jp.monkos.ai | ⚠️ `apps/idphoto-jp-v079/`도 동일 서비스로 배포 |
+| `monkos_AI/idphoto-jp/` | `monkos-idphoto-jp` (+`-dev`) | idphoto-jp.monkos.ai | 단일 정본 (10-01 T1 — 구 `apps/idphoto-jp-v079/`는 `apps/_legacy/`) |
 | `monkos_AI/studio/` | `monkos-studio` (+`-dev`) | studio.monkos.ai | |
-| **`monkos_AI/image-pro/backend/`** | **`monk-image-engine`** | **image.monkos.ai** | **IMAGE PRO. 꾸 상시 사용.** T2I=Vertex Imagen 4, I2I=Gemini 3 Pro Image. 포털 어드민 → IMAGE PRO(External) 경유. ⚠️ `apps/monk_imagen4/backend/`도 동일 서비스로 배포 |
+| **`monkos_AI/image-pro/backend/`** | **`monk-image-engine`** | **image.monkos.ai** | **IMAGE PRO. 꾸 상시 사용.** T2I=Vertex Imagen 4, I2I=Gemini 3 Pro Image. 포털 어드민 → IMAGE PRO(External) 경유. 단일 정본 (10-01 T1 — 구 `apps/monk_imagen4/backend/`는 `apps/_legacy/monk_imagen4-backend/`) |
 | `apps/jangsam/` | `jangsam-dev` | — | prod 서비스 미생성 |
 | `monkos_AI/matte-server/` | `birefnet-matte` (Cloud Run 아님) | matte.monkos.ai | 4060 GPU + CF Tunnel |
 | `MONK_kr/` | — | monk.kr | CF Pages |
 | — | (미확인) | pt.monkos.ai | 200 응답하나 us-central1 도메인 매핑·서비스 부재. 인프라 미상 — 확인 필요 [2조 한시적 예외] |
 
-**⚠️ 이중 소스 (같은 서비스로 배포하는 디렉터리 2개 — 마지막 배포가 덮어씀)**
-- `monk-image-engine` ← `monkos_AI/image-pro/backend/` **및** `apps/monk_imagen4/backend/`
-- `monkos-idphoto-jp` ← `monkos_AI/idphoto-jp/` **및** `apps/idphoto-jp-v079/`
-> 배포 전 어느 쪽이 현행 소스인지 확인할 것. 정본 일원화는 미결.
+**이중 소스 — 2026-10-01 전수조사 T1로 해소** (비정본은 `apps/_legacy/`, 사유는 그 README)
+- ~~`monk-image-engine`~~ 해소(10-01): `apps/monk_imagen4/backend/` → `apps/_legacy/monk_imagen4-backend/`
+- ~~`monkos-idphoto-jp`~~ 해소(10-01): `apps/idphoto-jp-v079/` → `apps/_legacy/`
+> 정본 일원화 완료(10-01). 두 deploy.sh의 게이트 5(이중 소스 경고)는 해제.
 
 **deploy.sh는 있으나 서비스 부재**
 - `monkos_AI/crop-engine/` → `monkos-crop-engine` — **asia-northeast3에 실존·200**(2026-09-04 실측, portal `CROP_ENGINE_URL` 주입 중). 08-13 "미생성"은 us-central1 조회 한정 오판 — 리전 상이
@@ -110,6 +110,7 @@
 
 ## 도구 맵
 
+> **범위(2026-10-01 T3)**: 도구 맵 = 실행 파일·서버·CI·launchd·빌드 도구. 스킬(`.claude/commands/`·`.claude/skills/`)은 비대상 — 디렉터리 자체가 인덱스다. 레거시는 각 `_legacy/README.md`가 정본.
 > 도구 신설 시 **3요건** 동시 충족 필수 (미충족 = 미완료):
 > 1. **인지** — 이 표에 등재 + 해당 rules/skills/PF에 포인터
 > 2. **스모크** — 작동 실증 기록 (완료 보고 ≠ 실작동)
@@ -167,6 +168,11 @@
 | verify_saju.mjs | 빌드/생성 | `monkos_AI/portal/tools/saju/` | 동 폴더 README + PF_FACEREAD |
 | **집행 훅 6종** (guard_bash·guard_write·prompt_submit·session_start·_common·smoke) | 인프라 | `scripts/hooks/` + `.claude/settings.json` hooks 블록 | DESIGN_20260930_집행코드화_hooks_deny.md. **09-30 구현(민아, 작가님 직접 지시·쌍아 추인 대기)**: PreToolUse Bash=헌법 4조 파괴·ch5 2조 배포·ch4 10조 Firestore·시크릿 직접·ch6 커밋 형식·E10 승인 게이트 / Edit·Write=세션로그 append-only·.env/secrets/deploy.sh ask / UserPromptSubmit=KST 시각 주입+채팅 '배포 승인'→세션 토큰 / SessionStart=디바이스·git·세션로그 실측. 스모크 `python3 scripts/hooks/smoke.py` 59/59 + 실세션(bypass, haiku) 차단 1·통과 1 실측. 실패 가시화 `[HOOK-ERR]`. 킬스위치 `MONK_HOOKS_OFF=1`(작가님 셸만) |
 | approve.sh (E10 예비 경로) | 인프라 | `scripts/approve.sh` | 작가님 전용 — 원격·무인에서 의도적으로 열 때. 에이전트 실행은 deny+훅 이중 차단 |
+| mailbox_watcher.sh (꾸 우체통) | CLI/데몬 | `monkos-ops/scripts/` + launchd `com.monk.mailbox-watcher` | MEMORY §팀 인적 인프라. 10-01 등재 — 가동 실측 PID 1437. M2 `~/kku/` ↔ `monkos-ops/marketing/kku/` 단방향 |
+| ads_upload.sh | CLI | `monkos-ops/scripts/` + launchd `com.monkos.ads-sync` | PF_MARKET_EYE. 10-01 등재 — launchd 등록(exit 0). 구 ads_sync.py는 _legacy |
+| runpod_balance_check.sh + com.monkos.runpod-balance.plist | 인프라 | `monkos-ops/scripts/` | PF_INFRA. 10-01 등재 — 09-30 수동 실행 $23.46 실측. plist 경로 오기 교정(10-01). **iMac 미설치**(설치 결정 대기). 사용량 원장 `ops/audit/RUNPOD_USAGE.jsonl` |
+| daily-briefing.yml · e2e-briefing-notify.yml · notify.yml | CI | `.github/workflows/` | PF_AUTOPILOT. 10-01 등재 — 09-30 success 실측 / notify.yml은 workflow_call 피호출(notify-monk-kr-pending) |
+| mk-pull.sh · sync-dev-test.sh · kimi.sh · tools/blog-publish/ · soul_sync.sh(미추적) | CLI/빌드 | `scripts/`·`scripts/tools/`·`portal/tools/` | **등재(스모크 미실증)** — 10-01 전수조사 T4. 막내 1회 실행 후 실증 표기로 전환 |
 | **pf.sh / pf.py** (PF 원장 CLI) | CLI | `scripts/` | `rules/pf-ops.md` + DESIGN_20260930_PF원장화. append(열·날짜형식·링크·중복 자동)/query/check/show. 훅 연동: `hooks/pf_autolink.py`(PostToolUse Write — portfolio: 문서 자동 링크), `hooks/stop_check.py`(Stop — PF 미갱신·세션로그 신선도 경고), CI C15. 스모크 `python3 scripts/hooks/smoke_pf.py` 17/17. 실패 가시화: rc 2 + `❌ pf:` / 훅 `[HOOK-ERR]` |
 
 ## 모델 배치

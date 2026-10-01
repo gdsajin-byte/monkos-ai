@@ -8,7 +8,7 @@ user_invocable: true
 
 이 스킬이 호출되면 아래 순서로 실행한다:
 
-1. `scripts/audit_secrets.sh` 실행
+1. `scripts/secret.sh map` (전체 맵 + 인벤 미등재 적발) + `scripts/tools/sa_audit.sh` 실행 — 구 `scripts/audit_secrets.sh`(07-14)는 두 도구의 선행본, 10-01 전수조사로 교정
    - GCP Secret Manager 전체 목록 vs SECRET_INVENTORY.md 대사
    - 미등재 시크릿 경고 출력
 
