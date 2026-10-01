@@ -128,13 +128,7 @@
         .shadow-sapphire { box-shadow: 0 10px 15px -3px rgba(26, 67, 124, 0.5), 0 4px 6px -2px rgba(26, 67, 124, 0.05); }
         .hover\:shadow-sapphire-dark:hover { box-shadow: 0 20px 25px -5px rgba(42, 87, 155, 0.7), 0 10px 10px -5px rgba(42, 87, 155, 0.1); }
     </style>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
-    <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
     <style>
-        .map-pin { display:flex; align-items:center; gap:6px; white-space:nowrap; font-family:Pretendard,sans-serif; font-size:13px; font-weight:600; }
-        .map-pin b { width:28px; height:28px; border-radius:9999px; display:inline-flex; align-items:center; justify-content:center; color:#fff; font-size:13px; box-shadow:0 2px 6px rgba(0,0,0,.3); border:2px solid #fff; }
-        .map-pin-logo b { width:38px; height:38px; padding:0; overflow:hidden; }
-        .map-pin span { background:#fff; padding:3px 8px; border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,.2); color:#111; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-[#FBBF24] selection:text-white">
@@ -322,11 +316,11 @@
                     <p class="text-gray-500 mt-3 break-keep">미사역 지하 연결 · 그랑파사쥬 B1층 다이소 바로 옆</p>
                 </div>
 
-                <!-- 지도 -->
-                <div class="relative z-0 w-full aspect-[4/3] md:aspect-[16/7] bg-gray-100 border border-gray-200 overflow-hidden">
-                    <div id="studio-map" class="w-full h-full" role="img" aria-label="몽크사진관과 주차장 위치 지도"></div>
-                    <div id="studio-map-hint" class="hidden md:block pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 z-10 px-3 py-1.5 rounded-lg bg-black/70 text-white text-xs transition-opacity duration-300">지도를 클릭하면 마우스 휠로 확대·축소할 수 있어요</div>
-                </div>
+                <!-- 지도 (누르면 네이버 지도) -->
+                <a href="https://map.naver.com/p/entry/place/1454242520" target="_blank" rel="noopener" class="block border border-gray-200 overflow-hidden bg-gray-100">
+                    <img src="./images/location_map.jpg?v=20261001" alt="몽크사진관 위치 — 미사역 1·2·3번 출구 근처 힐스테이트미사역 12-1BL 지하 1층" loading="lazy" class="w-full h-auto block">
+                </a>
+                <p class="text-right text-[11px] text-gray-400 mt-1">지도 © NAVER Corp.</p>
 
                 <!-- 지도 앱 버튼 -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
@@ -376,6 +370,13 @@
                         <div class="flex-1 space-y-0.5">
                         <p class="text-gray-700 leading-6 break-keep"><strong class="font-semibold text-gray-900">지하 2층 다이소 쪽</strong>에 주차하시고 고메스퀘어 쪽 에스컬레이터로 올라오시면 몽크사진관이 있습니다.</p>
                         <p class="text-gray-700 leading-6 break-keep">주차장 입구는 스타벅스 옆이 아니라 그 <strong class="font-semibold text-gray-900">오른쪽 PARKING IN</strong> 표지 쪽입니다(스타벅스 옆은 출구). 주차는 <strong class="font-semibold text-gray-900">90분 무료</strong>입니다.</p>
+                        <figure class="pt-3 max-w-md">
+                            <div class="relative overflow-hidden border border-gray-200">
+                                <img src="./images/parking_entrance.jpg?v=20261001" alt="주차장 입구 — 왼쪽 OUT 출구, 오른쪽 PARKING IN 입구" loading="lazy" class="w-full h-auto block">
+                                <span class="absolute right-[12%] top-[38%] bg-[#80CBC4] text-gray-900 text-xs sm:text-sm font-bold px-2.5 py-1 rounded-lg shadow">입구 IN</span>
+                                <span class="absolute left-[7%] top-[38%] bg-white/90 text-gray-600 text-xs sm:text-sm font-bold px-2.5 py-1 rounded-lg shadow">출구 OUT</span>
+                            </div>
+                        </figure>
                         </div>
                     </div>
                     <div class="bg-gray-50 rounded-2xl p-6 md:px-8 md:py-6 md:flex md:gap-10">
@@ -422,43 +423,6 @@
 
     <script>
         lucide.createIcons();
-
-        // 오시는 길 지도 — 사진관 + 주차장 입구 (OpenFreeMap, 키 불필요)
-        (function () {
-            if (!window.maplibregl) return;
-            var MAP_STYLE = 'bright'; // 브라이트(컬러)
-            var STUDIO = [127.1917733, 37.5642342];
-            var PARKING = [127.1913909, 37.5643338]; // 스타벅스 미사역그랑파사쥬점 옆 = 주차장 출구. 입구는 그 오른쪽 PARKING IN (꾸 확인 09-27). 입구 좌표는 꾸 실측 후 별도 핀 예정
-            var map = new maplibregl.Map({
-                container: 'studio-map',
-                style: 'https://tiles.openfreemap.org/styles/' + MAP_STYLE,
-                center: [127.1921, 37.5638],
-                zoom: 17,
-                scrollZoom: false,
-                attributionControl: { compact: true }
-            });
-            map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
-            // 지명은 한글로만
-            map.on('load', function () {
-                map.getStyle().layers.forEach(function (l) {
-                    if (l.layout && l.layout['text-field']) map.setLayoutProperty(l.id, 'text-field', ['coalesce', ['get', 'name:ko'], ['get', 'name']]);
-                });
-            });
-            function pin(lngLat, bg, mark, label, extra) {
-                var el = document.createElement('div');
-                el.className = 'map-pin' + (extra ? ' ' + extra : '');
-                el.innerHTML = '<b style="background:' + bg + '">' + mark + '</b><span>' + label + '</span>';
-                new maplibregl.Marker({ element: el, anchor: 'left', offset: [extra ? -19 : -14, 0] }).setLngLat(lngLat).addTo(map);
-            }
-            pin(STUDIO, '#fff', '<img src="/images/studio-icon-192.png" alt="" class="w-full h-full rounded-full">', '몽크사진관 (B1)', 'map-pin-logo');
-            pin(PARKING, '#2563EB', 'P', '주차장 출구 · 스타벅스 옆 (입구는 오른쪽 PARKING IN)');
-            pin([127.1928, 37.5633], '#996CAC', '5', '미사역'); // 5호선 역 위치(대략) — 1번 출구와 지하 연결
-
-            // 마우스 휠 확대·축소: 지도를 한 번 클릭하면 켜지고, 지도 밖으로 나가면 꺼진다 (페이지 스크롤 방해 방지)
-            var hint = document.getElementById('studio-map-hint');
-            map.on('click', function () { map.scrollZoom.enable(); if (hint) hint.classList.add('opacity-0'); });
-            map.getContainer().addEventListener('mouseleave', function () { map.scrollZoom.disable(); if (hint) hint.classList.remove('opacity-0'); });
-        })();
 
         // Header Scroll Effect
         const header = document.getElementById('header');
