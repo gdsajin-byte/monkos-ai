@@ -3,6 +3,13 @@ name: Deploy monk.kr (CF Pages)
 # 버튼 배포 — 푸시 자동 배포 아님 (법률 ch5 1조 1항. push·schedule·repository_dispatch 트리거 금지)
 # 실행: Actions 탭 → Run workflow, 또는 `gh workflow run deploy-monk-kr.yml -f reason="..."`
 #       트리거 권한 = 작가님. 에이전트는 새 사용자 턴의 승인 수신 후에만 (ch5 1조 3항 · ch1 7조 2항)
+#       (발효 전 — 발효 시 위 줄을 아래 문안으로 교체한다. PETITION_20261002 §6 P1~P5 충족 + 쌍아 발효 보고 후)
+#       트리거 권한 = 작가님. 단, 범위 게이트(G-K, ch5 1조 7항의2)를 통과한 변경은 꾸의 승인으로도 트리거한다
+#       (approver=꾸, 주관 M2/쌍아 고정 세션). 에이전트는 새 사용자 턴으로 도착한 승인권자의 승인 수신 후에만.
+#
+# 범위 게이트(G-K): approver=꾸일 때 배포 스텝 앞에서 판정한다. 로직 정본 = scripts/tools/kku_scope_gate.py
+#   (디스패치된 ref의 커밋 = github.sha 에서 꺼내 쓴다 — 롤백 대상 sha에 스크립트가 없어도 판정이 돌게).
+#   base = 직전 실제 배포 run의 기록(아티팩트 deploy-record, 없으면 로그 `배포 커밋:`) AND CF 활성 배포 — 불일치·부재·0건은 차단.
 #
 # ch5 6조 게이트 비적용 사유 (6조 서문 — 성립하지 않는 게이트는 사유 1행):
 # 게이트 1 엄격모드 비적용: 각 run 스텝이 `set -euo pipefail`을 자체 선언한다 (단일 스크립트가 아님)
@@ -22,6 +29,22 @@ on:
         description: '배포 커밋 SHA (비우면 선택 브랜치 HEAD). 롤백은 직전 정상 커밋 지정 — ch5 1조 9항'
         required: false
         type: string
+      approver:
+        description: '승인자 — 작가님(기본) | 꾸(범위 게이트 통과분만, 사유 주체 "꾸 via M2/쌍아(M2-쌍아-MMDD-HHMM)")'
+        required: true
+        type: choice
+        options: ['작가님', '꾸']
+        default: '작가님'
+
+# 꾸 경로 스위치 — ch5 1조 부칙(승인·미발효). 발효 시 쌍아가 "true"로 바꾼다(이 1줄이 발효 커밋).
+# "true"가 아닌 동안 approver=꾸는 G-K 판정까지 실행·표 기록 후 배포 전에 무조건 차단한다(판정 통과여도 배포 없음).
+env:
+  KKU_PATH_ENABLED: "false"
+
+# actions:read — 범위 게이트의 base 산출(직전 run 아티팩트·로그 조회). 그 외 쓰기 권한 없음
+permissions:
+  contents: read
+  actions: read
 
 concurrency:
   group: deploy-monk-kr
@@ -31,6 +54,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      deployed: ${{ steps.mark.outputs.deployed }}
+      notify_msg: ${{ steps.mark.outputs.notify_msg }}
     steps:
       # ── ch5 1조 4항 흔적 의무: 사유 서식 검증. 배포 스텝보다 반드시 앞 — 불일치 시 배포하지 않는다
       - name: 사유 서식 검증 (ch5 1조 4항)
@@ -66,6 +92,67 @@ jobs:
           test ! -e MONK_kr/functions || { echo "::error::MONK_kr/functions 존재 — 정본 이중화"; exit 1; }
           echo "배포 커밋: $(git rev-parse HEAD)"
 
+      # ── ch5 1조 7항의2 범위 게이트 (G-K). 배포 스텝보다 반드시 앞 — 범위 밖이면 배포하지 않는다.
+      #    approver=작가님: 흔적 정합(주체에 '꾸' 금지)만 검사하고 G-K는 비적용. 판정 불가(rc 2)는 경고 후 진행
+      #    approver=꾸   : rc 0만 통과. 1(범위 밖·차단)·2(판정 불가) 모두 배포하지 않는다 (fail-closed)
+      - name: 범위 게이트 G-K (ch5 1조 7항의2)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_DEPLOY_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          REASON: ${{ inputs.reason }}
+          APPROVER: ${{ inputs.approver }}
+          SHA_INPUT: ${{ inputs.sha }}
+          REF: ${{ github.ref }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          GATE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          GATE="$RUNNER_TEMP/kku_scope_gate.py"
+          RECORD="$RUNNER_TEMP/deploy-record.txt"
+          echo "DEPLOY_RECORD=$RECORD" >> "$GITHUB_ENV"
+          # record kind — 롤백의 롤백(재전진) 차단용 (§3.6, 막내4 권고 b)
+          if [ -n "$SHA_INPUT" ]; then KIND=rollback; else KIND=forward; fi
+          if ! git show "${GATE_SHA}:scripts/tools/kku_scope_gate.py" > "$GATE"; then
+            if [ "$APPROVER" = "꾸" ]; then echo "::error::게이트 스크립트 부재(${GATE_SHA}) — 꾸 경로 판정 불가, 배포하지 않는다"; exit 1; fi
+            echo "::warning::게이트 스크립트 부재 — 작가님 경로라 진행 (흔적 정합 미검사)"
+            echo "- ⚠ 범위 게이트 스크립트 부재 — 작가님 경로 진행, 흔적 정합 미검사" >> "$GITHUB_STEP_SUMMARY"
+            printf 'approver=%s\nbase=\ntarget=%s\nrun_id=%s\ngate=skip\nnfiles=\nkind=%s\n' "$APPROVER" "$(git rev-parse HEAD)" "$RUN_ID" "$KIND" > "$RECORD"
+            exit 0
+          fi
+
+          # base 1순위 — 직전 실제 배포 run의 기록 (headSha 금지: sha 입력 시 실제 배포 커밋과 다르다)
+          RUN_JSON=$(python3 "$GATE" resolve-run --repo "$REPO" --workflow deploy-monk-kr.yml --exclude-run "$RUN_ID" || echo '{}')
+          jget() { printf '%s' "$RUN_JSON" | python3 -c "import json,sys; print(json.load(sys.stdin).get('$1',''))"; }
+          RUN_BASE=$(jget commit); RUN_APPROVER=$(jget approver); RUN_REC_BASE=$(jget base); RUN_KIND=$(jget kind)
+          # base 2순위 — CF 활성 배포(canonical_deployment). CF 목록 최상단(Idle 섞임) 금지
+          CF_BASE=$(python3 "$GATE" resolve-cf --project monk-kr || true)
+          echo "직전 run 기록: ${RUN_JSON} / CF 활성 배포: ${CF_BASE:-없음}"
+
+          set +e
+          python3 "$GATE" gate --approver "$APPROVER" --ref "$REF" --target "$(git rev-parse HEAD)" \
+            --reason "$REASON" --sha-input "$SHA_INPUT" \
+            --run-base "$RUN_BASE" --run-approver "$RUN_APPROVER" --run-recorded-base "$RUN_REC_BASE" --run-kind "$RUN_KIND" \
+            --cf-base "$CF_BASE" --summary "$GITHUB_STEP_SUMMARY" --record "$RECORD" --run-id "$RUN_ID"
+          rc=$?
+          set -e
+          # 스위치 off — 판정 결과(rc)와 무관하게 꾸 경로는 여기서 끝난다. 정확히 "true"일 때만 열린다
+          if [ "$APPROVER" = "꾸" ] && [ "${KKU_PATH_ENABLED:-}" != "true" ]; then
+            echo "::error::꾸 경로 미발효(ch5 1조 부칙) — 판정 결과는 위 표 (G-K rc ${rc}). 배포하지 않는다"
+            echo "- ⛔ **꾸 경로 미발효(ch5 1조 부칙) — 판정 결과는 위 표** (G-K rc ${rc}, KKU_PATH_ENABLED=${KKU_PATH_ENABLED:-미설정}). 배포 없음" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          if [ "$rc" -eq 0 ]; then exit 0; fi
+          if [ "$APPROVER" = "작가님" ] && [ "$rc" -eq 2 ]; then
+            echo "::warning::범위 게이트 판정 불가(rc 2) — 작가님 경로라 진행한다 (G-K 비적용 경로, 흔적 미검사)"
+            echo "- ⚠ 범위 게이트 판정 불가(rc 2) — 작가님 경로 진행 · **흔적 미검사**(주체 '꾸' 검사 생략)" >> "$GITHUB_STEP_SUMMARY"
+            [ -s "$RECORD" ] || printf 'approver=작가님\nbase=\ntarget=%s\nrun_id=%s\ngate=error\nnfiles=\nkind=%s\n' "$(git rev-parse HEAD)" "$RUN_ID" "$KIND" > "$RECORD"
+            exit 0
+          fi
+          echo "::error::범위 게이트 차단(rc $rc) — 배포하지 않는다. 범위 밖이면 작가님 승인 경로(approver=작가님)로"
+          exit 1
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -83,7 +170,10 @@ jobs:
           npm install -g "wrangler@$VER"
           wrangler --version
 
+      # 2중 잠금: G-K 스텝 exit 1(1차)에 더해, 스위치 off면 꾸 경로는 이 스텝 자체가 평가되지 않는다
       - name: CF Pages 배포
+        id: cf
+        if: inputs.approver != '꾸' || env.KKU_PATH_ENABLED == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_DEPLOY_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
@@ -97,12 +187,28 @@ jobs:
       # ── ch5 1조 8항: 배포 반영 사실을 스모크 결과와 분리하여 기록한다.
       #    이 스텝이 실행됐다는 것 자체가 "배포는 라이브에 도달했다"는 뜻이다
       - name: 배포 반영 기록 (ch5 1조 8항)
+        id: mark
+        if: steps.cf.outcome == 'success'   # 배포 스텝이 건너뛰어졌으면 '배포됨' 기록·스모크도 없다
         env:
           # ${{ }} 직접 치환 금지 — 표현식이 셸·마크다운에 그대로 박히면 주입·서식 붕괴가 난다. env 경유가 정본
           REASON: ${{ inputs.reason }}
+          APPROVER: ${{ inputs.approver }}
+          HEAD_BRANCH: ${{ github.ref_name }}
+          RUN_ID: ${{ github.run_id }}
         run: |
           set -euo pipefail
           echo "DEPLOYED=1" >> "$GITHUB_ENV"
+          echo "deployed=1" >> "$GITHUB_OUTPUT"
+          # 다음 run의 base 1순위 = 이 기록 (G-K §3.1). 아티팩트 업로드는 다음 스텝
+          echo "deployed=1" >> "$DEPLOY_RECORD"
+          rget() { grep -m1 "^$1=" "$DEPLOY_RECORD" | cut -d= -f2- || true; }
+          if [ "$APPROVER" = "꾸" ]; then
+            B=$(rget base); T=$(rget target); N=$(rget nfiles)
+            # 텔레그램 HTML 모드 — 사유의 < > & 를 이스케이프 (§3.5 서식)
+            R_ESC=$(printf '%s' "$REASON" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g')
+            MSG="[꾸 배포] run ${RUN_ID} · approver 꾸 · ${HEAD_BRANCH} · base ${B:0:8}→${T:0:8} · 변경 ${N:-?}파일 · 범위 게이트 통과 · 사유 ${R_ESC}"
+            echo "notify_msg=$(printf '%s' "$MSG" | tr '\n' ' ' | head -c 3500)" >> "$GITHUB_OUTPUT"
+          fi
           # 사유 서식의 구분자 "|"가 마크다운 표의 열 구분자로 먹혀 "작가님"만 남는다(09-26 run 36228467825 적발).
           # 파이프를 이스케이프해 셀 안에 그대로 렌더한다.
           REASON_MD=$(printf '%s' "$REASON" | sed 's/|/\\|/g')
@@ -119,8 +225,20 @@ jobs:
             echo "> monk.kr 최종 판정은 **승인자 기기의 2회 히트** (ch5 1조 7항) — 러너는 존 정책상 403."
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # ── G-K §3.1: 다음 run의 base 1순위. 스모크보다 앞 — 스모크가 실패해도 배포 사실은 기록된다.
+      #    업로드 실패 시 다음 run은 로그 `배포 커밋:` 폴백을 쓰고 approver를 '기록 이전'으로 본다(꾸 롤백 불가 = 보수 측)
+      - name: 배포 기록 아티팩트 (G-K base)
+        if: steps.cf.outcome == 'success'   # 배포 스텝이 건너뛰어졌으면 '배포됨' 기록·스모크도 없다
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-record
+          path: ${{ env.DEPLOY_RECORD }}
+          if-no-files-found: error
+          retention-days: 90
+
       # ── ch5 1조 7항: 상태코드 단독 판정 금지. 도달 확인과 판정을 분리한다
       - name: 도달 확인 + 콘텐츠 어서션 (ch5 1조 7항)
+        if: steps.cf.outcome == 'success'   # 배포 스텝이 건너뛰어졌으면 '배포됨' 기록·스모크도 없다
         run: |
           set -euo pipefail
           sleep 15
@@ -207,3 +325,13 @@ jobs:
             echo "배포 스텝 이전에 실패 — 라이브 미반영 (ch5 1조 8항 적용 대상 아님)"
             echo "- ✅ 배포 스텝 이전 실패 — **라이브 미반영**" >> "$GITHUB_STEP_SUMMARY"
           fi
+
+  # ── G-K §3.5 사후 보고: 꾸 승인 run은 작가님에게 텔레그램 1줄. always() — 스모크가 실패해도 배포됐다면 보낸다.
+  #    알림 job 실패 = run 실패 표기 (배포 반영 표는 deploy job 요약에 보존 — ch5 1조 8항)
+  notify:
+    needs: deploy
+    if: always() && needs.deploy.outputs.deployed == '1' && inputs.approver == '꾸'
+    uses: ./.github/workflows/notify.yml
+    secrets: inherit
+    with:
+      message: "${{ needs.deploy.outputs.notify_msg }} · 배포 job ${{ needs.deploy.result }}"
