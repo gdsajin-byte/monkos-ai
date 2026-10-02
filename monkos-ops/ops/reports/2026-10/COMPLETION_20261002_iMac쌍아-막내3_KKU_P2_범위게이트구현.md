@@ -122,3 +122,29 @@ portfolio: PF_KKU
 
 - 문법: YAML 파싱 OK. `bash -n`으로 전 스텝 10/10 OK.
 - 💡 GitHub 표현식의 문자열 비교는 **대소문자를 구분하지 않는다**. 그래서 스위치가 `TRUE`이면 6번 스텝의 `if`는 참이 된다. 하지만 1차 잠금(셸, 정확히 `"true"`)이 막으므로 배포에 도달하지 않는다. 발효 시 값은 소문자 `true`로 적어야 한다.
+
+---
+
+## §B 반영 — 막내4 교차 검증 조건부 합격분 (REVIEW_20261002_iMac쌍아-막내4_KKU_P2_교차검증)
+
+**[2026-10-02 19:44 KST]** iMac/쌍아-막내3 → iMac/쌍아
+
+- **브랜치 `kku-scope-gate` = `efbf810c`** (origin과 SHA를 대조해 확인). main에는 머지하지 않았다. dispatch는 0회다.
+- 변경: `kku_scope_gate.py`와 `deploy-monk-kr.yml`.
+
+| 항목 | 반영 | 실증 |
+|---|---|---|
+| **K1 필수** R5 이벤트 속성 | `(?:^\|[\s/"'])on\w+\s*=` | 음성 3건 모두 R5로 차단: `<svg/onload=…>` · `<img src="a.png"/onerror="x()">` · 줄 첫머리 `onclick=…`. 회귀: `<img src=x onerror=y>`는 계속 탐지된다. 오탐 대조 `class="online"`·`data-on=1`은 탐지되지 않는다 |
+| **K2 필수** wrangler 설정 | `SCOPE`와 R3에 `wrangler.toml`·`wrangler.json`·`wrangler.jsonc` 추가 | 음성: `wrangler.toml` 변경 → R1·R3으로 차단 |
+| (a) 로그 폴백 한정 | `\t정본 확인\t…배포 커밋:`과 `\tCF Pages 배포\t… ✨ Deployment complete! Take a peek over at https://…monk-kr.pages.dev`를 **해당 스텝 줄에서만** 찾는다 | 양성: run 36994859500 → `ad8f9a09` 유지. 음성: `사유 서식 검증` 스텝 줄에 두 문구를 넣은 위조 로그 → 배포로 인정되지 않음 |
+| (b) 롤백의 롤백 | record에 `kind=rollback\|forward`(sha 입력 여부)를 남긴다. `resolve-run`이 kind를 전달하고, 직전 run이 `rollback`이면 꾸 롤백을 차단한다 | 음성: `--run-kind rollback` → "❌ 차단 (롤백의 롤백)". 기존 롤백 양성·음성 2건은 그대로다 |
+| ③ 흔적 미검사 명기 | 작가님 경로에서 rc 2로 진행할 때 경고와 요약에 "**흔적 미검사**(주체 '꾸' 검사 생략)"를 남긴다 | 시뮬레이션에서 문구가 나오는 것을 확인 |
+
+- 음성 시험 방법: 임시 인덱스와 `commit-tree`로 **매달린 커밋**을 만들었다. 브랜치·작업트리·main은 건드리지 않았다.
+- 회귀:
+  - gate 사례 16건(기존 15 + 롤백의 롤백)이 모두 기대값대로 나왔다.
+  - 30일 커밋 120건 재대입 결과는 통과 75 / 차단 45로, §1과 같다. K1 확장으로 생긴 신규 오탐은 0이다.
+  - 스위치 시뮬레이션 6건도 기대값대로다.
+- 문법: `ast.parse` OK, YAML OK, `bash -n` 10/10.
+  - 💡 K1 정규식을 처음 넣을 때 raw 문자열 안의 `'` 때문에 **SyntaxError**가 났다. 커밋 전 파싱 검사에서 잡아 문자열을 분할해 고쳤다.
+  - 그 상태로 러너에 올라갔다면 꾸 경로는 rc 2로 차단되고, 작가님 경로는 rc 2 경고 후 진행했을 것이다(fail-closed는 유지).
