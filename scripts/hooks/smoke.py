@@ -163,6 +163,12 @@ t, _ = ss_title({"source": "startup"}, "claude-desktop")
 expect("세션이름 startup desktop → 민아",     bool(t and "-민아-" in t), True)
 t, _ = ss_title({"source": "resume"}, "cli")
 expect("세션이름 resume 무명 cli → 막내",     bool(t and "-막내-" in t), True)
+with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as tf:
+    tf.write('{"type":"summary"}\n{"type":"user","timestamp":"2026-01-02T03:04:00Z"}\n')
+t, _ = ss_title({"source": "resume", "transcript_path": tf.name}, "claude-vscode")
+_want = time.strftime("%m%d-%H%M", time.localtime(1767323040))  # 2026-01-02T03:04:00Z 로컬 환산
+expect("resume 무명 → 시작 시각(기록 첫 timestamp)", bool(t and t.endswith(_want)), True)
+os.unlink(tf.name)
 expect("음성 기존 이름 유지(덮어쓰기 없음)",  ss_title({"source": "resume", "session_title": "M2-쌍아"}, "claude-vscode")[0], None)
 expect("음성 compact 이름 미지정",            ss_title({"source": "compact"}, "claude-vscode")[0], None)
 expect("음성 SDK·헤드리스 이름 미지정",       ss_title({"source": "startup"}, "sdk-cli")[0], None)

@@ -38,6 +38,20 @@ field() { printf '%s' "$input" | python3 -c "import json,sys; print(json.load(sy
 sid="$(field session_id)"
 src="$(field source)"
 cur_title="$(field session_title)"
+# resume은 재개 시각이 아니라 시작 시각으로 명명한다 — 대화 기록 첫 줄의 timestamp(UTC) → 로컬 MMDD-HHMM. 실패 시 현재 시각.
+if [ "$src" = "resume" ]; then
+  tpath="$(field transcript_path)"
+  tstamp="$(TP="$tpath" python3 -c '
+import json, os, datetime
+with open(os.environ["TP"], encoding="utf-8") as f:
+    for line in f:
+        ts = json.loads(line).get("timestamp")
+        if ts:
+            d = datetime.datetime.fromisoformat(ts.replace("Z", "+00:00")).astimezone()
+            print(d.strftime("%m%d-%H%M")); break
+' 2>/dev/null || echo "")"
+  [ -n "$tstamp" ] && stamp="$tstamp"
+fi
 
 title=""
 if [ -n "$cur_title" ]; then
