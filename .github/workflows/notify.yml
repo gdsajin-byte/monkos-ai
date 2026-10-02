@@ -20,4 +20,6 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python .github/scripts/telegram_notify.py "${{ inputs.message }}"
+          # ${{ }}를 셸에 직접 치환하면 메시지(사유 등 자유 텍스트)의 $( )·따옴표가 실행된다 — env 경유가 정본
+          MESSAGE: ${{ inputs.message }}
+        run: python .github/scripts/telegram_notify.py "$MESSAGE"
