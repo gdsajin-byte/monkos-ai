@@ -27,7 +27,8 @@ subject: "SessionStart 훅 세션 이름 자동 지정 + 세션 시작 절차 �
 
 ## ⏳ 미완
 
-- **§B 원격 자동 연결(`~/.claude/settings.json` `remoteControlAtStartup`)** — 전역 설정이라 ch1 7조 승인 게이트. 작가님 12:07 지시는 직접 실행 승인이며 이 항목 승인은 별도로 받는다.
+- ~~§B 원격 자동 연결~~ → **민아 집행(12:13)** — 작가님 승인(민아 세션 12:12 "일단 둘다 승인한다")으로 승인받은 세션이 직접 집행. iMac `~/.claude/settings.json` `remoteControlAtStartup: true` 쌍아 12:13 실측 확인(키 7개). M2 3건도 민아 ssh 집행.
+- **resume 명명 보정(12:12, ed4d61b7)** — 민아 검증 1차 관찰 반영: 무명 세션 재개 시 대화 기록 첫 timestamp로 시작 시각 명명. 스모크 69/69.
 - **실세션 검증** — 판단 분리(ch1 1조)에 따라 민아가 새 VSCode 대화를 열어 이름·핑 왕복으로 판정.
 
 ## 💡 관찰
