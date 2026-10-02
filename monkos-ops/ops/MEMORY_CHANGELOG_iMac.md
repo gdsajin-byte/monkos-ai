@@ -664,3 +664,10 @@
 - MEMORY.md 인덱스 +6행 (149 → 155줄, 캡 200 이내)
 - 같은 날 쌍아 변경분(feedback_korean_only_replies 신설, reference_cross_session_message_to_makne 갱신)은 쌍아 기록 소관
 - [2026-10-01 19:20 KST] iMac/민아 (마감 후 추가): reference_cross_machine_session_messaging 갱신 — isolatePeerMachines 제거(8cdd26d2)·기기 간 왕복 실측·웹에서 허용 버튼 불가
+
+## 2026-10-02 iMac/민아
+- [2026-10-02 12:34 KST] 세션 간 통신 정비 관련 메모리 갱신 8건:
+  - reference_cross_machine_session_messaging: 10-02 핑 재실증 / 세팅은 대화 단위·새 대화 미승계 / `remoteControlAtStartup`은 사용자 설정에서만 유효(원인 확정) / 자동 연결·훅 이름 적용 실증과 같은 기기 주소 미반영 한계
+  - reference_cross_session_message_to_makne: VSCode 확장 `initialPermissionMode`(새 대화 기본 모드로 보류되는 원인) / 같은 기기 이름 출처 = `~/.claude/sessions/{pid}.json`, 훅 제목은 cached만
+  - MEMORY.md 색인 2행 교정: §팀 인적 인프라(우체통 워처 10-02 폐기, 통로 = ssh m2 + 세션 메시지) / 기기 간 세션 메시지 줄(자동화·한계 반영)
+- 신규 메모리 파일 0. MEMORY.md 줄 수 변동 없음(행 교체만).
