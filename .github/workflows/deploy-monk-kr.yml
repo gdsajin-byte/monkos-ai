@@ -36,6 +36,11 @@ on:
         options: ['작가님', '꾸']
         default: '작가님'
 
+# 꾸 경로 스위치 — ch5 1조 부칙(승인·미발효). 발효 시 쌍아가 "true"로 바꾼다(이 1줄이 발효 커밋).
+# "true"가 아닌 동안 approver=꾸는 G-K 판정까지 실행·표 기록 후 배포 전에 무조건 차단한다(판정 통과여도 배포 없음).
+env:
+  KKU_PATH_ENABLED: "false"
+
 # actions:read — 범위 게이트의 base 산출(직전 run 아티팩트·로그 조회). 그 외 쓰기 권한 없음
 permissions:
   contents: read
@@ -130,6 +135,12 @@ jobs:
             --cf-base "$CF_BASE" --summary "$GITHUB_STEP_SUMMARY" --record "$RECORD" --run-id "$RUN_ID"
           rc=$?
           set -e
+          # 스위치 off — 판정 결과(rc)와 무관하게 꾸 경로는 여기서 끝난다. 정확히 "true"일 때만 열린다
+          if [ "$APPROVER" = "꾸" ] && [ "${KKU_PATH_ENABLED:-}" != "true" ]; then
+            echo "::error::꾸 경로 미발효(ch5 1조 부칙) — 판정 결과는 위 표 (G-K rc ${rc}). 배포하지 않는다"
+            echo "- ⛔ **꾸 경로 미발효(ch5 1조 부칙) — 판정 결과는 위 표** (G-K rc ${rc}, KKU_PATH_ENABLED=${KKU_PATH_ENABLED:-미설정}). 배포 없음" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
           if [ "$rc" -eq 0 ]; then exit 0; fi
           if [ "$APPROVER" = "작가님" ] && [ "$rc" -eq 2 ]; then
             echo "::warning::범위 게이트 판정 불가(rc 2) — 작가님 경로라 진행한다 (G-K 비적용 경로)"
@@ -157,7 +168,10 @@ jobs:
           npm install -g "wrangler@$VER"
           wrangler --version
 
+      # 2중 잠금: G-K 스텝 exit 1(1차)에 더해, 스위치 off면 꾸 경로는 이 스텝 자체가 평가되지 않는다
       - name: CF Pages 배포
+        id: cf
+        if: inputs.approver != '꾸' || env.KKU_PATH_ENABLED == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_DEPLOY_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
@@ -172,6 +186,7 @@ jobs:
       #    이 스텝이 실행됐다는 것 자체가 "배포는 라이브에 도달했다"는 뜻이다
       - name: 배포 반영 기록 (ch5 1조 8항)
         id: mark
+        if: steps.cf.outcome == 'success'   # 배포 스텝이 건너뛰어졌으면 '배포됨' 기록·스모크도 없다
         env:
           # ${{ }} 직접 치환 금지 — 표현식이 셸·마크다운에 그대로 박히면 주입·서식 붕괴가 난다. env 경유가 정본
           REASON: ${{ inputs.reason }}
@@ -211,6 +226,7 @@ jobs:
       # ── G-K §3.1: 다음 run의 base 1순위. 스모크보다 앞 — 스모크가 실패해도 배포 사실은 기록된다.
       #    업로드 실패 시 다음 run은 로그 `배포 커밋:` 폴백을 쓰고 approver를 '기록 이전'으로 본다(꾸 롤백 불가 = 보수 측)
       - name: 배포 기록 아티팩트 (G-K base)
+        if: steps.cf.outcome == 'success'   # 배포 스텝이 건너뛰어졌으면 '배포됨' 기록·스모크도 없다
         uses: actions/upload-artifact@v4
         with:
           name: deploy-record
@@ -220,6 +236,7 @@ jobs:
 
       # ── ch5 1조 7항: 상태코드 단독 판정 금지. 도달 확인과 판정을 분리한다
       - name: 도달 확인 + 콘텐츠 어서션 (ch5 1조 7항)
+        if: steps.cf.outcome == 'success'   # 배포 스텝이 건너뛰어졌으면 '배포됨' 기록·스모크도 없다
         run: |
           set -euo pipefail
           sleep 15
