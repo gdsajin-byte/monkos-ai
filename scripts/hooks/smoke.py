@@ -141,6 +141,32 @@ expect("승인 디렉터리 쓰기 차단",     run(W, write("Write", str(ROOT /
 # ---------- session_start ----------
 rc, _, ctx, err = run("session_start.sh", {"hook_event_name": "SessionStart", "source": "startup"})
 expect("E7 SessionStart 출력",       ("SessionStart 훅" in (ctx or "")) and ("디바이스=" in (ctx or "")), True)
+
+
+def ss_title(payload, entry):
+    """SessionStart 훅의 (sessionTitle, JSON 유효 여부)."""
+    env = dict(os.environ, CLAUDE_PROJECT_DIR=str(ROOT), CLAUDE_CODE_ENTRYPOINT=entry)
+    p = subprocess.run(["bash", str(HERE / "session_start.sh")], input=json.dumps(payload),
+                       capture_output=True, text=True, env=env, timeout=20)
+    try:
+        h = json.loads(p.stdout).get("hookSpecificOutput", {})
+        return h.get("sessionTitle"), True
+    except json.JSONDecodeError:
+        return None, False
+
+
+import re
+TITLE_RE = r"^[^-]+-(쌍아|민아|막내)-\d{4}-\d{4}$"
+t, ok = ss_title({"source": "startup"}, "claude-vscode")
+expect("세션이름 startup vscode → 쌍아 서식", bool(ok and t and re.match(TITLE_RE, t) and "-쌍아-" in t), True)
+t, _ = ss_title({"source": "startup"}, "claude-desktop")
+expect("세션이름 startup desktop → 민아",     bool(t and "-민아-" in t), True)
+t, _ = ss_title({"source": "resume"}, "cli")
+expect("세션이름 resume 무명 cli → 막내",     bool(t and "-막내-" in t), True)
+expect("음성 기존 이름 유지(덮어쓰기 없음)",  ss_title({"source": "resume", "session_title": "M2-쌍아"}, "claude-vscode")[0], None)
+expect("음성 compact 이름 미지정",            ss_title({"source": "compact"}, "claude-vscode")[0], None)
+expect("음성 SDK·헤드리스 이름 미지정",       ss_title({"source": "startup"}, "sdk-cli")[0], None)
+expect("음성 stdin 비JSON → 출력 유지",       ss_title("not-json", "claude-vscode")[1], True)
 # ---------- 실패 가시화 ----------
 p = subprocess.run([sys.executable, str(HERE / G)], input="{not json", capture_output=True, text=True,
                    env=dict(os.environ, CLAUDE_PROJECT_DIR=str(ROOT)))

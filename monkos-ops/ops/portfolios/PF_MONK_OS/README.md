@@ -141,6 +141,7 @@ domain: "governance/infrastructure"
 | 2026-10-02 | iMac/민아 | **COMPLETION** 광고 드롭 업로더(ads-sync·ads_upload.sh) 폐기 — 아이디어는 제안서로 존치, GCS 자산은 라이브 소비 중이라 존치 | [COMPLETION_20261002_iMac민아_광고업로더_폐기](../../reports/2026-10/COMPLETION_20261002_iMac민아_광고업로더_폐기.md) | ✅ |
 | 2026-10-02 | ?/? | **ORDER** 세션 이름 자동 지정(기기-역할-날짜-시각) + 새 세션 원격 자동 연결 + 옛 인스턴스 보고 — 세션 간 통신이 새 대화에 승계되지 않는 문제 해소 | [ORDER_20261002_iMac민아_iMac쌍아_세션이름자동화_원격자동연결](../../orders/2026-10/ORDER_20261002_iMac민아_iMac쌍아_세션이름자동화_원격자동연결.md) | ⏳ |
 | 2026-10-02 | ?/? | **ORDER** M2 새 대화가 원격 연결에 자동으로 붙도록 설정 이관(로컬 → 사용자 설정) + VSCode 초기 권한 모드 + 옛 대화 정리 | [ORDER_20261002_iMac민아_M2쌍아_원격자동연결_설정이관](../../orders/2026-10/ORDER_20261002_iMac민아_M2쌍아_원격자동연결_설정이관.md) | ⏳ |
+| 2026-10-02 | iMac/쌍아 | **COMPLETION** SessionStart 훅 세션 이름 자동 지정 + 세션 시작 절차 옛 인스턴스 보고 (ORDER_20261002 §A·§C·§D) | [COMPLETION_20261002_iMac쌍아_세션이름자동화](../../reports/2026-10/COMPLETION_20261002_iMac쌍아_세션이름자동화.md) | ✅ |
 
 ---
 
