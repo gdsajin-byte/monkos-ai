@@ -1,4 +1,5 @@
 #!/bin/bash
+# [폐기 2026-10-02] 실행 금지 — 대상 호스트 소멸·수신 폴더 부재. 대체: ssh m2(키 인증)·세션 메시지. _legacy/README.md 참조.
 # 우체통 워처 — 와이프(kku) 맥미니 M2 ↔ 우리 쪽 파일 자동 전달
 # 30초 폴링, sshm2(sshpass) 기반
 
@@ -9,7 +10,7 @@ KKU_INBOX="$TEAMS_DIR/kku/inbox"
 LOG_FILE="$PROJECT_DIR/monkos-ops/06_로그/orchestration/mailbox.log"
 REMOTE_HOST="100.93.220.17"
 REMOTE_USER="mac"
-REMOTE_PASS="1234"
+REMOTE_PASS=""  # 2026-10-02 폐기 시 평문 값 제거 (값은 git 이력에 잔존 — 대상 호스트 소멸)
 
 SSH_CMD="sshpass -p '$REMOTE_PASS' ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 $REMOTE_USER@$REMOTE_HOST"
 SCP_CMD="sshpass -p '$REMOTE_PASS' scp -o StrictHostKeyChecking=no -o ConnectTimeout=5"

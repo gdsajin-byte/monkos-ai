@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.monkos.ads-sync</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/jeong-kyushin/developer/monk_project/monkos-ops/scripts/ads_upload.sh</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/Users/jeong-kyushin/google-cloud-sdk/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    </dict>
+
+    <key>WatchPaths</key>
+    <array>
+        <string>/Users/jeong-kyushin/MONKOS_ADS</string>
+    </array>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/monkos-ads-stdout.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/tmp/monkos-ads-stderr.log</string>
+
+    <key>ThrottleInterval</key>
+    <integer>5</integer>
+</dict>
+</plist>

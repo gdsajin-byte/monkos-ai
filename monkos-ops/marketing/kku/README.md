@@ -6,4 +6,4 @@
 | outbox/ | 우리→꾸 | 와이프에게 전달 대기 파일 |
 | reference/ | 읽기전용 | 참고자료 |
 
-통신: SSH + mailbox_watcher.sh (M2 맥미니 100.93.220.17)
+통신: `ssh m2`(키 인증) + 세션 메시지(M2-쌍아). 자동 전달 워처(mailbox_watcher.sh)는 2026-10-02 폐기 — inbox/outbox는 자동으로 오가지 않는다.

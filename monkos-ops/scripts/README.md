@@ -4,7 +4,7 @@
 
 | 스크립트 | 용도 | 실행 |
 |----------|------|------|
-| mailbox_watcher.sh | 꾸(M2) 우체통 파일 자동 전달 | `mk-mb` (tmux) |
+| ~~mailbox_watcher.sh~~ | 꾸(M2) 우체통 파일 자동 전달 — **2026-10-02 폐기**, `_legacy/`로 이동 | — |
 | session_watcher.sh | 소넷이 세션 로그 자동 분석 | `mk-sw` (tmux) |
 | command_watcher.js | 지시서 감시 + 텔레그램 알림 | Node.js |
 | command_bridge.js | Firestore→CLI 브릿지 | Node.js |
@@ -24,7 +24,7 @@
 | 스크립트 | 용도 |
 |----------|------|
 | ads_sync.py | GCS 광고 동기화 |
-| ads_upload.sh | MONKOS_ADS → GCS 업로드 |
+| ~~ads_upload.sh~~ | MONKOS_ADS → GCS 업로드 — **2026-10-02 폐기**, `_legacy/`로 이동 |
 
 ## 야간/알림
 

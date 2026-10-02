@@ -1,4 +1,5 @@
 #!/bin/bash
+# [폐기 2026-10-02] 실행 금지 — launchd 해제·드롭 폴더 제거. GCS ads/ 자산과 manifest.json은 라이브 소비 중이라 존치. 재설계: PROPOSAL_20261002_iMac민아_광고슬롯_재설계.md
 # MONKOS Ads Auto-Upload — launchd WatchPaths 트리거
 # ~/MONKOS_ADS/ 에 이미지 드롭 → GCS 직행 → 매니페스트 갱신
 # 프로젝트 폴더 안 거침, git 무관

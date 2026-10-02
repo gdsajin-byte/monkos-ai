@@ -9,5 +9,7 @@
 | night_operator.py · session_watcher.sh · session_append.sh | 02-22 | Routines·SessionStart/Stop 훅·pf.sh |
 | notify.ps1 | 02-22 | 4060 윈도우 알림 — 텔레그램 CI notify.yml |
 | collect_saga.sh | 02-22 | 1회성 수집 |
-| ads_sync.py | 03-06 | `ads_upload.sh`(launchd com.monkos.ads-sync) |
+| ads_sync.py | 03-06 | `ads_upload.sh`(launchd com.monkos.ads-sync) — 그것도 10-02 폐기(아래) |
+| ads_upload.sh · com.monkos.ads-sync.plist | 03-06 | **2026-10-02 폐기**(작가님 지시 — 아이디어 존치·구성 폐기). iMac `~/MONKOS_ADS/` 드롭 → GCS `monk-ai-images/ads/` 공개 업로드 → 최신 6장 FIFO → `manifest.json`. 실업로드 7건, 마지막 03-02. launchd 해제·드롭 폴더 제거. **GCS 자산은 라이브 소비 중이라 존치.** 재설계: `ops/proposals/PROPOSAL_20261002_iMac민아_광고슬롯_재설계.md` |
 | cheolchang_watcher.sh · com.monkos.cheolchang-sync.plist | 02-23 | 설치본 launchd가 `scripts/철창이_watcher.sh` 호출 |
+| mailbox_watcher.sh · com.monk.mailbox-watcher.plist | 02-22 | **2026-10-02 폐기**(작가님 지시). 꾸 우체통 워처 — 대상 호스트가 tailnet에서 사라지고 수신 폴더가 없어 07-13 이후 전달 0(프로세스만 81일 생존). launchd 해제, plist는 `~/Library/LaunchAgents/`에서 이리로 이동. 스크립트의 평문 비밀번호 1행은 제거(값은 git 이력에 잔존). 대체: `ssh m2`(키 인증) + 세션 메시지 |
