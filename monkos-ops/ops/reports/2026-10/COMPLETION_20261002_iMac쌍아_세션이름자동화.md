@@ -3,7 +3,7 @@ type: completion
 date: 2026-10-02
 device: iMac
 agent: 쌍아
-status: 검증 대기
+status: 마감
 portfolio: PF_MONK_OS
 subject: "SessionStart 훅 세션 이름 자동 지정 + 세션 시작 절차 옛 인스턴스 보고 (ORDER_20261002 §A·§C·§D)"
 ---
@@ -35,3 +35,9 @@ subject: "SessionStart 훅 세션 이름 자동 지정 + 세션 시작 절차 �
 
 - 12:08 피어 목록: `monk-project-7a`(23시간 전 시작, VSCode 추정)가 살아 있다. 훅 이전 세션은 이름 서식이 없어 이름만으로는 역할 식별 불가 — §C 절차에 시작 시각 병기로 대응.
 - 판별표의 프롬프트 문구 기준(VSCode/Agent SDK)은 VSCode 확장에 두 문구가 함께 들어 있어 모호하다. ch1 5조 본문 정비 대상(쌍아 차회 청구).
+
+## 실증 (민아 판정, 12:22)
+
+- **합격(기기 간)**: iMac 새 대화 `iMac-쌍아-1002-1219`·M2 새 대화 `M2-쌍아-1002-1220` — 이름·bypass 시작·Remote Control 자동 연결, M2↔iMac 양방향 그 이름으로 핑 왕복.
+- **미반영(같은 기기)**: 로컬 피어 목록은 기본 이름(`monk-project-72` 등) 유지 — 훅 이름 앞 로컬 발신 실패. 대화 기록의 custom-title·agent-name은 훅 이름(원인 미확정, 하네스 측 추정).
+- **보완(12:23)**: session-start 4단계에 "시작 알림 1줄"(훅 이름 + 로컬 주소) 추가 — 받는 쪽이 `from`으로 답해 우회. 예비 = 수동 `/rename`.
