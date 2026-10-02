@@ -2,7 +2,7 @@
 """PreToolUse(Bash) 집행 훅 — E1·E2·E3·E4·E5(Bash)·E9·E10.
 
 원천: DESIGN_20260930_집행코드화_hooks_deny.md §4.3 판정표
-판정 원칙: 명령을 세그먼트(선두 / && ; || | 뒤 / $( ) / 개행)로 쪼개고
+판정 원칙: 명령을 세그먼트(선두 / && ; || | & 뒤 / $( )·백틱 / 개행 — 따옴표 안 연산자는 데이터, 10-02 P1)로 쪼개고
 각 세그먼트 **선두**에서 패턴을 본다 (CI C13과 동일 — 문자열 '언급'이 아니라 실행 형태).
 히어독 본문·주석은 제거 후 판정 (세션 로그 어펜드의 문서 텍스트 오탐 방지).
 """
@@ -49,10 +49,14 @@ RULES = [
 ]
 
 # E10 — 승인 게이트 대상 (ch5 1조·ch1 7조)
+# monk.kr 버튼 배포 워크플로의 식별자 3종: 파일명 · 표시 이름 · 워크플로 ID(gh api …/actions/workflows 실측 10-02)
+MONKKR_WF = r"deploy-monk-kr|Deploy\s+monk\.kr|\b365714442\b"
 DEPLOY_GATE = [
     (r"(\./|bash\s+|sh\s+)?([\w./-]*/)?deploy\.sh\s+prod\b", "deploy.sh prod"),
     (r"wrangler\s+pages\s+deploy\b", "wrangler pages deploy (monk.kr)"),
-    (r"gh\s+workflow\s+run\s+deploy-monk-kr", "gh workflow run deploy-monk-kr"),
+    # 10-02 P1: 인자 순서(-R 선행)·표시 이름·워크플로 ID·REST dispatches 우회 차단 (사법심사 F4)
+    (r"gh\s+workflow\s+run\b.*?(%s)" % MONKKR_WF, "gh workflow run deploy-monk-kr"),
+    (r"gh\s+api\b.*?(%s)\S*/dispatches\b" % MONKKR_WF, "gh api …/deploy-monk-kr/dispatches"),
     (r"edge/deploy\.sh\b", "edge/deploy.sh (monkos.ai 엣지)"),
 ]
 
@@ -60,19 +64,116 @@ DEPLOY_GATE = [
 PIPE_TO_SHELL = re.compile(r"\b(curl|wget)\b[^|]*\|\s*(sudo\s+)?(ba|z)?sh\b")
 
 HEREDOC = re.compile(r"<<-?\s*['\"]?(\w+)['\"]?[^\n]*\n(.*?)\n\s*\1\s*(?=\n|$)", re.S)
-SPLIT = re.compile(r"\s*(?:&&|\|\||;|\||\n|\$\(|`)\s*")
 PREFIX = re.compile(r"^(?:(?:sudo|time|nohup|env|command|exec)\s+|[A-Za-z_][A-Za-z0-9_]*=\S*\s+|\(\s*)+")
 WRAPPERS = re.compile(r"^(?:bash|sh|zsh)\s+-l?c\s+(['\"])(.*)\1\s*$", re.S)
 XARGS = re.compile(r"^xargs\s+(?:-\S+\s+)*(.*)$")
 EVAL = re.compile(r"^eval\s+(['\"]?)(.*)\1$", re.S)
 
 
+# 인자 문자열을 다시 명령으로 실행하는 래퍼 — 이들의 따옴표 안은 데이터가 아니라 명령이다 (10-02 P1 ⑤)
+EXECUTORS = {"bash", "sh", "zsh", "dash", "ksh", "fish", "ssh", "eval", "su", "sudo", "doas", "watch",
+             "timeout", "nice", "nohup", "env", "command", "exec", "time", "script", "tmux", "screen",
+             "parallel", "xargs", "find", "docker", "kubectl", "gtimeout", "caffeinate"}
+QUOTED = re.compile(r"'([^']*)'|\"((?:[^\"\\]|\\.)*)\"", re.S)
+
+
+def _close(s: str, i: int, opener: str) -> int:
+    """s[i]가 여는 `$(` 내부 시작 위치일 때, 짝 맞는 `)` 위치 (따옴표·중첩 고려). 없으면 len(s)."""
+    depth, q = 1, None
+    while i < len(s):
+        c = s[i]
+        if q:
+            if c == "\\" and q == '"':
+                i += 2
+                continue
+            if c == q:
+                q = None
+        elif c in "'\"":
+            q = c
+        elif c == "\\":
+            i += 2
+            continue
+        elif c == "(":
+            depth += 1
+        elif c == ")":
+            depth -= 1
+            if depth == 0:
+                return i
+        i += 1
+    return len(s)
+
+
+def split_top(body: str) -> tuple[list[str], list[str]]:
+    """따옴표를 존중해 최상위 연산자(&& || ; | & 개행)에서만 쪼갠다.
+    `$( )`·백틱은 따옴표 밖이든 큰따옴표 안이든 실행되므로 내부를 별도 명령으로 뽑는다.
+    작은따옴표 안과 큰따옴표 안의 연산자는 데이터다 (막내2 F8 — grep "…\\|wrangler pages deploy" 오탐)."""
+    segs, subs, cur, q, i = [], [], [], None, 0
+    while i < len(body):
+        c = body[i]
+        two = body[i:i + 2]
+        if q == "'":
+            cur.append(c)
+            if c == "'":
+                q = None
+            i += 1
+            continue
+        if c == "\\":
+            cur.append(body[i:i + 2])
+            i += 2
+            continue
+        if two == "$(":
+            j = _close(body, i + 2, "(")
+            subs.append(body[i + 2:j])
+            cur.append("$CMDSUB")
+            i = j + 1
+            continue
+        if c == "`":
+            j = body.find("`", i + 1)
+            j = len(body) if j < 0 else j
+            subs.append(body[i + 1:j])
+            cur.append("$CMDSUB")
+            i = j + 1
+            continue
+        if q == '"':
+            cur.append(c)
+            if c == '"':
+                q = None
+            i += 1
+            continue
+        if c in "'\"":
+            q = c
+            cur.append(c)
+            i += 1
+            continue
+        if two in ("&&", "||"):
+            segs.append("".join(cur))
+            cur = []
+            i += 2
+            continue
+        if c == "&" and (body[i - 1:i] in (">", "<") or body[i + 1:i + 2] == ">"):  # 2>&1 · &> 는 리다이렉트
+            cur.append(c)
+            i += 1
+            continue
+        if c in ";|&\n":
+            segs.append("".join(cur))
+            cur = []
+            i += 1
+            continue
+        cur.append(c)
+        i += 1
+    segs.append("".join(cur))
+    return segs, subs
+
+
 def segments(cmd: str) -> list[str]:
     body = HEREDOC.sub("<<HEREDOC_STRIPPED", cmd)
     body = re.sub(r"(^|\s)#[^\n]*", " ", body)  # 주석 제거
     out = []
-    for seg in SPLIT.split(body):
-        seg = seg.strip().strip(")")
+    top, subs = split_top(body)
+    for sub in subs:
+        out.extend(segments(sub))
+    for seg in top:
+        seg = seg.strip().strip("()").strip()
         if not seg:
             continue
         seg = PREFIX.sub("", seg)
@@ -85,6 +186,16 @@ def segments(cmd: str) -> list[str]:
             out.extend(segments(m.group(1)))
             continue
         out.append(seg)
+        # 실행 래퍼(ssh m2 '…', timeout 5 …, find -exec …): 따옴표 안을 명령으로 재귀 판정하고,
+        # 따옴표 밖 인자는 각 단어 위치를 명령 시작으로 본다 — 쪼개기 정밀화가 차단을 약하게 만들지 않도록
+        words = seg.split()
+        if words and (words[0].rsplit("/", 1)[-1] in EXECUTORS or "-exec" in words):
+            for m in QUOTED.finditer(seg):
+                inner = m.group(1) if m.group(1) is not None else m.group(2)
+                if inner.strip():
+                    out.extend(segments(inner))
+            bare = QUOTED.sub(" ", seg).split()
+            out.extend(" ".join(bare[k:]) for k in range(1, len(bare)))
     return out
 
 
