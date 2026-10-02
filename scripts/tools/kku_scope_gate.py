@@ -7,7 +7,7 @@ Python 3.9 호환(M2) — match·`X | Y` 타입 표기 금지.
 사용:
   kku_scope_gate.py --dry-run BASE TARGET              # R1~R8만 (로컬 사전 점검)
   kku_scope_gate.py gate --approver 꾸 --ref refs/heads/main --target SHA --reason "..." \
-        [--sha-input SHA] [--run-base SHA --run-approver 꾸 --run-recorded-base SHA] [--cf-base SHA] \
+        [--sha-input SHA] [--run-base SHA --run-approver 꾸 --run-recorded-base SHA --run-kind rollback] [--cf-base SHA] \
         [--summary PATH] [--record PATH] [--run-id ID]
   kku_scope_gate.py resolve-run --repo O/R --workflow deploy-monk-kr.yml --exclude-run ID   # gh 필요
   kku_scope_gate.py resolve-cf --project monk-kr                                            # CF API env 필요
@@ -24,14 +24,17 @@ import tempfile
 import urllib.request
 
 # ── 패턴 정본 (청구안 §3.2 — 보강=규정 변경, 완화=법률 개정) ─────────────────────────
-SCOPE = ["MONK_kr/", "functions/", ".github/", "package.json"]          # §3.1 diff 범위
+# §3.1 diff 범위. 루트 wrangler 설정은 `wrangler pages deploy`가 읽어 functions 바인딩·호환 날짜에 반영한다(막내4 K2)
+WRANGLER_CFG = ["wrangler.toml", "wrangler.json", "wrangler.jsonc"]
+SCOPE = ["MONK_kr/", "functions/", ".github/", "package.json"] + WRANGLER_CFG
 ALLOWED_ROOT = "MONK_kr/monk_studio/"                                     # R1
 ALLOWED_EXT = {".html", ".css", ".json", ".md", ".txt", ".jpg", ".jpeg", ".png",
                ".webp", ".avif", ".svg", ".gif", ".ico"}                  # R2 (.js 제외 — K2-A)
 BLOCKED_PATHS = ["functions/", ".github/", "package.json", "MONK_kr/smoke_assert.txt",
-                 "_headers", "_redirects", "config.js"]                    # R3
+                 "_headers", "_redirects", "config.js"] + WRANGLER_CFG                    # R3
 R4_PAT = re.compile(r'<form|<input|<textarea|<select|contenteditable|type\s*=\s*["\']?file', re.I)
-R5_PAT = re.compile(r'<script|\son\w+\s*=|javascript:|fetch\s*\(|XMLHttpRequest|sendBeacon|action\s*=|'
+# 이벤트 속성은 공백 뒤만이 아니라 줄 첫머리·`/`·따옴표 뒤도 잡는다(<svg/onload=, "/onerror=, 여러 줄 태그 — 막내4 K1)
+R5_PAT = re.compile(r'<script|' r"(?:^|[\s/\"'])on\w+\s*=" r'|javascript:|fetch\s*\(|XMLHttpRequest|sendBeacon|action\s*=|'
                     r'eval\s*\(|new\s+Function|<meta[^>]*http-equiv|<base[\s>]|<object|<embed|srcdoc', re.I)
 URL_PAT = re.compile(r'(?:https?:)?//[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+[^\s"\'<>)\\`]*')   # R6
 R7_PATH = re.compile(r'monk_studio/store/print/|order|checkout|pay', re.I)
@@ -208,7 +211,8 @@ def cmd_gate(a):
         # record: 배포 후 아티팩트로 올라간다. base는 다음 꾸 롤백의 허용 대상(§3.6)
         write_record(a.record, approver=a.approver, base=base or run_base, target=target,
                      run_id=a.run_id, gate=("pass" if code == 0 else "block"),
-                     nfiles=("" if nfiles is None else nfiles))
+                     nfiles=("" if nfiles is None else nfiles),
+                     kind=("rollback" if a.sha_input else "forward"))
         return code
 
     if not target:
@@ -250,6 +254,9 @@ def cmd_gate(a):
 
     # §3.6 롤백 — sha 입력은 직전 꾸 run이 기록한 base로만
     if a.sha_input:
+        if a.run_kind == "rollback":
+            notes.append("직전 꾸 run이 롤백 run이다 — 롤백의 롤백(재전진)은 꾸 경로 불가(§3.6 '방금 승인한 배포를 되돌림'). 작가님 경로로")
+            return done("❌ 차단 (롤백의 롤백)", 1, base)
         if a.run_approver == "꾸" and rev(a.run_recorded_base) and rev(a.sha_input) == rev(a.run_recorded_base):
             notes.append("꾸 롤백 — 직전 꾸 run의 base `%s`로 되돌림 (§3.6). R1~R8 비대상(이미 라이브였던 내용)" % target[:8])
             return done("✅ 범위 안 (꾸 롤백)", 0, base)
@@ -310,14 +317,18 @@ def cmd_resolve_run(a):
                 kv = dict(l.split("=", 1) for l in open(path, encoding="utf-8").read().splitlines() if "=" in l)
                 if kv.get("deployed") == "1":
                     print(json.dumps({"run_id": rid, "commit": kv.get("target", ""),
-                                      "approver": kv.get("approver", ""), "base": kv.get("base", "")}))
+                                      "approver": kv.get("approver", ""), "base": kv.get("base", ""),
+                                      "kind": kv.get("kind", "")}))
                     return 0
                 continue
         # 기록 없는 과거 run — 실행 로그의 `배포 커밋:` + wrangler 완료 문구가 둘 다 있어야 배포로 인정
         log = sh(["gh", "run", "view", rid, "-R", a.repo, "--log"]).stdout
-        m = re.search(r"배포 커밋: ([0-9a-f]{40})", log)
-        if m and "Deployment complete!" in log:
-            print(json.dumps({"run_id": rid, "commit": m.group(1), "approver": "작가님(기록 이전)", "base": ""}))
+        # 스텝 한정(막내4 권고 a): 사유 원문은 `사유 서식 검증` 스텝 로그에 그대로 찍히므로, 문구는
+        # 해당 스텝 줄(`\t{스텝명}\t`)에서만 찾는다. gh 로그 서식 = "{job}\t{step}\t{ts} {text}"
+        m = re.search(r"\t정본 확인\t\S+ 배포 커밋: ([0-9a-f]{40})$", log, re.M)
+        done = re.search(r"\tCF Pages 배포\t\S+ ✨ Deployment complete! Take a peek over at https://[0-9a-f]+\.monk-kr\.pages\.dev", log)
+        if m and done:
+            print(json.dumps({"run_id": rid, "commit": m.group(1), "approver": "작가님(기록 이전)", "base": "", "kind": ""}))
             return 0
     print("{}")
     return 0
@@ -365,6 +376,7 @@ def main():
     g.add_argument("--run-base", default="")
     g.add_argument("--run-approver", default="")
     g.add_argument("--run-recorded-base", default="")
+    g.add_argument("--run-kind", default="")
     g.add_argument("--cf-base", default="")
     g.add_argument("--summary", default="")
     g.add_argument("--record", default="")

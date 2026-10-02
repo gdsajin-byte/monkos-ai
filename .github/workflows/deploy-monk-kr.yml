@@ -112,18 +112,20 @@ jobs:
           GATE="$RUNNER_TEMP/kku_scope_gate.py"
           RECORD="$RUNNER_TEMP/deploy-record.txt"
           echo "DEPLOY_RECORD=$RECORD" >> "$GITHUB_ENV"
+          # record kind — 롤백의 롤백(재전진) 차단용 (§3.6, 막내4 권고 b)
+          if [ -n "$SHA_INPUT" ]; then KIND=rollback; else KIND=forward; fi
           if ! git show "${GATE_SHA}:scripts/tools/kku_scope_gate.py" > "$GATE"; then
             if [ "$APPROVER" = "꾸" ]; then echo "::error::게이트 스크립트 부재(${GATE_SHA}) — 꾸 경로 판정 불가, 배포하지 않는다"; exit 1; fi
             echo "::warning::게이트 스크립트 부재 — 작가님 경로라 진행 (흔적 정합 미검사)"
             echo "- ⚠ 범위 게이트 스크립트 부재 — 작가님 경로 진행, 흔적 정합 미검사" >> "$GITHUB_STEP_SUMMARY"
-            printf 'approver=%s\nbase=\ntarget=%s\nrun_id=%s\ngate=skip\nnfiles=\n' "$APPROVER" "$(git rev-parse HEAD)" "$RUN_ID" > "$RECORD"
+            printf 'approver=%s\nbase=\ntarget=%s\nrun_id=%s\ngate=skip\nnfiles=\nkind=%s\n' "$APPROVER" "$(git rev-parse HEAD)" "$RUN_ID" "$KIND" > "$RECORD"
             exit 0
           fi
 
           # base 1순위 — 직전 실제 배포 run의 기록 (headSha 금지: sha 입력 시 실제 배포 커밋과 다르다)
           RUN_JSON=$(python3 "$GATE" resolve-run --repo "$REPO" --workflow deploy-monk-kr.yml --exclude-run "$RUN_ID" || echo '{}')
           jget() { printf '%s' "$RUN_JSON" | python3 -c "import json,sys; print(json.load(sys.stdin).get('$1',''))"; }
-          RUN_BASE=$(jget commit); RUN_APPROVER=$(jget approver); RUN_REC_BASE=$(jget base)
+          RUN_BASE=$(jget commit); RUN_APPROVER=$(jget approver); RUN_REC_BASE=$(jget base); RUN_KIND=$(jget kind)
           # base 2순위 — CF 활성 배포(canonical_deployment). CF 목록 최상단(Idle 섞임) 금지
           CF_BASE=$(python3 "$GATE" resolve-cf --project monk-kr || true)
           echo "직전 run 기록: ${RUN_JSON} / CF 활성 배포: ${CF_BASE:-없음}"
@@ -131,7 +133,7 @@ jobs:
           set +e
           python3 "$GATE" gate --approver "$APPROVER" --ref "$REF" --target "$(git rev-parse HEAD)" \
             --reason "$REASON" --sha-input "$SHA_INPUT" \
-            --run-base "$RUN_BASE" --run-approver "$RUN_APPROVER" --run-recorded-base "$RUN_REC_BASE" \
+            --run-base "$RUN_BASE" --run-approver "$RUN_APPROVER" --run-recorded-base "$RUN_REC_BASE" --run-kind "$RUN_KIND" \
             --cf-base "$CF_BASE" --summary "$GITHUB_STEP_SUMMARY" --record "$RECORD" --run-id "$RUN_ID"
           rc=$?
           set -e
@@ -143,9 +145,9 @@ jobs:
           fi
           if [ "$rc" -eq 0 ]; then exit 0; fi
           if [ "$APPROVER" = "작가님" ] && [ "$rc" -eq 2 ]; then
-            echo "::warning::범위 게이트 판정 불가(rc 2) — 작가님 경로라 진행한다 (G-K 비적용 경로)"
-            echo "- ⚠ 범위 게이트 판정 불가(rc 2) — 작가님 경로 진행" >> "$GITHUB_STEP_SUMMARY"
-            [ -s "$RECORD" ] || printf 'approver=작가님\nbase=\ntarget=%s\nrun_id=%s\ngate=error\nnfiles=\n' "$(git rev-parse HEAD)" "$RUN_ID" > "$RECORD"
+            echo "::warning::범위 게이트 판정 불가(rc 2) — 작가님 경로라 진행한다 (G-K 비적용 경로, 흔적 미검사)"
+            echo "- ⚠ 범위 게이트 판정 불가(rc 2) — 작가님 경로 진행 · **흔적 미검사**(주체 '꾸' 검사 생략)" >> "$GITHUB_STEP_SUMMARY"
+            [ -s "$RECORD" ] || printf 'approver=작가님\nbase=\ntarget=%s\nrun_id=%s\ngate=error\nnfiles=\nkind=%s\n' "$(git rev-parse HEAD)" "$RUN_ID" "$KIND" > "$RECORD"
             exit 0
           fi
           echo "::error::범위 게이트 차단(rc $rc) — 배포하지 않는다. 범위 밖이면 작가님 승인 경로(approver=작가님)로"
