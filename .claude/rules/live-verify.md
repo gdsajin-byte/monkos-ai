@@ -1,4 +1,4 @@
-> source: governance/laws/ch5_deployment.md@2026-09-26
+> source: governance/laws/ch5_deployment.md@2026-10-02
 
 # 라이브 검증 규칙
 

@@ -7,7 +7,7 @@ paths:
   - ".github/workflows/deploy-*.yml"
 ---
 
-> source: governance/laws/ch5_deployment.md@2026-09-26
+> source: governance/laws/ch5_deployment.md@2026-10-02
 
 # 배포 규칙 (monk.kr · Cloud Run)
 

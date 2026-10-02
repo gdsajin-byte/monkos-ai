@@ -4,7 +4,7 @@ description: monk.kr CF Pages 배포 절차를 수행한다
 ---
 
 > 원천: ch5 1조 (monk.kr 배포)
-> source: governance/laws/ch5_deployment.md@2026-09-26
+> source: governance/laws/ch5_deployment.md@2026-10-02
 
 ## 0단계 — 승인 확인 (필수)
 
