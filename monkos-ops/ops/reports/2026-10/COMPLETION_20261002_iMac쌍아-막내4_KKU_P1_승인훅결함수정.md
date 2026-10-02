@@ -32,7 +32,7 @@ portfolio: PF_KKU
 - 머리말 :6의 전제 "실제 사용자 입력에만 발화"를 실측 사실로 정정했다. 훅은 세션 간 메시지·붙여넣기에도 발화한다(10-01·10-02 실측).
 - 승인처럼 보이지만 발급하지 않은 경우 `[승인 토큰 미발급] {사유}`를 컨텍스트 1줄로 남긴다(무음 금지). 무관어(`product …`)는 승인 언급으로 보지 않으므로 고지하지 않는다.
 
-❌ **지시서와 다르게 처리한 1건.** 이 세션은 하네스의 작업 공간 분리 강제를 받는다(worktree, main 직접 푸시 금지). 그래서 브랜치 `worktree-makne4-kku-deploy-review`로 푸시했다. **쌍아 측에서 main에 반영해야 한다.**
+❌ **지시서와 다르게 처리한 1건.** 이 세션은 하네스의 작업 공간 분리 강제를 받는다(worktree, main 직접 푸시 금지). 그래서 브랜치 `makne4-p1-hook-fix`(origin/main 위 2커밋, fast-forward 가능)로 푸시했다. 기존 `worktree-makne4-kku-deploy-review`는 심사 커밋이 main에 cherry-pick 반영된 뒤라 갈라져 새 이름을 썼다(강제 푸시 금지). **쌍아 측에서 main에 반영해야 한다.**
 
 ⏳ **실세션 측정 1건(§4) 보류 — 순서 문제.** 훅은 `$CLAUDE_PROJECT_DIR/scripts/hooks/`(`.claude/settings.json:21·33`)에서 실행된다. 수정본이 main에 반영되고 **main 체크아웃에 pull되기 전에** 승인 문구가 든 메시지를 보내면, 쌍아 세션에 구 훅이 토큰을 **실제로 발급**한다. 그래서 반영과 pull 확인 회신을 받은 뒤에 시험 메시지 1통을 보낸다. 판정은 쌍아의 `.claude/approvals/`에서 한다.
 
