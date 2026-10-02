@@ -83,3 +83,42 @@ portfolio: PF_KKU
 ## 📁
 - 브랜치 `kku-scope-gate` `dd3bf9f1`: `.github/workflows/deploy-monk-kr.yml` · `.github/workflows/notify.yml` · `scripts/tools/kku_scope_gate.py`
 - 사전 점검: `python3 scripts/tools/kku_scope_gate.py --dry-run <직전 배포 커밋> origin/main` (M2 쌍아 편의용이며 판정이 아니다)
+
+---
+
+## §A 후속 — 꾸 경로 스위치 (ORDER_20261002 …스위치·교차검증 §A)
+
+**[2026-10-02 19:36 KST]** iMac/쌍아-막내3 → iMac/쌍아
+
+- **브랜치 `kku-scope-gate` = `5a302d97`** (origin과 SHA를 대조해 확인). main에는 머지하지 않았다. dispatch는 0회다. 변경 파일은 `deploy-monk-kr.yml` +17이다.
+- 구현:
+  1. 워크플로 최상단에 `env: KKU_PATH_ENABLED: "false"`를 두고, 주석으로 "ch5 1조 부칙(승인·미발효) — 발효 시 쌍아가 true로"를 달았다.
+  2. G-K 스텝은 판정을 끝까지 실행하고 STEP_SUMMARY 표를 남긴다. 그 뒤 `approver=꾸`이고 스위치 값이 정확히 `"true"`가 아니면, **rc와 무관하게** `exit 1`로 끝낸다. 메시지는 "꾸 경로 미발효(ch5 1조 부칙) — 판정 결과는 위 표"다.
+  3. **2중 잠금**:
+     - `CF Pages 배포` 스텝에 `if: inputs.approver != '꾸' || env.KKU_PATH_ENABLED == 'true'`를 달았다.
+     - 반영 기록·아티팩트·스모크 스텝은 `if: steps.cf.outcome == 'success'`일 때만 돈다. 배포 스텝을 건너뛰었으면 "배포됨" 기록이 남지 않는다.
+  4. 사후 알림 job은 `needs.deploy.outputs.deployed == '1'`을 조건으로 한다. `deployed`는 `mark` 스텝에서만 설정되고, 그 스텝은 cf가 성공했을 때만 돈다. 스위치가 꺼져 있으면 값이 비어 있으므로 **알림이 구조적으로 나가지 않는다.**
+
+**스텝 순서·`if` 대조 (스위치 off · approver=꾸)**
+| # | 스텝 | if | 결과 |
+|---|---|---|---|
+| 0~2 | 사유 서식 · checkout · 정본 확인 | success | 실행 |
+| 3 | **범위 게이트 G-K** | success | 판정·표 기록 → **exit 1** (1차 잠금) |
+| 4~5 | setup-node · wrangler 설치 | success | 건너뜀 (앞 스텝 실패) |
+| 6 | **CF Pages 배포** | `approver!='꾸' \|\| 스위치=='true'` | 건너뜀 (앞 스텝 실패 + 식 false, 2차 잠금) |
+| 7~9 | 반영 기록 · 아티팩트 · 스모크 | `steps.cf.outcome=='success'` | 건너뜀 |
+| 10 | 롤백 고지 | failure() | 실행 — `DEPLOYED` 미설정 → "배포 스텝 이전 실패 — 라이브 미반영" |
+| job | notify | `always() && deployed=='1' && 꾸` | 건너뜀 (`deployed` 빈 값) |
+
+**로컬 실증** (G-K 스텝 `run:` 블록을 추출해 bash로 실행. `${{ }}`는 env로 대체, gh 조회는 실제, CF 토큰 없음):
+| approver | 스위치 | 판정 rc | 스텝 exit |
+|---|---|---|---|
+| 꾸 | `false` | 1 (실판정) | **1** + 미발효 메시지 |
+| 꾸 | 미설정 | 1 | **1** |
+| 꾸 | `false` | **0 (강제)** | **1** ← 판정 통과여도 차단 |
+| 꾸 | `TRUE` | 0 (강제) | **1** (셸 비교는 대소문자 구분) |
+| 꾸 | `true` | 0 (강제) | 0 (발효 후 동작) |
+| 작가님 | `false` | 0 | 0 (회귀 없음, "비적용" 표) |
+
+- 문법: YAML 파싱 OK. `bash -n`으로 전 스텝 10/10 OK.
+- 💡 GitHub 표현식의 문자열 비교는 **대소문자를 구분하지 않는다**. 그래서 스위치가 `TRUE`이면 6번 스텝의 `if`는 참이 된다. 하지만 1차 잠금(셸, 정확히 `"true"`)이 막으므로 배포에 도달하지 않는다. 발효 시 값은 소문자 `true`로 적어야 한다.
