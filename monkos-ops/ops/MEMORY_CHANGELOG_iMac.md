@@ -671,3 +671,5 @@
   - reference_cross_session_message_to_makne: VSCode 확장 `initialPermissionMode`(새 대화 기본 모드로 보류되는 원인) / 같은 기기 이름 출처 = `~/.claude/sessions/{pid}.json`, 훅 제목은 cached만
   - MEMORY.md 색인 2행 교정: §팀 인적 인프라(우체통 워처 10-02 폐기, 통로 = ssh m2 + 세션 메시지) / 기기 간 세션 메시지 줄(자동화·한계 반영)
 - 신규 메모리 파일 0. MEMORY.md 줄 수 변동 없음(행 교체만).
+
+**[2026-10-03 11:52 KST]** iMac/쌍아 — 신규 `feedback_shared_worktree_autostash_conflict.md`(공유 체크아웃 PF 원장 미커밋 누적 → pull autostash 충돌 2회, 대응 절차) + MEMORY.md 운영 교훈 1행.
