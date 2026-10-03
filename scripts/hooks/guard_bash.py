@@ -6,6 +6,8 @@
 각 세그먼트 **선두**에서 패턴을 본다 (CI C13과 동일 — 문자열 '언급'이 아니라 실행 형태).
 히어독 본문·주석은 제거 후 판정 (세션 로그 어펜드의 문서 텍스트 오탐 방지).
 """
+from __future__ import annotations
+
 import re
 import sys
 

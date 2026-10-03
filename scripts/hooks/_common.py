@@ -5,6 +5,8 @@
 - stdin JSON 읽기 / 판정 JSON 출력 / 킬스위치 / 실패 가시화([HOOK-ERR])
 - 외부 의존 0 (표준 라이브러리만). jq 금지 (4060 WSL·웹 컨테이너 호환).
 """
+from __future__ import annotations
+
 import json
 import os
 import sys

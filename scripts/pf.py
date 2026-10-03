@@ -11,6 +11,8 @@
 
 종료 코드: 0 정상 / 1 검사 위반(--strict) 또는 입력 오류 / 2 PF 부재·구조 오류
 """
+from __future__ import annotations
+
 import argparse
 import datetime as dt
 import json
