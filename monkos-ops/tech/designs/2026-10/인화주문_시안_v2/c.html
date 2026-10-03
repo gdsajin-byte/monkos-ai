@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사진 인화 주문 | 몽크사진관</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  body{font-family:'Pretendard',-apple-system,sans-serif !important}
+  [hidden]{display:none !important}
+  .text-tiffany{color:#0ABAB5} .border-tiffany{border-color:#0ABAB5} .bg-tiffany{background-color:#0ABAB5}
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+<!-- 실제 페이지는 studio-header.js 공통 메뉴. 시안은 외부 파일 없이 열리도록 자리만 그린다 -->
+<header class="bg-white border-b border-gray-100">
+  <div class="max-w-xl mx-auto px-6 h-16 flex items-center font-bold">몽크사진관</div>
+</header>
+
+<main class="max-w-xl lg:max-w-5xl mx-auto px-6 py-12">
+
+  <h1 class="text-2xl font-semibold text-center mb-2">증명 · 서류사진 인화 주문</h1>
+  <p class="text-center text-sm text-gray-500 mb-10">일반 · 대형 인화는 네이버 톡톡으로 보내주세요</p>
+
+  <!-- ===== 주문 화면 ===== -->
+  <div id="orderView" class="grid grid-cols-1 gap-6 items-start max-w-xl mx-auto">
+
+    <!-- 사진 카드: 종류 칩 + 업로드/미리보기 -->
+    <section class="bg-white rounded-3xl border border-gray-200 p-5 sm:p-8">
+
+      <div id="kinds" class="grid grid-cols-4 gap-2 mb-5">
+        <button data-kind="passport" class="h-11 rounded-xl text-sm font-bold inline-flex items-center justify-center leading-none">여권·운전</button>
+        <button data-kind="idcard"   class="h-11 rounded-xl text-sm font-bold inline-flex items-center justify-center leading-none">민증</button>
+        <button data-kind="half"     class="h-11 rounded-xl text-sm font-bold inline-flex items-center justify-center leading-none">반명함</button>
+        <button data-kind="visa"     class="h-11 rounded-xl text-sm font-bold inline-flex items-center justify-center leading-none">비자</button>
+      </div>
+
+      <!-- 업로드 전 / 형식 오류 -->
+      <div id="drop">
+        <div id="dropzone" class="border-2 border-dashed border-gray-300 rounded-2xl py-16 text-center hover:border-tiffany transition-colors cursor-pointer">
+          <i data-lucide="image-plus" class="w-10 h-10 mx-auto text-gray-300 mb-4"></i>
+          <p class="font-bold text-gray-700">사진 올리기</p>
+          <p class="text-sm text-gray-400 mt-1">JPG, PNG · 모든 종류 10,000원</p>
+        </div>
+        <p id="badtype" class="text-sm text-red-600 mt-3 flex items-center gap-1.5" hidden>
+          <i data-lucide="circle-alert" class="w-4 h-4"></i>JPG, PNG 파일만 올릴 수 있습니다
+        </p>
+        <p class="text-xs text-gray-500 mt-3">원본 파일로 올려 주세요. 메신저로 주고받은 사진은 압축되어 흐리게 인화됩니다.</p>
+      </div>
+
+      <!-- 업로드 중 -->
+      <div id="uploading" class="border border-gray-200 rounded-2xl py-16 px-6 text-center" hidden>
+        <p class="font-bold text-gray-700 mb-4">올리는 중</p>
+        <div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full w-3/5 bg-tiffany rounded-full"></div></div>
+        <p class="text-xs text-gray-400 mt-3">사진1.jpg</p>
+      </div>
+
+      <!-- 미리보기 -->
+      <div id="preview" hidden>
+        <div class="relative bg-gray-50 border border-gray-200 rounded-2xl pt-8 pb-6 px-4">
+          <button id="shotDel" aria-label="사진 지우기" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center hover:bg-black">✕</button>
+
+          <p id="sizeTitle" class="text-center text-sm font-bold text-gray-600 mb-4">3.5 × 4.5cm</p>
+
+          <div class="flex justify-center items-stretch gap-2">
+            <!-- 세로 치수 -->
+            <div id="rulerH" class="flex flex-col items-center w-6">
+              <div class="w-px flex-1 bg-gray-300"></div>
+              <span id="hLabel" class="text-[11px] text-gray-500 py-1 [writing-mode:vertical-rl] rotate-180">4.5cm</span>
+              <div class="w-px flex-1 bg-gray-300"></div>
+            </div>
+            <div>
+              <!-- 규격 틀 -->
+              <div id="frame" class="w-48 border-2 border-tiffany bg-white overflow-hidden" style="aspect-ratio:3.5/4.5">
+                <svg viewBox="0 0 70 90" preserveAspectRatio="xMidYMax slice" class="w-full h-full block" aria-hidden="true">
+                  <rect width="70" height="90" fill="#F3F4F6"/>
+                  <ellipse cx="35" cy="36" rx="13" ry="16" fill="#D1D5DB"/>
+                  <path d="M6 90 C8 66 20 58 35 58 C50 58 62 66 64 90 Z" fill="#D1D5DB"/>
+                </svg>
+              </div>
+              <!-- 가로 치수 -->
+              <div id="rulerW" class="flex items-center gap-1 mt-2">
+                <div class="h-px flex-1 bg-gray-300"></div>
+                <span id="wLabel" class="text-[11px] text-gray-500">3.5cm</span>
+                <div class="h-px flex-1 bg-gray-300"></div>
+              </div>
+            </div>
+            <div class="w-6"></div>
+          </div>
+
+          <p id="asIs" class="mt-5 text-center font-bold flex items-center justify-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4 text-tiffany"></i>이대로 인화됩니다
+          </p>
+
+          <!-- 해상도 낮음 -->
+          <div id="lowres" class="mt-5 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3" hidden>
+            <p class="text-sm text-amber-900 font-bold">사진 해상도가 낮습니다</p>
+            <p class="text-xs text-amber-900 mt-1 leading-relaxed">이대로는 흐리게 인화될 수 있습니다. 원본 파일로 다시 올려 주세요.</p>
+            <button id="reup" class="w-full mt-3 h-11 bg-white border border-gray-200 rounded-xl text-sm font-bold hover:border-gray-400 inline-flex items-center justify-center leading-none">다시 올리기</button>
+          </div>
+
+          <!-- 비자 -->
+          <div id="visa" class="mt-5" hidden>
+            <p class="text-xs text-gray-600 leading-relaxed">국가마다 규격이 다릅니다. 가시는 나라를 적어주세요.</p>
+            <input type="text" placeholder="예: 미국 / 캐나다 / 중국" class="w-full mt-2 border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:border-tiffany">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between mt-5">
+          <span class="text-sm font-bold text-gray-600">매수</span>
+          <div class="flex items-center gap-3">
+            <button id="qtyMinus" class="w-9 h-9 rounded-full border border-gray-200 bg-white font-bold hover:border-gray-400">−</button>
+            <span id="qty" class="w-8 text-center font-bold">1</span>
+            <button id="qtyPlus" class="w-9 h-9 rounded-full border border-gray-200 bg-white font-bold hover:border-gray-400">+</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 영수증 카드: 받는 방법 · 연락처 · 금액 (사진 올린 뒤 나타남) -->
+    <section id="receipt" class="bg-white rounded-3xl border border-gray-200 p-5 sm:p-8 lg:sticky lg:top-6" hidden>
+
+      <!-- 1. 받는 방법 -->
+      <p class="font-bold mb-3">받는 방법</p>
+      <div class="grid grid-cols-2 gap-3">
+        <button id="pickStore" class="rounded-xl p-4 text-left">
+          <p class="font-bold text-sm mb-0.5">매장에서 수령</p>
+          <p class="text-xs text-gray-500">미사역 몽크사진관</p>
+        </button>
+        <button id="pickMail" class="rounded-xl p-4 text-left">
+          <p class="font-bold text-sm mb-0.5">우편(준등기)</p>
+          <p class="text-xs text-gray-500">3일 내외, 주말·공휴일 제외</p>
+        </button>
+      </div>
+      <div id="addr" class="mt-4 space-y-3" hidden>
+        <div class="flex gap-2">
+          <input type="text" placeholder="우편번호" readonly class="flex-1 min-w-0 border border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:outline-none">
+          <button class="px-4 h-[50px] bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors text-sm leading-none inline-flex items-center justify-center shrink-0">주소 검색</button>
+        </div>
+        <input type="text" placeholder="주소" readonly class="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:outline-none">
+        <input type="text" placeholder="상세 주소" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
+      </div>
+
+      <!-- 2. 연락처 -->
+      <div class="border-t border-gray-200 mt-7 pt-7">
+        <p class="font-bold mb-3">주문하시는 분</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input type="text" placeholder="이름" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
+          <input type="tel" placeholder="010-0000-0000" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
+        </div>
+      </div>
+
+      <!-- 3. 금액 -->
+      <div class="border-t border-gray-200 mt-7 pt-7">
+        <div class="space-y-2 mb-5">
+          <div class="flex justify-between items-center text-sm text-gray-600">
+            <span>인화 금액</span><span id="amtItem">10,000원</span>
+          </div>
+          <div class="flex justify-between items-center text-sm text-gray-600">
+            <span>우편요금 (준등기)</span><span id="amtPost">0원</span>
+          </div>
+          <div class="flex justify-between items-center pt-3 border-t border-gray-200">
+            <span class="font-bold">총 결제 금액</span>
+            <span class="font-bold text-2xl"><span id="amtTotal">10,000</span><span class="text-base font-normal">원</span></span>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 mb-4">
+          <dl class="text-xs text-gray-600 leading-relaxed grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
+            <dt class="font-bold text-gray-700">수집 항목</dt><dd>이름 · 연락처 · 올린 사진<span id="privAddr"> · 주소</span></dd>
+            <dt class="font-bold text-gray-700">보관 기간</dt><dd>주문 완료 후 N일</dd>
+            <dt class="font-bold text-gray-700">파기 방법</dt><dd>기간이 지나면 자동 삭제</dd>
+          </dl>
+          <label class="flex items-start gap-2 mt-3 text-sm text-gray-600 cursor-pointer">
+            <input type="checkbox" class="mt-1 accent-black">
+            <span>위 내용에 동의합니다</span>
+          </label>
+        </div>
+
+        <!-- 결제 블록: ② 접수 / ③ 바로 결제 -->
+        <button id="submit" class="w-full px-6 h-14 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors leading-none text-lg inline-flex items-center justify-center">주문 접수하기</button>
+        <p id="payNote2" class="text-xs text-gray-500 text-center mt-3">결제는 주문 확인 후 연락처로 안내해 드립니다</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== 주문 완료 ===== -->
+  <section id="doneView" class="max-w-xl mx-auto bg-white rounded-3xl border border-gray-200 p-5 sm:p-8" hidden>
+    <div class="text-center">
+      <i data-lucide="circle-check" class="w-12 h-12 mx-auto text-tiffany mb-4"></i>
+      <p id="doneTitle" class="text-xl font-bold">주문이 접수되었습니다</p>
+      <p class="text-sm text-gray-500 mt-2">주문번호 <b class="text-gray-900 tracking-wide">000-0000</b></p>
+    </div>
+    <div class="border-t border-gray-200 mt-7 pt-7 space-y-4 text-sm">
+      <div class="flex justify-between gap-4">
+        <span class="text-gray-500 shrink-0">받는 방법</span>
+        <span id="doneShip" class="text-right font-bold">우편(준등기)</span>
+      </div>
+      <div class="flex justify-between gap-4">
+        <span class="text-gray-500 shrink-0">받는 때</span>
+        <span id="doneWhen" class="text-right">발송 후 3일 내외, 주말·공휴일 제외</span>
+      </div>
+      <div class="flex justify-between gap-4 pt-4 border-t border-gray-200">
+        <span class="font-bold">총 결제 금액</span>
+        <span class="font-bold"><span id="doneTotal">11,800</span>원</span>
+      </div>
+    </div>
+    <p id="donePay" class="mt-6 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-600 text-center">결제는 주문 확인 후 연락처로 안내해 드립니다</p>
+  </section>
+
+  <!-- 일반 · 대형 인화 -->
+  <div id="talk" class="max-w-xl mx-auto mt-8 bg-white border border-gray-200 rounded-2xl p-5">
+    <p class="text-sm font-bold mb-1">일반 인화 · 대형 인화는 네이버 톡톡으로</p>
+    <p class="text-xs text-gray-600 leading-relaxed mb-1">4×6 · 5×7 등 일반 사진과 8×10 이상 대형 인화는 <b>네이버 톡톡으로 사진을 보내주시면</b> 장수·금액을 안내해 드립니다.</p>
+    <p class="text-xs text-gray-500 leading-relaxed mb-4"><b class="text-gray-700">사진은 꼭 &lsquo;원본&rsquo;으로 보내주세요.</b> 화질이 줄면 인화가 흐려집니다.</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <a href="https://talk.naver.com/W5UJ45" target="_blank" rel="noopener" class="px-4 h-11 bg-[#03C75A] text-white font-bold rounded-xl hover:bg-[#02b351] transition-colors inline-flex items-center justify-center gap-2 leading-none text-sm">
+        <i data-lucide="message-circle" class="w-4 h-4"></i><span class="-translate-y-px">네이버 톡톡으로 보내기</span>
+      </a>
+      <a href="tel:031-791-5030" class="px-4 h-11 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors inline-flex items-center justify-center gap-2 leading-none text-sm">
+        <i data-lucide="phone" class="w-4 h-4"></i><span class="-translate-y-px">031-791-5030</span>
+      </a>
+    </div>
+  </div>
+
+  <p class="text-center text-sm text-gray-500 mt-8 leading-relaxed">
+    몽크사진관 · 경기도 하남시 미사강변동로 95 그랑파사쥬 B1029호<br>
+    031-791-5030 · 11:00 - 19:30 · 매주 화요일 휴무
+  </p>
+
+</main>
+
+<script>
+lucide.createIcons();
+(function(){
+  var q = new URLSearchParams(location.search);
+  var state = q.get('state') || 'preview';
+  var pay = q.get('pay') === '3' ? 3 : 2;
+  var mail = q.get('ship') !== 'store';
+  var POST = 1800, UNIT = 10000, qty = 1, kind = 'passport';
+  var SPEC = {
+    passport: { w: 3.5, h: 4.5 },
+    idcard:   { w: 3.5, h: 4.5 },
+    half:     { w: 3,   h: 4   },
+    visa:     null                // 국가별 상이
+  };
+  var $ = function(id){ return document.getElementById(id); };
+  function won(n){ return n.toLocaleString('ko-KR'); }
+
+  function render(){
+    var uploaded = state === 'preview' || state === 'lowres';
+    var done = state === 'done';
+    $('orderView').hidden = done;
+    $('doneView').hidden = !done;
+    $('drop').hidden = !(state === 'empty' || state === 'badtype');
+    $('badtype').hidden = state !== 'badtype';
+    $('dropzone').className = 'border-2 border-dashed rounded-2xl py-16 text-center hover:border-tiffany transition-colors cursor-pointer ' + (state === 'badtype' ? 'border-red-300' : 'border-gray-300');
+    $('uploading').hidden = state !== 'uploading';
+    $('preview').hidden = !uploaded;
+    $('receipt').hidden = !uploaded;
+    // 사진을 올리면 넓은 화면에서 좌우 2단
+    $('orderView').className = 'grid grid-cols-1 gap-6 items-start mx-auto ' + (uploaded ? 'max-w-xl lg:max-w-none lg:grid-cols-2' : 'max-w-xl');
+
+    // 종류 칩
+    [].forEach.call(document.querySelectorAll('#kinds button'), function(b){
+      var on = b.dataset.kind === kind;
+      b.className = 'h-11 rounded-xl text-sm font-bold inline-flex items-center justify-center leading-none ' +
+        (on ? 'border-2 border-tiffany bg-tiffany/5' : 'border border-gray-200 text-gray-600 hover:border-gray-400');
+    });
+
+    // 규격 틀
+    var s = SPEC[kind];
+    $('frame').style.aspectRatio = s ? (s.w + '/' + s.h) : '3.5/4.5';
+    $('frame').className = 'w-48 bg-white overflow-hidden ' + (s ? 'border-2 border-tiffany' : 'border-2 border-dashed border-gray-300');
+    $('sizeTitle').textContent = s ? (s.w + ' × ' + s.h + 'cm') : '국가별 상이';
+    $('rulerH').style.visibility = s ? 'visible' : 'hidden';
+    $('rulerW').style.visibility = s ? 'visible' : 'hidden';
+    if (s) { $('wLabel').textContent = s.w + 'cm'; $('hLabel').textContent = s.h + 'cm'; }
+    $('visa').hidden = !!s;
+    $('lowres').hidden = state !== 'lowres';
+    $('asIs').hidden = !s || state === 'lowres';
+
+    // 받는 방법 · 금액
+    var on = 'border-2 border-tiffany bg-tiffany/5 rounded-xl p-4 text-left';
+    var off = 'border border-gray-200 rounded-xl p-4 text-left hover:border-gray-400';
+    $('pickStore').className = mail ? off : on;
+    $('pickMail').className  = mail ? on : off;
+    $('addr').hidden = !mail;
+    $('privAddr').hidden = !mail;
+    var item = UNIT * qty, post = mail ? POST : 0;
+    $('qty').textContent = qty;
+    $('amtItem').textContent = won(item) + '원';
+    $('amtPost').textContent = won(post) + '원';
+    $('amtTotal').textContent = won(item + post);
+
+    // 결제 블록 갈아 끼우기
+    $('submit').textContent = pay === 3 ? won(item + post) + '원 결제하기' : '주문 접수하기';
+    $('payNote2').hidden = pay === 3;
+
+    // 완료 화면
+    $('doneTitle').textContent = pay === 3 ? '결제가 완료되었습니다' : '주문이 접수되었습니다';
+    $('donePay').hidden = pay === 3;
+    $('doneShip').textContent = mail ? '우편(준등기)' : '매장에서 수령 · 미사역 몽크사진관';
+    $('doneWhen').textContent = mail ? '발송 후 3일 내외, 주말·공휴일 제외' : '준비되면 연락처로 알려 드립니다';
+    $('doneTotal').textContent = won(item + post);
+  }
+
+  [].forEach.call(document.querySelectorAll('#kinds button'), function(b){
+    b.onclick = function(){ kind = b.dataset.kind; render(); };
+  });
+  $('qtyPlus').onclick  = function(){ qty++; render(); };
+  $('qtyMinus').onclick = function(){ if (qty > 1) { qty--; render(); } };
+  $('pickStore').onclick = function(){ mail = false; render(); };
+  $('pickMail').onclick  = function(){ mail = true;  render(); };
+  // 시안 데모: 업로드 상자를 누르면 올리는 중 → 미리보기, ✕·다시 올리기는 업로드 전으로
+  $('dropzone').onclick = function(){ state = 'uploading'; render(); setTimeout(function(){ state = 'preview'; render(); }, 900); };
+  $('shotDel').onclick = function(){ state = 'empty'; render(); };
+  $('reup').onclick = function(){ state = 'empty'; render(); };
+  $('submit').onclick = function(){ state = 'done'; render(); window.scrollTo(0, 0); };
+  render();
+})();
+</script>
+
+<!-- ======================================================================
+     시안 근거표 — 손님 화면 밖 (구현 시 삭제)
+     ====================================================================== -->
+<section class="max-w-5xl mx-auto px-6 pb-16 mt-16 border-t-4 border-dashed border-gray-300 pt-8 text-xs text-gray-600">
+  <p class="font-bold text-sm text-gray-900 mb-1">시안 근거표 — 손님 화면 밖</p>
+  <p class="mb-4">방향 C 미리보기 우선형. 범위 ① 정직화 / ② 접수까지 / ③ 온라인 결제까지.</p>
+  <table class="w-full border border-gray-200 bg-white">
+    <thead class="bg-gray-50 text-left"><tr><th class="p-2 border-b">화면 요소</th><th class="p-2 border-b">근거</th><th class="p-2 border-b">범위</th></tr></thead>
+    <tbody class="[&_td]:p-2 [&_td]:border-b [&_td]:align-top">
+      <tr><td>제목 · 부제</td><td>꾸 결정</td><td>①</td></tr>
+      <tr><td>종류 칩 4개(여권·운전 / 민증 / 반명함 / 비자)</td><td>I1, 설계서 §3 ①</td><td>②</td></tr>
+      <tr><td>업로드 상자 "JPG, PNG · 모든 종류 10,000원"</td><td>I1, §12 균일가</td><td>②</td></tr>
+      <tr><td>"원본 파일로 올려 주세요" 안내</td><td>I9, §14</td><td>①</td></tr>
+      <tr><td>형식 오류 문구</td><td>상태 화면(최소)</td><td>②</td></tr>
+      <tr><td>올리는 중 진행 막대</td><td>상태 화면(최소)</td><td>②</td></tr>
+      <tr><td>규격 틀 + 가로·세로 치수 + "이대로 인화됩니다"</td><td>I2, §3 핵심 장치 ③, 치수 §11·§12</td><td>②</td></tr>
+      <tr><td>칩 바꾸면 틀 비율·치수 변경</td><td>I2</td><td>②</td></tr>
+      <tr><td>비자: 점선 틀 "국가별 상이" + 나라 입력</td><td>I1, §12, 현행 print.html:107~108 문구</td><td>②</td></tr>
+      <tr><td>✕ 사진 지우기</td><td>꾸 결정(§16 썸네일 + ✕)</td><td>②</td></tr>
+      <tr><td>해상도 낮음 경고 + 다시 올리기</td><td>I9</td><td>②</td></tr>
+      <tr><td>매수</td><td>현행 print.html:89~95, §3 ④</td><td>①</td></tr>
+      <tr><td>업로드 전 영수증 카드 숨김</td><td>I5, 꾸 결정(첫 화면 짧게)</td><td>①</td></tr>
+      <tr><td>받는 방법 2택(매장 / 우편(준등기) 3일 내외, 주말·공휴일 제외)</td><td>I3, §10·§13</td><td>①</td></tr>
+      <tr><td>주소 칸 우편 선택 시만 + 우편번호 "주소 검색"</td><td>I4, §16</td><td>①(칸 숨김) / ②(주소 검색)</td></tr>
+      <tr><td>이름 · 연락처(비회원)</td><td>I7</td><td>①</td></tr>
+      <tr><td>금액 3줄, 즉시 반영, 설명문 없음</td><td>I6, I3, §16</td><td>①</td></tr>
+      <tr><td>개인정보 고지(수집 항목 · 보관 N일 · 자동 삭제) + 동의</td><td>I8, §5</td><td>②</td></tr>
+      <tr><td>"주문 접수하기" + 결제 안내 한 줄</td><td>범위 ② 결제 블록</td><td>②</td></tr>
+      <tr><td>"N원 결제하기"</td><td>범위 ③ 결제 블록</td><td>③</td></tr>
+      <tr><td>완료: 주문번호 · 받는 방법 · 받는 때 · 금액</td><td>I10 · 설계서 §4(수단 미확정)</td><td>②</td></tr>
+      <tr><td>톡톡 · 전화 안내(맨 아래)</td><td>I1, §14, 꾸 결정(부제)</td><td>①</td></tr>
+      <tr><td>상호 표기 전부 "몽크사진관"</td><td>I7, §6-1</td><td>①</td></tr>
+      <tr><td>블랙 버튼 · 고정 높이 · 둥근 사각 · Pretendard · 연회색 테두리 · #0ABAB5</td><td>꾸 결정, 현행 print.html 값</td><td>①</td></tr>
+    </tbody>
+  </table>
+  <p class="mt-4"><b>받지 못한 I번호:</b> 없음. 단 I2의 비자는 규격 미정이라 "이대로 인화됩니다"를 띄우지 않는다.</p>
+  <p class="mt-1"><b>현행에서 뺀 것:</b> 항목 추가(여러 사진 한 주문), 자주 묻는 질문 3개, "표시 가격은 매장 수령 기준" 설명문, 톡톡 박스의 일반 인화 가격 줄.</p>
+</section>
+</body>
+</html>

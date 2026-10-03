@@ -197,9 +197,12 @@ rc, _, ctx, err = run("session_start.sh", {"hook_event_name": "SessionStart", "s
 expect("E7 SessionStart 출력",       ("SessionStart 훅" in (ctx or "")) and ("디바이스=" in (ctx or "")), True)
 
 
-def ss_title(payload, entry):
-    """SessionStart 훅의 (sessionTitle, JSON 유효 여부)."""
+def ss_title(payload, entry, monk_role=None):
+    """SessionStart 훅의 (sessionTitle, JSON 유효 여부). MONK_ROLE은 호출 환경(소소 세션 등)에서 상속하지 않고 인자로만 준다."""
     env = dict(os.environ, CLAUDE_PROJECT_DIR=str(ROOT), CLAUDE_CODE_ENTRYPOINT=entry)
+    env.pop("MONK_ROLE", None)
+    if monk_role is not None:
+        env["MONK_ROLE"] = monk_role
     p = subprocess.run(["bash", str(HERE / "session_start.sh")], input=json.dumps(payload),
                        capture_output=True, text=True, env=env, timeout=20)
     try:
@@ -227,6 +230,14 @@ expect("음성 기존 이름 유지(덮어쓰기 없음)",  ss_title({"source": 
 expect("음성 compact 이름 미지정",            ss_title({"source": "compact"}, "claude-vscode")[0], None)
 expect("음성 SDK·헤드리스 이름 미지정",       ss_title({"source": "startup"}, "sdk-cli")[0], None)
 expect("음성 stdin 비JSON → 출력 유지",       ss_title("not-json", "claude-vscode")[1], True)
+# MONK_ROLE 재정의 (10-02 디자인 TF 시범 — mk-soso.sh): CLI 표면 + 허용값(소소)만.
+t, _ = ss_title({"source": "startup"}, "cli", monk_role="소소")
+expect("세션이름 cli + MONK_ROLE=소소 → 소소", bool(t and re.match(r"^[^-]+-소소-\d{4}-\d{4}$", t)), True)
+t, _ = ss_title({"source": "startup"}, "claude-vscode", monk_role="소소")
+expect("음성 타 표면은 MONK_ROLE 무시(쌍아 유지)", bool(t and "-쌍아-" in t), True)
+t, _ = ss_title({"source": "startup"}, "cli", monk_role="총괄")
+expect("음성 허용값 밖 MONK_ROLE 무시(막내 유지)", bool(t and "-막내-" in t), True)
+expect("음성 헤드리스는 MONK_ROLE 있어도 미지정", ss_title({"source": "startup"}, "sdk-cli", monk_role="소소")[0], None)
 # ---------- 실패 가시화 ----------
 p = subprocess.run([sys.executable, str(HERE / G)], input="{not json", capture_output=True, text=True,
                    env=dict(os.environ, CLAUDE_PROJECT_DIR=str(ROOT)))

@@ -14,7 +14,7 @@ description: 세션 시작 시 역할 판별, git 동기화, 보고를 수행한
 
 ## 역할 판별 (ch1 5조)
 
-0. **SessionStart 훅의 `실행 표면=` 값이 1순위** (10-02): `claude-vscode`→쌍아 / `claude-desktop`→민아 / `cli`→막내. VSCode 확장 프롬프트에는 아래 1·2 문구가 함께 들어 있어 문구 판별만으로는 모호하다.
+0. **SessionStart 훅의 `실행 표면=` 값이 1순위** (10-02): `claude-vscode`→쌍아 / `claude-desktop`→민아 / `cli`→막내. VSCode 확장 프롬프트에는 아래 1·2 문구가 함께 들어 있어 문구 판별만으로는 모호하다. 훅이 `역할 후보 소소`를 내면(`scripts/mk-soso.sh` 기동 — CLI + `MONK_ROLE=소소`, 10-02 디자인 TF 시범) → **소소**. 소소는 시작 시 `.claude/agents/soso.md`가 가리키는 헌장을 먼저 읽는다.
 1. 시스템 프롬프트에 `VSCode native extension` 포함 → **쌍아**
 2. 시스템 프롬프트에 `Claude Agent SDK` 포함 → **민아**
 3. 그 외 (CLI 터미널) → **막내** (번호는 지시서 초문에서 수신)
@@ -40,4 +40,5 @@ description: 세션 시작 시 역할 판별, git 동기화, 보고를 수행한
 5. 첫 인사를 출력한다:
    - 쌍아: `[YYYY-MM-DD HH:MM KST] {디바이스}/쌍아입니다. 지시 대기합니다.`
    - 막내: `[YYYY-MM-DD HH:MM KST] {디바이스}/막내입니다. 지시서 수신 대기합니다.`
+   - 소소: `[YYYY-MM-DD HH:MM KST] {디바이스}/소소입니다. 브리프 대기합니다.`
 6. 동기화 결과를 보고한다. 이 절차를 완료하기 전까지 신규 작업에 착수하지 않는다.

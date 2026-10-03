@@ -67,6 +67,12 @@ status: active
 | 07/15 | M1/막내 | tokens.css 생성 — specs 퍼널 분리 시 CSS 변수 추출. "컴포넌트 px 소유 금지" 원칙 | tokens.css | ✅ |
 | 07/21 | M1/민아 | **디자인 자산 실측** — 표면 CSS 11파일 산재, tokens.css --specs-* 한정, DESIGN_SYSTEM.md 스테일 확인. 3층 토큰 골격 제안 (L0/L1/L2) | 세션로그 | ✅ |
 | 07/21 | 작가님 | **PF_DESIGNLAB 신설 결정** — 디자인 토큰·브랜딩은 공정이 다르므로 별도 PF. 아키텍처 전환 Phase 0~1 선행 조건으로 편입 | 본 README | ✅ |
+| 10/02 | iMac/민아 | **PROPOSAL** 디자인 TF 시범 편성 — 소소 CLI 세션 + 에이전트 팀, 업무 프로세스 6단계 | [PROPOSAL_20261002_iMac민아_디자인TF_소소세션_시범편성](../../proposals/PROPOSAL_20261002_iMac민아_디자인TF_소소세션_시범편성.md) | ⏳ |
+| 10/02 | iMac/민아 | **COMPLETION** 소소 CLI 세션 정의 + 디자인 TF 시범 구성 — 정의 4장·기동 스크립트·훅 역할 표시 | [COMPLETION_20261002_iMac민아_소소세션_디자인TF_시범구성](../../reports/2026-10/COMPLETION_20261002_iMac민아_소소세션_디자인TF_시범구성.md) | ✅ |
+| 10/02 | ?/? | **ORDER** 소소 세션 세팅 — 능력 3(의도 파악·트렌드 분석·UI 설계 정합) 기반 구축 + 에이전트 팀 실증 1회 | [ORDER_20261002_iMac민아_iMac소소_세션세팅_능력3_팀실증](../../orders/2026-10/ORDER_20261002_iMac민아_iMac소소_세션세팅_능력3_팀실증.md) | ⏳ |
+| 10/02 | iMac/소소 | **DESIGN** 트렌드 조사 1회 실증 — 증명·여권 사진 온라인 서비스는 무료·유료·인화 선택지를 어떤 화면 구조로 보여 주는가 | [DESIGN_20261002_iMac소소_티어제시화면_트렌드조사](../../../tech/designs/2026-10/DESIGN_20261002_iMac소소_티어제시화면_트렌드조사.md) | ⏳ |
+| 10/02 | iMac/소소 | **DESIGN** 현행 디자인 토큰·표면 지도 실측 — 포털 :root·specs tokens·표면 CSS·SSR 셸·monk.kr 팔레트, 같은 역할 다른 값 | [DESIGN_20261002_iMac소소_현행토큰_실측](../../../tech/designs/2026-10/DESIGN_20261002_iMac소소_현행토큰_실측.md) | ⏳ |
+| 10/02 | iMac/소소 | 소소 세션 세팅·능력 3 기반(결정 원장 69행·트렌드 조사·토큰 실측)·에이전트 팀 실증 1회 — 팀 생성 OK, 팀원 훅 미작동·session_id 리드 동일 | [COMPLETION_20261002_iMac소소_세션세팅_능력3_팀실증](../../reports/2026-10/COMPLETION_20261002_iMac소소_세션세팅_능력3_팀실증.md) | ✅ |
 
 ---
 
