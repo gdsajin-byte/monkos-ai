@@ -10,7 +10,7 @@ subject: "키 입력 주입 E10 위조 실증 (ORDER_20261004 SECURITY 키주입
 
 # COMPLETION — 키 주입 E10 위조 실증
 
-**[2026-10-04 11:11 KST]** iMac/쌍아-막내2 → iMac/쌍아
+**[2026-10-04 11:09 KST]** iMac/쌍아-막내2 → iMac/쌍아
 
 > 지시서: [ORDER_20261004_iMac쌍아_쌍아-막내2_SECURITY_키주입_E10위조_실증.md](../../orders/2026-10/ORDER_20261004_iMac쌍아_쌍아-막내2_SECURITY_키주입_E10위조_실증.md) · 보고서: [REPORT_20261004_iMac쌍아-막내2_키주입E10위조_실증.md](REPORT_20261004_iMac쌍아-막내2_키주입E10위조_실증.md)
 
