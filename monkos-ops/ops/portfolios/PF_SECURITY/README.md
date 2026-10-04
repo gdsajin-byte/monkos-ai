@@ -101,6 +101,7 @@ status: active
 | 08/13 | iMac/막내1 | **`secret.sh env` 시크릿 실값 stdout 노출 제거** (작가님 지시 "로테이션 불요, 출력만 제거"). **원인 = zsh 언어 사양**: `TYPESET_SILENT` 미설정(기본)에서 `local VAR`를 값 할당 없이 실행하면 그 파라미터가 이미 존재할 때 `VAR=<현재값>`을 출력한다. `cmd_env`의 `local SM_VALUE`/`local CURRENT`가 **while 루프 안**에 있어 2회차부터 직전 시크릿 실값이 누출 — 쌍아 §2의 "본문에 echo 없음·`set -x` 없음·`.env`에 해당 라인 없음, 그럼에도 재현" 4관찰을 전부 설명. 셸 초기화 파일·래퍼 무관. **2중 차단**: ①선언을 루프 밖으로 + 초기값 할당 ②`setopt TYPESET_SILENT` 1줄로 버그 클래스 전체 무력화(값 미할당 `local` 잔여 10건 영구 커버). **전 9경로 실측 마스킹 검증 값 노출 0건**. `get`은 문서화된 값 조회 인터페이스라 임의 제거하지 않고 판단 요망으로 보고. `.env` 무변경(갱신 0개, mtime 유지) | [COMPLETION](../../reports/2026-08/COMPLETION_20260813_iMac막내1_SECURITY_시크릿값출력제거.md) | ✅ |
 | 10/04 | iMac/쌍아 | **ORDER** 키 입력 주입으로 E10 '배포 승인' 사람 턴 위조가 되는지 실증 — 운영 변경 없음 | [ORDER_20261004_iMac쌍아_쌍아-막내2_SECURITY_키주입_E10위조_실증](../../orders/2026-10/ORDER_20261004_iMac쌍아_쌍아-막내2_SECURITY_키주입_E10위조_실증.md) | ⏳ |
 | 10/04 | iMac/쌍아-막내2 | **COMPLETION** 키 주입 E10 위조 실증 K0~K5 — 외부·자기 주입·bg attach 3경로 모두 토큰 발급(위조 가능), guard_bash tmux send-keys 무경고, 부수 발견: guard_write E8 워크트리 절대경로 우회 | [COMPLETION_20261004_iMac쌍아-막내2_SECURITY_키주입E10위조_실증](../../reports/2026-10/COMPLETION_20261004_iMac쌍아-막내2_SECURITY_키주입E10위조_실증.md) | ✅ |
+| 10/04 | iMac/쌍아-막내2 | **REPORT** 키 주입 E10 위조 실증 K0~K5 본문 — 결론 '위조 가능', 부록 A 부작용 사실관계(E8 워크트리 우회·MCP 비활성 원인) | [REPORT_20261004_iMac쌍아-막내2_키주입E10위조_실증](../../reports/2026-10/REPORT_20261004_iMac쌍아-막내2_키주입E10위조_실증.md) | ✅ |
 
 ---
 
