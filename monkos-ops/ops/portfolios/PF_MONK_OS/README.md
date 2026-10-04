@@ -150,6 +150,8 @@ domain: "governance/infrastructure"
 | 2026-10-04 | iMac/쌍아 | **ORDER** 컨트롤 룸 PoC — Claude Code 모드로 상황판·TF/PF 발동 버튼·통신 스위치(모의)·승인 버튼(모의) | [ORDER_20261004_iMac쌍아_쌍아-막내2_MONK_OS_컨트롤룸_PoC](../../orders/2026-10/ORDER_20261004_iMac쌍아_쌍아-막내2_MONK_OS_컨트롤룸_PoC.md) | ⏳ |
 | 2026-10-04 | iMac/쌍아-막내2 | **COMPLETION** 컨트롤 룸 PoC P1·P2 — 상황판 60초 자동 갱신 작동, 발동은 삽입만 직접·실행은 모델 경유(prompt.submit '/' 거부), P3·P4 제외(분류기 중단) | [COMPLETION_20261004_iMac쌍아-막내2_MONK_OS_컨트롤룸_PoC](../../reports/2026-10/COMPLETION_20261004_iMac쌍아-막내2_MONK_OS_컨트롤룸_PoC.md) | ✅ |
 | 2026-10-04 | iMac/쌍아-막내2 | **REPORT** 컨트롤 룸 PoC 본문 — 패널별 결과·모드 API 한계 4·운영화 결정 5 | [REPORT_20261004_iMac쌍아-막내2_컨트롤룸_PoC](../../reports/2026-10/REPORT_20261004_iMac쌍아-막내2_컨트롤룸_PoC.md) | ✅ |
+| 2026-10-04 | iMac/쌍아 | **DESIGN** 지휘 원장(누가 누구에게 무엇을 시켰나) + 지휘소 화면 — 0단계 의미 검증부터 | [DESIGN_20261004_iMac쌍아_지휘원장_지휘소](../../../tech/designs/2026-10/DESIGN_20261004_iMac쌍아_지휘원장_지휘소.md) | ⏳ |
+| 2026-10-04 | iMac/쌍아 | **ORDER** 지휘 원장 0단계 — 기존 기록으로 원장 재구성 + 시험 질문 5개 답안 (읽기 전용) | [ORDER_20261004_iMac쌍아_쌍아-막내2_MONK_OS_지휘원장_0단계](../../orders/2026-10/ORDER_20261004_iMac쌍아_쌍아-막내2_MONK_OS_지휘원장_0단계.md) | ⏳ |
 
 ---
 
