@@ -145,6 +145,7 @@ domain: "governance/infrastructure"
 | 2026-10-02 | iMac/민아 | 세션 시작 절차 4에 이름 자가 교정 추가 — 데스크톱 표면은 앱 제목이 훅 이름을 덮으므로 set_session_title(self)로 교정, 같은 기기 피어 목록 반영 실측. 작가님 12:57 직접 지시, 쌍아 추인 대상 (세션 로그 2026-10-02_iMac_민아 세션 2) | — | ✅ |
 | 2026-10-03 | iMac/쌍아 | **ORDER** pf.py·훅 Python 3.9 호환 — M2(python3 3.9.6)에서 pf.sh 작동 불가 해소 | [ORDER_20261003_iMac쌍아_쌍아-막내2_PF_MONK_OS_py39호환](../../orders/2026-10/ORDER_20261003_iMac쌍아_쌍아-막내2_PF_MONK_OS_py39호환.md) | ⏳ |
 | 2026-10-03 | iMac/쌍아-막내2 | **COMPLETION** pf.py·훅 Python 3.9 호환 — __future__ annotations 3파일, 3.9 smoke 106/106·17/17 | [COMPLETION_20261003_iMac쌍아-막내2_PF_MONK_OS_py39호환](../../reports/2026-10/COMPLETION_20261003_iMac쌍아-막내2_PF_MONK_OS_py39호환.md) | ✅ |
+| 2026-10-04 | iMac/쌍아 | **ORDER** Claude Code 모드(mods)로 배포 승인 버튼 시범 — 실측만, 운영 반영 없음 | [ORDER_20261004_iMac쌍아_쌍아-막내2_MONK_OS_모드승인버튼_시범실측](../../orders/2026-10/ORDER_20261004_iMac쌍아_쌍아-막내2_MONK_OS_모드승인버튼_시범실측.md) | ⏳ |
 
 ---
 
