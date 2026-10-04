@@ -1,0 +1,6 @@
+{
+  "name": "control-room",
+  "version": "0.1.0",
+  "description": "MONK 컨트롤 룸 PoC — 상황판·발동 버튼·통신 스위치(모의)·승인 버튼(모의). 시범 전용, 운영 미반영",
+  "types": "./types/index.d.ts"
+}

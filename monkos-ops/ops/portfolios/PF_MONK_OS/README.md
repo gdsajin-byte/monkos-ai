@@ -148,6 +148,8 @@ domain: "governance/infrastructure"
 | 2026-10-04 | iMac/쌍아 | **ORDER** Claude Code 모드(mods)로 배포 승인 버튼 시범 — 실측만, 운영 반영 없음 | [ORDER_20261004_iMac쌍아_쌍아-막내2_MONK_OS_모드승인버튼_시범실측](../../orders/2026-10/ORDER_20261004_iMac쌍아_쌍아-막내2_MONK_OS_모드승인버튼_시범실측.md) | ⏳ |
 | 2026-10-04 | iMac/쌍아-막내2 | **REPORT** 모드 승인 버튼 시범 실측 M1~M6 — 버튼·클릭 토큰 양성, 모델 tmux 키 주입으로 정식 토큰 발급(가설 기각) → 결론 후보 '보조 가능/단독 대체 불가' | [REPORT_20261004_iMac쌍아-막내2_모드승인버튼_실측](../../reports/2026-10/REPORT_20261004_iMac쌍아-막내2_모드승인버튼_실측.md) | ✅ |
 | 2026-10-04 | iMac/쌍아 | **ORDER** 컨트롤 룸 PoC — Claude Code 모드로 상황판·TF/PF 발동 버튼·통신 스위치(모의)·승인 버튼(모의) | [ORDER_20261004_iMac쌍아_쌍아-막내2_MONK_OS_컨트롤룸_PoC](../../orders/2026-10/ORDER_20261004_iMac쌍아_쌍아-막내2_MONK_OS_컨트롤룸_PoC.md) | ⏳ |
+| 2026-10-04 | iMac/쌍아-막내2 | **COMPLETION** 컨트롤 룸 PoC P1·P2 — 상황판 60초 자동 갱신 작동, 발동은 삽입만 직접·실행은 모델 경유(prompt.submit '/' 거부), P3·P4 제외(분류기 중단) | [COMPLETION_20261004_iMac쌍아-막내2_MONK_OS_컨트롤룸_PoC](../../reports/2026-10/COMPLETION_20261004_iMac쌍아-막내2_MONK_OS_컨트롤룸_PoC.md) | ✅ |
+| 2026-10-04 | iMac/쌍아-막내2 | **REPORT** 컨트롤 룸 PoC 본문 — 패널별 결과·모드 API 한계 4·운영화 결정 5 | [REPORT_20261004_iMac쌍아-막내2_컨트롤룸_PoC](../../reports/2026-10/REPORT_20261004_iMac쌍아-막내2_컨트롤룸_PoC.md) | ✅ |
 
 ---
 
