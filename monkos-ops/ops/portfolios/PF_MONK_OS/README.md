@@ -146,6 +146,7 @@ domain: "governance/infrastructure"
 | 2026-10-03 | iMac/쌍아 | **ORDER** pf.py·훅 Python 3.9 호환 — M2(python3 3.9.6)에서 pf.sh 작동 불가 해소 | [ORDER_20261003_iMac쌍아_쌍아-막내2_PF_MONK_OS_py39호환](../../orders/2026-10/ORDER_20261003_iMac쌍아_쌍아-막내2_PF_MONK_OS_py39호환.md) | ⏳ |
 | 2026-10-03 | iMac/쌍아-막내2 | **COMPLETION** pf.py·훅 Python 3.9 호환 — __future__ annotations 3파일, 3.9 smoke 106/106·17/17 | [COMPLETION_20261003_iMac쌍아-막내2_PF_MONK_OS_py39호환](../../reports/2026-10/COMPLETION_20261003_iMac쌍아-막내2_PF_MONK_OS_py39호환.md) | ✅ |
 | 2026-10-04 | iMac/쌍아 | **ORDER** Claude Code 모드(mods)로 배포 승인 버튼 시범 — 실측만, 운영 반영 없음 | [ORDER_20261004_iMac쌍아_쌍아-막내2_MONK_OS_모드승인버튼_시범실측](../../orders/2026-10/ORDER_20261004_iMac쌍아_쌍아-막내2_MONK_OS_모드승인버튼_시범실측.md) | ⏳ |
+| 2026-10-04 | iMac/쌍아-막내2 | **REPORT** 모드 승인 버튼 시범 실측 M1~M6 — 버튼·클릭 토큰 양성, 모델 tmux 키 주입으로 정식 토큰 발급(가설 기각) → 결론 후보 '보조 가능/단독 대체 불가' | [REPORT_20261004_iMac쌍아-막내2_모드승인버튼_실측](../../reports/2026-10/REPORT_20261004_iMac쌍아-막내2_모드승인버튼_실측.md) | ✅ |
 
 ---
 
