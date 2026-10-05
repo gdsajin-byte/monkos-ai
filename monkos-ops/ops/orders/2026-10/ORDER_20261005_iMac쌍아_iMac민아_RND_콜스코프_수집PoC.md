@@ -6,7 +6,7 @@ to: iMac/민아
 device: iMac
 agent: 쌍아
 subject: 콜스코프 수집 PoC — 대리 기사앱(콜마너·카카오·티맵) 아이폰 캡처 → 판독·구조화 → 포털 어드민 열람 (dev 배포)
-status: 발행
+status: 보류
 portfolio: PF_RND
 ---
 
