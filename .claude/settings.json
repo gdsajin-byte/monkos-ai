@@ -99,5 +99,13 @@
       "Bash(./scripts/approve.sh *)"
     ]
   },
-  "crossSessionInbound": "accept"
+  "crossSessionInbound": "accept",
+  "enabledMcpjsonServers": [
+    "playwright",
+    "google-analytics",
+    "google-search-console",
+    "cloudflare",
+    "google-docs",
+    "monk-retrieval"
+  ]
 }
