@@ -92,6 +92,7 @@ MONK.KR / MONKOS.AI
 | 내부 도구 | PT | (EXTERNAL→pt.monkos.ai) | 3D 프레젠테이션 엔진 | ❓ |
 | 내부 도구 | Headshot | (→/headshot) | 헤드샷 생성 진입점 | 🟢 |
 | 내부 도구 | 관상 리포트 | gwansang.html | 사주×관상 얼굴 지도 | ⏸️ INTERNAL |
+| 내부 도구 | 콜스코프 | callscope.html | 대리 기사앱 캡처 판독 → 콜 기록·요약 (PF_RND 수집 PoC, 10-05 신설 — dev 한정, prod 미배포) | ⏸️ INTERNAL |
 | (메뉴 미노출) | Citadel | citadel.html | 메뉴에 없는 잔존 페이지 — 용도·존폐 확인 필요 | ❓ |
 | (메뉴 미노출) | User | user.html | 유저 관리 — 메뉴 미노출 사유 확인 필요 | ❓ |
 

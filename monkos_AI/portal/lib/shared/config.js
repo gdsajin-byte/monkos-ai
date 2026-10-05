@@ -131,6 +131,8 @@ export const aiImage = new GoogleGenAI({
   location: 'global',
 });
 export const CMS_IMAGE_MODEL = 'gemini-3.1-flash-image';
+// 콜스코프(어드민 내부 도구) 캡처 판독 — CMS 텍스트 경로(lib/cms/ai.js·translate.js)와 같은 모델을 `ai`로 호출한다
+export const CALLSCOPE_MODEL = 'gemini-2.5-flash';
 
 // === Telegram API URL ===
 export const TELEGRAM_CS_API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;

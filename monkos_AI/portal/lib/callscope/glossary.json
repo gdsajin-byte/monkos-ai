@@ -1,0 +1,13 @@
+{
+  "_comment": "콜스코프 용어집 — 대리 기사앱 메모·태그 약어. status: confirmed(작가님 확인) / assumed(추정) / unknown(미상). 모르는 약어는 버리지 않고 unknown_tokens로 모은다.",
+  "terms": [
+    { "token": "법", "meaning": "법인", "kind": "pay", "status": "confirmed" },
+    { "token": "후", "meaning": "후불", "kind": "pay", "status": "confirmed" },
+    { "token": "즉후", "meaning": "즉시 후불", "kind": "pay", "status": "confirmed" },
+    { "token": "청", "meaning": "청방(회사 이름)", "kind": "source_co", "status": "confirmed" },
+    { "token": "상담", "meaning": "사무실 통화 후 배정", "kind": "condition", "status": "assumed" },
+    { "token": "비흡연", "meaning": "비흡연 기사 요구", "kind": "condition", "status": "assumed" },
+    { "token": "경유", "meaning": "경유지 있음", "kind": "condition", "status": "assumed" },
+    { "token": "셀퍼만", "meaning": null, "kind": null, "status": "unknown" }
+  ]
+}

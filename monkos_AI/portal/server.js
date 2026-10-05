@@ -58,6 +58,7 @@ import { handleIdphotoResults } from './lib/cms/idphoto-review.js';
 import { resolveCreditSource } from './lib/credit-source.js';
 import { handleAiImage, handleAiThumbnail, handleAiSuggest } from './lib/cms/ai.js';
 import { handleGwansangData, handleGwansangSaju } from './lib/cms/gwansang.js';
+import { handleCallscopeIngest, handleCallscopeCalls, handleCallscopeVerify, handleCallscopeTiming } from './lib/callscope/api.js';
 import { handleTranslate } from './lib/cms/translate.js';
 import { handleSearch } from './lib/cms/search.js';
 import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderGuide, renderAiPhotoGuide, renderSitemap, renderSitemapStatic, renderSitemapSpecs, renderSitemapSpecsLang, renderSitemapBlog, renderPricing, renderSpecsList, renderSpecsDetail } from './lib/cms/render.js';
@@ -1158,6 +1159,12 @@ const httpServer = createServer(async (req, res) => {
   // === 관상×사주 리포트 (PF_FACEREAD Phase A) — 어드민 비공개 ===
   if (urlPath === '/api/admin/gwansang/data' && req.method === 'GET') return handleGwansangData(req, res);
   if (urlPath === '/api/admin/gwansang/saju' && req.method === 'GET') return handleGwansangSaju(req, res);
+
+  // === 콜스코프 수집 PoC (PF_RND) — 어드민 비공개 ===
+  if (urlPath === '/api/admin/callscope/ingest' && req.method === 'POST') return handleCallscopeIngest(req, res);
+  if (urlPath === '/api/admin/callscope/calls' && req.method === 'GET') return handleCallscopeCalls(req, res);
+  if (urlPath === '/api/admin/callscope/verify' && req.method === 'POST') return handleCallscopeVerify(req, res);
+  if (urlPath === '/api/admin/callscope/timing' && req.method === 'POST') return handleCallscopeTiming(req, res);
 
   // === VTON Studio (PF_VTON Phase4) — RunPod 프록시 ===
   if (urlPath === '/admin/api/vton/pod/start' && req.method === 'POST') return handlePodStart(req, res);

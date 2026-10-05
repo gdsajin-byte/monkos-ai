@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>콜스코프 — MONKOS Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .chip { display: inline-flex; align-items: center; gap: 4px; font-size: 0.72rem; border-radius: 6px; padding: 3px 7px; border: 1px solid #d6d3d1; background: #fff; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+    .chip.low { background: #fef3c7; border-color: #f59e0b; }
+    .chip.ok { background: #dcfce7; border-color: #16a34a; }
+    .chip.bad { background: #fee2e2; border-color: #dc2626; }
+    .chip .k { color: #78716c; }
+    .tab { padding: 6px 14px; border-radius: 999px; font-size: 0.85rem; border: 1px solid #d6d3d1; background: #fff; }
+    .tab.on { background: #1c1917; color: #fff; border-color: #1c1917; }
+    .tag { font-size: 0.68rem; border-radius: 4px; padding: 1px 6px; background: #e7e5e4; color: #44403c; }
+    td, th { padding: 4px 8px; text-align: right; white-space: nowrap; }
+    td:first-child, th:first-child { text-align: left; }
+  </style>
+</head>
+<body class="bg-stone-100 text-stone-800 min-h-screen">
+
+  <nav class="flex items-center justify-between px-4 py-3 bg-white border-b border-stone-200">
+    <span class="text-lg font-bold tracking-widest text-stone-900">MONKOS</span>
+    <a href="/admin/" class="text-sm text-stone-500 hover:text-stone-900">← 어드민</a>
+  </nav>
+
+  <div class="max-w-3xl mx-auto px-3 py-5">
+
+    <header class="mb-4">
+      <span class="inline-block text-xs font-semibold bg-stone-800 text-amber-300 rounded-full px-3 py-1 mb-2">내부 검증용 · 비공개 (PoC)</span>
+      <h1 class="text-2xl font-bold tracking-tight">콜스코프</h1>
+      <p class="text-sm text-stone-500 mt-1">기사앱 화면 캡처를 올리면 콜을 읽어 표로 쌓습니다. 캡처 원본은 저장하지 않습니다.</p>
+    </header>
+
+    <!-- 올리기 -->
+    <section class="bg-white rounded-2xl border border-stone-200 p-4 mb-4">
+      <div class="flex flex-wrap items-end gap-3">
+        <div>
+          <label for="appHint" class="block text-xs font-medium text-stone-600 mb-1">앱</label>
+          <select id="appHint" class="border border-stone-300 rounded-lg px-2 py-2 text-sm bg-white">
+            <option value="auto">자동 판별</option>
+            <option value="콜마너">콜마너</option>
+            <option value="카카오">카카오 T 대리</option>
+            <option value="티맵">티맵 대리</option>
+          </select>
+        </div>
+        <div class="flex-1 min-w-[180px]">
+          <label for="files" class="block text-xs font-medium text-stone-600 mb-1">캡처 (여러 장 선택 가능)</label>
+          <input type="file" id="files" accept="image/*" multiple class="block w-full text-sm">
+        </div>
+        <button id="uploadBtn" class="bg-stone-900 text-white rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-40" disabled>올리기</button>
+      </div>
+      <div id="progress" class="text-sm mt-3 space-y-1" aria-live="polite"></div>
+    </section>
+
+    <!-- 요약 -->
+    <section id="summary" class="mb-4"></section>
+
+    <!-- 목록 -->
+    <section>
+      <div class="flex items-center gap-2 mb-3">
+        <button class="tab on" data-tab="immediate">즉시 <span id="nImmediate"></span></button>
+        <button class="tab" data-tab="reserved">예약 <span id="nReserved"></span></button>
+        <button class="tab" data-tab="all">전체 <span id="nAll"></span></button>
+        <button id="reloadBtn" class="ml-auto text-sm text-stone-500 underline">새로고침</button>
+      </div>
+      <p class="text-xs text-stone-500 mb-2">칸을 누르면 맞음(초록) → 틀림(빨강) → 해제 순으로 표기됩니다. 노란 칸은 판독 신뢰도가 낮은 칸입니다.</p>
+      <div id="list" class="space-y-3"></div>
+    </section>
+  </div>
+
+  <script type="module" src="/admin/js/callscope.js"></script>
+</body>
+</html>
