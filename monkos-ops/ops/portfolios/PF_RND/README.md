@@ -46,6 +46,7 @@ status: active
 | 04/24 | 민아 | PF_RND 신설 제안서 작성 | `proposals/PROPOSAL_20260424_민아_PF_RND_신설_제안서.md` | ✅ |
 | 04/24 | 작가님 | PF_RND 신설 승인 (17:34 KST) | — | ✅ |
 | 04/24 | 막내2 | PF_RND 물리 구조 생성 + 2트랙 초기화 | 본 문서 + tracks/ + crossref/ | ✅ |
+| 10/05 | iMac/쌍아 | **ORDER** 콜스코프 수집 PoC — 대리 기사앱(콜마너·카카오·티맵) 아이폰 캡처 → 판독·구조화 → 포털 어드민 열람 (dev 배포) | [ORDER_20261005_iMac쌍아_iMac민아_RND_콜스코프_수집PoC](../../orders/2026-10/ORDER_20261005_iMac쌍아_iMac민아_RND_콜스코프_수집PoC.md) | ⏳ |
 
 ---
 
