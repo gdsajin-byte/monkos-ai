@@ -131,6 +131,7 @@ status: active
 | 09/16 | iMac/민아 | **네이버 유입 정밀 분석** — GA4 오가닉 ×2.2 중 70%가 네이버 검색(monkos.ai, monk.kr 합산 아님). 8/10 색인 계단 → 3차 파동, 랜딩 60 ko specs, PC 62%. 네이버 웹문서 API 실측: 국가별 여권·비자 규격 쿼리 14/19 5위 내(1위 6) — 롱테일 선점, 헤드텀(여권 사진 규격·주민등록증)은 정부 사이트 독점. 틈: visa/us 자기 쿼리 미노출·PC→폰 동선 | 세션로그 09-16 18:29~18:52 | ✅ 분석 / ⏳ specs 후속 제안 |
 | 10/06 | iMac/쌍아 | **ORDER** 마켓아이 센서 수선 — 결측 백필·GA4 차원 확장·이상 트래픽 경보·bizinfo 키 하드코딩 제거·RSS/트렌드 결손 | [ORDER_20261006_iMac쌍아_막내_MARKET_EYE_센서수선](../../orders/2026-10/ORDER_20261006_iMac쌍아_막내_MARKET_EYE_센서수선.md) | ⏳ |
 | 10/06 | iMac/막내2 | 센서 수선(ORDER_20261006): 결측 백필 기본 탑재(GSC 24→2·GA4 23→0일, 잔여=지연 창), ga4_daily_dims 신설+봇·비운영 호스트 경보(9월 SG·localhost 검출), bizinfo 키 하드코딩 제거·마스킹(시크릿 미등록=결정 대기), Anthropic 공식 /news 파싱, trends 429 재시도·10월 7/7. 자기 사고 ga4_daily 중복 106행 롤백 대기. main 미병합 | [COMPLETION_20261006_iMac쌍아-막내2_MARKET_EYE_센서수선](../../reports/2026-10/COMPLETION_20261006_iMac쌍아-막내2_MARKET_EYE_센서수선.md) | ✅ |
+| 10/06 | iMac/쌍아 | INCIDENT ga4_daily 8일 106행 중복 적재(막내2 자기 사고, BQ DATE 파라미터 NULL 바인딩) — 수정(bq.date+대조군) main 병합 6b4f4d53, 중복 행 롤백은 스트리밍 버퍼 소진 대기 | [INCIDENT_20261006_market_eye_ga4_daily_중복적재](../../incidents/2026-10/INCIDENT_20261006_market_eye_ga4_daily_중복적재.md) | ✅ |
 
 ---
 
