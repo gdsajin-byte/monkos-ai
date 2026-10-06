@@ -211,10 +211,25 @@ def detect_traffic_alerts(country_source_rows, host_rows):
             alerts.append(
                 f"- 🟡 봇 의심: {r['country']} × {r['source']} 7일 {r['users']}명·세션 {r['sessions']}·참여율 {rate*100:.1f}%"
             )
-    for r in sorted(host_rows, key=lambda r: -r["users"]):
-        if r["users"] > 0 and not is_operational_host(r["host"]):
-            alerts.append(f"- 🟡 비운영 호스트 유입: `{r['host']}` 7일 {r['users']}명·세션 {r['sessions']}")
+    # 호스트별 나열 대신 1줄 요약 (2026-10-06 쌍아 보정 — 작가님 텔레그램 캡처 기준)
+    off = [r for r in sorted(host_rows, key=lambda r: -r["users"])
+           if r["users"] > 0 and not is_operational_host(r["host"])]
+    if off:
+        total = sum(r["users"] for r in off)
+        parts = "·".join(f"{_short_host(r['host'])} {r['users']}" for r in off)
+        alerts.append(f"- 🟡 비운영 호스트 유입 7일 {total}명({parts})")
     return alerts
+
+
+def _short_host(host):
+    h = (host or "").lower()
+    if h.endswith(".pages.dev"):
+        return "pages.dev"
+    if h.endswith(".translate.goog"):
+        return "translate.goog"
+    if h.endswith(".run.app"):
+        return "dev run.app" if "-dev-" in h else "run.app"
+    return host
 
 
 def fetch_ga4_traffic_rows(key_json, property_id, end_date):
@@ -504,7 +519,7 @@ def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
                       ga4_device=None, gsc_device=None,
                       gsc_search_appearance=None, gsc_url_inspection=None,
                       naver_searchad=None, naver_datalab=None,
-                      bing_data=None, pagespeed_data=None):
+                      bing_data=None, pagespeed_data=None, cautions=None):
     run_date = run_date or target_date
     lines = []
     lines.append("---")
@@ -527,6 +542,11 @@ def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
     lines.append("")
 
     # 성과
+    if cautions:
+        lines.append("## 🟡 주의")
+        lines.extend(cautions)
+        lines.append("")
+
     lines.append("## 📊 성과")
     lines.append(f"| 지표 | {target_date} | {compare_date} | 변동 |")
     lines.append("|------|------|-----------|------|")
@@ -720,7 +740,7 @@ def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
 
 
 def build_telegram_summary(ga4_today, ga4_compare, gsc_today, gsc_compare,
-                           alerts, seo_result, target_date, run_date):
+                           alerts, seo_result, target_date, run_date, cautions=None):
     """텔레그램 본문형 요약 — 링크 없이 읽고 끝나는 동선형 메시지."""
     lines = [f"📊 <b>데일리 브리핑 {run_date}</b> (데이터 {target_date})", ""]
 
@@ -730,6 +750,11 @@ def build_telegram_summary(ga4_today, ga4_compare, gsc_today, gsc_compare,
             lines.append(a.replace("- ", "· "))
     else:
         lines.append("🔴 긴급: 없음")
+    if cautions:
+        lines.append("")
+        lines.append("🟡 <b>주의</b>")
+        for c in cautions:
+            lines.append(c.replace("- ", "· ", 1))
     lines.append("")
 
     lines.append(
@@ -846,15 +871,16 @@ def main():
     # 이상 감지
     alerts = detect_anomalies(ga4_today, ga4_compare, gsc_today, gsc_compare, seo_result)
 
-    # 이상 트래픽 (7일: 봇 의심·비운영 호스트) — 수집 실패도 경보 라인으로 노출
+    # 이상 트래픽 (7일: 봇 의심·비운영 호스트) — 🔴 긴급과 분리해 🟡 주의 섹션으로. 판독 실패도 노출
+    cautions = []
     try:
         cs_rows, host_rows, win_start = fetch_ga4_traffic_rows(key_json, property_id, target_date)
         traffic_alerts = detect_traffic_alerts(cs_rows, host_rows)
         print(f"[traffic] {win_start}~{target_date} 국가×소스 {len(cs_rows)}행·호스트 {len(host_rows)}행 → 경보 {len(traffic_alerts)}건")
-        alerts.extend(traffic_alerts)
+        cautions.extend(traffic_alerts)
     except Exception as e:
         print(f"WARNING: 이상 트래픽 판독 실패 — {mask_secrets(e)}", file=sys.stderr)
-        alerts.append(f"- 🟡 이상 트래픽 판독 실패: {mask_secrets(e)}"[:200])
+        cautions.append(f"- 🟡 이상 트래픽 판독 실패: {mask_secrets(e)}"[:200])
 
     # 생성
     content = generate_briefing(
@@ -862,7 +888,7 @@ def main():
         top_queries, top_pages, seo_result, news, alerts,
         target_date, compare_date, stale_sources, news_errors,
         channel_data, funnel_data, page_query, country_data,
-        run_date=run_date_str,
+        run_date=run_date_str, cautions=cautions,
         ga4_device=ga4_device, gsc_device=gsc_device,
         gsc_search_appearance=gsc_search_appearance,
         gsc_url_inspection=gsc_url_inspection,
@@ -879,7 +905,7 @@ def main():
 
     summary = build_telegram_summary(
         ga4_today, ga4_compare, gsc_today, gsc_compare,
-        alerts, seo_result, target_date, run_date_str,
+        alerts, seo_result, target_date, run_date_str, cautions=cautions,
     )
     summary_file = Path("telegram_summary.txt")
     summary_file.write_text(summary, encoding="utf-8")
