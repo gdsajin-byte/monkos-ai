@@ -5,7 +5,7 @@ device: iMac
 agent: 막내2
 order: monkos-ops/ops/orders/2026-10/ORDER_20261006_iMac쌍아_막내_MARKET_EYE_센서수선.md
 portfolio: PF_MARKET_EYE
-status: 완료 (롤백 1건 버퍼 대기 — §6)
+status: 완료
 ---
 
 # COMPLETION — 마켓아이 센서 수선
@@ -83,7 +83,7 @@ status: 완료 (롤백 1건 버퍼 대기 — §6)
 
 ## 6. 🔴 자기 사고 — `ga4_daily` 8일 106행 중복
 
-W1 로컬 시험 중 존재 조회 버그(문자열 DATE 파라미터 → NULL)로 이미 있는 8일을 다시 적재했다. 교정·대조군 가드 완료. 롤백(실행 전 스냅샷으로 8일 복원)은 스트리밍 버퍼 소진 후 실행 — 결과는 INCIDENT에 기록.
+W1 로컬 시험 중 존재 조회 버그(문자열 DATE 파라미터 → NULL)로 이미 있는 8일을 다시 적재했다. 교정·대조군 가드 완료. **롤백 완료(17:25 KST)** — 실행 전 스냅샷으로 8일 복원, 날짜별 행 수 전부 일치 검증.
 → `monkos-ops/ops/incidents/2026-10/INCIDENT_20261006_market_eye_ga4_daily_중복적재.md`
 
 ## 7. 브랜치·배포 상태
@@ -99,6 +99,7 @@ W1 로컬 시험 중 존재 조회 버그(문자열 DATE 파라미터 → NULL)�
 4. 비운영 호스트 허용 목록(pages.dev·translate.goog·dev run.app)
 5. GA4 내부 트래픽 필터(localhost·작가님 IP) 설정 — 속성 관리 변경이라 제안만
 6. `seo_collectors.py` 예외 출력 마스킹(범위 밖)
+7. 구 수집기가 남긴 **기존 완전 중복 행 정리** — `ga4_daily` 4일 18행·`gsc_daily` 6일 1,097행(INCIDENT §4). 기존 행 삭제라 지시서 금지 범위 → 승인 시 날짜별 DISTINCT 재구성으로 처리 가능
 
 ## 9. 보정 (쌍아 16:57 세션 메시지 — 출처 작가님 16:55 텔레그램 캡처, 지시서 범위 내)
 
