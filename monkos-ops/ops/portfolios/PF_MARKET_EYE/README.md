@@ -132,6 +132,7 @@ status: active
 | 10/06 | iMac/쌍아 | **ORDER** 마켓아이 센서 수선 — 결측 백필·GA4 차원 확장·이상 트래픽 경보·bizinfo 키 하드코딩 제거·RSS/트렌드 결손 | [ORDER_20261006_iMac쌍아_막내_MARKET_EYE_센서수선](../../orders/2026-10/ORDER_20261006_iMac쌍아_막내_MARKET_EYE_센서수선.md) | ⏳ |
 | 10/06 | iMac/막내2 | 센서 수선(ORDER_20261006): 결측 백필 기본 탑재(GSC 24→2·GA4 23→0일, 잔여=지연 창), ga4_daily_dims 신설+봇·비운영 호스트 경보(9월 SG·localhost 검출), bizinfo 키 하드코딩 제거·마스킹(시크릿 미등록=결정 대기), Anthropic 공식 /news 파싱, trends 429 재시도·10월 7/7. 자기 사고 ga4_daily 중복 106행 롤백 대기. main 미병합 | [COMPLETION_20261006_iMac쌍아-막내2_MARKET_EYE_센서수선](../../reports/2026-10/COMPLETION_20261006_iMac쌍아-막내2_MARKET_EYE_센서수선.md) | ✅ |
 | 10/06 | iMac/쌍아 | INCIDENT ga4_daily 8일 106행 중복 적재(막내2 자기 사고, BQ DATE 파라미터 NULL 바인딩) — 수정(bq.date+대조군) main 병합 6b4f4d53, 중복 행 롤백은 스트리밍 버퍼 소진 대기 | [INCIDENT_20261006_market_eye_ga4_daily_중복적재](../../incidents/2026-10/INCIDENT_20261006_market_eye_ga4_daily_중복적재.md) | ✅ |
+| 10/06 | iMac/쌍아 | **REPORT** 네이버 스마트플레이스·예약·네이버페이 세팅 자료 정리 — 대행 범위 판단용 | [REPORT_20261006_iMac쌍아_네이버_플레이스예약페이_세팅자료](../../reports/2026-10/REPORT_20261006_iMac쌍아_네이버_플레이스예약페이_세팅자료.md) | 📁 |
 
 ---
 
