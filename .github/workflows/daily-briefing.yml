@@ -5,6 +5,17 @@ on:
     - cron: '0 20 * * *'  # UTC 20:00 = KST 05:00 (일배치)
     - cron: '0 0 1 * *'   # UTC 00:00 매월 1일 = KST 09:00 (월배치)
   workflow_dispatch:
+    inputs:
+      backfill_since:
+        description: 'GSC·GA4 결측 백필 시작일 (YYYY-MM-DD, 비우면 기본 창 — GSC 14일·GA4 10일)'
+        required: false
+        default: ''
+      monthly:
+        description: '월배치 실행 범위 — none(기본: 수동 실행이 월 테이블에 중복 적재하지 않게) / trends(결손분만 재수집) / all'
+        required: false
+        default: 'none'
+        type: choice
+        options: ['none', 'trends', 'all']
 
 jobs:
   briefing:
@@ -34,6 +45,7 @@ jobs:
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
           GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
+          BACKFILL_SINCE: ${{ inputs.backfill_since }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: node scripts/collectors/collect_gsc.js
@@ -42,13 +54,14 @@ jobs:
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
           GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          BACKFILL_SINCE: ${{ inputs.backfill_since }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: node scripts/collectors/collect_ga4.js
 
       # --- MARKET_EYE 월배치 (매월 1일) ---
       - name: Collect Keywords monthly
-        if: github.event.schedule == '0 0 1 * *' || github.event_name == 'workflow_dispatch'
+        if: github.event.schedule == '0 0 1 * *' || (github.event_name == 'workflow_dispatch' && inputs.monthly == 'all')
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
           GOOGLE_ADS_DEV_TOKEN: ${{ secrets.GOOGLE_ADS_DEV_TOKEN }}
@@ -64,7 +77,7 @@ jobs:
         run: node scripts/collectors/collect_keywords.js
 
       - name: Collect Trends monthly
-        if: github.event.schedule == '0 0 1 * *' || github.event_name == 'workflow_dispatch'
+        if: github.event.schedule == '0 0 1 * *' || (github.event_name == 'workflow_dispatch' && (inputs.monthly == 'trends' || inputs.monthly == 'all'))
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
           NAVER_DATALAB_CLIENT_ID: ${{ secrets.NAVER_DATALAB_CLIENT_ID }}
@@ -85,6 +98,8 @@ jobs:
           NAVER_DATALAB_CLIENT_ID: ${{ secrets.NAVER_DATALAB_CLIENT_ID }}
           NAVER_DATALAB_CLIENT_SECRET: ${{ secrets.NAVER_DATALAB_CLIENT_SECRET }}
           BING_WMT_API_KEY: ${{ secrets.BING_WMT_API_KEY }}
+          # 미등록이면 빈 값 → 브리핑이 🔴 "BIZINFO_API_KEY 미설정"으로 건너뜀 (코드 기본값 제거, 2026-10-06)
+          BIZINFO_API_KEY: ${{ secrets.BIZINFO_API_KEY }}
         run: python .github/scripts/daily_briefing.py
 
       - name: Commit and push

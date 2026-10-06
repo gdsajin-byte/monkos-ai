@@ -79,10 +79,22 @@ bq query --project_id=monkos "SELECT query, SUM(clicks) c, AVG(position) p FROM 
 
 # GA4 채널별 세션 추이
 bq query --project_id=monkos "SELECT date, channel, sessions FROM market_eye.ga4_daily ORDER BY date DESC LIMIT 30"
+
+# GA4 국가×호스트×랜딩×소스 (ga4_daily_dims, 2026-10-06 신설) — 참여율 낮은 국가·소스 조합(봇 판독)
+bq query --project_id=monkos --use_legacy_sql=false "SELECT country, source, SUM(active_users) u, SUM(sessions) s, SAFE_DIVIDE(SUM(engaged_sessions), SUM(sessions)) er FROM market_eye.ga4_daily_dims WHERE date >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY) GROUP BY 1,2 HAVING u >= 50 ORDER BY er LIMIT 20"
 ```
+
+### 수집 운용 (2026-10-06 센서 수선 — ORDER_20261006)
+
+- **결측 백필 기본 탑재**: `collect_gsc.js`(최근 14일, KST 오늘-3일까지)·`collect_ga4.js`(최근 10일, 오늘-2일까지)는 테이블에 **없는 날짜만** 수집. 같은 날짜 재적재 금지 — 존재 조회 + 대조군(리터럴 COUNT) 불일치 시 적재 중단
+- **장기 백필**: `node scripts/collectors/collect_ga4.js --since 2026-07-01` (또는 `workflow_dispatch` 입력 `backfill_since`). 로컬은 `GOOGLE_APPLICATION_CREDENTIALS`(임퍼소네이션 ADC) 폴백
+- **`ga4_daily_dims`**: country × hostName × landingPage(언어 접두 en/ja/es/zh/ko 제거 후 1단) × sessionSource. `active_users`는 랜딩 정규화 합산이라 상한 근사
+- **브리핑 경보 2종**(`daily_briefing.py detect_traffic_alerts`, 7일 합계 GA4 직조회): 🟡 봇 의심(국가×소스 50명↑·참여율 10%↓) / 🟡 비운영 호스트 유입(`monkos.ai`·`*.monkos.ai`·`monk.kr`·`*.monk.kr` 외, 1줄 요약). 🔴 긴급과 분리된 `🟡 주의` 섹션에 출력
+- **trends 월배치**: pytrends 429 재시도(3회) + 결손 텔레그램 알림 + 같은 달 기적재 키워드 건너뜀 → `workflow_dispatch monthly=trends`로 결손분만 재수집. 수동 실행 기본값 `monthly=none`(월 테이블 중복 방지)
+- **뉴스**: Anthropic = 공식 `/news` 페이지 파싱(공식 RSS 없음). bizinfo = `BIZINFO_API_KEY` 시크릿 필수(미설정 시 🔴 명시 건너뜀), 로그의 인증값 `***` 마스킹
 
 ## 도구 3요건
 
 - **인지**: 본 스킬 + references.md 도구맵 등재
-- **스모크**: `scripts/ads.sh keywords "증명사진"` → 수치 반환 확인
-- **실패 가시화**: API 에러 시 stderr WARNING 출력 (무음 금지)
+- **스모크**: `scripts/ads.sh keywords "증명사진"` → 수치 반환 확인 / 센서 수선분은 COMPLETION_20261006 MARKET_EYE_센서수선 (과거 데이터 경보 시험·dispatch 실행)
+- **실패 가시화**: API 에러 시 stderr WARNING 출력 (무음 금지). 수집 0행·결손·존재 조회 무효는 텔레그램 ⚠️/🔴

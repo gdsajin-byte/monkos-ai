@@ -3,8 +3,10 @@
 import base64
 import json
 import os
+import re
 import sys
-from datetime import date, timedelta
+import time
+from datetime import date, datetime, timedelta
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from urllib.parse import unquote
@@ -55,9 +57,10 @@ NEWS_SOURCES = [
         "keywords": ["AI", "SW", "소상공인", "창업", "인공지능", "디지털"],
     },
     {
-        "name": "Anthropic Blog",
+        # 2026-10-06: 비공식 미러 피드(08-25 이후 정체) → 공식 뉴스 페이지 파싱. 공식 RSS 없음(/rss.xml 등 404 실측)
+        "name": "Anthropic News",
         "category": "AI/기술",
-        "rss": "https://raw.githubusercontent.com/taobojlen/anthropic-rss-feed/main/anthropic_news_rss.xml",
+        "html": "https://www.anthropic.com/news",
     },
     {
         "name": "Google AI Blog",
@@ -66,6 +69,14 @@ NEWS_SOURCES = [
         "rss_keywords": ["AI", "Gemini", "model", "LLM", "machine learning", "neural", "DeepMind"],
     },
 ]
+
+
+# URL 쿼리·로그 문자열 속 인증값 가림 — 예외 메시지가 요청 URL을 그대로 싣기 때문 (2026-10-06 bizinfo 키 평문 노출)
+_SECRET_PARAM_RE = re.compile(r"((?:crtfcKey|apikey|api_key|key|token|access_token)=)[^&\s'\")]+", re.IGNORECASE)
+
+
+def mask_secrets(text):
+    return _SECRET_PARAM_RE.sub(r"\1***", str(text))
 
 
 def get_credentials():
@@ -175,6 +186,88 @@ def _fetch_ga4_funnel(client, prop, d):
     return out
 
 
+# --- 이상 트래픽 경보 (ORDER_20261006 W3) ---
+# 9월 실사례: 싱가포르 162명 중 159 direct·참여율 5.7%·평균 0.5초(봇), localhost·127.0.0.1 호스트 유입(개발 트래픽)
+BOT_MIN_USERS_7D = 50
+BOT_MAX_ENGAGEMENT = 0.10
+OPERATIONAL_HOSTS = ("monkos.ai", "monk.kr")
+
+
+def is_operational_host(host):
+    h = (host or "").lower().strip(".")
+    return any(h == d or h.endswith("." + d) for d in OPERATIONAL_HOSTS)
+
+
+def detect_traffic_alerts(country_source_rows, host_rows):
+    """순수 함수 — 입력은 7일 합계 행. 반환은 브리핑용 🟡 라인 목록.
+    country_source_rows: [{country, source, users, sessions, engaged}]
+    host_rows: [{host, users, sessions}]"""
+    alerts = []
+    for r in sorted(country_source_rows, key=lambda r: -r["users"]):
+        if r["users"] < BOT_MIN_USERS_7D or not r["sessions"]:
+            continue
+        rate = r["engaged"] / r["sessions"]
+        if rate < BOT_MAX_ENGAGEMENT:
+            alerts.append(
+                f"- 🟡 봇 의심: {r['country']} × {r['source']} 7일 {r['users']}명·세션 {r['sessions']}·참여율 {rate*100:.1f}%"
+            )
+    # 호스트별 나열 대신 1줄 요약 (2026-10-06 쌍아 보정 — 작가님 텔레그램 캡처 기준)
+    off = [r for r in sorted(host_rows, key=lambda r: -r["users"])
+           if r["users"] > 0 and not is_operational_host(r["host"])]
+    if off:
+        total = sum(r["users"] for r in off)
+        parts = "·".join(f"{_short_host(r['host'])} {r['users']}" for r in off)
+        alerts.append(f"- 🟡 비운영 호스트 유입 7일 {total}명({parts})")
+    return alerts
+
+
+def _short_host(host):
+    h = (host or "").lower()
+    if h.endswith(".pages.dev"):
+        return "pages.dev"
+    if h.endswith(".translate.goog"):
+        return "translate.goog"
+    if h.endswith(".run.app"):
+        return "dev run.app" if "-dev-" in h else "run.app"
+    return host
+
+
+def fetch_ga4_traffic_rows(key_json, property_id, end_date):
+    """end_date 포함 7일 합계 — 국가×소스, 호스트 2개 리포트."""
+    creds = Credentials.from_service_account_info(key_json, scopes=SCOPES_GA4)
+    client = BetaAnalyticsDataClient(credentials=creds)
+    start = (date.fromisoformat(end_date) - timedelta(days=6)).isoformat()
+    prop = f"properties/{property_id}"
+
+    cs = client.run_report(RunReportRequest(
+        property=prop,
+        date_ranges=[DateRange(start_date=start, end_date=end_date)],
+        dimensions=[Dimension(name="country"), Dimension(name="sessionSource")],
+        metrics=[Metric(name="activeUsers"), Metric(name="sessions"), Metric(name="engagedSessions")],
+        limit=10000,
+    ))
+    hosts = client.run_report(RunReportRequest(
+        property=prop,
+        date_ranges=[DateRange(start_date=start, end_date=end_date)],
+        dimensions=[Dimension(name="hostName")],
+        metrics=[Metric(name="activeUsers"), Metric(name="sessions")],
+        limit=1000,
+    ))
+    cs_rows = [{
+        "country": r.dimension_values[0].value,
+        "source": r.dimension_values[1].value,
+        "users": int(r.metric_values[0].value),
+        "sessions": int(r.metric_values[1].value),
+        "engaged": int(r.metric_values[2].value),
+    } for r in cs.rows]
+    host_rows = [{
+        "host": r.dimension_values[0].value,
+        "users": int(r.metric_values[0].value),
+        "sessions": int(r.metric_values[1].value),
+    } for r in hosts.rows]
+    return cs_rows, host_rows, start
+
+
 def fetch_gsc(key_json, site_url, target_date, compare_date):
     from googleapiclient.discovery import build
 
@@ -243,27 +336,61 @@ def seo_scan():
 
 
 def fetch_news():
+    """반환: (results, stale_sources, errors). errors는 브리핑에 🔴로 노출 — 무음 실패 금지."""
     results = {"정부자금": [], "AI/기술": []}
     stale_sources = []
+    errors = []
 
     for source in NEWS_SOURCES:
         try:
             if "rss" in source:
                 keywords = source.get("rss_keywords")
                 items = fetch_rss(source["rss"], limit=3, keywords=keywords)
+            elif "html" in source:
+                items = fetch_anthropic_news(source["html"], limit=3)
             else:
                 items = fetch_bizinfo(source["url"], source["keywords"])
             results[source["category"]].extend(items)
-            if source["name"] == "Anthropic Blog" and items:
+            if source["name"] == "Anthropic News" and items:
                 latest = items[0].get("date", "")
                 if latest and latest < (date.today() - timedelta(days=14)).isoformat():
-                    print(f"WARNING: Anthropic RSS 최신 기사 {latest} — 14일 초과 (피드 정체 의심)", file=sys.stderr)
+                    print(f"WARNING: Anthropic News 최신 기사 {latest} — 14일 초과 (피드 정체 의심)", file=sys.stderr)
                     stale_sources.append(source["name"])
         except Exception as e:
-            print(f"WARNING: {source['name']} 수집 실패 — {e}", file=sys.stderr)
+            msg = f"{source['name']} 수집 실패 — {mask_secrets(e)}"
+            print(f"🔴 {msg}", file=sys.stderr)
+            errors.append(msg)
             continue
 
-    return results, stale_sources
+    return results, stale_sources, errors
+
+
+def fetch_anthropic_news(url, limit=3):
+    """공식 뉴스 목록 파싱 — `a[href^=/news/]` 안의 `<time>`(예: "Oct 2, 2026")과 제목.
+    해시 클래스명에 의존하지 않는다. 0건이면 구조 변경으로 보고 예외(무음 금지)."""
+    resp = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0 (compatible; MONKOS-Briefing/1.0)"})
+    resp.raise_for_status()
+    soup = BeautifulSoup(resp.content, "html.parser")
+    seen = {}
+    for a in soup.select('a[href^="/news/"]'):
+        t = a.find("time")
+        if not t:
+            continue
+        try:
+            d = datetime.strptime(t.get_text(strip=True), "%b %d, %Y").date().isoformat()
+        except ValueError:
+            continue
+        title_el = a.find(class_=lambda c: c and "title" in c.lower()) or a.find(["h2", "h3", "h4"])
+        title = (title_el.get_text(" ", strip=True) if title_el else "").strip()
+        if not title:
+            continue
+        href = "https://www.anthropic.com" + a["href"]
+        if href not in seen or seen[href]["date"] < d:
+            seen[href] = {"title": title[:100], "url": href, "date": d}
+    items = sorted(seen.values(), key=lambda i: i["date"], reverse=True)
+    if not items:
+        raise ValueError("목록 파싱 0건 — 페이지 구조 변경 의심")
+    return items[:limit]
 
 
 def fetch_rss(url, limit=3, keywords=None):
@@ -291,19 +418,41 @@ def fetch_rss(url, limit=3, keywords=None):
     return items
 
 
+BIZINFO_API_URL = "https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do"
+# 러너→bizinfo 연결 타임아웃은 간헐적(07-08~10-06 보존 로그 97회 중 39회, iMac은 정상). 연결 단계만 재시도한다
+BIZINFO_CONNECT_RETRIES = 3
+BIZINFO_TIMEOUT = (10, 20)  # (connect, read)
+
+
+def _bizinfo_get(params):
+    last = None
+    for attempt in range(BIZINFO_CONNECT_RETRIES):
+        try:
+            return requests.get(BIZINFO_API_URL, params=params, timeout=BIZINFO_TIMEOUT)
+        except (requests.ConnectionError, requests.Timeout) as e:
+            last = e
+            if attempt < BIZINFO_CONNECT_RETRIES - 1:
+                time.sleep(5 * (attempt + 1))
+    raise last
+
+
 def fetch_bizinfo(url, keywords):
-    api_url = "https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do"
+    # 2026-10-06: 코드 기본값(하드코딩 키) 제거. 시크릿 미설정이면 명시적으로 건너뛴다(무음 금지)
+    api_key = os.environ.get("BIZINFO_API_KEY", "")
+    if not api_key:
+        raise RuntimeError("BIZINFO_API_KEY 미설정 — bizinfo 수집 건너뜀 (등록: 작가님 secret 경로)")
     items = []
+    failures = []
     for kw in keywords:
         params = {
-            "crtfcKey": os.environ.get("BIZINFO_API_KEY", "QP6yn2"),
+            "crtfcKey": api_key,
             "dataType": "json",
             "pageUnit": "5",
             "pageIndex": "1",
             "hashtags": kw,
         }
         try:
-            resp = requests.get(api_url, params=params, timeout=15)
+            resp = _bizinfo_get(params)
             resp.raise_for_status()
             data = resp.json()
             for entry in data.get("jsonArray", []):
@@ -313,11 +462,17 @@ def fetch_bizinfo(url, keywords):
                 if title and detail_url and len(items) < 3:
                     if not any(i["url"] == detail_url for i in items):
                         items.append({"title": title[:80], "url": detail_url, "date": pub_date})
+        except (requests.ConnectionError, requests.Timeout) as e:
+            # 연결 불가는 키워드 문제가 아니다 — 나머지 키워드로 같은 타임아웃을 반복하지 않고 즉시 중단
+            raise RuntimeError(f"bizinfo 연결 불가({BIZINFO_CONNECT_RETRIES}회 재시도) — {mask_secrets(e)}") from None
         except Exception as e:
-            print(f"WARNING: bizinfo 키워드 '{kw}' 수집 실패 — {e}", file=sys.stderr)
+            failures.append(kw)
+            print(f"WARNING: bizinfo 키워드 '{kw}' 수집 실패 — {mask_secrets(e)}", file=sys.stderr)
             continue
         if len(items) >= 3:
             break
+    if failures and not items:
+        raise RuntimeError(f"bizinfo 전 키워드 실패 ({', '.join(failures)})")
     return items[:3]
 
 
@@ -357,14 +512,14 @@ def pct_change(now, before):
 
 def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
                       top_queries, top_pages, seo_result, news, alerts,
-                      target_date, compare_date, stale_sources=None,
+                      target_date, compare_date, stale_sources=None, news_errors=None,
                       channel_data=None, funnel_data=None,
                       page_query=None, country_data=None,
                       run_date=None,
                       ga4_device=None, gsc_device=None,
                       gsc_search_appearance=None, gsc_url_inspection=None,
                       naver_searchad=None, naver_datalab=None,
-                      bing_data=None, pagespeed_data=None):
+                      bing_data=None, pagespeed_data=None, cautions=None):
     run_date = run_date or target_date
     lines = []
     lines.append("---")
@@ -387,6 +542,11 @@ def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
     lines.append("")
 
     # 성과
+    if cautions:
+        lines.append("## 🟡 주의")
+        lines.extend(cautions)
+        lines.append("")
+
     lines.append("## 📊 성과")
     lines.append(f"| 지표 | {target_date} | {compare_date} | 변동 |")
     lines.append("|------|------|-----------|------|")
@@ -549,6 +709,8 @@ def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
 
     # 뉴스
     lines.append("## 📰 뉴스")
+    for err in news_errors or []:
+        lines.append(f"- 🔴 {err}")
     lines.append("### 정부자금")
     if news["정부자금"]:
         for item in news["정부자금"]:
@@ -566,7 +728,7 @@ def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
         lines.append("- (수집 건 없음)")
     if stale_sources:
         for s in stale_sources:
-            lines.append(f"- ⚠️ {s}: 피드 정체 (최신 기사 14일 초과)")
+            lines.append(f"- ⚠️ {s}: 소스 정체 (최신 기사 14일 초과)")
     lines.append("")
 
     # 참고
@@ -578,7 +740,7 @@ def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
 
 
 def build_telegram_summary(ga4_today, ga4_compare, gsc_today, gsc_compare,
-                           alerts, seo_result, target_date, run_date):
+                           alerts, seo_result, target_date, run_date, cautions=None):
     """텔레그램 본문형 요약 — 링크 없이 읽고 끝나는 동선형 메시지."""
     lines = [f"📊 <b>데일리 브리핑 {run_date}</b> (데이터 {target_date})", ""]
 
@@ -588,6 +750,11 @@ def build_telegram_summary(ga4_today, ga4_compare, gsc_today, gsc_compare,
             lines.append(a.replace("- ", "· "))
     else:
         lines.append("🔴 긴급: 없음")
+    if cautions:
+        lines.append("")
+        lines.append("🟡 <b>주의</b>")
+        for c in cautions:
+            lines.append(c.replace("- ", "· ", 1))
     lines.append("")
 
     lines.append(
@@ -678,7 +845,7 @@ def main():
 
     # 축3: 뉴스
     print("[4/8] 뉴스 수집...")
-    news, stale_sources = fetch_news()
+    news, stale_sources, news_errors = fetch_news()
 
     # 축5: 네이버 검색광고
     print("[5/8] 네이버 검색광고...")
@@ -704,13 +871,24 @@ def main():
     # 이상 감지
     alerts = detect_anomalies(ga4_today, ga4_compare, gsc_today, gsc_compare, seo_result)
 
+    # 이상 트래픽 (7일: 봇 의심·비운영 호스트) — 🔴 긴급과 분리해 🟡 주의 섹션으로. 판독 실패도 노출
+    cautions = []
+    try:
+        cs_rows, host_rows, win_start = fetch_ga4_traffic_rows(key_json, property_id, target_date)
+        traffic_alerts = detect_traffic_alerts(cs_rows, host_rows)
+        print(f"[traffic] {win_start}~{target_date} 국가×소스 {len(cs_rows)}행·호스트 {len(host_rows)}행 → 경보 {len(traffic_alerts)}건")
+        cautions.extend(traffic_alerts)
+    except Exception as e:
+        print(f"WARNING: 이상 트래픽 판독 실패 — {mask_secrets(e)}", file=sys.stderr)
+        cautions.append(f"- 🟡 이상 트래픽 판독 실패: {mask_secrets(e)}"[:200])
+
     # 생성
     content = generate_briefing(
         ga4_today, ga4_compare, gsc_today, gsc_compare,
         top_queries, top_pages, seo_result, news, alerts,
-        target_date, compare_date, stale_sources,
+        target_date, compare_date, stale_sources, news_errors,
         channel_data, funnel_data, page_query, country_data,
-        run_date=run_date_str,
+        run_date=run_date_str, cautions=cautions,
         ga4_device=ga4_device, gsc_device=gsc_device,
         gsc_search_appearance=gsc_search_appearance,
         gsc_url_inspection=gsc_url_inspection,
@@ -727,7 +905,7 @@ def main():
 
     summary = build_telegram_summary(
         ga4_today, ga4_compare, gsc_today, gsc_compare,
-        alerts, seo_result, target_date, run_date_str,
+        alerts, seo_result, target_date, run_date_str, cautions=cautions,
     )
     summary_file = Path("telegram_summary.txt")
     summary_file.write_text(summary, encoding="utf-8")
