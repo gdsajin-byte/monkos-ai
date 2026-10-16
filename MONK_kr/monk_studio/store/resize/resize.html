@@ -108,18 +108,27 @@ lucide.createIcons();
       img=new Image();
       img.onload=function(){
         loaded=true;
-        var s=Math.min(1, MAXW/img.width);
         srcEl.src=img.src;
-        srcEl.style.width=Math.round(img.width*s)+'px';
-        srcEl.style.height=Math.round(img.height*s)+'px';
         $('empty').hidden=true; $('wrap').hidden=false; $('dl').disabled=false;
-        initSel();
+        fit(); initSel();
       };
       img.src=ev.target.result;
     };
     r.readAsDataURL(f);
   });
 
+  // 화면 폭에 맞춰 표시 크기를 정한다 — 휴대폰에서 560px 고정이면 가로만 줄어 사진이 찌그러지고 자를 위치가 어긋났다
+  function fit(){
+    var room=$('wrap').clientWidth || MAXW;
+    var s=Math.min(1, MAXW/img.width, room/img.width);
+    srcEl.style.width=Math.round(img.width*s)+'px';
+    srcEl.style.height=Math.round(img.height*s)+'px';
+  }
+  window.addEventListener('resize', function(){
+    if(!loaded) return;
+    var d0=dispSize(); fit(); var d=dispSize(), k=d.w/d0.w;
+    sel.x*=k; sel.y*=k; sel.w*=k; sel.h*=k; apply();
+  });
   function dispSize(){ return {w:srcEl.clientWidth, h:srcEl.clientHeight}; }
 
   function initSel(){
@@ -176,11 +185,11 @@ lucide.createIcons();
   $('dl').onclick=function(){
     if(!loaded) return;
     var W=+$('w').value, H=+$('h').value, d=dispSize();
-    var k=img.width/d.w;                       // 표시 → 원본 배율
+    var kx=img.width/d.w, ky=img.height/d.h;   // 표시 → 원본 배율 (가로·세로 따로)
     var cv=document.createElement('canvas'); cv.width=W; cv.height=H;
     var ctx=cv.getContext('2d');
     ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
-    ctx.drawImage(img, sel.x*k, sel.y*k, sel.w*k, sel.h*k, 0, 0, W, H);
+    ctx.drawImage(img, sel.x*kx, sel.y*ky, sel.w*kx, sel.h*ky, 0, 0, W, H);
     var kbEl=$('kb'), limit=kbEl?(+kbEl.value||0):0, q=0.92, url=cv.toDataURL('image/jpeg',q);
     if(limit>0){ while(q>0.3 && (url.length*0.75/1024)>limit){ q-=0.06; url=cv.toDataURL('image/jpeg',q); } }
     var a=document.createElement('a');
