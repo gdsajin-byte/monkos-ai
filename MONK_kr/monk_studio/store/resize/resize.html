@@ -23,8 +23,12 @@
     background:
       linear-gradient(to right, rgba(255,255,255,.55) 1px, transparent 1px) 33.33% 0/33.33% 100%,
       linear-gradient(to bottom, rgba(255,255,255,.55) 1px, transparent 1px) 0 33.33%/100% 33.33%}
-  .hd{position:absolute;width:14px;height:14px;background:#fff;border:2px solid #0ABAB5;border-radius:3px}
-  .hd.se{right:-8px;bottom:-8px;cursor:nwse-resize}
+  .hd{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;background:#fff;border:2px solid #0ABAB5;border-radius:3px}
+  .hd::after{content:'';position:absolute;inset:-10px}  /* 손가락으로 잡기 쉽게 터치 영역만 넓힘 */
+  .hd[data-h=nw]{left:0;top:0;cursor:nwse-resize}   .hd[data-h=n]{left:50%;top:0;cursor:ns-resize}
+  .hd[data-h=ne]{left:100%;top:0;cursor:nesw-resize} .hd[data-h=e]{left:100%;top:50%;cursor:ew-resize}
+  .hd[data-h=se]{left:100%;top:100%;cursor:nwse-resize} .hd[data-h=s]{left:50%;top:100%;cursor:ns-resize}
+  .hd[data-h=sw]{left:0;top:100%;cursor:nesw-resize} .hd[data-h=w]{left:0;top:50%;cursor:ew-resize}
 </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -72,10 +76,10 @@
     <div id="wrap" class="text-center" hidden>
       <div id="stage">
         <img id="src" alt="">
-        <div id="box"><div class="g"></div><div class="hd se"></div></div>
+        <div id="box"><div class="g"></div><div class="hd" data-h="nw"></div><div class="hd" data-h="n"></div><div class="hd" data-h="ne"></div><div class="hd" data-h="e"></div><div class="hd" data-h="se"></div><div class="hd" data-h="s"></div><div class="hd" data-h="sw"></div><div class="hd" data-h="w"></div></div>
       </div>
       <p id="info" class="text-sm text-gray-500 mt-4"></p>
-      <p class="text-xs text-gray-400 mt-1">상자를 끌어 위치를 잡고, 오른쪽 아래 모서리로 크기를 조절하세요.</p>
+      <p class="text-xs text-gray-400 mt-1">상자를 끌어 위치를 잡고, 모서리나 변의 손잡이로 크기를 조절하세요.</p>
     </div>
   </div>
 
@@ -158,16 +162,32 @@ lucide.createIcons();
 
   // 드래그 이동 / 모서리 크기 조절
   var drag=null;
+  // 손잡이 8곳 — 끄는 쪽의 반대편(모서리는 맞은편 꼭짓점, 변은 맞은편 변)을 제자리에 두고 비율을 유지한다
   box.addEventListener('pointerdown', function(e){
-    var handle=e.target.classList.contains('se');
-    drag={mode:handle?'size':'move', sx:e.clientX, sy:e.clientY, ox:sel.x, oy:sel.y, ow:sel.w};
+    var h=e.target.dataset && e.target.dataset.h;
+    drag={h:h||null, sx:e.clientX, sy:e.clientY, o:{x:sel.x, y:sel.y, w:sel.w, h:sel.h}};
     box.setPointerCapture(e.pointerId); e.preventDefault();
   });
+  function resizeFrom(hd, o, dx, dy){
+    var r=ratio(), d=dispSize(), E=hd.indexOf('e')>=0, W=hd.indexOf('w')>=0, N=hd.indexOf('n')>=0, S=hd.indexOf('s')>=0;
+    var cx=o.x+o.w/2, cy=o.y+o.h/2, right=o.x+o.w, bottom=o.y+o.h;
+    // 끈 거리로 새 폭 계산 (모서리는 가로·세로 중 더 많이 움직인 쪽)
+    var fw=E?o.w+dx:W?o.w-dx:null, fh=S?o.h+dy:N?o.h-dy:null, w;
+    if(fw!==null && fh!==null) w=Math.abs(fw-o.w)>=Math.abs(fh*r-o.w)?fw:fh*r;
+    else w=fw!==null?fw:fh*r;
+    // 사진 밖으로 나가지 않는 최대 폭
+    var aw=E?d.w-o.x:W?right:2*Math.min(cx, d.w-cx);
+    var ah=S?d.h-o.y:N?bottom:2*Math.min(cy, d.h-cy);
+    w=Math.max(30, Math.min(w, aw, ah*r)); var h=w/r;
+    sel.w=w; sel.h=h;
+    sel.x=E?o.x:W?right-w:cx-w/2;
+    sel.y=S?o.y:N?bottom-h:cy-h/2;
+  }
   box.addEventListener('pointermove', function(e){
     if(!drag) return;
     var dx=e.clientX-drag.sx, dy=e.clientY-drag.sy;
-    if(drag.mode==='move'){ sel.x=drag.ox+dx; sel.y=drag.oy+dy; }
-    else { sel.w=drag.ow+dx; sel.h=sel.w/ratio(); }
+    if(!drag.h){ sel.x=drag.o.x+dx; sel.y=drag.o.y+dy; }
+    else resizeFrom(drag.h, drag.o, dx, dy);
     apply();
   });
   box.addEventListener('pointerup', function(){ drag=null; });
