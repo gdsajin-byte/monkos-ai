@@ -147,6 +147,7 @@
 | collectors/ (4종) | CLI | `scripts/collectors/` | PF_MARKET_EYE |
 | seo_collect.sh | 인프라 | `scripts/tools/` | `commands/market-eye.md` |
 | gsc_submit.sh | 인프라 | `scripts/tools/` | `rules/mcp-tools.md` |
+| tg_notify.sh (팀봇 텔레그램 1줄+URL 버튼) | 인프라 | `scripts/tools/` | `commands/deploy-cf.md` −1단계 3항 + PF_KKU. **10-22 신설**(ORDER_20261022 텔레그램발송도구). 토큰=SM `TELEGRAM_TEAM_BOT_TOKEN`(secret.sh 경유, curl `-K -` stdin — 인자·출력 미노출), chat_id=portal `deploy.sh` `TEAM_CHAT_ID` 정본 읽기(사본 없음), url 버튼만(callback 금지). 스모크: `--dry-run` 토큰 문자열 0건 · 실발송 message_id=451 · 음성 대조군(`TG_CHAT_ID_OVERRIDE`) HTTP 400 exit 1. 실패 가시화: `❌ tg_notify:` + exit 1 |
 | sa_audit.sh | 인프라 | `scripts/tools/` | SECRET_INVENTORY.md 권한 매트릭스 |
 | secret_patrol.sh | 인프라 | `scripts/tools/` + launchd `ai.monkos.secret-patrol`(일 09:30) | PATROL_LOG.md |
 | secret_meta_backfill.py | 인프라(1회성) | `scripts/tools/` | PROPOSAL_20260724 시크릿인지코드화 |
