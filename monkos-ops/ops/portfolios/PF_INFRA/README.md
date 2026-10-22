@@ -195,6 +195,7 @@ secret env               # SM → .env 일괄 동기화
 | 10/22 | iMac/쌍아 | **COMPLETION** 애플 비전 매팅 2단계(막내10) — 터널 matte-imac·dev E/F 통과·마스크 2016×1512 고정·품질 띠 MAE 0.06~0.10 | [COMPLETION_20261022_iMac쌍아-막내10_INFRA_애플비전_매팅서버_2단계](../../reports/2026-10/COMPLETION_20261022_iMac쌍아-막내10_INFRA_애플비전_매팅서버_2단계.md) | ✅ |
 | 10/22 | iMac/쌍아-막내9 | Gemini 2.5→3.5 텍스트 이전 dev 완료 — 4서비스 global 3.5-flash, 콜스코프 thinkingLevel 호환 수정, prod 승인 대기 | [COMPLETION_20261022_iMac쌍아-막내9_INFRA_Gemini25_3x이전](../../reports/2026-10/COMPLETION_20261022_iMac쌍아-막내9_INFRA_Gemini25_3x이전.md) | dev 완료 |
 | 10/22 | iMac/쌍아 | **ORDER** Gemini 3.5 타임아웃·건너뛰기 가드(원장 187 prod 선행) | [ORDER_20261022_iMac쌍아_막내_INFRA_Gemini35_타임아웃가드](../../orders/2026-10/ORDER_20261022_iMac쌍아_막내_INFRA_Gemini35_타임아웃가드.md) | ⏳ |
+| 10/22 | iMac/쌍아-막내9 | Gemini 3.5 타임아웃·건너뛰기 가드 dev 완료 — 사전분석 15s 생략·콜스코프 30s 명시 오류, 자연 429 1회 생략 실증, prod 승인 대기 | [COMPLETION_20261022_iMac쌍아-막내9_INFRA_Gemini35_타임아웃가드](../../reports/2026-10/COMPLETION_20261022_iMac쌍아-막내9_INFRA_Gemini35_타임아웃가드.md) | dev 완료 |
 
 ---
 | 08/13 | iMac/민아 | **2주 운영 감사 — 4060 매팅 불통 확정 + 폴백 체계 실전 검증** — matte.monkos.ai 전 경로 530(CF 터널 불통) + Tailscale 노드 소멸 + SSH 타임아웃 = 기계 자체 오프라인. 마지막 4060 정상 서빙 08-12 16:54 KST → 08-13 01:14 KST부터 전량 프리플라이트 불통. 14일 매팅 74건 중 RunPod 폴백 약 27건(36%), 최근 3일 사실상 전량 RunPod(종량 과금 중). 야간·새벽 간헐 이탈 포함 15일 중 8일 이탈 관측. **유저 실패 0건** — 07-25 조치(세마포어·줄서기·25s) 실전 합격: 최악 08-10 20:49 KST 4060 hang+RunPod 순간 동시실패에도 200/87.7s 납품, 504 재발 0. 물리 점검(전원/네트워크) 필요 | 세션 보고 (sessions/2026-08/2026-08-13_iMac_민아.md) | 🔴 4060 물리 확인 대기 |
