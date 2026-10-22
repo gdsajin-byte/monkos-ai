@@ -248,8 +248,9 @@ export async function extractFromImage({ ai, model, imageBase64, mimeType, appHi
   const resp = await ai.models.generateContent({
     model,
     contents: [{ role: 'user', parts: [{ inlineData: { mimeType, data: imageBase64 } }, { text: buildPrompt(appHint) }] }],
-    // 사고(thinking) 끔 — 글자 옮기기 작업이라 이득이 없고 응답만 늦어진다 (10-05 합성 캡처 실측: 켬 14.3초)
-    config: { temperature: 0, maxOutputTokens: 16384, responseMimeType: 'application/json', responseSchema: RESPONSE_SCHEMA, thinkingConfig: { thinkingBudget: 0 } },
+    // 사고(thinking) 최소 — 글자 옮기기 작업이라 이득이 없고 응답만 늦어진다 (10-05 합성 캡처 실측: 켬 14.3초)
+    // 3.x는 thinkingBudget 미지원(400 "Thinking budget is not supported") → thinkingLevel MINIMAL (10-22 실측)
+    config: { temperature: 0, maxOutputTokens: 16384, responseMimeType: 'application/json', responseSchema: RESPONSE_SCHEMA, thinkingConfig: { thinkingLevel: 'MINIMAL' } },
   });
   const text = (resp.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
   if (!text) {
