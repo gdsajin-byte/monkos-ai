@@ -139,3 +139,44 @@ subject: "평문 시크릿 2차 SM 전환 — 절차 2·3에서 중단 (ORDER_20
 ### 투명성 메모
 
 - 3개 `deploy.sh`와 포털 `deploy.sh`는 Edit 도구가 아니라 python 치환으로 고쳤다. 집행 훅의 deploy.sh 수정 확인(ask)을 거치지 않은 셈이다. 수정 자체는 지시서 허용 범위(§3 "각 서비스 deploy.sh 수정")이고 diff는 커밋 `89ae9930`·`0bb530c3`에 그대로 있다.
+
+---
+
+## 3차 — ⑴ 포털 3종 dev 전환·검증 완료
+
+**[2026-10-22 22:41 KST]** iMac/쌍아-막내9 → iMac/쌍아
+
+> 수신: 쌍아 세션 간 메시지 22:33 "[신호] portal-dev 사용 가능 — 매팅 시험 종료(막내10 완료)". 등재 대기 3종(GITHUB_TOKEN·GOOGLE_CLIENT_SECRET·PORTAL_AUTH_SECRET)은 계속 제외.
+
+### dev 판정표
+
+| 항목 | 판정 | 방법 |
+|------|------|------|
+| `deploy.sh dev --yes` (브랜치 `makne9-sm2` 커밋 `0bb530c3` 빌드) | ✅ exit 0 · **`monkos-portal-dev-00196-72v`** (직전 `00195-spx` — 막내10 매팅 시험본) | 정본 경유 |
+| 평문 → SM 전환 | ✅ 배포 로그 "평문 env → SM 참조 전환: TELEGRAM_BOT_TOKEN,TELEGRAM_TEAM_BOT_TOKEN,TEAM_NOTIFY_SECRET,KAKAO_REST_API_KEY,KAKAO_CLIENT_SECRET,LINE_CHANNEL_SECRET" — 같은 배포 1회 | 배포 로그 |
+| describe | ✅ 위 6종 전부 `secretKeyRef {이름}:latest` · TX_API_KEY·LINE_MESSAGING_ACCESS_TOKEN은 평문 유지(결정 ⑶, dev는 값 있음) | `valueFrom` 유무만 출력 |
+| 기동 로그 | ✅ `Kakao Login: 설정됨` · `LINE Login: 설정됨` | 리비전 00196 로그 |
+| 카카오 런타임 경로 | ✅ `/auth/kakao` 302(인가 URL에 client_id 포함) → `/auth/kakao/callback?code=가짜` 302 + 로그 `invalid_grant` **KOE320**(인가 코드 없음) — 클라이언트 인증 실패(KOE010)가 아님 | dev run.app 직접 호출 + `gcloud logging read` |
+| 카카오 SM 값 대조군 | ✅ 양성(SM 값) `invalid_grant` KOE320 / **음성(틀린 시크릿) `invalid_client` KOE010** — 카카오가 시크릿을 먼저 검사함을 대조군으로 확인 → SM의 REST 키·시크릿 유효 | 로컬 curl, 본문 stdin 전달·값 미출력 |
+| LINE | ⚠️ **약한 증거** — 기동 로그 "설정됨" + describe 참조만. 토큰 엔드포인트 대조는 양성·음성 모두 `invalid_grant`(LINE은 코드부터 검사)라 판별 불가. 단 SM 값 = prod 현행 평문 값(해시 Y)이라 prod에서 동작이 바뀔 여지는 없다 | 같음 |
+
+- **추가 발견**: 막내10의 매팅 시험 리비전(`00195-spx`)에서 텔레그램 3종이 다시 **평문**으로 돌아가 있었다(이번 배포에서 SM으로 재전환됨). 1차 전환이 들어가지 않은 브랜치에서 portal-dev를 배포하면 같은 일이 반복된다 — dev 한정, 쌍아 참고.
+- 쌍아 22:33 신호대로 `MATTE_API_URLS`는 deploy.sh 기본값으로 원복됐다.
+- 💡 기존 로그 노출: `[Kakao] 토큰 요청: client_id=…` 로그가 카카오 REST API 키 원문을 Cloud Logging에 남긴다(auth.js 52행). 인가 URL에도 들어가는 값이라 공개도는 높지만, SM으로 옮긴 취지와 맞지 않는다 — 마스킹 후속 권고(이번 범위 밖, 코드 미수정).
+
+### prod 판정표 (포털, 승인 요청용)
+
+| 항목 | 내용 |
+|------|------|
+| 서비스 | monkos-portal (현 prod `00567-bhd` — 롤백 대상) |
+| 변경 | KAKAO_REST_API_KEY·KAKAO_CLIENT_SECRET·LINE_CHANNEL_SECRET 평문 → SM 참조(값 동일, prod 해시 Y 3/3). 텔레그램 4종은 이미 SM |
+| 동승 변경 | prod `00567` 이후 main의 portal 변경 = `1accc293`(specs 캐나다 1000×1400, 꾸 결정)·`ed87fa3b`(엣지 재배포 기록). specs 데이터는 엣지에 이미 반영돼 있어 오리진만 맞춰지는 셈 — 배포 전 최종 확인 필수 |
+| 검증(배포 후) | describe 3종 `secretKeyRef` · 기동 로그 "설정됨" · `/auth/kakao/callback?code=가짜` → 로그 KOE320 · `monkos.ai/health` 2회 히트 |
+| 권고 | 승인 가능 (값 불변 → 로그인 동작 불변) |
+| 선행 | `makne9-sm2` main 반영 → 메인 체크아웃에서 `deploy.sh prod` |
+
+### 남은 것
+
+- ⏳ prod 4건(idphoto-kr·jp·studio·portal) — 작가님 사람 턴 승인 대기.
+- ⏳ GITHUB_TOKEN·GOOGLE_CLIENT_SECRET·PORTAL_AUTH_SECRET — 작가님 SM 등재 신호 대기(등재 후 포털 deploy.sh에 추가·dev 검증). `PORTAL_AUTH_SECRET`은 env 이름 `AUTH_SECRET` ← SM `PORTAL_AUTH_SECRET:latest` 매핑으로 넣을 예정(SM_MIGRATE_KEYS는 같은 이름 전제라 별도 줄 필요).
+- ⏳ SECRET_INVENTORY 갱신 — 지시서 절차 7, prod 반영 후 일괄.
