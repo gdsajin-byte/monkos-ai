@@ -54,7 +54,7 @@ order: monkos-ops/ops/orders/2026-10/ORDER_20261022_iMac쌍아_막내_INFRA_매�
 - 둘 다 `RunAtLoad`·`KeepAlive`·`ThrottleInterval 30`이고 `MONK_ROOT`=본진 경로(secret.sh·tg_notify 위치). 실행 사본이 `~/.monkos/vision-matte/`에 있어서 worktree를 지워도 영향이 없다. 설치·해제: `monkos_AI/vision-matte/run_local.sh install|uninstall`.
 - 설치 22:50 → 둘 다 running · 로컬 `/health` 200 · 커넥터 4연결 · 터널 토큰은 로그·`ps` 인자에 0건.
 - **재기동 실증**: 22:50:23 `kill -9` 서버(60405)·cloudflared(60411) → 35초 뒤 둘 다 `runs = 2`, pid 60608/60609 · 로컬 200. 옛 워처(60504)는 대상이 죽자 같이 끝났고 새 워처(60699) 1개만 남았다(중복 없음).
-- **헬스 워처**: 60초마다 외부 `https://matte-imac.monkos.ai/health`를 2회 히트하고 2차로 판정한다. 연속 2회 실패 = down. 알림은 상태 전이(up↔down) 때만 보내고, 직전 알림 후 10분 안이면 다음 주기로 미룬다. 서버 잡을 bootout(23:06:51)한 뒤 **23:08:47 `tg_notify` 발송 성공**(exit 0 — 상태 파일 `down 502`, 오류 로그 0바이트). 복구 알림은 10분 간격 규칙상 23:18:47 이후에 나간다(아래 갱신 줄 참조). 워처 자체가 실패하면 `~/.monkos/vision-matte/health_watch.err`에 남는다.
+- **헬스 워처**: 60초마다 외부 `https://matte-imac.monkos.ai/health`를 2회 히트하고 2차로 판정한다. 연속 2회 실패 = down. 알림은 상태 전이(up↔down) 때만 보내고, 직전 알림 후 10분 안이면 다음 주기로 미룬다. 서버 잡을 bootout(23:06:51)한 뒤 **23:08:47 `tg_notify` 발송 성공**(exit 0 — 상태 파일 `down 502`, 오류 로그 0바이트). 복구 알림 **23:19:14 발송 성공**(10분 최소 간격 직후, 상태 `up 200`, 오류 0바이트) — 전이 2회에 알림 정확히 2건. 워처 자체가 실패하면 `~/.monkos/vision-matte/health_watch.err`에 남는다.
 - 운영 메모: 수동 정지는 `launchctl bootout gui/$(id -u)/<잡>`이다. `kill`은 KeepAlive가 되살린다.
 
 ## 3. 포털 체인 + dev E·F·T1
@@ -70,7 +70,7 @@ order: monkos-ops/ops/orders/2026-10/ORDER_20261022_iMac쌍아_막내_INFRA_매�
 - **T1 유료 경로를 실행하지 못했다(도구·권한 한계)**: 유료 게이트를 통과하려면 ① 결제 토큰(토스 샌드박스 결제 — 브라우저 흐름이 필요한데 이 세션은 playwright MCP 연결이 실패했다) ② 로그인 크레딧(크레딧 변경 = ch4 10조, 작가님 지시 필요) 중 하나가 필요하다. Firestore에 토큰을 직접 쓰는 것은 금지 사항이다.
   - 코드상 T1이 매팅을 쓰는 곳은 **비백색국 배경 재채색 한 곳**뿐이다(`server.js:874-878` `runMatteChain(t1Image, bgColor, slug)`). 그래서 **등가 호출**로 검증했다: 흰 배경 증명사진(E 결과, 나노 산출 등가) → `https://matte-imac.monkos.ai/api/matte` bgColor `#438EDB` → 200 · 경계 흰 테두리 없음(육안) · elapsedSec 1.09s(재기동 직후 첫 호출 웜업). 시트 `~/.monkos/vision-matte/q/t1_equiv_sheet.jpg`.
   - 실 T1 1회가 필요하면 작가님이 dev에서 결제 1회(토스 테스트 키)를 하거나, 테스트 계정 크레딧 충전을 지시해야 한다.
-- 부수 영향: 공유 Firestore `free_quota` 당일 GLOBAL +2(누적 오늘 +4) · dev GCS `idphoto/specs-visitor/` 2쌍(브랜드 자산) · 텔레그램 팀방 경보 1건(+복구 1건 예정).
+- 부수 영향: 공유 Firestore `free_quota` 당일 GLOBAL +2(누적 오늘 +4) · dev GCS `idphoto/specs-visitor/` 2쌍(브랜드 자산) · 텔레그램 팀방 경보 2건(down 23:08:47·복구 23:19:14).
 
 ## ⚠️ 자진 보고 — 직전 지시서의 dev env 직접 갱신
 
