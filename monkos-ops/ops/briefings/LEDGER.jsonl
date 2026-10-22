@@ -1,2 +1,74 @@
 {"ts": "2026-10-22 19:08 KST", "id": 160, "event": "open", "axis": "secret", "severity": "🔴", "title": "포털 런타임 env 평문 시크릿 4종 → --set-secrets 전환", "owner": "쌍아", "by": "iMac/쌍아-막내6"}
 {"ts": "2026-10-22 19:08 KST", "id": 160, "event": "resolve", "evidence": "prod rev 00567-bhd 4종 valueFrom · 6f9a2ee5 (latestReadyRevision 재실측 일치)", "by": "iMac/쌍아-막내6"}
+{"ts": "2026-10-22 19:15 KST", "id": 131, "event": "open", "axis": "mail", "severity": "🔴", "title": "고객 환불 요청 미회신(스레드 메시지 1 유지, 564h)", "owner": "작가님", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 146, "event": "open", "axis": "repo", "severity": "🔴", "due": "2026-11-15", "title": "RunPod 429 백오프 미구현 · REST v1 폐기 D-24", "owner": "막내", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 124, "event": "open", "axis": "repo", "severity": "🔴", "title": "캐나다 비자 5×7cm 불일치 (묶음 134)", "owner": "막내", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 123, "event": "open", "axis": "content", "severity": "🔴", "title": "es 2필드 영문 잔존(번역 미완)", "owner": "막내", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 166, "event": "open", "axis": "repo", "severity": "⏸️", "title": "PR #195 08-07 브리핑 미머지·미클로즈(76일)", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 167, "event": "open", "axis": "repo", "severity": "⏸️", "title": "PR #208 MARKET_EYE 미머지·미클로즈(70일)", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 168, "event": "open", "axis": "repo", "severity": "⏸️", "title": "PR #303 09-15 브리핑 미머지·미클로즈(37일)", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 169, "event": "open", "axis": "repo", "severity": "⏸️", "title": "PR #412·#413 미머지(적층) — 추인+머지 순서", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 126, "event": "open", "axis": "repo", "severity": "⏸️", "title": "파일명 결함 — 16일 연속 TODO 미실행 (묶음 127)", "owner": "막내", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 127, "event": "open", "axis": "repo", "severity": "⏸️", "title": "파일명 결함 (126과 묶음)", "owner": "막내", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 153, "event": "open", "axis": "repo", "severity": "⏸️", "title": "알림 자르기 1줄 · 다이제스트 상한 3800", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 110, "event": "open", "axis": "repo", "severity": "⏸️", "title": "E10 처방 미결(승인 게이트 위조 가능) — 처방 A 채택/반려/보류", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 170, "event": "open", "axis": "live", "severity": "⏸️", "title": "GBP 재심사 — 콘솔 조작만 남음(50일)", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 171, "event": "open", "axis": "repo", "severity": "⏸️", "title": "specs 지시서 재발행(20일 연속 미실행)", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 172, "event": "open", "axis": "secret", "severity": "⏸️", "title": "레거시 키 2행 — 값 접촉 필요(134일)", "owner": "작가님", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 173, "event": "open", "axis": "infra", "severity": "⏸️", "title": "GSC 색인 401 — 경로 오류 여부 미확정", "owner": "막내", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 174, "event": "open", "axis": "secret", "severity": "⏸️", "title": "GOOGLE_CLIENT_SECRET SM 정본화(값 접촉 필요)", "owner": "작가님", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 175, "event": "open", "axis": "secret", "severity": "⏸️", "title": "AGENT-API-KEYS SM v1 disable(v2 등록 완료)", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 176, "event": "open", "axis": "infra", "severity": "⏸️", "title": "매팅 콜드스타트 방향 — RunPod 수치 조회 불가(열나흘)", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 177, "event": "open", "axis": "mail", "severity": "⏸️", "title": "고객 문의 \"Passfoto\" 미회신(20일, 되묻기/종결)", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 178, "event": "open", "axis": "live", "severity": "⏸️", "title": "네이버 예약 상품 가격 미표시(관리자 화면)", "owner": "꾸", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 140, "event": "open", "axis": "content", "severity": "⏸️", "title": "콘텐츠 101/139편 미발행(적체 5개월)", "owner": "작가님", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 116, "event": "open", "axis": "secret", "severity": "⏸️", "title": "정부자금 수집 키(BIZINFO_API_KEY) 미등록 — 10-22 정정: CI 경로만 복구", "owner": "작가님", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 102, "event": "open", "axis": "live", "severity": "⏸️", "title": "홈 이미지 9,006,534 B 19일 연속 동일 (묶음 111·118)", "owner": "막내", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 111, "event": "open", "axis": "live", "severity": "⏸️", "title": ".jpg 4장이 라이브에서 PNG 매직 바이트", "owner": "막내", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 118, "event": "open", "axis": "live", "severity": "⏸️", "title": "교체본 파일명 불일치(style-linkedin_pro.webp)", "owner": "막내", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 179, "event": "open", "axis": "repo", "severity": "⏸️", "title": "PR #420 10-21 철창이 세션 로그 미머지(draft)", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 155, "event": "open", "axis": "live", "severity": "🔴", "title": "monk.kr 커밋이 라이브에 도달하지 않음(연락처 미반영)", "owner": "작가님", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 162, "event": "open", "axis": "session", "severity": "ℹ️", "title": "「막내」 수신 항목 5건 16일째 무수신", "owner": "작가님", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 161, "event": "open", "axis": "repo", "severity": "ℹ️", "title": "Anthropic News 수집기 파싱 0건", "owner": "막내", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 163, "event": "open", "axis": "mail", "severity": "ℹ️", "due": "2026-10-27", "title": "토스 에스크로 OpenAPI + Payment 필드 추가 — XPAY 영향 확인", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 159, "event": "open", "axis": "mail", "severity": "ℹ️", "due": "2026-12-03", "title": "민사 변론기일 12-03 달력 미등록", "owner": "작가님", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 129, "event": "open", "axis": "repo", "severity": "ℹ️", "title": "랙 임계 4일이 구조적으로 도달 불가", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 157, "event": "open", "axis": "repo", "severity": "ℹ️", "title": "PR #412가 CI와 같은 검사를 바꾼다 — 추인+순서", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 156, "event": "open", "axis": "repo", "severity": "ℹ️", "title": "specs 치수·DPI·픽셀 불일치 4건", "owner": "막내", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 121, "event": "open", "axis": "live", "severity": "ℹ️", "title": "monk.kr 챗봇 프롬프트 라이브 반영 — 종결 후보(쌍아 1줄 대기)", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 105, "event": "open", "axis": "infra", "severity": "ℹ️", "title": "CF Pages Git 연동 미정리(236일)", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 132, "event": "open", "axis": "repo", "severity": "ℹ️", "title": "루틴 시크릿 정규식이 자기 보고서를 잡는다", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 134, "event": "open", "axis": "repo", "severity": "ℹ️", "title": "kr-taxi 단독 이탈 (124와 묶음)", "owner": "막내", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 143, "event": "open", "axis": "infra", "severity": "ℹ️", "title": "Lemon 주문 1건 적립 미확인(포털 로그)", "owner": "막내", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 141, "event": "open", "axis": "infra", "severity": "ℹ️", "due": "2026-11-11", "title": "Google OAuth agentic 표시 D-20", "owner": "작가님", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 139, "event": "open", "axis": "repo", "severity": "ℹ️", "title": "GitHub Cursor 앱 권한 요청(승인/거부)", "owner": "작가님", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 136, "event": "open", "axis": "content", "severity": "ℹ️", "title": "AI기본법 31조 사전 고지 — 법령 미확인", "owner": "작가님", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 148, "event": "open", "axis": "session", "severity": "ℹ️", "title": "웹 MEMORY 243줄 — 캡 초과", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 149, "event": "open", "axis": "repo", "severity": "ℹ️", "title": "자동 브리핑 🔴이 상단 집계 미합류", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 130, "event": "open", "axis": "repo", "severity": "ℹ️", "title": "루틴 bizinfo 키 기본값 문구 실효", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 117, "event": "open", "axis": "infra", "severity": "ℹ️", "title": "ga4_daily 중복 106행 현 상태(BQ 자격 필요)", "owner": "막내", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 115, "event": "open", "axis": "infra", "severity": "ℹ️", "title": "matte 영향 없음 판정의 근거 소실 — 폴백 생존·잔액·실패율", "owner": "민아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 122, "event": "open", "axis": "content", "severity": "ℹ️", "title": "jp-visa 꼬리표 불일치 (묶음 119·133)", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 119, "event": "open", "axis": "content", "severity": "ℹ️", "title": "출처 등급 2층 (122와 묶음)", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 133, "event": "open", "axis": "content", "severity": "ℹ️", "title": "쉥겐 분류 누락 (122와 묶음)", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 147, "event": "open", "axis": "session", "severity": "ℹ️", "title": "교훈: 3점 이하로 방향을 쓰지 않는다 — 유지", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 164, "event": "open", "axis": "live", "severity": "ℹ️", "title": "2회 히트는 캐시용, 콜드스타트 분리 못함 — live-verify 3회 히트 1줄", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 165, "event": "open", "axis": "content", "severity": "ℹ️", "title": "한 음절 내부 호칭은 맨 grep으로 게이트 불가 — 경계 조건", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 150, "event": "open", "axis": "session", "severity": "ℹ️", "title": "교훈: 미결 항목이 새 관측의 설명으로 먼저 잡힌다 — 유지", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 151, "event": "open", "axis": "session", "severity": "ℹ️", "title": "교훈: 축 없는 모수는 전일 비교 불가 — 유지", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 142, "event": "open", "axis": "session", "severity": "ℹ️", "title": "교훈: 404·0건의 원인이 조회 쪽일 수 있다 (묶음 135·145)", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 135, "event": "open", "axis": "session", "severity": "ℹ️", "title": "교훈: 404·0건 (142와 묶음)", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 145, "event": "open", "axis": "session", "severity": "ℹ️", "title": "교훈: 404·0건 (142와 묶음)", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 152, "event": "open", "axis": "session", "severity": "ℹ️", "title": "교훈: 반복 기재는 검증을 유예한다 — 유지", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 103, "event": "open", "axis": "repo", "severity": "ℹ️", "title": "외부 입력 무검증 기록(수집기 절단·펜스)", "owner": "막내", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 94, "event": "open", "axis": "repo", "severity": "ℹ️", "title": "빈 수집이 기존 데이터 덮어씀(보존 로직 부재, 134일)", "owner": "막내", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 106, "event": "open", "axis": "live", "severity": "ℹ️", "title": "인화 주문 결제 연동(꾸 희망) — 방식 택1", "owner": "작가님", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 108, "event": "open", "axis": "session", "severity": "ℹ️", "title": "꾸 위임 P4 — 배포 승인 2회(위임 여부)", "owner": "작가님", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 144, "event": "open", "axis": "session", "severity": "ℹ️", "title": "(143)/(144) 번호가 두 축에 중복 배정 — 재배정", "owner": "쌍아", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 75, "event": "open", "axis": "infra", "severity": "ℹ️", "title": "MCP 6서버 연결 실패(웹 환경) — 대체 경로 운용", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:15 KST", "id": 154, "event": "open", "axis": "repo", "severity": "ℹ️", "title": "rejectionReasons가 전 레코드 공통 문구", "owner": "미배정", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:16 KST", "id": 155, "event": "resolve", "evidence": "10-21 run 39535836155(626df474)·run #19(4876c5a6) success, 라이브 data-cfemail 복호 info@monkos.ai 2회 히트 일치(웹민아 10-22 07:12 §🔧) · 승계 (155) 폐기 표기", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:16 KST", "id": 106, "event": "resolve", "evidence": "작가님 10-22 17:38 결정 (나) monk.kr 토스 연동 · 배포 run 39753645464 커밋 95040ca3 · 라이브 2회 히트(studio-order.js 3·POST only) · 꾸 실결제 MS-261022-MVFK 18:29 DONE 10,000원(토스 거래 조회) · 메일 2통 수신(꾸 19:0x)", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:16 KST", "id": 162, "event": "note", "text": "10-22 17:05 iMac 쌍아 e1이 쌍아-막내2(tg_notify.sh)·막내3(포털 env SM 전환) 투입 통지(세션 간). iMac 미커밋 쌍아 로그 4건(10-08·13·14·15)은 웹 비가시 — 무수신 판정은 로컬 축 재측정 필요", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:16 KST", "id": 124, "event": "note", "text": "10-22 19:16 꾸 결정 ca-visa 1000×1400px·dpi 508 통일(1accc293, 미배포) — 본 항목(5×7cm 불일치)과의 관계는 막내 정정 시 대조", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:16 KST", "id": 115, "event": "note", "text": "10-22 민아: RunPod 잔액 09-30 $23.46 이후 미실측. 매팅 대안으로 M1 애플 비전 서버 테스트 설계 착수(DESIGN_20261022_INFRA_M1)", "by": "iMac/민아"}
