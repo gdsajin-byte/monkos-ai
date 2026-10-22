@@ -137,6 +137,8 @@ export const aiImage = new GoogleGenAI({
 export const CMS_IMAGE_MODEL = 'gemini-3.1-flash-image';
 // 콜스코프(어드민 내부 도구) 캡처 판독 — CMS 텍스트 경로(lib/cms/ai.js·translate.js)와 같은 모델을 `ai`로 호출한다
 export const CALLSCOPE_MODEL = TEXT_MODEL;
+// 콜스코프 판독 호출당 상한 — 정상 3~4s(10-22 합성 캡처 실측), 이상 사례 204s 1건. 내부 도구라 초과 시 명시 오류(건너뛰기 아님)
+export const CALLSCOPE_TIMEOUT_MS = 30000;
 
 // === Telegram API URL ===
 export const TELEGRAM_CS_API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;

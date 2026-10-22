@@ -10,7 +10,7 @@
  */
 import { FieldValue } from '@google-cloud/firestore';
 import { requireAdmin } from '../cms/admin-auth.js';
-import { ai, firestore, log, CALLSCOPE_MODEL } from '../shared/config.js';
+import { ai, firestore, log, CALLSCOPE_MODEL, CALLSCOPE_TIMEOUT_MS } from '../shared/config.js';
 import { extractFromImage, normalizeExtraction, APPS, VERIFY_FIELDS, GLOSSARY } from './extract.js';
 
 const COLLECTION = 'mina_callscope';
@@ -88,7 +88,7 @@ export async function handleCallscopeIngest(req, res) {
   let raw;
   const tx0 = Date.now();
   try {
-    raw = await extractFromImage({ ai, model: CALLSCOPE_MODEL, imageBase64, mimeType: mime, appHint });
+    raw = await extractFromImage({ ai, model: CALLSCOPE_MODEL, imageBase64, mimeType: mime, appHint, timeoutMs: CALLSCOPE_TIMEOUT_MS });
   } catch (e) {
     const ms = Date.now() - t0;
     log(`[Callscope] 판독 실패 ${ms}ms — ${e.message}`, 'ERROR');
