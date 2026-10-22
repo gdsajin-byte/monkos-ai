@@ -106,6 +106,7 @@ status: active
 | 10/21 | iMac/민아 | INCIDENT — 포털 Cloud Run env 평문 텔레그램 토큰이 에이전트 도구 출력에 노출(로컬 한정). 로테이션 불요 판정, env→SM secretKeyRef 전환 보완 청구(쌍아) | [INCIDENT_20261021_portal-env-telegram-token-exposure](../../incidents/2026-10/INCIDENT_20261021_portal-env-telegram-token-exposure.md) | ✅ |
 | 10/22 | iMac/쌍아 | **ORDER** 포털 env 평문 시크릿 4종→SM 전환 (dev 선행, prod 작가님 승인, EVENT 봇 토큰 SM 미등재) | [ORDER_20261022_iMac쌍아_막내_SECURITY_포털env평문시크릿_SM전환](../../orders/2026-10/ORDER_20261022_iMac쌍아_막내_SECURITY_포털env평문시크릿_SM전환.md) | ⏳ |
 | 10/22 | iMac/쌍아-막내3 | 포털 env 평문 시크릿 SM 전환 — 3종 값 일치 Y(dev·prod), TELEGRAM_EVENT_BOT_TOKEN SM 미등재로 절차 2 중단. 작가님 secret add 후 재개 | [COMPLETION_20261022_iMac쌍아-막내3_SECURITY_포털env평문시크릿_SM전환_중단](../../reports/2026-10/COMPLETION_20261022_iMac쌍아-막내3_SECURITY_포털env평문시크릿_SM전환_중단.md) | ⏳ |
+| 10/22 | iMac/쌍아-막내3 | 포털 env SM 전환 완료 — prod 4종(00567-bhd)·dev 3종(00192-x52) secretKeyRef, 3봇 토큰 인증·웹훅 스모크 합격, SECRET_INVENTORY 갱신 (같은 COMPLETION §4차) | — | ✅ |
 
 ---
 

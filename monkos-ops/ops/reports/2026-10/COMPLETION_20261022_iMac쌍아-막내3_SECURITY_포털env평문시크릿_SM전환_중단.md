@@ -118,3 +118,39 @@ gcloud run services describe monkos-portal --region us-central1 --project monkos
 
 - ⏳ 절차 5 prod: 작가님 새 사람 턴 승인 후 `deploy.sh prod` (main 브랜치 게이트 — 메인 체크아웃에서 실행).
 - ⏳ 절차 6 SECRET_INVENTORY: prod 전환 후 일괄 갱신(EVENT 토큰 신규 행 포함).
+
+---
+
+## 4차 — prod 전환 완료 (지시서 전 절차 완료)
+
+**[2026-10-22 18:43 KST]** iMac/쌍아-막내3 → iMac/쌍아
+
+> 승인: **작가님 2026-10-22 18:37 이 세션 사람 턴 "prod 배포 승인"** (훅 E10 승인 토큰 발급 — 세션 바인딩·1회용). 실행 1회.
+
+✅ **결론**: prod 4종 SM 참조 전환 완료·스모크 합격. 절차 1~6 전부 종료. (파일명 `_중단`은 1차 보고 시점 명명 — 최종 상태는 완료)
+
+### 절차 5 — prod 판정표
+
+| 항목 | 판정 | 방법 |
+|------|------|------|
+| 배포 전 점검 | ✅ 메인 체크아웃 = origin/main `90837605`, portal 디렉터리 클린, prod 직전 리비전 `00566-ngn`(10-05) 이후 portal 변경 = `04128ba4` 1건뿐(타 작업 동승 없음) | git status·log |
+| `deploy.sh prod --yes` | ✅ exit 0 · 리비전 **`monkos-portal-00567-bhd`** 100% · 롤백 = `00566-ngn` | 메인 체크아웃(main 게이트) |
+| 평문 제거 | ✅ 배포 로그 "평문 env → SM 참조 전환: 4종" — 같은 배포 1회 | 배포 로그 |
+| describe 4종 | ✅ `TELEGRAM_BOT_TOKEN`·`TELEGRAM_TEAM_BOT_TOKEN`·`TEAM_NOTIFY_SECRET`·`TELEGRAM_EVENT_BOT_TOKEN` = `secretKeyRef {이름}:latest` | `valueFrom` 유무만 출력 |
+| 기동 로그 | ✅ CS·Event·Team Bot 모두 "설정됨" | 리비전 00567 `jsonPayload.message` |
+| `/api/team/notify` | ✅ 음성(틀린 시크릿) **403** · 양성(SM 값) **200** + 실패 로그 0 → 팀 채널 1건 발송 | curl, 헤더 stdin |
+| 팀봇 웹훅 `/api/webhook/telegram-team` | ✅ 200 + 텔레그램 "chat not found" | 판별 chat_id=1 (아래) |
+| CS봇 웹훅 `/api/webhook/telegram` (callback `cs_chat`) | ✅ 200 + "chat not found" | 같음 |
+| 이벤트봇 웹훅 `/api/webhook/telegram-event` (`/start`) | ✅ 200 + "chat not found" | 같음 |
+| 라이브 헬스 | ✅ `https://monkos.ai/health` 200 healthy | 엣지 경유 2회 히트, 2차 판정 |
+
+**판별 방법**: 존재하지 않는 chat_id=1로 회신하게 해, 텔레그램 응답으로 토큰 인증을 가린다 — 유효 토큰은 "Bad Request: chat not found", 무효 토큰은 "Unauthorized". 3봇 모두 "chat not found"(09:42:46/47/48Z, 요청 순서와 일치) = 3개 토큰 전부 텔레그램 인증 통과. 실발송 0. 이 실패 로그가 실제로 찍힌다는 것이 곧 **로그 경로의 양성 대조**이므로, notify 양성 건의 "실패 로그 0"도 유효한 증거가 된다(3차 판정표의 약한 증거 단서는 prod 기준으로 해소).
+
+### 절차 6 — SECRET_INVENTORY
+
+- #22·#23·#25 주입 방식을 "SM `latest` 참조(dev·prod)"로 갱신, **#25-E `TELEGRAM_EVENT_BOT_TOKEN` 신규 행**(prod 전용, dev 미적용 사유 포함). 값 미기재.
+
+### 남은 것 / 참고
+
+- dev `TELEGRAM_EVENT_BOT_TOKEN`은 빈 평문 env로 남아 있다(결정대로). 나중에 dev도 SM 참조로 바꾸면 dev에서도 이벤트봇 실발송이 시작된다.
+- 텔레그램 토큰 4종은 이제 `describe`·콘솔에 값이 나오지 않는다. 남은 평문 env 19종은 비시크릿 설정값으로 본다(이번 범위 밖, 전수 감사는 하지 않음).

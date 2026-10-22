@@ -95,10 +95,11 @@ status: 현행
 | 20 | LEMONSQUEEZY_API_KEY | Lemon Squeezy API | portal (JP/글로벌 결제) | 2026-07-02 v2 로테이션 (키노출 인시던트) |
 | 21 | LEMONSQUEEZY_WEBHOOK_SECRET | Lemon Squeezy 웹훅 (JP store#290457) | portal | |
 | 21-G | LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL | Lemon Squeezy 웹훅 (Global store#415328) | portal | 2026-06-23 |
-| 22 | TELEGRAM_BOT_TOKEN | CS 봇 @monkos_support_bot | portal | |
-| 23 | TELEGRAM_TEAM_BOT_TOKEN | 팀 전용 봇 | 내부 알림 | ⭐ 누락 |
+| 22 | TELEGRAM_BOT_TOKEN | CS 봇 @monkos_support_bot | portal | 2026-10-22 portal Cloud Run 주입 = SM `latest` 참조(평문 env 제거, ORDER_20261022 SM 전환) — dev·prod |
+| 23 | TELEGRAM_TEAM_BOT_TOKEN | 팀 전용 봇 | 내부 알림 · portal | ⭐ 누락 · 2026-10-22 portal Cloud Run 주입 = SM `latest` 참조(평문 env 제거, ORDER_20261022) — dev·prod |
 | 24 | TEAM_CHAT_ID | 텔레그램 팀 채팅 ID | 내부 알림 | ⭐ 누락 |
-| 25 | TEAM_NOTIFY_SECRET | 팀 알림 시크릿 | 내부 알림 | ⭐ 누락 |
+| 25 | TEAM_NOTIFY_SECRET | 팀 알림 시크릿 | 내부 알림 · portal | ⭐ 누락 · 2026-10-22 portal Cloud Run 주입 = SM `latest` 참조(평문 env 제거, ORDER_20261022) — dev·prod |
+| 25-E | TELEGRAM_EVENT_BOT_TOKEN | 이벤트 봇 (/start는 CS봇 안내) | portal (prod 전용) | 2026-10-22 SM 신규 등재(작가님 터미널, v1 — 현행 prod env 값 무노출 이관) · prod SM 참조 전환. **dev는 미적용·빈 값 유지**(작가님 10-22 "2번승인", dev 실발송 방지) |
 | 26 | X_ACCESS_TOKEN | X/Twitter OAuth | n8n 자동화 | |
 | 27 | X_ACCESS_TOKEN_SECRET | X OAuth 시크릿 | n8n | |
 | 28 | X_CONSUMER_KEY | X API 컨슈머 키 | n8n | |
