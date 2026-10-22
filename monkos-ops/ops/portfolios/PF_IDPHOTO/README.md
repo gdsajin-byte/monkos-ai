@@ -69,6 +69,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 |------|------|------|--------|------|
 | 01/11 | 작가님+쌍아 | Image Pro MVP 착수 | `a08f5ff` | ✅ |
 | 01/16 | 막내 | idphoto-kr 증명사진 MVP 완성 (7커밋) | `b2e7b26` | ✅ |
+| 10/23 | iMac/쌍아 | **PROPOSAL** 보정 적정성 판정기 — 원본 대비 이탈 5축 + 작가님 눈 선호 모델 + 판단·번역·입담 3층(부록: 바둑 해설 봇 연구 시드) | [PROPOSAL_20261023_iMac쌍아_IDPHOTO_보정적정성판정기](../../proposals/PROPOSAL_20261023_iMac쌍아_IDPHOTO_보정적정성판정기.md) | ⏳ |
 
 ### Phase 1 — idphoto-kr/jp 웹 서비스 (01/16~02/14)
 

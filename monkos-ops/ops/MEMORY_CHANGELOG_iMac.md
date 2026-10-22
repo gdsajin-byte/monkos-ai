@@ -691,3 +691,9 @@
 - MEMORY.md·메모리 파일 변경 0. 기록은 세션 로그(2026-10-15·2026-10-21_iMac_민아.md)·PF_KKU(배포 2회·앱 알림 설계 0단계)·PF_SECURITY(INCIDENT env 평문 토큰)·PROPOSAL_20261021_iMac민아_KKU_배포요청_앱알림_승인버튼에 남김.
 
 - **[2026-10-22 23:32 KST]** iMac/쌍아 — project_monkos_sovereignty.md 갱신: '실행 권한도 자체 도구로'(작가님 10-22 Duet 대비 발언) 단락 추가.
+
+- **[2026-10-23 05:15 KST]** iMac/쌍아 — 신규 메모리 project_own_ledger_over_channel_logs.md + MEMORY.md 인덱스 1행(작가님 10-23 자체 장부 원칙).
+
+- **[2026-10-23 05:23 KST]** iMac/쌍아 — feedback_constitution_art4_intent.md 갱신: 4조 2항도 취지 해석(합의·기록·백업 시 이력 재작성 가능, 작가님 10-23).
+
+- **[2026-10-23 05:33 KST]** iMac/쌍아 — project_monkos_sovereignty.md에 '로컬=소유' 단락 추가(작가님 10-23).
