@@ -3,7 +3,7 @@ type: design
 date: 2026-10-22
 device: iMac
 agent: 쌍아
-status: 초안 — 민아 범위 맞춤 대기
+status: 범위 맞춤 완료(민아 19:06) — 1단계 지시서 발행
 portfolio: PF_AUTOPILOT
 subject: "E2E 데일리 브리핑 — 해소 원장 신설 → iMac 민아 로컬·인프라 축 인수 → 메일 경로 확보 시 웹 종료"
 related:
@@ -43,9 +43,10 @@ related:
 ## 3. 해소 원장
 
 - 위치: `monkos-ops/ops/briefings/LEDGER.jsonl` (append-only, 1행 1이벤트).
-- 행: `{"ts","id","event":"open|resolve|reopen|note","axis","title","owner","evidence","by"}`
+- 행: `{"ts","id","event":"open|resolve|reopen|note","axis","severity","due","title","owner","evidence","by"}`
   - `id` = 현행 승계 번호 `(NNN)` 그대로 이관(신규는 최대값+1).
-  - `evidence` 필수(resolve·reopen): 커밋 SHA / 라이브 실측(방법 포함 — 2회 히트·대조군) / 사람 턴 원문 시각. 근거 없는 resolve는 CLI가 거부.
+  - `axis` 고정 enum: `mail|repo|live|infra|local|session|content|secret` / `severity`: `🔴|⏸️|ℹ️` / `due`: `YYYY-MM-DD`(D-day 항목만) — CLI가 검사.
+  - **CLI 규칙**(민아 19:06 보완): resolve·reopen은 open/reopen 상태 id에만 허용 · `by`는 `{디바이스}/{에이전트}` 형식 · `evidence`는 SHA(7자+) / "2회 히트"·"대조군" / `HH:MM` 사람 턴 시각 중 1개 이상 포함 강제. 위반 시 거부.
 - CLI: `scripts/brief_ledger.sh {open|resolve|reopen|note|list|show}` — `list --open`이 현재 열린 항목 표. 실패 가시화 `❌ brief_ledger:` + rc≠0.
 - **누가 쓰나**: 처리한 주체 누구나(쌍아·민아·막내·작가님). 완료 보고 절차(`makne-finish`·`session-end`)에 "관련 승계 번호가 있으면 resolve 1행" 추가.
 - **초기 적재**: 10-22 브리핑의 열린 항목 전량(🔴·⏸️·승계 번호)을 open으로 이관 — 웹민아 1회 작업(정본 해석 주체).
@@ -54,7 +55,9 @@ related:
 ## 4. iMac 민아 헤드리스
 
 - 기동: launchd `ai.monkos.mina-briefing` 06:30 → `scripts/mk-mina-brief.sh` → `claude -p`(헤드리스, 단발) + `MONK_ROLE=민아` + 정본 지시문 `ops/templates/ROUTINE_iMac민아_로컬축.md`.
-- 축(웹이 못 보는 것만): 미추적·미커밋 파일(세션 로그 포함) · ahead/behind · SM 존재(`secret check`, 값 접촉 0) · Cloud Run 리비전·env 참조 방식(값 미출력 필터) · CF Pages 최신 배포 · bg 세션 상태(`claude agents --json`) · launchd 잡 최근 실행 · 원장 열린 항목 중 위 축으로 판정 가능한 것 재측정.
+- **0번 축 — 로그인 전제 생존**(맨 앞, 민아 보완): `wrangler whoami`·`gh auth status`·`gcloud auth list`. 하나라도 죽으면 나머지 축은 거짓 음성이므로 그 사실만 보고하고 종료.
+- 축(웹이 못 보는 것만): Pages 시크릿 이름 ↔ SECRET_INVENTORY §E 대조(`wrangler pages secret list`, 이름만) · CF Pages 최신 배포 SHA ↔ origin/main `MONK_kr/`·`functions/` 변경 = 미배포 잔량 · 미추적·미커밋 파일(세션 로그 포함) · ahead/behind · SM 존재(`secret check`, 값 접촉 0) · Cloud Run 리비전·env 참조 방식(값 미출력 필터) · CF Pages 최신 배포 · bg 세션 상태(`claude agents --json`) · launchd 잡 최근 실행 · 원장 열린 항목 중 위 축으로 판정 가능한 것 재측정.
+- 제외: 세션 간 메시지 수신함(헤드리스가 못 읽음 — 미커밋 세션 로그로 대체). Cloud Run env는 **이름·참조 방식(valueFrom/plain)만** 출력 — 값 필터를 지시문에 명문화. `claude agents --json`은 10-22 실측 존재(notify_blocked.py가 사용 중).
 - **무인 맥락 규칙(ch1 7조)**: 읽기 전용. 쓰기는 자기 산출물(LOCAL·원장·세션 로그) + commit/push만. 배포·시크릿 생성·설정 변경·메시지 발송(텔레그램 경보 제외) 금지. 승인 필요 행위는 원장 note로 에스컬레이션.
 - 비용: Max 쿼터(작가님 대화와 공유) → 턴 상한(`--max-turns`)·시간 상한(15분) 둔다. 모델은 사용자 기본.
 - 훅: `session_start.sh` MONK_ROLE 허용값에 `민아` 추가(CLI 표면 한정, 소소와 동일 방식) + smoke 케이스.
@@ -66,6 +69,7 @@ related:
 - (a) Gmail API OAuth 클라이언트(읽기 전용 scope) — **시크릿 신설 = 작가님 손**.
 - (b) 로컬 Gmail MCP 서버.
 결정 전까지 웹 루틴 유지(B 과도기). 이 설계의 1~3단계는 메일 결정과 무관하게 진행.
+- 민아 선호(19:06): **(a)** — (b)도 같은 OAuth 자격이 필요하고 서버 한 겹이 더 붙는다. 스크립트 1개(`gmail.readonly`, 리프레시 토큰 SM). 전제 확인: 환불 스레드가 어느 메일함인지(작가님 gmail vs info@monkos.ai 워크스페이스).
 
 ## 6. 단계
 
@@ -73,7 +77,7 @@ related:
 |------|------|------|------|
 | 1 | 원장 + CLI + 완료 보고 절차 1줄 + 웹 루틴 지시문에 "원장 먼저 읽기·resolved 재보고 금지" | 막내(CLI) · 쌍아(지시문·절차) | CLI 스모크(근거 없는 resolve 거부 음성 대조 포함), 다음 날 웹 브리핑에서 (160) 미재보고 |
 | 1b | 초기 적재 | 웹민아(다음 루틴 1회) | open 건수 = 10-22 브리핑 열린 항목 수 |
-| 2 | iMac 민아 헤드리스(launchd·스크립트·지시문·훅 허용값·실패 경보) | 막내 | 수동 1회 + launchd 실기동 1회, LOCAL 생성·push·원장 갱신 실측 |
+| 2 | iMac 민아 헤드리스(launchd·스크립트·지시문·훅 허용값·실패 경보). **첫 launchd 기동은 1b 적재 다음 날**(그 전엔 resolve 대상 없음). 지시문 초안은 민아 검토 1회 | 막내 | 수동 1회 + launchd 실기동 1회, LOCAL 생성·push·원장 갱신 실측 |
 | 3 | 웹 지시문 축 분리(로컬·인프라 축 삭제, LOCAL 흡수) + 08:00 Actions 경보 | 쌍아(지시문) · 막내(워크플로) | 3일 연속 1부 보고·반복 보고 0 |
 | 4 | 메일 경로 결정 → 웹 종료(A) | 작가님 결정 후 | 별도 지시서 |
 
