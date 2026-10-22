@@ -5812,8 +5812,8 @@
     "typeEn": "Visa",
     "typeJa": "ビザ",
     "size": "5 × 7cm",
-    "pixels": "591 × 827px",
-    "dpi": 300,
+    "pixels": "1000 × 1400px",
+    "dpi": 508,
     "background": "흰색",
     "backgroundEn": "White",
     "backgroundJa": "白",
@@ -5823,9 +5823,9 @@
     "validity": "촬영 후 6개월 이내",
     "validityEn": "Taken within the last 6 months",
     "validityJa": "6ヶ月以内に撮影",
-    "fileSpec": "JPEG/JPG format, minimum 420 x 540 pixels",
-    "fileSpecEn": "JPEG/JPG format, minimum 420 x 540 pixels",
-    "fileSpecJa": "JPEG/JPG、最小420×540ピクセル",
+    "fileSpec": "JPG, 1000 × 1400픽셀",
+    "fileSpecEn": "JPG, 1000 × 1400 pixels",
+    "fileSpecJa": "JPG、1000 × 1400ピクセル",
     "standard": "PPTC-203",
     "continent": "americas",
     "details": {
@@ -5899,6 +5899,10 @@
         {
           "q": "사진을 몇 장 제출하나요?",
           "a": "동일한 사진 2장을 제출합니다. 두 장은 같은 촬영본이어야 하며, 6개월 이내에 찍은 것이어야 합니다. 규격에 맞지 않으면 심사가 진행되지 않고 새 사진을 다시 제출해야 합니다."
+        },
+        {
+          "q": "온라인 신청용 사진 파일 크기는?",
+          "a": "1000 × 1400픽셀 JPG로 맞추면 됩니다. 캐나다 비자와 영주권 온라인 신청 모두 이 파일 하나로 올릴 수 있습니다."
         }
       ],
       "en": [
@@ -5929,6 +5933,10 @@
         {
           "q": "How many photos do I submit?",
           "a": "Two identical photos. Both must come from the same session and have been taken within the last 6 months. If they do not meet the specifications, processing stops until you supply new photos."
+        },
+        {
+          "q": "What file size should the photo be for an online application?",
+          "a": "Use a 1000 × 1400 pixel JPG. This one file works for both Canadian visa and permanent residence online applications."
         }
       ],
       "ja": [
@@ -5959,6 +5967,10 @@
         {
           "q": "写真は何枚提出しますか？",
           "a": "同一の写真を2枚提出します。2枚は同じ撮影のもので、6か月以内に撮影されている必要があります。規格に合わない場合は審査が進まず、新しい写真を提出し直すことになります。"
+        },
+        {
+          "q": "オンライン申請用の写真ファイルのサイズは？",
+          "a": "1000 × 1400ピクセルのJPGにしてください。カナダのビザと永住権のオンライン申請、どちらもこの1つのファイルでアップロードできます。"
         }
       ],
       "es": [
@@ -5989,6 +6001,10 @@
         {
           "q": "¿Cuántas fotos hay que entregar?",
           "a": "Dos fotos idénticas. Ambas deben proceder de la misma sesión y haberse tomado dentro de los últimos 6 meses. Si no cumplen las especificaciones, la tramitación se detiene hasta que entregue fotos nuevas."
+        },
+        {
+          "q": "¿Qué tamaño de archivo debe tener la foto para una solicitud en línea?",
+          "a": "Use un JPG de 1000 × 1400 píxeles. Este mismo archivo sirve para las solicitudes en línea de visa y de residencia permanente de Canadá."
         }
       ]
     },
@@ -6038,7 +6054,7 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "3.1-3.6cm",
     "validityEs": "Tomada dentro de los últimos 6 meses",
-    "fileSpecEs": "JPEG/JPG formato, mínimo 420 x 540 píxeles",
+    "fileSpecEs": "JPG, 1000 × 1400 píxeles",
     "source": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/temporary-resident-visa-application-photograph-specifications.html",
     "sourceName": "canada.ca"
   },
