@@ -191,6 +191,7 @@ secret env               # SM → .env 일괄 동기화
 | 10/22 | iMac/쌍아-막내8 | 애플 비전 매팅 서버 1단계 — vision-matte Swift 서버(4060 계약 준수) + iMac 로컬 계약 테스트 8/8, 3MP p50 0.206s | [COMPLETION_20261022_iMac쌍아-막내8_INFRA_애플비전_매팅서버_1단계](../../reports/2026-10/COMPLETION_20261022_iMac쌍아-막내8_INFRA_애플비전_매팅서버_1단계.md) | ✅ |
 | 10/22 | iMac/쌍아 | **ORDER** Gemini 2.5→3.x 이전(원장 187) | [ORDER_20261022_iMac쌍아_막내_INFRA_Gemini25_3x이전](../../orders/2026-10/ORDER_20261022_iMac쌍아_막내_INFRA_Gemini25_3x이전.md) | ⏳ |
 | 10/22 | iMac/쌍아 | **ORDER** 애플 비전 매팅 2단계 iMac dev 시험(터널 matte-imac) | [ORDER_20261022_iMac쌍아_막내_INFRA_애플비전_매팅서버_2단계_iMac](../../orders/2026-10/ORDER_20261022_iMac쌍아_막내_INFRA_애플비전_매팅서버_2단계_iMac.md) | ⏳ |
+| 10/22 | iMac/쌍아 | **COMPLETION** 애플 비전 매팅 2단계(막내10) — 터널 matte-imac·dev E/F 통과·마스크 2016×1512 고정·품질 띠 MAE 0.06~0.10 | [COMPLETION_20261022_iMac쌍아-막내10_INFRA_애플비전_매팅서버_2단계](../../reports/2026-10/COMPLETION_20261022_iMac쌍아-막내10_INFRA_애플비전_매팅서버_2단계.md) | ✅ |
 
 ---
 | 08/13 | iMac/민아 | **2주 운영 감사 — 4060 매팅 불통 확정 + 폴백 체계 실전 검증** — matte.monkos.ai 전 경로 530(CF 터널 불통) + Tailscale 노드 소멸 + SSH 타임아웃 = 기계 자체 오프라인. 마지막 4060 정상 서빙 08-12 16:54 KST → 08-13 01:14 KST부터 전량 프리플라이트 불통. 14일 매팅 74건 중 RunPod 폴백 약 27건(36%), 최근 3일 사실상 전량 RunPod(종량 과금 중). 야간·새벽 간헐 이탈 포함 15일 중 8일 이탈 관측. **유저 실패 0건** — 07-25 조치(세마포어·줄서기·25s) 실전 합격: 최악 08-10 20:49 KST 4060 hang+RunPod 순간 동시실패에도 200/87.7s 납품, 504 재발 0. 물리 점검(전원/네트워크) 필요 | 세션 보고 (sessions/2026-08/2026-08-13_iMac_민아.md) | 🔴 4060 물리 확인 대기 |
