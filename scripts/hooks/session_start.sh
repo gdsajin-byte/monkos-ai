@@ -30,7 +30,11 @@ case "$entry" in
   *)              role="" ;;
 esac
 # CLI 표면 한정 역할 재정의 (10-02 디자인 TF 시범): scripts/mk-soso.sh가 MONK_ROLE=소소로 기동. 허용값 밖·타 표면은 무시.
-if [ "$entry" = "cli" ] && [ "${MONK_ROLE:-}" = "소소" ]; then role="소소"; fi
+# 10-22 허용값 민아 추가 (ORDER_20261022 iMac민아 헤드리스브리핑): scripts/mk-mina-brief.sh가 MONK_ROLE=민아로 기동.
+#   헤드리스(claude -p = sdk-cli)도 대상(쌍아 10-22 판단). MONK_ROLE 미설정 sdk-cli는 기존대로 역할 없음.
+if [ "$entry" = "cli" ] || [ "$entry" = "sdk-cli" ]; then
+  case "${MONK_ROLE:-}" in 소소|민아) role="$MONK_ROLE" ;; esac
+fi
 [ "$device" = "웹(원격)" ] && [ -n "$role" ] && role="민아"   # 웹(원격 컨테이너)=웹 민아
 name_device="${device%%(*}"                                     # 이름엔 괄호를 쓰지 않는다: 웹(원격) → 웹
 
@@ -58,6 +62,8 @@ fi
 title=""
 if [ -n "$cur_title" ]; then
   title_line="세션 이름: ${cur_title} (기존 이름 유지)"
+elif [ "$entry" = "sdk-cli" ]; then
+  title_line="세션 이름: 자동 지정 안 함 (헤드리스 — 이름은 기동 래퍼의 --name)"
 elif [ -z "$role" ]; then
   title_line="세션 이름: 자동 지정 안 함 (실행 표면 ${entry:-미상} — 역할 미판별)"
 elif [ "$src" = "startup" ] || [ "$src" = "resume" ]; then

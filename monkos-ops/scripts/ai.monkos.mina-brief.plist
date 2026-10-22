@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- iMac 민아 헤드리스 데일리 브리핑 — 매일 06:30 KST. ORDER_20261022 iMac민아 헤드리스브리핑 2단계.
+     레포 사본. 설치: cp 이 파일 ~/Library/LaunchAgents/ && launchctl load ~/Library/LaunchAgents/ai.monkos.mina-brief.plist
+     설치는 작가님 승인 후(상주 자동화 신설 — ch1 7조 승인 게이트). 실패 경보는 스크립트가 텔레그램으로 낸다. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>ai.monkos.mina-brief</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Users/jeong-kyushin/developer/monk_project/scripts/mk-mina-brief.sh</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict><key>Hour</key><integer>6</integer><key>Minute</key><integer>30</integer></dict>
+  <key>WorkingDirectory</key><string>/Users/jeong-kyushin/developer/monk_project</string>
+  <key>EnvironmentVariables</key>
+  <dict><key>PATH</key><string>/Users/jeong-kyushin/.local/bin:/Users/jeong-kyushin/google-cloud-sdk/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string></dict>
+  <key>StandardOutPath</key><string>/Users/jeong-kyushin/.monkos/mina-brief/launchd.log</string>
+  <key>StandardErrorPath</key><string>/Users/jeong-kyushin/.monkos/mina-brief/launchd.log</string>
+</dict>
+</plist>

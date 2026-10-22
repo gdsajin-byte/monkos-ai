@@ -133,6 +133,7 @@ domain: 인프라
 | 10/22 | iMac/쌍아 | **ORDER** 해소 원장 1단계 — LEDGER.jsonl + brief_ledger CLI + 완료 절차·웹 루틴 연결 | [ORDER_20261022_iMac쌍아_막내_AUTOPILOT_해소원장_1단계](../../orders/2026-10/ORDER_20261022_iMac쌍아_막내_AUTOPILOT_해소원장_1단계.md) | ⏳ |
 | 10/22 | iMac/쌍아-막내6 | **COMPLETION** 해소 원장 1단계 — brief_ledger CLI + LEDGER.jsonl (시범 (160) resolve) · 판정 4/4, 브랜치 worktree-makne6-brief-ledger 21ad3af | [COMPLETION_20261022_막내6_190836](../../reports/2026-10/COMPLETION_20261022_막내6_190836.md) | ✅ |
 | 10/22 | iMac/쌍아 | **ORDER** iMac 민아 헤드리스 브리핑 2단계 (웹 루틴 일시정지 대응, 메일 축 제외, launchd 설치는 승인 후) | [ORDER_20261022_iMac쌍아_막내_AUTOPILOT_iMac민아_헤드리스브리핑_2단계](../../orders/2026-10/ORDER_20261022_iMac쌍아_막내_AUTOPILOT_iMac민아_헤드리스브리핑_2단계.md) | ⏳ |
+| 10/22 | iMac/쌍아-막내7 | iMac 민아 헤드리스 브리핑 2단계 — mk-mina-brief.sh·지시문·plist(미설치)·훅 민아. 수동 1회 BRIEFING_LOCAL_20261022 (4b57bc76, 40턴·375s). launchd 설치 승인 대기 | [COMPLETION_20261022_막내7_iMac민아헤드리스브리핑2단계](../../reports/2026-10/COMPLETION_20261022_막내7_iMac민아헤드리스브리핑2단계.md) | ⏳ |
 
 ---
 
