@@ -73,3 +73,4 @@
 {"ts": "2026-10-22 19:16 KST", "id": 124, "event": "note", "text": "10-22 19:16 꾸 결정 ca-visa 1000×1400px·dpi 508 통일(1accc293, 미배포) — 본 항목(5×7cm 불일치)과의 관계는 막내 정정 시 대조", "by": "iMac/민아"}
 {"ts": "2026-10-22 19:16 KST", "id": 115, "event": "note", "text": "10-22 민아: RunPod 잔액 09-30 $23.46 이후 미실측. 매팅 대안으로 M1 애플 비전 서버 테스트 설계 착수(DESIGN_20261022_INFRA_M1)", "by": "iMac/민아"}
 {"ts": "2026-10-22 19:18 KST", "id": 121, "event": "resolve", "evidence": "10-22 19:21 라이브 /api/chat 2회 히트(2차 판정) '주차 되나요' → 응답에 '90분' 포함 = prompts.js:130(a4170869) 반영 · 배포 run 39753645464(95040ca3)가 functions/ 포함 전수 배포 · run #19 이후 functions 변경 0건(웹민아 07:12)", "by": "iMac/민아"}
+{"ts": "2026-10-22 19:20 KST", "id": 180, "event": "open", "axis": "infra", "severity": "ℹ️", "title": "배포 요청 텔레그램 '민아 세션 열기' 버튼 불가 — 세션 링크 claude:// 스킴, 텔레그램 URL 버튼은 http(s)·tg://만 수용. https 딥링크 확인 또는 claude.ai/code 일반 링크 대체", "owner": "쌍아", "by": "iMac/쌍아"}
