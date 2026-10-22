@@ -47,3 +47,34 @@ subject: "포털 env 평문 시크릿 SM 전환 — 절차 2 중단 (ORDER_20261
 
 📁 산출: 본 COMPLETION · 세션 로그 `sessions/2026-10/2026-10-22_iMac_쌍아-막내3.md` · PF_SECURITY 1행. 운영 파일 변경 0.
 🔀 쌍아 판단: 작가님께 등재 요청 전달 / 등재 후 막내3 재투입(같은 지시서).
+
+---
+
+## 추가 보고 — 재개 지시 수신 후 2차 중단
+
+**[2026-10-22 17:11 KST]** iMac/쌍아-막내3 → iMac/쌍아
+
+> 수신: 쌍아(monk-project-e1) 세션 간 메시지 17:10 — 출처 "작가님 17:10 쌍아 세션 사람 턴 'A 승인'"(A안 = 현행 env 값을 화면 미노출로 SM 등재). 이어서 절차 3~4까지.
+
+⏳ **결론**: 다시 중단. 사유 2건.
+
+1. **dev·prod 값 불일치** (쌍아 지시의 중단 조건): dev `monkos-portal-dev`의 `TELEGRAM_EVENT_BOT_TOKEN`은 **이름만 있고 값 없음(빈 env)**, prod `monkos-portal`에만 값이 있다. 판정 방법: describe JSON에서 env 항목의 키 구성·값 길이만 출력(값 미출력).
+   - **1차 보고 정정**: 17:06 표의 "4종 전부 dev·prod 평문 env"는 dev 이벤트봇 토큰에 한해 틀렸다 — 빈 값 env였다. 나머지 3종의 dev 일치 Y는 유효하다(SM 값과 같았음).
+2. **시크릿 생성은 이 세션에서 하지 않음**: `gcloud secrets create`는 집행 훅 E5 deny 대상이고(헌법 4조 1항·data-access "직접 실행 금지 — secret 커맨드 경유"), 원 지시서 절차 2도 등재 경로를 작가님 `secret.sh add`로 지정했다. 승인은 세션 간 메시지로 승계되지 않으므로(ch1 7조 2항) 우회 경로(secret.sh에 파이프로 넘기기 등)도 쓰지 않는다.
+
+## 작가님 실행안 (값이 화면에 나오지 않음)
+
+prod env 값을 그대로 SM에 넣는 1줄(작가님 터미널, 출력 없음):
+
+```bash
+gcloud run services describe monkos-portal --region us-central1 --project monkos --format=json \
+ | python3 -I -c 'import json,sys;d=json.load(sys.stdin);v=[e["value"] for e in d["spec"]["template"]["spec"]["containers"][0]["env"] if e["name"]=="TELEGRAM_EVENT_BOT_TOKEN"][0];sys.stdout.write(v)' \
+ | gcloud secrets create TELEGRAM_EVENT_BOT_TOKEN --project monkos --replication-policy=automatic --data-file=-
+```
+
+또는 `secret add TELEGRAM_EVENT_BOT_TOKEN` (@BotFather에서 이벤트봇 토큰 복사).
+
+## 재개 시 판단 필요 (쌍아)
+
+- dev가 지금 빈 값이므로, SM 참조로 바꾸면 **dev는 처음으로 이벤트봇 실토큰을 갖게 된다**(dev에서 이벤트 알림이 실제로 발송되기 시작할 수 있다). 허용할지, 아니면 dev는 이 변수를 제외하거나 별도 처리할지 결정해야 한다.
+- 등재 후 재투입 시: SM 값 ↔ prod env 해시 대조 → 절차 3~4.
