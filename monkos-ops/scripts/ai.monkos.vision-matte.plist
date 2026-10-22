@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- iMac vision-matte 서버 (매팅 1순위 — 옛 4060 자리, 작가님 10-22 22:42 결정). ORDER_20261022 매팅_4060자리_Vision전환.
+     레포 사본. 설치: monkos_AI/vision-matte/run_local.sh install (바이너리·스크립트를 ~/.monkos/vision-matte/에 복사 후 bootstrap).
+     MATTE_SECRET은 실행 때 SM에서 env로만 주입한다(plist에 값 없음). 죽으면 KeepAlive로 재기동, 외부 헬스 경보는 터널 잡 워처가 낸다. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>ai.monkos.vision-matte</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>/Users/jeong-kyushin/.monkos/vision-matte/bin/run_local.sh</string>
+    <string>run</string>
+  </array>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>ThrottleInterval</key><integer>30</integer>
+  <key>WorkingDirectory</key><string>/Users/jeong-kyushin/.monkos/vision-matte</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key><string>/Users/jeong-kyushin/google-cloud-sdk/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    <key>MONK_ROOT</key><string>/Users/jeong-kyushin/developer/monk_project</string>
+    <key>PORT</key><string>8000</string>
+  </dict>
+  <key>StandardOutPath</key><string>/Users/jeong-kyushin/.monkos/vision-matte/launchd-server.log</string>
+  <key>StandardErrorPath</key><string>/Users/jeong-kyushin/.monkos/vision-matte/launchd-server.log</string>
+</dict>
+</plist>
