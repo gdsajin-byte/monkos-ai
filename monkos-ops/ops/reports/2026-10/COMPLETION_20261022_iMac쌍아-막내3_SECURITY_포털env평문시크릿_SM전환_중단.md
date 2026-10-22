@@ -78,3 +78,43 @@ gcloud run services describe monkos-portal --region us-central1 --project monkos
 
 - dev가 지금 빈 값이므로, SM 참조로 바꾸면 **dev는 처음으로 이벤트봇 실토큰을 갖게 된다**(dev에서 이벤트 알림이 실제로 발송되기 시작할 수 있다). 허용할지, 아니면 dev는 이 변수를 제외하거나 별도 처리할지 결정해야 한다.
 - 등재 후 재투입 시: SM 값 ↔ prod env 해시 대조 → 절차 3~4.
+
+---
+
+## 3차 — dev 전환 완료 · prod 승인 대기
+
+**[2026-10-22 17:40 KST]** iMac/쌍아-막내3 → iMac/쌍아
+
+> 수신: 쌍아 세션 간 메시지 17:15 결정 전달(출처 작가님 17:13 "2번승인" — dev는 EVENT 토큰 미적용·현행 빈 값 유지, prod만 4종) · 17:3x 알림(EVENT 토큰 작가님 터미널 등재 17:16, version 1). 절차 3~4는 원 지시서 허용 범위.
+
+✅ **결론**: dev 3종 SM 참조 전환·스모크 합격. prod는 선행 조건(4종 SM 존재·값 일치) 충족, **배포는 작가님 새 사람 턴 승인 대기**.
+
+### 절차 3 — deploy.sh (커밋 `04128ba4`)
+
+- `SM_MIGRATE_KEYS` = 공통 3종 + 환경별 `EXTRA_SM_KEYS`(prod=`TELEGRAM_EVENT_BOT_TOKEN`, dev=빈 값). `SECRETS`에 `{KEY}={KEY}:latest`로 추가.
+- 현행 서비스에 동명 평문 env가 있으면 **같은 `gcloud run deploy` 명령에 `--remove-env-vars`** 를 붙인다(값 미출력, 이름만 경고 출력).
+- 194행 주석을 이 지시서·INCIDENT_20261021 근거로 갱신. 기존 TOSS 선제 제거 블록은 유지.
+
+### 절차 4 — dev 판정표
+
+| 항목 | 판정 | 방법 |
+|------|------|------|
+| `deploy.sh dev --yes` | ✅ exit 0 · 리비전 `monkos-portal-dev-00192-x52` (직전 `00191-pcd`, 롤백용) | 정본 경유, 워크트리 커밋본 빌드 |
+| 동명 평문→시크릿 한 번에 전환 | ✅ `--remove-env-vars` 동반으로 **같은 배포 1회에 성공** — 선제 `services update` 불요 | 위 배포 로그 |
+| describe 3종 | ✅ `TELEGRAM_BOT_TOKEN`·`TELEGRAM_TEAM_BOT_TOKEN`·`TEAM_NOTIFY_SECRET` = `secretKeyRef {이름}:latest` | describe JSON의 `valueFrom` 유무만 출력 |
+| dev EVENT 토큰 | ✅ 평문 빈 값(길이 0) 유지 — 결정대로 | 같은 조회 |
+| 기동 로그 | ✅ CS Bot·Team Bot "설정됨", Event Bot "미설정"(의도대로) | 리비전 00192 기동 로그 `jsonPayload.message` |
+| `/api/team/notify` 음성 대조군 | ✅ 틀린 시크릿 → **403** | curl, 헤더는 stdin(`-H @-`) |
+| `/api/team/notify` 양성 (TEAM_NOTIFY_SECRET 경로) | ✅ SM 값 → **200** `{"ok":true}` · 팀 채널 발송 1건 | 같음 |
+| `/api/webhook/telegram-team` `/help` (팀봇 토큰 경로) | ✅ **200** · 봇 회신 팀 채널 1건 | 같음 |
+| 텔레그램 발송 실패 로그 | ✅ 스모크 구간 0건 — ⚠️ **약한 증거**: 30일 전체 실패 로그도 0건이라 조회의 양성 대조 없음. 팀 채널에 스모크 메시지 2건("dev SM 전환 스모크 1/2" + `/help` 도움말) 도착 여부를 사람 눈으로 1회 확인 권장 | `gcloud logging read` (jsonPayload) |
+
+### prod 선행 조건 (17:40 재측정)
+
+- prod 4종 SM `latest` ↔ 현행 평문 env 해시 일치: **Y / Y / Y / Y** (EVENT 토큰 포함). 값·해시 미기록.
+- prod 배포 시 예상 동작: 4종 `--remove-env-vars` + `secretKeyRef` 전환. 검증은 절차 4와 동일 + CS봇·이벤트봇 웹훅 각 1회.
+
+### 남은 것
+
+- ⏳ 절차 5 prod: 작가님 새 사람 턴 승인 후 `deploy.sh prod` (main 브랜치 게이트 — 메인 체크아웃에서 실행).
+- ⏳ 절차 6 SECRET_INVENTORY: prod 전환 후 일괄 갱신(EVENT 토큰 신규 행 포함).
