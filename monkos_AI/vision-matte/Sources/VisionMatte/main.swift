@@ -84,8 +84,9 @@ func hexToCIColor(_ hex: String) -> CIColor {
     return CIColor(red: CGFloat((v >> 16) & 0xFF) / 255, green: CGFloat((v >> 8) & 0xFF) / 255, blue: CGFloat(v & 0xFF) / 255)
 }
 
-/// 반환: (JPEG 바이트, 추론 ms, 폭, 높이). EXIF 회전은 적용하지 않는다 — 4060(PIL Image.open)과 같다.
-func runMatte(_ data: Data, bgColor: String) throws -> (Data, Double, Int, Int) {
+/// 반환: (JPEG 바이트, 추론 ms, 폭, 높이, 마스크 폭, 마스크 높이). EXIF 회전은 적용하지 않는다 — 4060(PIL Image.open)과 같다.
+/// 마스크 크기는 Vision이 낸 원 해상도(업스케일 전) — 2단계 §5 흰 테두리 원인 판정용으로 meta·로그에 싣는다.
+func runMatte(_ data: Data, bgColor: String) throws -> (Data, Double, Int, Int, Int, Int) {
     guard let src = CGImageSourceCreateWithData(data as CFData, nil),
           let cg = CGImageSourceCreateImageAtIndex(src, 0, nil) else { throw MatteError.decode }
 
@@ -113,7 +114,8 @@ func runMatte(_ data: Data, bgColor: String) throws -> (Data, Double, Int, Int) 
     guard let dest = CGImageDestinationCreateWithData(out, UTType.jpeg.identifier as CFString, 1, nil) else { throw MatteError.encode }
     CGImageDestinationAddImage(dest, outCG, [kCGImageDestinationLossyCompressionQuality: 0.95] as CFDictionary)
     guard CGImageDestinationFinalize(dest) else { throw MatteError.encode }
-    return (out as Data, inferMs, cg.width, cg.height)
+    return (out as Data, inferMs, cg.width, cg.height,
+            CVPixelBufferGetWidth(obs.pixelBuffer), CVPixelBufferGetHeight(obs.pixelBuffer))
 }
 
 // --- HTTP/1.1 최소 구현 (Connection: close, Content-Length 본문만) ----------------
@@ -229,14 +231,14 @@ func route(_ req: Request) -> Response {
         return Response(status: 400, json: ["detail": "Invalid base64 image"])
     }
     do {
-        let (jpeg, inferMs, w, h) = try runMatte(bytes, bgColor: bgColor)
+        let (jpeg, inferMs, w, h, mw, mh) = try runMatte(bytes, bgColor: bgColor)
         let totalMs = Double(DispatchTime.now().uptimeNanoseconds - tStart.uptimeNanoseconds) / 1e6
         elapsedForState = totalMs
-        log("Matte \(w)x\(h) bg=\(bgColor) in \(Int(inferMs))ms (total \(Int(totalMs))ms)")
+        log("Matte \(w)x\(h) mask=\(mw)x\(mh) bg=\(bgColor) in \(Int(inferMs))ms (total \(Int(totalMs))ms)")
         return Response(status: 200, json: [
             "success": true,
             "image": jpeg.base64EncodedString(),
-            "meta": ["elapsedSec": (inferMs).rounded() / 1000],
+            "meta": ["elapsedSec": (inferMs).rounded() / 1000, "maskSize": [mw, mh], "inputSize": [w, h]],
         ])
     } catch MatteError.decode {
         return Response(status: 400, json: ["detail": "Invalid base64 image"])
