@@ -72,3 +72,14 @@ python3 qa_compare.py quality --out <dir> --vision http://127.0.0.1:8000 [--runp
 - `quality`는 흰·검정 배경 합성 2회로 알파를 복원해(`a = 1 − (C_w − C_b)/255`) 두 엔진을 같은 좌표에서 비교한다. 경계 띠는 참조(RunPod) 알파 0.5 경계 ±8px.
 - 응답 `meta.maskSize`: Vision 마스크는 입력과 무관하게 2016×1512/1512×2016 고정(10-22 실측). 4:3이 아닌 입력은 비등방 스케일된다.
 - python.org 파이썬은 CA 번들이 없을 수 있다 → RunPod 호출 시 `SSL_CERT_FILE=/etc/ssl/cert.pem`.
+
+### 터널 (`tunnel.sh`)
+
+```bash
+./tunnel.sh setup    # 원격 관리형 터널 matte-imac + 인그레스 → 127.0.0.1:8000 + DNS CNAME matte-imac.monkos.ai (멱등, 기존 DNS가 다르면 중단)
+./tunnel.sh start    # 터널 토큰을 API로 받아 TUNNEL_TOKEN env로만 cloudflared에 전달 (SM·파일·인자·로그 미기록)
+./tunnel.sh status|stop
+```
+
+- 인증: SM `CF_API_TOKEN`(monkos-settings 토큰 — Account·Cloudflare One Connector: cloudflared:Edit + Zone·DNS:Edit 필요, 10-22 추가) · `CF_ACCOUNT_ID`. 존 ID는 이름으로 조회(SM `CF_ZONE_ID` 없음).
+- 원격에서 판정할 때는 `/health`를 2회 히트하고 2차로 판정한다(live-verify.md).

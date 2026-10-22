@@ -35,8 +35,9 @@ zone_id() {
 
 # api METHOD PATH [JSON] → 응답 JSON(stdout). success=false면 에러 코드 출력 후 exit 1. 토큰은 출력하지 않는다.
 api() {
-  local out
-  out="$(curl -s -X "$1" "https://api.cloudflare.com/client/v4$2" -H "Authorization: Bearer $CF_T" -H 'Content-Type: application/json' ${3:+--data "$3"})"
+  local out; local -a body=()
+  [ -n "${3:-}" ] && body=(--data "$3")   # zsh는 ${3:+--data "$3"}를 한 단어로 넘긴다(10-22 실측) → 배열
+  out="$(curl -s -X "$1" "https://api.cloudflare.com/client/v4$2" -H "Authorization: Bearer $CF_T" -H 'Content-Type: application/json' "${body[@]}")"
   python3 -c 'import json,sys
 d=json.loads(sys.argv[1] or "{}")
 if not d.get("success"):
