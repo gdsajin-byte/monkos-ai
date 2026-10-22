@@ -56,11 +56,14 @@ function log(msg, severity = 'INFO', meta = {}) {
 // AI Studio API Key 의존 제거 → 전 모델 Vertex AI ADC로 통합
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
+// 텍스트 전용. Gemini 3.x 텍스트 GA 모델은 global 로케이션에만 배치된다(2026-10-22 실호출 실측 —
+// us-central1은 gemini-3.5-flash 404). 2.5 이전(Google 통지 10-20 기한)으로 global 전환.
 const ai = new GoogleGenAI({
   vertexai: true,
   project: PROJECT_ID,
-  location: LOCATION,
+  location: 'global',
 });
+const TEXT_MODEL = 'gemini-3.5-flash';
 
 const imageAI = new GoogleGenAI({
   vertexai: true,
@@ -299,7 +302,7 @@ function extractBase64(base64Input) {
 }
 
 // === 사전분석 폴백 모델 ===
-const PRECHECK_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
+const PRECHECK_MODELS = [TEXT_MODEL, 'gemini-3.5-flash-lite'];
 
 // === 사전분석 (SPA 호환 — Vertex AI ADC) ===
 const PRE_CHECK_INSTRUCTION = `이 사진이 증명사진 AI 생성의 원본으로 사용 가능한지 판단해 주세요.
@@ -664,7 +667,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log(`리전: ${LOCATION}`);
   log(`인증: 하이브리드 (ADC + API Key)`);
   log(`Imagen I2I: 활성 (gemini-3-pro-image, API Key)`);
-  log(`사전분석: 활성 (gemini-2.5-flash)`);
+  log(`사전분석: 활성 (${PRECHECK_MODELS.join(' → ')} @global)`);
   // 2026-07-25: 클라이언트 키는 /config.js 서빙 시 치환 주입 — 미주입이면 위젯이 조용히 안 뜬다(무음 강등 금지)
   const tossClientKey = process.env.TOSS_CLIENT_KEY || '';
   const isDevService = (process.env.K_SERVICE || '').includes('-dev');

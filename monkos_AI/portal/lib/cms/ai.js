@@ -7,7 +7,7 @@ import { readFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { Storage } from '@google-cloud/storage';
-import { ai, aiImage, CMS_IMAGE_MODEL, GCS_BUCKET, log, parseJsonBody } from '../shared/config.js';
+import { ai, aiImage, CMS_IMAGE_MODEL, TEXT_MODEL, GCS_BUCKET, log, parseJsonBody } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
 import { generateSlug } from './slug.js';
 
@@ -52,7 +52,7 @@ export async function handleAiImage(req, res) {
 
     // ① Gemini 2.5 Flash로 이미지 프롬프트 생성
     const promptResponse = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: TEXT_MODEL,
       contents: [{ role: 'user', parts: [{ text:
         `You are an expert image prompt engineer for Imagen 4. Generate a single English image generation prompt based on:
 Title: ${title}
@@ -224,7 +224,7 @@ export async function handleAiSuggest(req, res) {
 
     const snippet = (content || '').substring(0, 1000);
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: TEXT_MODEL,
       contents: [{ role: 'user', parts: [{ text:
         `You are an SEO expert for a Korean photo studio and AI service blog.
 Given the blog post below, generate:

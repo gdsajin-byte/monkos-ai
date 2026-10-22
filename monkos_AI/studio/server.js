@@ -44,11 +44,14 @@ function log(msg, severity = 'INFO', meta = {}) {
 }
 
 // === Vertex AI ADC 인증 ===
+// 텍스트 전용. Gemini 3.x 텍스트 GA 모델은 global 로케이션에만 배치된다(2026-10-22 실호출 실측 —
+// us-central1은 gemini-3.5-flash 404). 2.5 이전(Google 통지 10-20 기한)으로 global 전환.
 const ai = new GoogleGenAI({
   vertexai: true,
   project: PROJECT_ID,
-  location: LOCATION,
+  location: 'global',
 });
+const TEXT_MODEL = 'gemini-3.5-flash';
 
 const imageAI = new GoogleGenAI({
   vertexai: true,
@@ -57,7 +60,7 @@ const imageAI = new GoogleGenAI({
 });
 
 log('[Studio] 내부용 AI 보정 앱 초기화');
-log(`[Vertex AI] ADC 클라이언트 초기화 (project: ${PROJECT_ID}, location: ${LOCATION})`);
+log(`[Vertex AI] 텍스트 클라이언트 초기화 (project: ${PROJECT_ID}, location: global, model: ${TEXT_MODEL})`);
 log(`[Vertex AI] 이미지 생성 클라이언트 초기화 (location: global)`);
 
 // === 프로필 프롬프트 맵 ===
@@ -389,7 +392,7 @@ function extractBase64(base64Input) {
 }
 
 // === 사전분석 ===
-const PRECHECK_MODELS = ['gemini-2.5-flash'];
+const PRECHECK_MODELS = [TEXT_MODEL];
 
 const PRE_CHECK_INSTRUCTION = `이 사진이 증명사진 원본으로 적합한지 분석해 주세요.
 

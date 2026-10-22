@@ -50,11 +50,14 @@ function log(msg, severity = 'INFO', meta = {}) {
 // AI Studio API Key 依存除去 → 全モデル Vertex AI ADCに統合
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
+// テキスト専用。Gemini 3.x テキスト GA モデルは global ロケーションのみ(2026-10-22 実呼び出し実測 —
+// us-central1 は gemini-3.5-flash 404)。2.5 移行(Google 通知 10-20 期限)に伴い global へ切替。
 const ai = new GoogleGenAI({
   vertexai: true,
   project: PROJECT_ID,
-  location: LOCATION,
+  location: 'global',
 });
+const TEXT_MODEL = 'gemini-3.5-flash';
 
 const imageAI = new GoogleGenAI({
   vertexai: true,
@@ -294,7 +297,7 @@ function extractBase64(base64Input) {
 }
 
 // === 事前分析 フォールバックモデル ===
-const PRECHECK_MODELS = ['gemini-2.5-flash'];
+const PRECHECK_MODELS = [TEXT_MODEL];
 
 // === 事前分析 (SPA互換 — Gemini 2.0 Flash via Vertex AI ADC) ===
 const PRE_CHECK_INSTRUCTION = `この写真が証明写真の原本として適切かどうか分析してください。
@@ -376,7 +379,7 @@ async function detectFace(imageBuffer) {
   try {
     const base64 = imageBuffer.toString('base64');
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: TEXT_MODEL,
       contents: [{
         role: 'user',
         parts: [
@@ -692,7 +695,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log(`リージョン: ${LOCATION}`);
   log(`認証: ハイブリッド (ADC + API Key)`);
   log(`Imagen I2I: アクティブ (gemini-3-pro-image, API Key)`);
-  log('事前分析: アクティブ (gemini-2.5-flash)');
+  log(`事前分析: アクティブ (${TEXT_MODEL} @global)`);
   log('='.repeat(60));
   log('エンドポイント:');
   log('  GET  /health              — ヘルスチェック');

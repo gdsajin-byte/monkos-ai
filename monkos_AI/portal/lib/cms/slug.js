@@ -1,6 +1,7 @@
 /**
  * 블로그 슬러그 생성·정규화 단일 모듈
  */
+import { TEXT_MODEL } from '../shared/config.js';
 
 function generateSlug(title) {
   return title
@@ -15,7 +16,7 @@ function generateSlug(title) {
 async function generateSlugFromAI(aiInstance, title) {
   try {
     const response = await aiInstance.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: TEXT_MODEL,
       contents: [{ role: 'user', parts: [{ text: `You are an SEO expert. First TRANSLATE the blog title meaning into English, then convert to a URL slug. Do NOT romanize Korean — translate the MEANING. Lowercase, hyphens only, max 60 chars, ASCII only. Return ONLY the slug.\n\nTitle: ${title}` }] }],
       config: { maxOutputTokens: 64, temperature: 0.1 },
     });

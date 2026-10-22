@@ -2,7 +2,7 @@
  * 블로그 자동번역 — Gemini 2.0 Flash
  * 한국어 원본 → 일본어/영어 자동 생성
  */
-import { ai, firestore, log } from '../shared/config.js';
+import { ai, firestore, log, TEXT_MODEL } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
 import { notifySearchEngines } from './seo.js';
 
@@ -14,7 +14,7 @@ async function ensureEnglishBase(title, candidateBase) {
   if (!hasKorean(candidateBase)) return candidateBase;
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: TEXT_MODEL,
       contents: [{ role: 'user', parts: [{ text: `You are an SEO expert. First TRANSLATE the blog title meaning into English, then convert to a URL slug. Do NOT romanize Korean — translate the MEANING. Lowercase, hyphens only, max 60 chars, ASCII only. Return ONLY the slug.\n\nTitle: ${title}` }] }],
       config: { maxOutputTokens: 64, temperature: 0.1 },
     });
@@ -110,7 +110,7 @@ ${originalDoc.content}
 ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: TEXT_MODEL,
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           maxOutputTokens: 32768,
