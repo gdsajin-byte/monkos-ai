@@ -157,6 +157,7 @@ domain: "governance/infrastructure"
 | 2026-10-03 | iMac/민아 | 세션 시작 절차 4단계 '옛 세션 비활성화' 신설(RC off→아카이브, 앱 자동·VSCode/CLI 보고, kill 금지, M2 동일) — 작가님 10-03 12:41 A안 승인, 민아 옛 세션 3건 아카이브 실증(피어 53→47), 쌍아 사후 추인 청구 | [session-start](../../../../.claude/commands/session-start.md) | 완료 |
 | 2026-10-05 | iMac/민아 | 프로젝트 MCP 6종 꺼짐 원인 확정(10-04 시험 세션 Esc 거부 영속 + 6종 영구 승인 부재)·재발 차단 — settings.json enabledMcpjsonServers 명시, mcp list 전 Pending 6 → 후 Connected 6 | — | ✅ |
 | 2026-10-05 | iMac/쌍아 | **REPORT** 민아 10-03~10-05 규정 계층 변경 2건(+로컬 복원 1) 사후 추인 | [REVIEW_20261005_iMac쌍아_민아_1003-1005_사후추인](../../reports/2026-10/REVIEW_20261005_iMac쌍아_민아_1003-1005_사후추인.md) | 📁 |
+| 2026-10-22 | iMac/쌍아 | **ORDER** 백그라운드 세션 승인 대기 → 텔레그램 알림(Notification 훅+tg_notify) — 10-22 막내3 17분 무신호 정지 대응 | [ORDER_20261022_iMac쌍아_막내_MONK_OS_백그라운드승인대기_텔레그램알림](../../orders/2026-10/ORDER_20261022_iMac쌍아_막내_MONK_OS_백그라운드승인대기_텔레그램알림.md) | ⏳ |
 
 ---
 
