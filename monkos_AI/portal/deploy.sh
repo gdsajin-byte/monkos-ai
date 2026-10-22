@@ -103,6 +103,8 @@ if [ "$ENV" = "dev" ]; then
   FREE_QUOTA_BYPASS="1"  # dev 무료 횟수 제한 해제
   TOSS_CLIENT_KEY_NAME="TOSS_CLIENT_KEY_TEST"  # dev 테스트 클라이언트 키 (SM 참조)
   TOSS_SECRET_KEY_NAME="TOSS_SECRET_KEY_TEST"  # dev 테스트 시크릿 키
+  # TELEGRAM_EVENT_BOT_TOKEN: dev는 SM 참조 미적용·현행 빈 값 유지 (2026-10-22 작가님 "2번승인" — dev 실발송 방지)
+  EXTRA_SM_KEYS=""
   DEPLOY_FLAGS=""
 elif [ "$ENV" = "prod" ]; then
   SERVICE_NAME="monkos-portal"
@@ -110,6 +112,7 @@ elif [ "$ENV" = "prod" ]; then
   CPU="1"
   MIN_INSTANCES="0"  # 2026-08-24 작가님 승인 웜 해제 — specs 열람 트래픽은 CF 엣지가 흡수(같은 날 컷오버), 오리진 도달은 API·SSR만. 콜드스타트는 생성·결제 첫 요청에 한정. 유료 전환 본격화 시 재검토
   MAX_INSTANCES="5"
+  EXTRA_SM_KEYS="TELEGRAM_EVENT_BOT_TOKEN"  # prod 전용 SM 참조 (ORDER_20261022 SM 전환)
   DEPLOY_FLAGS=""
 
   # 브랜치 안전장치
@@ -191,13 +194,35 @@ echo -e "\n${GREEN}[3/3]${NC} Cloud Run 배포 중..."
 
 # 토스 클라이언트 키: dev=TOSS_CLIENT_KEY_TEST / prod=TOSS_CLIENT_KEY — 둘 다 SM 참조 (2026-07-25 평문 하드코딩 제거)
 # TEAM_CHAT_ID: 팀 알림 텔레그램 채널(비시크릿 정본값) — 4f71cbc 빈값 덮임 사고 재발 방지 정본화 (2026-07-14 작가님 승인)
-# TELEGRAM_TEAM_BOT_TOKEN·TEAM_NOTIFY_SECRET은 시크릿 성격 — deploy.sh 비기재, 서비스 env 직주입 유지 (--update-env-vars는 미나열 키 보존)
+# 텔레그램 토큰·TEAM_NOTIFY_SECRET: 2026-10-22 평문 env 직주입 → SM 참조 전환 (ORDER_20261022_iMac쌍아_막내_SECURITY_포털env평문시크릿_SM전환,
+#   INCIDENT_20261021 portal-env-telegram-token-exposure 보완). 공통 3종 + 환경별 EXTRA_SM_KEYS(prod=TELEGRAM_EVENT_BOT_TOKEN)
 ENV_VARS="^::^PROJECT_ID=${PROJECT_ID}::LOCATION=${REGION}::GCS_BUCKET=${GCS_BUCKET}::CHAT_WORKERS_URL=${CHAT_WORKERS_URL}::NAVER_CLIENT_ID=${NAVER_CLIENT_ID}::CROP_ENGINE_URL=${CROP_ENGINE_URL}::MATTE_API_URLS=${MATTE_API_URLS}::MATTE_SLUGS=${MATTE_SLUGS}::PILOT_T1_RETOUCH=${PILOT_T1_RETOUCH}::FREE_QUOTA_BYPASS=${FREE_QUOTA_BYPASS:-0}::GEN_DELIVERY_DEADLINE_MS=${GEN_DELIVERY_DEADLINE_MS:-115000}::TEAM_CHAT_ID=-1003794441262"
 SECRETS="CHAT_API_KEY=CHAT_API_KEY:latest,NAVER_CLIENT_SECRET=NAVER_CLIENT_SECRET:latest,ADMIN_UIDS=ADMIN_UIDS:latest,AGENT_API_KEYS=AGENT-API-KEYS:latest,LEMONSQUEEZY_API_KEY=LEMONSQUEEZY_API_KEY:latest,LEMONSQUEEZY_WEBHOOK_SECRET=LEMONSQUEEZY_WEBHOOK_SECRET:latest,LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL=LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL:latest,LEMONSQUEEZY_VARIANT_SPECS_SINGLE=LEMONSQUEEZY_VARIANT_SPECS_SINGLE:latest,MATTE_API_KEY=RUNPOD_API_KEY:latest,MATTE_SECRET=MATTE_SECRET:latest,NAVER_SEARCHAD_API_KEY=NAVER_SEARCHAD_API_KEY:latest,NAVER_SEARCHAD_SECRET_KEY=NAVER_SEARCHAD_SECRET_KEY:latest,NAVER_SEARCHAD_CUSTOMER_ID=NAVER_SEARCHAD_CUSTOMER_ID:latest,NAVER_DATALAB_CLIENT_ID=NAVER_DATALAB_CLIENT_ID:latest,NAVER_DATALAB_CLIENT_SECRET=NAVER_DATALAB_CLIENT_SECRET:latest,BING_WMT_API_KEY=BING_WMT_API_KEY:latest,RESEND_API_KEY=RESEND_API_KEY:latest,EDGE_TRUST_KEY=EDGE_TRUST_KEY:latest"
 
 # dev/prod 토스 키 분기 — 값은 전부 SM 정본 참조 (평문 기재 금지, 헌법 4조 1항)
 SECRETS="${SECRETS},TOSS_CLIENT_KEY=${TOSS_CLIENT_KEY_NAME:-TOSS_CLIENT_KEY}:latest"
 SECRETS="${SECRETS},TOSS_SECRET_KEY=${TOSS_SECRET_KEY_NAME:-TOSS_SECRET_KEY}:latest"
+
+# 평문 env → SM 참조 전환 대상 (2026-10-22). 현행 서비스에 같은 이름의 평문 env가 있으면
+# 같은 배포 명령에서 --remove-env-vars로 걷어낸다 (동명 평문·시크릿 공존 시 Cloud Run 거부).
+SM_MIGRATE_KEYS="TELEGRAM_BOT_TOKEN TELEGRAM_TEAM_BOT_TOKEN TEAM_NOTIFY_SECRET ${EXTRA_SM_KEYS:-}"
+REMOVE_PLAIN=""
+_CUR_ENV_JSON=$(gcloud run services describe ${SERVICE_NAME} --region ${REGION} --project=${PROJECT_ID} \
+  --format=json 2>/dev/null | tr -d ' \n' || true)
+for _k in ${SM_MIGRATE_KEYS}; do
+  SECRETS="${SECRETS},${_k}=${_k}:latest"
+  if printf '%s' "$_CUR_ENV_JSON" | grep -qE "\"name\":\"${_k}\"(,\"value\":|\})"; then
+    REMOVE_PLAIN="${REMOVE_PLAIN:+${REMOVE_PLAIN},}${_k}"
+  fi
+done
+unset _CUR_ENV_JSON
+REMOVE_FLAG=""
+if [ -n "$REMOVE_PLAIN" ]; then
+  echo -e "${YELLOW}⚠ 평문 env → SM 참조 전환: ${REMOVE_PLAIN} (값 미출력)${NC}"
+  REMOVE_FLAG="--remove-env-vars=${REMOVE_PLAIN}"
+else
+  echo -e "SM 전환 대상 평문 env 없음 (이미 SM 참조 또는 부재)"
+fi
 
 # 2026-07-25 이행 정리: 과거 dev는 TOSS_CLIENT_KEY를 평문 env로 주입했다.
 # 같은 키가 평문 env와 시크릿 참조로 동시에 존재하면 Cloud Run이 배포를 거부하므로 선제 제거한다.
@@ -221,6 +246,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --min-instances ${MIN_INSTANCES} \
   --max-instances ${MAX_INSTANCES} \
   --update-env-vars "${ENV_VARS}" \
+  ${REMOVE_FLAG} \
   --set-secrets="${SECRETS}" \
   --service-account ${SERVICE_ACCOUNT} \
   ${DEPLOY_FLAGS}
