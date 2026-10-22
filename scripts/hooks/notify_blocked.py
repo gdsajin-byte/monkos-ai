@@ -91,6 +91,12 @@ def summarize(data: dict) -> str:
     return ("%s · %s" % (tool, msg) if tool else msg)[:80]
 
 
+def build_text(name: str, summary: str, short: str) -> str:
+    """알림 본문. attach는 같은 기기 터미널 전용 — 다른 기기(맥 미니 등)에서는 attach가 실패하므로
+    Remote Control 경로를 함께 적는다 (10-22 22:52 실전: 작가님 맥 미니 attach 실패 → Remote Control로 승인)."""
+    return "⏸ %s 승인 대기 — %s\nclaude attach %s\n원격: claude.ai/code 세션 목록 → %s" % (name, summary, short, name)
+
+
 def main() -> int:
     if kill_switch():
         return 0
@@ -122,7 +128,7 @@ def main() -> int:
 
     name = entry.get("name") or sid[:8]
     short = entry.get("id") or sid[:8]
-    text = "⏸ %s 승인 대기 — %s\nclaude attach %s" % (name, summarize(data), short)
+    text = build_text(name, summarize(data), short)
     tool = project_dir() / "scripts/tools/tg_notify.sh"
     try:
         p = subprocess.run(["bash", str(tool), "--text", text], capture_output=True, text=True, timeout=40)

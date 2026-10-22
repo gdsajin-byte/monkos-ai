@@ -297,6 +297,10 @@ expect("킬스위치 MONK_HOOKS_OFF=1 → 무동작",     (rc, "[HOOK-OFF]" in e
 p = subprocess.run([sys.executable, str(HERE / NB)], input="{not json", capture_output=True, text=True,
                    env=dict(os.environ, **_nbenv))
 expect("notify_blocked 비JSON → [HOOK-ERR]·exit 0", (p.returncode, "[HOOK-ERR]" in p.stderr), (0, True))
+_nbsrc = subprocess.run([sys.executable, "-c", "import sys; sys.path.insert(0, sys.argv[1]); import notify_blocked as m; "
+                         "print(m.build_text('막내-스모크', 'Bash', 'bg1'))", str(HERE)], capture_output=True, text=True).stdout
+expect("알림 문구 = attach + 원격 Remote Control 경로", _nbsrc.strip().split("\n"),
+       ["⏸ 막내-스모크 승인 대기 — Bash", "claude attach bg1", "원격: claude.ai/code 세션 목록 → 막내-스모크"])
 
 # ---------- 실패 가시화 ----------
 p = subprocess.run([sys.executable, str(HERE / G)], input="{not json", capture_output=True, text=True,
