@@ -104,6 +104,7 @@ status: active
 | 10/04 | iMac/쌍아-막내2 | **REPORT** 키 주입 E10 위조 실증 K0~K5 본문 — 결론 '위조 가능', 부록 A 부작용 사실관계(E8 워크트리 우회·MCP 비활성 원인) | [REPORT_20261004_iMac쌍아-막내2_키주입E10위조_실증](../../reports/2026-10/REPORT_20261004_iMac쌍아-막내2_키주입E10위조_실증.md) | ✅ |
 | 10/04 | iMac/쌍아 | **REPORT** 키 주입 E10 위조 실증 — 위조 가능(K1·K2·K3 발급, K4 무경고) + guard_write 워크트리 우회 결함. 쌍아 판정 채택, 차단안 A·C 작가님 결정 대기 | [REPORT_20261004_iMac쌍아-막내2_키주입E10위조_실증](../../reports/2026-10/REPORT_20261004_iMac쌍아-막내2_키주입E10위조_실증.md) | ✅ |
 | 10/21 | iMac/민아 | INCIDENT — 포털 Cloud Run env 평문 텔레그램 토큰이 에이전트 도구 출력에 노출(로컬 한정). 로테이션 불요 판정, env→SM secretKeyRef 전환 보완 청구(쌍아) | [INCIDENT_20261021_portal-env-telegram-token-exposure](../../incidents/2026-10/INCIDENT_20261021_portal-env-telegram-token-exposure.md) | ✅ |
+| 10/22 | iMac/쌍아 | **ORDER** 포털 env 평문 시크릿 4종→SM 전환 (dev 선행, prod 작가님 승인, EVENT 봇 토큰 SM 미등재) | [ORDER_20261022_iMac쌍아_막내_SECURITY_포털env평문시크릿_SM전환](../../orders/2026-10/ORDER_20261022_iMac쌍아_막내_SECURITY_포털env평문시크릿_SM전환.md) | ⏳ |
 
 ---
 
