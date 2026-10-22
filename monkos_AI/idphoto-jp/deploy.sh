@@ -68,7 +68,8 @@ SERVICE_ACCOUNT="monk-image-engine@${PROJECT_ID}.iam.gserviceaccount.com"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # 시크릿은 GCP에 세팅된 값 유지 — deploy.sh가 덮어쓰지 않음
-# GEMINI_API_KEY 등 시크릿은 GCP 콘솔 또는 gcloud로 1회 세팅
+# GEMINI_API_KEY 평문 env는 매 배포 제거 — 코드 미사용(모든 Gemini 호출은 Vertex ADC), 평문 시크릿 잔존 방지
+#   (ORDER_20261022 평문시크릿 2차, 작가님 10-22 22:28 승인 — SM 전환 대신 제거)
 
 # 환경별 설정
 if [ "$ENV" = "dev" ]; then
@@ -137,6 +138,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --min-instances ${MIN_INSTANCES} \
   --max-instances ${MAX_INSTANCES} \
   --update-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET},CUSTOMER_GCS_BUCKET=${CUSTOMER_GCS_BUCKET}" \
+  --remove-env-vars GEMINI_API_KEY \
   --set-secrets="AUTH_SECRET=AUTH_SECRET:latest" \
   --service-account ${SERVICE_ACCOUNT}
 
