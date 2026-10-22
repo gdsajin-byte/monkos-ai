@@ -243,6 +243,20 @@ t, _ = ss_title({"source": "startup"}, "cli", monk_role="민아")
 expect("세션이름 cli + MONK_ROLE=민아 → 민아", bool(t and re.match(r"^[^-]+-민아-\d{4}-\d{4}$", t)), True)
 t, _ = ss_title({"source": "startup"}, "claude-vscode", monk_role="민아")
 expect("음성 타 표면은 MONK_ROLE=민아 무시(쌍아 유지)", bool(t and "-쌍아-" in t), True)
+# 헤드리스(sdk-cli) 역할 표시 (10-22 쌍아 판단): 문맥에 역할 후보만, 이름은 래퍼 --name 몫이라 미지정 유지.
+def ss_ctx(entry, monk_role=None):
+    env = dict(os.environ, CLAUDE_PROJECT_DIR=str(ROOT), CLAUDE_CODE_ENTRYPOINT=entry)
+    env.pop("MONK_ROLE", None)
+    if monk_role is not None:
+        env["MONK_ROLE"] = monk_role
+    p = subprocess.run(["bash", str(HERE / "session_start.sh")], input=json.dumps({"source": "startup"}),
+                       capture_output=True, text=True, env=env, timeout=20)
+    try:
+        return json.loads(p.stdout).get("hookSpecificOutput", {}).get("additionalContext", "")
+    except json.JSONDecodeError:
+        return ""
+expect("sdk-cli + MONK_ROLE=민아 → 역할 후보 민아", "역할 후보 민아" in ss_ctx("sdk-cli", "민아"), True)
+expect("음성 sdk-cli MONK_ROLE 미설정 → 역할 없음", "역할 후보" in ss_ctx("sdk-cli"), False)
 # ---------- notify_blocked (Notification — bg 승인 대기 텔레그램, 10-22) ----------
 # 발송은 tg_notify.sh에 TG_CHAT_ID_OVERRIDE=1(무효 chat)로만 — 실발송 없이 실패 경로를 탄다.
 NB = "notify_blocked.py"
