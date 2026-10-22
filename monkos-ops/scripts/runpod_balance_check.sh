@@ -9,7 +9,7 @@
 #   ./runpod_balance_check.sh --check-only   # 조회만, 경보 미발송 (health-check 스킬용)
 #   ./runpod_balance_check.sh --test-alert   # [테스트] 라벨로 경보 강제 발송 (배선 검증용)
 #
-# 스케줄: ~/Library/LaunchAgents/com.monkos.runpod-balance.plist (09:00·21:00 KST, 1일 2회)
+# 스케줄: ~/Library/LaunchAgents/com.monkos.runpod-balance.plist (월·목 09:00 KST, 주 2회 — 10-22 작가님 조정)
 # 시크릿: GCP Secret Manager RUNPOD_API_KEY · TELEGRAM_TEAM_BOT_TOKEN — 값 화면 출력 절대 금지
 # 헌법 4조 1항: 키 값 생성/추측 금지. 파이프/변수로만 취급.
 
