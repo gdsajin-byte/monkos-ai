@@ -87,7 +87,9 @@ NAVER_CLIENT_ID="${NAVER_CLIENT_ID:-JaqN_J5ashaxBC7t6aya}"
 # 우선순위 체인: 4060(₩0) → RunPod T4 flex(₩수 원) → 전부 실패 시 Gemini L3.
 # 각 엔드포인트는 2.5s /health 프리플라이트로 생사 판정 후 본 호출.
 # 2026-09-03 4060 라인업 배제(자녀 포맷, 메모리 project_4060_intentional_downtime) — matte.monkos.ai 프리플라이트 제거. 재구축 시 앞에 복원
-MATTE_API_URLS="https://api.runpod.ai/v2/di9upymdumei34"
+# 2026-10-22 옛 4060 자리 = iMac 애플 비전(matte-imac, 작가님 22:42 "4060이 맡던것을 비전으로… 문제가 생기면 런팟이 받으면 되지").
+#   무료·유료 공통 체인. 서버·터널: monkos_AI/vision-matte/ (launchd ai.monkos.vision-matte·matte-imac-tunnel)
+MATTE_API_URLS="https://matte-imac.monkos.ai,https://api.runpod.ai/v2/di9upymdumei34"
 # 카나리 게이트 (2026-07-07 작가님): kr-passport 파일럿 → 크롭 정확도·디자인 검증 후 확산. 빈값 = 전 슬러그
 MATTE_SLUGS=""  # 빈 값 = 전 슬러그 매팅 허용 (2026-07-11 작가님 T0 전면 개방 지시. 카나리 kr-passport 졸업)
 # T1 의상+보정 파일럿 (2026-07-11): 유료 게이트 한정. 원본→나노2(v4)→crop-engine. RunPod 불필요.
