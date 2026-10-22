@@ -1,0 +1,2 @@
+{"ts": "2026-10-22 19:08 KST", "id": 160, "event": "open", "axis": "secret", "severity": "🔴", "title": "포털 런타임 env 평문 시크릿 4종 → --set-secrets 전환", "owner": "쌍아", "by": "iMac/쌍아-막내6"}
+{"ts": "2026-10-22 19:08 KST", "id": 160, "event": "resolve", "evidence": "prod rev 00567-bhd 4종 valueFrom · 6f9a2ee5 (latestReadyRevision 재실측 일치)", "by": "iMac/쌍아-막내6"}

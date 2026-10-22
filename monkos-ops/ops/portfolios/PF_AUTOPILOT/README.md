@@ -131,6 +131,7 @@ domain: 인프라
 | 10/22 | 웹/민아 | **데일리 E2E #이상발견** — 자동 브리핑 파이프라인 이상 **2건 + 정정 1건**. ① 🆕 **Anthropic News 수집기 파싱 0건**(`BRIEFING_20261020.md` 📰 뉴스에 「목록 파싱 0건 — 페이지 구조 변경 의심」). 직전 7회차(10-14~10-19) 전수 grep으로 **신규 확정**. 무음 강등 아니라 명시 에러 = 도구 3요건 「실패 가시화」 작동. 유저 대면 0. 다음 1수: 막내 파서 선택자 1줄. ② **상단 🔴 미합류 결함이 가리는 양이 1 → 2건으로 증가**(상단 `🔴 긴급`은 '없음'인데 📰 뉴스에 정부자금·Anthropic News 2건). 16일차, 오늘 실물 재현. ③ **정정** — 16일간 적어 온 「BIZINFO 키 등록 즉시 자동 수집과 웹 조회가 함께 복구」가 오류. 무키 호출 2회 HTTP 000이고 **음성 대조 google.com도 000 / 양성 monkos.ai 200** → 엔드포인트 장애가 아니라 환경 네트워크 정책이므로 **복구되는 것은 CI 경로 하나**. 회차 자체는 정상: #178 지연 +163분으로 확정 분포(중앙값 +183분) 안쪽, #179 미시작(+2.2h)을 이상으로 적지 않음. 지표 data_date 10-16 → 10-17 갱신. | [BRIEFING_E2E_20261022](../../briefings/BRIEFING_E2E_20261022.md) | ✅ |
 | 10/22 | iMac/쌍아 | **DESIGN** E2E 브리핑 iMac 이관 + 해소 원장 — ①원장 ②iMac 민아 헤드리스 로컬축 ③웹 축분리 ④메일 경로 후 웹 종료 | [DESIGN_20261022_AUTOPILOT_브리핑_iMac이관_해소원장](../../../tech/designs/2026-10/DESIGN_20261022_AUTOPILOT_브리핑_iMac이관_해소원장.md) | ⏳ |
 | 10/22 | iMac/쌍아 | **ORDER** 해소 원장 1단계 — LEDGER.jsonl + brief_ledger CLI + 완료 절차·웹 루틴 연결 | [ORDER_20261022_iMac쌍아_막내_AUTOPILOT_해소원장_1단계](../../orders/2026-10/ORDER_20261022_iMac쌍아_막내_AUTOPILOT_해소원장_1단계.md) | ⏳ |
+| 10/22 | iMac/쌍아-막내6 | **COMPLETION** 해소 원장 1단계 — brief_ledger CLI + LEDGER.jsonl (시범 (160) resolve) · 판정 4/4, 브랜치 worktree-makne6-brief-ledger 21ad3af | [COMPLETION_20261022_막내6_190836](../../reports/2026-10/COMPLETION_20261022_막내6_190836.md) | ✅ |
 
 ---
 
