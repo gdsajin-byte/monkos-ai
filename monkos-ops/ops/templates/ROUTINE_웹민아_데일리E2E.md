@@ -28,6 +28,8 @@ status: draft (쌍아 보정 대기)
 
 ## 사이클 (순서대로)
 
+0. [해소 원장] 시작 직후 `scripts/brief_ledger.sh list --open` 판독 — resolved 항목 재보고 금지, 재측정이 반증하면 `reopen`+근거. 원장(monkos-ops/ops/briefings/LEDGER.jsonl)에 시범 외 항목이 없으면 최초 1회 초기 적재(전날 브리핑 열린 항목 전량 `open`).
+
 1. [브리핑 검증] monkos-ops/ops/briefings/ 최신 파일을 읽고:
    - 생성일·데이터 기준일 확인 (랙 4일 초과 시 🔴 표기)
    - 🔴🟡 알림 항목을 종합보고에 인계
