@@ -90,3 +90,4 @@
 {"ts": "2026-10-22 19:21 KST", "id": 169, "event": "note", "text": "19:19 gh pr view: OPEN·draft 유지", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-10-22 19:21 KST", "id": 179, "event": "note", "text": "19:19 gh pr view: OPEN·draft 유지", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-10-22 19:22 KST", "id": 116, "event": "note", "text": "19:22 gh secret list -R (대조군: 이름 26건 조회 유효) — BIZINFO_API_KEY 부재 유지", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-22 19:25 KST", "id": 184, "event": "resolve", "evidence": "커밋 c405b87c — 10-08·13·14·15 iMac 쌍아 로그 추적 편입", "by": "iMac/쌍아"}
