@@ -132,6 +132,7 @@ domain: 인프라
 | 10/22 | iMac/쌍아 | **DESIGN** E2E 브리핑 iMac 이관 + 해소 원장 — ①원장 ②iMac 민아 헤드리스 로컬축 ③웹 축분리 ④메일 경로 후 웹 종료 | [DESIGN_20261022_AUTOPILOT_브리핑_iMac이관_해소원장](../../../tech/designs/2026-10/DESIGN_20261022_AUTOPILOT_브리핑_iMac이관_해소원장.md) | ⏳ |
 | 10/22 | iMac/쌍아 | **ORDER** 해소 원장 1단계 — LEDGER.jsonl + brief_ledger CLI + 완료 절차·웹 루틴 연결 | [ORDER_20261022_iMac쌍아_막내_AUTOPILOT_해소원장_1단계](../../orders/2026-10/ORDER_20261022_iMac쌍아_막내_AUTOPILOT_해소원장_1단계.md) | ⏳ |
 | 10/22 | iMac/쌍아-막내6 | **COMPLETION** 해소 원장 1단계 — brief_ledger CLI + LEDGER.jsonl (시범 (160) resolve) · 판정 4/4, 브랜치 worktree-makne6-brief-ledger 21ad3af | [COMPLETION_20261022_막내6_190836](../../reports/2026-10/COMPLETION_20261022_막내6_190836.md) | ✅ |
+| 10/22 | iMac/쌍아 | **ORDER** iMac 민아 헤드리스 브리핑 2단계 (웹 루틴 일시정지 대응, 메일 축 제외, launchd 설치는 승인 후) | [ORDER_20261022_iMac쌍아_막내_AUTOPILOT_iMac민아_헤드리스브리핑_2단계](../../orders/2026-10/ORDER_20261022_iMac쌍아_막내_AUTOPILOT_iMac민아_헤드리스브리핑_2단계.md) | ⏳ |
 
 ---
 
