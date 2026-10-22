@@ -141,7 +141,7 @@ status: 현행
 |---|--------|------|------|
 | 1 | GEMINI_API_KEY | Gemini API | monkos_AI와 동일값 추정 |
 
-### E. Cloudflare Dashboard (monk-kr Pages — 13개)
+### E. Cloudflare Dashboard (monk-kr Pages — 16개)
 
 | # | 변수명 | 용도 |
 |---|--------|------|
@@ -158,6 +158,9 @@ status: 현행
 | 11 | ADMIN_CHAT_ID | 관리자 채팅 ID |
 | 12 | TX_API_KEY | D1 거래 원장 |
 | 13 | CHAT_API_KEY | 챗봇 Workers API 인증 (monkos.ai→Workers 서비스 간 호출) | ⭐ 2026-05-25 추가
+| 14 | TOSS_CLIENT_KEY | 사진관 인화 주문 토스 결제위젯 (`functions/api/studio-order.js`) — SM #TOSS_CLIENT_KEY 동일 값, 포털과 공유(사업자 단위) | ⭐ 2026-10-22 추가 (민아, `secret get`→`wrangler pages secret put` 파이프 동기화) |
+| 15 | TOSS_SECRET_KEY | 사진관 인화 주문 토스 승인 + 주문 토큰 HMAC (`functions/api/studio-pay.js`) — SM 동일 값 | ⭐ 2026-10-22 추가 (동상) |
+| 16 | RESEND_API_KEY | 사진관 인화 주문 사진·결제완료 메일 발신 (`functions/api/_lib/studio-order.js`) — SM #43 동일 값 | ⭐ 2026-10-22 추가 (동상). SM↔Pages 자동 동기 없음 — 로테이션 시 재파이프 |
 
 > ⚠️ **§E GEMINI_API_KEY 지문 미대조** (2026-06-12 검수): monkos_AI와 "동일값 추정"일 뿐 실측 대조된 적 없음. 만약 구 프로젝트(Default Gemini 등) 발급 키였다면 06-12 프로젝트 종료로 무효화됐을 수 있음 → **지문 대조 또는 monk.kr Gemini 폴백 라이브 검증 필요** (ORDER_20260612 Task 1 연계).
 

@@ -175,6 +175,7 @@
 | runpod_balance_check.sh + com.monkos.runpod-balance.plist | 인프라 | `monkos-ops/scripts/` | PF_INFRA. 10-01 등재 — 09-30 수동 실행 $23.46 실측. plist 경로 오기 교정(10-01). **iMac 미설치**(설치 결정 대기). 사용량 원장 `ops/audit/RUNPOD_USAGE.jsonl` |
 | daily-briefing.yml · e2e-briefing-notify.yml · notify.yml | CI | `.github/workflows/` | PF_AUTOPILOT. 10-01 등재 — 09-30 success 실측 / notify.yml은 workflow_call 피호출(notify-monk-kr-pending) |
 | mk-pull.sh · sync-dev-test.sh · kimi.sh · tools/blog-publish/ · soul_sync.sh(미추적) | CLI/빌드 | `scripts/`·`scripts/tools/`·`portal/tools/` | **등재(스모크 미실증)** — 10-01 전수조사 T4. 막내 1회 실행 후 실증 표기로 전환 |
+| **pages-dev/dev.sh** (monk.kr Pages Functions 로컬 서버) | 인프라 | `scripts/tools/pages-dev/` (+ `wrangler.toml` AI 제외 사본, `.dev.vars` gitignore) + `.claude/launch.json` "monk-kr (studio dev, AI 제외)" | 10-22 신설(민아). 루트 `wrangler pages dev`는 [ai] 바인딩이 원격 프리뷰 세션을 요구해 기동 실패(실측), Pages는 `--config` 미지원 → 레포 밖 임시 폴더 복사 기동. 스모크: 주문·결제 함수 음성 11·양성 2·429 1 (10-22). 실패 가시화: `.dev.vars` 부재 경고 + 함수 500 |
 | **pf.sh / pf.py** (PF 원장 CLI) | CLI | `scripts/` | `rules/pf-ops.md` + DESIGN_20260930_PF원장화. append(열·날짜형식·링크·중복 자동)/query/check/show. 훅 연동: `hooks/pf_autolink.py`(PostToolUse Write — portfolio: 문서 자동 링크), `hooks/stop_check.py`(Stop — PF 미갱신·세션로그 신선도 경고), CI C15. 스모크 `python3 scripts/hooks/smoke_pf.py` 17/17. 실패 가시화: rc 2 + `❌ pf:` / 훅 `[HOOK-ERR]` |
 
 ## 모델 배치

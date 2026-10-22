@@ -10,6 +10,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://js.tosspayments.com/v2/standard"></script>
 <style>
   body{font-family:'Pretendard',-apple-system,sans-serif !important}
   .text-tiffany{color:#0ABAB5} .border-tiffany{border-color:#0ABAB5}
@@ -26,17 +27,17 @@
   <h1 class="text-2xl font-semibold text-center mb-2">증명 · 서류사진 인화 주문</h1>
   <p class="text-center text-sm text-gray-500 mb-10">일반 · 대형 인화는 네이버 톡톡으로 보내주세요</p>
 
-  <div class="bg-white rounded-3xl border border-gray-200 p-8 space-y-8">
+  <div id="orderCard" class="bg-white rounded-3xl border border-gray-200 p-8 space-y-8">
 
     <!-- 이름 · 연락처 -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div>
         <label class="block text-sm font-bold mb-2">이름</label>
-        <input type="text" placeholder="주문자 성함" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
+        <input type="text" id="name" name="name" autocomplete="name" placeholder="주문자 성함" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
       </div>
       <div>
         <label class="block text-sm font-bold mb-2">연락처</label>
-        <input type="text" placeholder="010-0000-0000" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
+        <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="010-0000-0000" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
       </div>
     </div>
 
@@ -99,8 +100,8 @@
         </button>
       </div>
       <div id="addr" class="mt-4 space-y-3" hidden>
-        <input type="text" placeholder="받는 주소" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
-        <input type="text" placeholder="상세 주소" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
+        <input type="text" id="addr1" name="addr1" autocomplete="street-address" placeholder="받는 주소" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
+        <input type="text" id="addr2" name="addr2" placeholder="상세 주소" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-tiffany">
       </div>
     </div>
     <!-- 결제 -->
@@ -117,16 +118,21 @@
           <span class="font-bold text-2xl"><span id="amtTotal">10,000</span><span class="text-base font-normal">원</span></span>
         </div>
       </div>
-      <button class="w-full px-6 h-14 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors leading-none text-lg inline-flex items-center justify-center">
+      <p id="orderError" class="text-sm text-red-600 mb-3" hidden></p>
+      <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+      <button id="orderBtn" type="button" class="w-full px-6 h-14 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors leading-none text-lg inline-flex items-center justify-center disabled:opacity-50">
         주문하기
       </button>
       <label class="flex items-start gap-2 mt-5 text-sm text-gray-500 cursor-pointer">
-        <input type="checkbox" class="mt-1 accent-black">
+        <input type="checkbox" id="agree" class="mt-1 accent-black">
         <span>올린 사진은 인화 후 자동 삭제되며, 인화 외 용도로 쓰지 않는 데 동의합니다.</span>
       </label>
     </div>
 
   </div>
+
+  <!-- 접수 → 결제창 → 완료 화면 (studio-order.js가 채운다) -->
+  <div id="studioPay" hidden></div>
 
   <!-- 자주 묻는 질문 (접힌 상태) -->
   <div class="mt-8 space-y-2">
@@ -351,11 +357,26 @@ lucide.createIcons();
     });
   }
 
-  // 페이지를 벗어나며 올린 사진이 있으면 한 번 확인 (아직 보내지 않았으므로)
+  // 주문 접수·결제는 studio-order.js 가 맡는다 — 여기서는 화면 상태만 건네준다
+  var sent = false;
+  window.StudioOrderPage = {
+    kind: 'id',
+    collect: function(){
+      return {
+        delivery: mail ? 'mail' : 'store',
+        items: rows.map(function(r){ return { file: r.file, purpose: r.purpose, qty: r.qty }; }),
+        photos: shotsData.map(function(s){ return s.file; })
+      };
+    },
+    sent: function(){ sent = true; }
+  };
+
+  // 페이지를 벗어나며 올린 사진이 있으면 한 번 확인 (아직 보내지 않은 경우만 — 결제창으로 이동할 때는 묻지 않는다)
   window.addEventListener('beforeunload', function(e){
-    if (shotsData.length) { e.preventDefault(); e.returnValue = ''; }
+    if (shotsData.length && !sent) { e.preventDefault(); e.returnValue = ''; }
   });
 })();
 </script>
+<script src="/monk_studio/store/studio-order.js"></script>
 </body>
 </html>

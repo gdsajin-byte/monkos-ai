@@ -186,3 +186,6 @@ monkos_AI/portal/tools/t1-tuning/
 
 # E10 승인 토큰 (세션 바인딩·1h·1회용) — 커밋 금지
 .claude/approvals/
+
+# Pages Functions 로컬 시크릿 (secret 래퍼로 생성, 커밋 금지)
+.dev.vars

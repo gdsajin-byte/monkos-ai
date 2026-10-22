@@ -29,3 +29,10 @@
 # 대조군(soft-404 전제 검증) — 미존재 경로는 index fallback 이므로 monk_studio 고유 문구가 없어야 한다.
 # 이 행이 실패하면 fallback 동작이 바뀐 것이며, 위 "+" 어서션들의 전제가 무효가 된다.
 /zzz-monkos-assert-selftest	-v=20260924
+
+# 인화 주문 결제 연동(2026-10-22, 민아) — 주문 페이지 2장이 공용 스크립트를 싣고, Pages Function이 살아 있는지
+# (/api/* 는 함수가 없으면 index fallback 으로 200 이 나오므로 함수 응답 고유 문구 "POST only" 로 판정)
+/monk_studio/store/print/print	+studio-order.js
+/monk_studio/store/photo/photo	+studio-order.js
+/api/studio-order	+POST only
+/api/studio-pay	+POST only

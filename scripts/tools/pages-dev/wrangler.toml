@@ -1,0 +1,13 @@
+# monk.kr Pages Functions 로컬 개발 전용 설정 (2026-10-22 민아)
+# 루트 wrangler.toml의 [ai] 바인딩은 `wrangler pages dev`에서 원격 프리뷰 세션을 요구해 로컬 기동이 실패한다
+# (실측: "Could not create remote preview session"). 챗봇(AI) 제외, 주문·결제 함수 시험용.
+# 사용: scripts/tools/pages-dev/dev.sh (레포 밖 임시 폴더에 복사 후 기동 — 사유는 dev.sh 머리말)
+# 시크릿: 이 폴더의 .dev.vars (secret 래퍼로 생성, gitignore) — 값은 커밋·출력 금지
+name = "monk-kr"
+pages_build_output_dir = "MONK_kr"
+compatibility_date = "2026-01-02"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "monk-db"
+database_id = "6fe2a64b-9144-436c-94f7-1e9375249a1e"

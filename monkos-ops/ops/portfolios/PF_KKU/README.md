@@ -191,6 +191,7 @@ idpass.monkos.ai (SPA 간판) → monkos.ai/specs/{국가-문서} (본진 SSR, S
 | 10/22 | iMac/민아 | monk.kr 배포 2회(626df474·4876c5a6, 꾸 수정 3건 라이브) + 배포 요청 앱 알림 설계 0단계 실측 종결(폰 경로=텔레그램 팀봇+링크 버튼 확정, Claude 푸시 보조, ② 채널 승인 보류) | [2026-10-21_iMac_민아](../../sessions/2026-10/2026-10-21_iMac_민아.md) | ✅ |
 | 10/22 | iMac/쌍아 | **ORDER** 배포 요청 텔레그램 발송 도구(tg_notify.sh) — 팀봇 1줄+URL 버튼, 실패 가시화 + kku-context 발신 절차 신설 | [ORDER_20261022_iMac쌍아_막내_KKU_배포요청_텔레그램발송도구](../../orders/2026-10/ORDER_20261022_iMac쌍아_막내_KKU_배포요청_텔레그램발송도구.md) | ⏳ |
 | 10/22 | iMac/쌍아-막내2 | tg_notify.sh 신설(팀봇 1줄+URL 버튼, 실패 가시화) — 스모크 3/3, 실발송 message_id=451, 수신 확인 대기 | [COMPLETION_20261022_iMac쌍아-막내2_KKU_텔레그램발송도구](../../reports/2026-10/COMPLETION_20261022_iMac쌍아-막내2_KKU_텔레그램발송도구.md) | ✅ |
+| 10/22 | iMac/민아 | 인화 주문 토스 결제 연동 구현 — 사진 메일 선전송(Pages Function+Resend, 서버 저장 0) → 토스 위젯 v2 → 승인 함수 → [결제완료] 메일. 주문 페이지 2장 연결, SM→Pages 시크릿 3건 동기화, 로컬 스모크 통과. 배포 대기(작가님 버튼) + 라이브 1,000원 실결제·꾸 메일함 수신 미검증 | [studio-order](../../../../functions/api/studio-order.js) | ⏳ |
 
 ---
 

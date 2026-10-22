@@ -15,6 +15,14 @@
       "port": 8788
     },
     {
+      "name": "monk-kr (studio dev, AI 제외)",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "scripts/tools/pages-dev/dev.sh"
+      ],
+      "port": 8788
+    },
+    {
       "name": "portal (monkos.ai)",
       "runtimeExecutable": "node",
       "runtimeArgs": [
