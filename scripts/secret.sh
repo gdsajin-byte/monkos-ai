@@ -8,6 +8,8 @@
 #   scripts/secret.sh list                     # 등록된 시크릿 전체 목록
 #   scripts/secret.sh check <NAME>             # 존재 여부 + 버전 확인
 #   scripts/secret.sh env                      # .env 파일 일괄 동기화 (SM → .env)
+#   scripts/secret.sh pages-sync <NAME> [--use <SM_NAME>] [--project monk-kr] [--env production|preview] [--dry-run]
+#                                             # SM → Cloudflare Pages 시크릿 파이프 동기화 + 인벤토리 §E 자동 기록 (2026-10-22)
 #
 # 저장소: GCP Secret Manager (project=monkos) — 단일 정본
 # 인벤토리: monkos-ops/ops/SECRET_INVENTORY.md — 메타정보(이름·용도·날짜)만 기록, 값 절대 금지
@@ -61,6 +63,8 @@ usage() {
   echo "  ${GREEN}secret check${NC} <NAME>  존재 여부 + 최신 버전 확인"
   echo "  ${GREEN}secret map${NC} [NAME]    인지 1콜: 존재·상태·용도·소비처 (무인자=전체 맵+미등재 적발)"
   echo "  ${GREEN}secret env${NC}           SM → .env 일괄 동기화"
+  echo "  ${GREEN}secret pages-sync${NC} <NAME> [--use <SM_NAME>] [--project monk-kr] [--env production|preview] [--purpose \"용도\"] [--dry-run]"
+  echo "                        SM → Cloudflare Pages 시크릿 파이프 동기화 + 인벤토리 §E 자동 기록 (값 미노출)"
   exit 1
 }
 
@@ -317,6 +321,94 @@ cmd_annotate() {
 }
 
 # 메인
+# ── pages-sync: SM 정본 → Cloudflare Pages 시크릿 동기화 + 인벤토리 §E 자동 기록 (2026-10-22 민아) ──
+# 왜: Pages Functions는 GCP SM을 못 읽는다. 값을 사람 손·화면 없이 파이프로 옮기고, 옮긴 사실을 인벤토리에 남긴다.
+# 사용: secret pages-sync <NAME> [--use <SM_NAME>] [--project monk-kr] [--env production|preview] [--purpose "용도"] [--dry-run]
+# 실패 가시화: 전제(wrangler 로그인)·SM 조회·put·사후 목록 대조·인벤토리 기록 각각 ❌ + exit≠0. 무음 통과 없음.
+cmd_pages_sync() {
+  local NAME="" SRC="" PRJ="monk-kr" ENVN="production" PURPOSE="" DRY=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --use) SRC="$2"; shift 2 ;;
+      --project) PRJ="$2"; shift 2 ;;
+      --env) ENVN="$2"; shift 2 ;;
+      --purpose) PURPOSE="$2"; shift 2 ;;
+      --dry-run) DRY=1; shift ;;
+      -*) echo -e "${RED}❌ pages-sync: 알 수 없는 옵션 $1${NC}"; exit 2 ;;
+      *) if [ -z "$NAME" ]; then NAME="$1"; else echo -e "${RED}❌ pages-sync: 인자 과다 ($1)${NC}"; exit 2; fi; shift ;;
+    esac
+  done
+  [ -n "$NAME" ] || { echo -e "${RED}❌ pages-sync: 이름을 지정하세요 — secret pages-sync <NAME> [--use <SM_NAME>]${NC}"; exit 2; }
+  [ -n "$SRC" ] || SRC="$NAME"
+  case "$ENVN" in production|preview) ;; *) echo -e "${RED}❌ pages-sync: --env 는 production|preview${NC}"; exit 2 ;; esac
+  local WR="$PROJECT_ROOT/node_modules/.bin/wrangler"
+  [ -x "$WR" ] || { echo -e "${RED}❌ pages-sync: wrangler 없음 ($WR) — 루트에서 npm install${NC}"; exit 1; }
+  local ENVFLAG=""
+  [ "$ENVN" = "preview" ] && ENVFLAG="--env preview"
+
+  # 전제 1: Cloudflare 로그인 (wrangler OAuth — 인벤토리 §H)
+  if ! "$WR" whoami >/dev/null 2>&1; then
+    echo -e "${RED}❌ pages-sync: wrangler 미로그인 — 이 기기에서 'npx wrangler login' 후 재시도 (인벤토리 §H 전제)${NC}"; exit 1
+  fi
+  # 전제 2: SM 조회 (값은 변수에만 — 출력·파일 금지)
+  local VALUE
+  VALUE=$(gcloud secrets versions access latest --secret="$SRC" --project="$PROJECT" 2>/dev/null) || VALUE=""
+  [ -n "$VALUE" ] || { echo -e "${RED}❌ pages-sync: SM 조회 실패 — $SRC (존재하지 않거나 권한 부족)${NC}"; exit 1; }
+  local VLEN=${#VALUE}
+  echo -e "${BLUE}pages-sync${NC} SM:$SRC (길이 $VLEN) → Pages:$PRJ/$ENVN 변수 $NAME"
+  if [ "$DRY" = "1" ]; then
+    echo -e "${YELLOW}[dry-run]${NC} put 생략. 인벤토리 기록도 생략. (현재 목록만 조회)"
+    "$WR" pages secret list --project-name "$PRJ" $ENVFLAG 2>/dev/null | grep -E "^\s+- " || echo "  (목록 조회 실패 또는 0건)"
+    unset VALUE; return 0
+  fi
+  # put — stdin 파이프 (프로세스 인자·화면에 값 없음)
+  if ! printf '%s' "$VALUE" | "$WR" pages secret put "$NAME" --project-name "$PRJ" $ENVFLAG >/dev/null 2>&1; then
+    unset VALUE
+    echo -e "${RED}❌ pages-sync: wrangler pages secret put 실패 — 프로젝트명($PRJ)·권한 확인${NC}"; exit 1
+  fi
+  unset VALUE
+  # 사후 대조 — 목록에 이름이 있어야 성공
+  if ! "$WR" pages secret list --project-name "$PRJ" $ENVFLAG 2>/dev/null | grep -qE "^\s+- $NAME:"; then
+    echo -e "${RED}❌ pages-sync: put 후 목록에 $NAME 없음 — 반영 미보장${NC}"; exit 1
+  fi
+  echo -e "${GREEN}✅ Pages 반영${NC} — $PRJ/$ENVN $NAME (목록 대조 통과)"
+
+  # 인벤토리 §E 자동 기록 (메타만)
+  local TODAY; TODAY=$(TZ=Asia/Seoul date '+%Y-%m-%d')
+  python3 - "$INVENTORY" "$NAME" "$SRC" "$PRJ" "$ENVN" "$PURPOSE" "$TODAY" "$VLEN" <<'PYEOF'
+import sys, re, pathlib
+inv, name, src, prj, envn, purpose, today, vlen = sys.argv[1:9]
+p = pathlib.Path(inv); lines = p.read_text().split('\n')
+hdr = None
+for i, l in enumerate(lines):
+    if l.startswith('### ') and 'Cloudflare Dashboard' in l and f'({prj} Pages' in l:
+        hdr = i; break
+if hdr is None:
+    print(f"❌ pages-sync: 인벤토리에 '### … Cloudflare Dashboard ({prj} Pages — N개)' 섹션 없음 — 수기 추가 필요 (Pages 반영은 완료)"); sys.exit(2)
+end = next((j for j in range(hdr + 1, len(lines)) if lines[j].startswith('### ') or lines[j].startswith('## ')), len(lines))
+rows = [j for j in range(hdr, end) if re.match(r'^\| *\d+ *\|', lines[j])]
+envtag = '' if envn == 'production' else f' [{envn}]'
+stamp = f'재동기화 {today} (secret pages-sync{envtag}, 길이 {vlen})'
+for j in rows:
+    cells = [c.strip() for c in lines[j].strip().strip('|').split('|')]
+    if len(cells) >= 2 and cells[1] == name:
+        line = lines[j].rstrip()
+        lines[j] = (line[:-1].rstrip() + ' · ' + stamp + ' |') if line.endswith('|') else (line + ' · ' + stamp)
+        p.write_text('\n'.join(lines)); print(f"✅ 인벤토리 §E 갱신 — {name} 행에 '{stamp}'"); sys.exit(0)
+n = len(rows) + 1
+use = purpose or '(용도 미기재 — secret pages-sync로 등록, 수기 보완 필요)'
+new = f"| {n} | {name} | {use} — SM #{src} 동일 값 | ⭐ {today} 추가 (secret pages-sync{envtag}, 길이 {vlen}). SM↔Pages 자동 동기 없음 — 로테이션 시 재실행 |"
+ins = rows[-1] + 1 if rows else hdr + 3
+lines.insert(ins, new)
+m = re.search(r'— (\d+)개\)', lines[hdr])
+if m: lines[hdr] = lines[hdr].replace(f'— {m.group(1)}개)', f'— {n}개)')
+p.write_text('\n'.join(lines)); print(f"✅ 인벤토리 §E 추가 — #{n} {name} (헤더 {n}개)")
+PYEOF
+  local RC=$?
+  [ "$RC" = "0" ] || { echo -e "${YELLOW}⚠️ Pages 반영은 끝났으나 인벤토리 기록 실패(rc=$RC) — SECRET_INVENTORY.md §E 수기 보완${NC}"; exit 2; }
+  echo -e "${YELLOW}[다음]${NC} 인벤토리 변경분 커밋 필요: git add $INVENTORY"
+}
+
 case "${1:-}" in
   add)   cmd_add "$2" ;;
   get)   cmd_get "$2" ;;
@@ -325,6 +417,7 @@ case "${1:-}" in
   map)   cmd_map "${2:-}" ;;
   annotate) cmd_annotate "${2:-}" ;;
   env)   cmd_env ;;
+  pages-sync) shift; cmd_pages_sync "$@" ;;
   -h|--help|help) usage ;;
   *)     cmd_interactive ;;
 esac

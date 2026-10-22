@@ -85,6 +85,7 @@ secret check <NAME>                 # 존재 + 버전만 확인
 1. `SECRET_INVENTORY.md` 메타 1행 추가 (이름·용도·서비스·날짜만. 값 절대 금지)
 2. `deploy.sh --set-secrets` 라인 추가 (해당 시)
 3. `secret env` 로 .env 동기화 (해당 시)
+4. Cloudflare Pages Functions가 쓰는 키는 **`secret pages-sync <NAME> [--use <SM_NAME>] [--purpose "용도"]`** (10-22 신설) — SM→Pages 파이프 + 인벤토리 §E 자동 기록. 값 접촉 없이 에이전트가 실행 가능(기존 키 인프라 등록 = 일임). 전제: 기기 wrangler 로그인(인벤토리 §H-2). 키 로테이션 후에도 재실행 — SM↔Pages 자동 동기 없음
 
 ## "없다"고 보고하기 전에
 - **시크릿 인지 = `scripts/secret.sh map <NAME>` 1콜** (2026-07-24 신설): 존재·버전 상태·용도·소비처가 한 번에 나온다. grep·문서 탐색으로 있네없네 판단 금지. 무인자 실행 = 전체 맵 + 인벤 미등재 적발.

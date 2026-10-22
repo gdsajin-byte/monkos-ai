@@ -134,7 +134,7 @@
 | monk_relations | MCP | `scripts/retrieval/` | `rules/mcp-tools.md` |
 | monk_stats | MCP | `scripts/retrieval/` | `rules/mcp-tools.md` |
 | cdp.sh + cdp_utils.py (+cdp_setup.sh) | 인프라 | `scripts/tools/` | `commands/cdp-browser.md` (10-01 경로 교정 — 06-11 skills→commands 이동 미반영) |
-| secret | 인프라 | `scripts/secret.sh` (07-24 위치 오기 교정) | `rules/data-access.md` |
+| secret | 인프라 | `scripts/secret.sh` (07-24 위치 오기 교정) | `rules/data-access.md`. **10-22 `pages-sync` 신설**(SM→CF Pages 파이프+인벤토리 §E 자동 기록) — 스모크: 멱등 재동기화 1·dry-run 1·음성 3(없는 SM·없는 프로젝트·무인자, exit≠0). 실패 가시화 `❌ pages-sync:`. 기기 로그인 전제는 SECRET_INVENTORY §H-2 |
 | credits.sh | CLI | `scripts/` | `rules/data-access.md` |
 | mk-push.sh | CLI | `scripts/` | — |
 | ads.sh | CLI | `scripts/` | — |

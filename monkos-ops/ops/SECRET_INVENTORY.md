@@ -161,7 +161,7 @@ status: 현행
 | 13 | CHAT_API_KEY | 챗봇 Workers API 인증 (monkos.ai→Workers 서비스 간 호출) | ⭐ 2026-05-25 추가
 | 14 | TOSS_CLIENT_KEY | 사진관 인화 주문 토스 결제위젯 (`functions/api/studio-order.js`) — SM #TOSS_CLIENT_KEY 동일 값, 포털과 공유(사업자 단위) | ⭐ 2026-10-22 추가 (민아, `secret get`→`wrangler pages secret put` 파이프 동기화) |
 | 15 | TOSS_SECRET_KEY | 사진관 인화 주문 토스 승인 + 주문 토큰 HMAC (`functions/api/studio-pay.js`) — SM 동일 값 | ⭐ 2026-10-22 추가 (동상) |
-| 16 | RESEND_API_KEY | 사진관 인화 주문 사진·결제완료 메일 발신 (`functions/api/_lib/studio-order.js`) — SM #43 동일 값 | ⭐ 2026-10-22 추가 (동상). SM↔Pages 자동 동기 없음 — 로테이션 시 재파이프 |
+| 16 | RESEND_API_KEY | 사진관 인화 주문 사진·결제완료 메일 발신 (`functions/api/_lib/studio-order.js`) — SM #43 동일 값 | ⭐ 2026-10-22 추가 (동상). SM↔Pages 자동 동기 없음 — 로테이션 시 재파이프 · 재동기화 2026-10-22 (secret pages-sync, 길이 36) |
 
 > ⚠️ **§E GEMINI_API_KEY 지문 미대조** (2026-06-12 검수): monkos_AI와 "동일값 추정"일 뿐 실측 대조된 적 없음. 만약 구 프로젝트(Default Gemini 등) 발급 키였다면 06-12 프로젝트 종료로 무효화됐을 수 있음 → **지문 대조 또는 monk.kr Gemini 폴백 라이브 검증 필요** (ORDER_20260612 Task 1 연계).
 
@@ -192,6 +192,16 @@ status: 현행
 | SA 키 캐시 (MCP 1순위) | ~/.config/monkos-mcp/sa_key.json | gsc_mcp.sh용 GCP_SA_KEY 복원본(600) — SM 정본 단일화 원칙 (2026-07-14 작가님·쌍아·민아 합의) |
 | ADC impersonated (폴백) | ~/.config/gcloud/adc_impersonated.json | yong-a 임퍼소네이션 — SM 접근 불가 시 폴백. 주의: source_credentials에 사용자 리프레시 토큰 내장(기존 ADC 사본) |
 | ADC impersonated | ~/.config/gcloud/adc_impersonated.json | SA 임퍼소네이션 |
+
+#### H-2. 기기 로그인 세션 전제 (2026-10-22 신설 — 민아. "손이 안 간" 흐름이 기대는 숨은 자격. 새 기기·재설치 시 먼저 복구)
+
+| 자격 | 저장 위치(기기 로컬) | 쓰는 곳 | 복구 명령 | 실측 |
+|------|---------------------|---------|-----------|------|
+| Cloudflare 계정 로그인 (wrangler OAuth) | `~/Library/Preferences/.wrangler/config/default.toml` | `secret pages-sync`(Pages 시크릿 put/list), `wrangler pages secret list`, 로컬 `pages dev`, 예비 배포 경로 | `npx wrangler login` (브라우저 승인) · 확인 `npx wrangler whoami` | iMac 10-22 ✅ (사용자 OAuth — CF_PAGES_DEPLOY_TOKEN #45와 별개, 범위가 더 넓음) |
+| GitHub CLI 로그인 (gh) | `~/.config/gh/hosts.yml` (keyring) | 버튼 배포 `gh workflow run`·`gh run watch`, PR·이슈 | `gh auth login` · 확인 `gh auth status` | iMac 10-22 ✅ |
+| gcloud 사용자 계정 + ADC | `~/.config/gcloud/` (위 H 표) | `secret.sh` 전부(SM 조회·등록), `gcloud run` 조회 | `gcloud auth login` + `gcloud auth application-default login` | iMac 10-22 ✅ |
+
+> 원칙: 이 세 로그인은 **값이 아니라 세션**이라 SM에 넣지 않는다. 대신 어느 기기에 살아 있는지 이 표로 안다. 에이전트가 "도구가 안 된다"를 만나면 키 부재보다 이 표를 먼저 본다. 다른 기기(M1·M2·4060)는 미실측 — 그 기기에서 처음 쓸 때 행을 채운다.
 
 ### I. D1 데이터베이스
 
