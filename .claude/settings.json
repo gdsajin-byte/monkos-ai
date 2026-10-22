@@ -69,6 +69,18 @@
           }
         ]
       }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/scripts/hooks/notify_blocked.py",
+            "timeout": 60
+          }
+        ]
+      }
     ]
   },
   "permissions": {

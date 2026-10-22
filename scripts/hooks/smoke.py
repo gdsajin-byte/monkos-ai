@@ -238,6 +238,47 @@ expect("음성 타 표면은 MONK_ROLE 무시(쌍아 유지)", bool(t and "-쌍�
 t, _ = ss_title({"source": "startup"}, "cli", monk_role="총괄")
 expect("음성 허용값 밖 MONK_ROLE 무시(막내 유지)", bool(t and "-막내-" in t), True)
 expect("음성 헤드리스는 MONK_ROLE 있어도 미지정", ss_title({"source": "startup"}, "sdk-cli", monk_role="소소")[0], None)
+# ---------- notify_blocked (Notification — bg 승인 대기 텔레그램, 10-22) ----------
+# 발송은 tg_notify.sh에 TG_CHAT_ID_OVERRIDE=1(무효 chat)로만 — 실발송 없이 실패 경로를 탄다.
+NB = "notify_blocked.py"
+_nbdir = tempfile.mkdtemp(prefix="nb-smoke-")
+_agents = Path(_nbdir) / "agents.json"
+_agents.write_text(json.dumps([
+    {"sessionId": "bg-1", "kind": "background", "id": "bg1", "name": "막내-스모크"},
+    {"sessionId": "it-1", "kind": "interactive", "name": "monk-project-xx"},
+]), encoding="utf-8")
+_nbenv = {"MONK_NOTIFY_STATE_DIR": _nbdir, "MONK_NOTIFY_AGENTS_JSON": str(_agents), "TG_CHAT_ID_OVERRIDE": "1"}
+
+
+def notif(sid, ntype="permission_prompt"):
+    return {"hook_event_name": "Notification", "session_id": sid, "message": "Claude needs your permission",
+            "notification_type": ntype, "cwd": str(ROOT)}
+
+
+def nb(payload, env=None):
+    rc, dec, ctx, err = run(NB, payload, dict(_nbenv, **(env or {})))
+    return rc, err, ctx
+
+
+rc, err, out = nb(notif("it-1"))
+expect("음성 대화형 승인 대기 → 무발송·무출력",   (rc, "tg_notify" in err, out), (0, False, None))
+rc, err, out = nb(notif("bg-1", "idle_prompt"))
+expect("음성 유휴 알림 → 무시",                   (rc, err.strip(), out), (0, "", None))
+rc, err, out = nb(notif("bg-1"))
+expect("bg 승인 대기 + tg 실패 → [HOOK-ERR]·exit 0", (rc, "[HOOK-ERR]" in err and "tg_notify" in err, out), (0, True, None))
+(Path(_nbdir) / "bg-1").write_text("stamp\n", encoding="utf-8")
+rc, err, out = nb(notif("bg-1"))
+expect("음성 10분 내 재대기 → 무발송",           (rc, err.strip()), (0, ""))
+rc, err, out = nb(notif("zz-9"))
+expect("판별 실패(목록 부재) → [HOOK-ERR] 무발송", (rc, "판별 실패" in err), (0, True))
+rc, err, out = nb(notif("bg-2"), {"MONK_NOTIFY_AGENTS_JSON": str(Path(_nbdir) / "missing.json")})
+expect("판별 실패(agents 조회 불가) → [HOOK-ERR]", (rc, "판별 실패" in err), (0, True))
+rc, err, out = nb(notif("bg-1"), {"MONK_HOOKS_OFF": "1"})
+expect("킬스위치 MONK_HOOKS_OFF=1 → 무동작",     (rc, "[HOOK-OFF]" in err), (0, True))
+p = subprocess.run([sys.executable, str(HERE / NB)], input="{not json", capture_output=True, text=True,
+                   env=dict(os.environ, **_nbenv))
+expect("notify_blocked 비JSON → [HOOK-ERR]·exit 0", (p.returncode, "[HOOK-ERR]" in p.stderr), (0, True))
+
 # ---------- 실패 가시화 ----------
 p = subprocess.run([sys.executable, str(HERE / G)], input="{not json", capture_output=True, text=True,
                    env=dict(os.environ, CLAUDE_PROJECT_DIR=str(ROOT)))
