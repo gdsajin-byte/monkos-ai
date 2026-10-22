@@ -93,3 +93,4 @@
 {"ts": "2026-10-22 19:25 KST", "id": 184, "event": "resolve", "evidence": "커밋 c405b87c — 10-08·13·14·15 iMac 쌍아 로그 추적 편입", "by": "iMac/쌍아"}
 {"ts": "2026-10-22 21:42 KST", "id": 187, "event": "open", "axis": "infra", "severity": "🔴", "due": "2026-10-20", "title": "Gemini 2.5 트래픽 마이그레이션 기한(10-20) 경과 — gemini-2.5-flash 잔존(portal 챗봇·CALLSCOPE_MODEL·idphoto-kr/jp 사전분석·idphoto-generate 매핑). 10-22 기준 모델 오류 0·챗봇 정상, 차단 시점 미상", "owner": "쌍아", "by": "iMac/쌍아"}
 {"ts": "2026-10-22 22:24 KST", "id": 188, "event": "open", "axis": "secret", "severity": "ℹ️", "title": "SECRET_INVENTORY #6 CF_API_TOKEN '용도: DNS 관리' 오기 — 실측 권한=Zone Settings·Bot Management(대시보드 토큰 monkos-settings), DNS 읽기 403. 인벤토리 정정 필요", "owner": "쌍아", "by": "iMac/쌍아"}
+{"ts": "2026-10-22 22:53 KST", "id": 182, "event": "resolve", "evidence": "prod idphoto-kr 00211-4k7·jp 00131-nt9·studio 00028-ml8 GEMINI_API_KEY env 부재 실측 22:53, 코드 미사용이라 제거(89ae9930), health 2회 히트 200", "by": "iMac/쌍아"}
