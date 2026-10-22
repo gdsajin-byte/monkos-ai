@@ -115,3 +115,4 @@ last_updated: 2026-05-13
 - MCP: chrome-devtools (CDP 규칙 기반)
 - 권한: 배포, gcloud, curl, CDP, Google Docs/Analytics MCP 허용
 - additionalDirectories: 강한소상공인(외부 프로젝트), .claude(설정 접근)
+- 헤드리스 민아 데일리 브리핑(10-22 신설): `scripts/mk-mina-brief.sh` + 전용 worktree `.claude/worktrees/mina-brief`(origin/main 분리 HEAD) + launchd `ai.monkos.mina-brief` 06:30(레포 사본 `monkos-ops/scripts/ai.monkos.mina-brief.plist`, **설치는 작가님 승인 후**). 지시문 정본 `monkos-ops/ops/templates/ROUTINE_iMac민아_로컬축.md`. 실측 로그 `~/.monkos/mina-brief/`. 전제 = wrangler·gh·gcloud 로그인(SECRET_INVENTORY §H-2)

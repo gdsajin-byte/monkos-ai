@@ -30,7 +30,10 @@ case "$entry" in
   *)              role="" ;;
 esac
 # CLI 표면 한정 역할 재정의 (10-02 디자인 TF 시범): scripts/mk-soso.sh가 MONK_ROLE=소소로 기동. 허용값 밖·타 표면은 무시.
-if [ "$entry" = "cli" ] && [ "${MONK_ROLE:-}" = "소소" ]; then role="소소"; fi
+# 10-22 허용값 민아 추가 (ORDER_20261022 iMac민아 헤드리스브리핑): scripts/mk-mina-brief.sh가 MONK_ROLE=민아로 기동.
+if [ "$entry" = "cli" ]; then
+  case "${MONK_ROLE:-}" in 소소|민아) role="$MONK_ROLE" ;; esac
+fi
 [ "$device" = "웹(원격)" ] && [ -n "$role" ] && role="민아"   # 웹(원격 컨테이너)=웹 민아
 name_device="${device%%(*}"                                     # 이름엔 괄호를 쓰지 않는다: 웹(원격) → 웹
 

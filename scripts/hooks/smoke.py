@@ -238,6 +238,11 @@ expect("음성 타 표면은 MONK_ROLE 무시(쌍아 유지)", bool(t and "-쌍�
 t, _ = ss_title({"source": "startup"}, "cli", monk_role="총괄")
 expect("음성 허용값 밖 MONK_ROLE 무시(막내 유지)", bool(t and "-막내-" in t), True)
 expect("음성 헤드리스는 MONK_ROLE 있어도 미지정", ss_title({"source": "startup"}, "sdk-cli", monk_role="소소")[0], None)
+# 허용값 민아 (10-22 — mk-mina-brief.sh): CLI 표면만, 타 표면에선 무시.
+t, _ = ss_title({"source": "startup"}, "cli", monk_role="민아")
+expect("세션이름 cli + MONK_ROLE=민아 → 민아", bool(t and re.match(r"^[^-]+-민아-\d{4}-\d{4}$", t)), True)
+t, _ = ss_title({"source": "startup"}, "claude-vscode", monk_role="민아")
+expect("음성 타 표면은 MONK_ROLE=민아 무시(쌍아 유지)", bool(t and "-쌍아-" in t), True)
 # ---------- notify_blocked (Notification — bg 승인 대기 텔레그램, 10-22) ----------
 # 발송은 tg_notify.sh에 TG_CHAT_ID_OVERRIDE=1(무효 chat)로만 — 실발송 없이 실패 경로를 탄다.
 NB = "notify_blocked.py"
