@@ -58,3 +58,17 @@ MATTE_SECRET=<테스트값> ./.build/out/vision-matte          # :8000
 2. M1: macOS 12 이상 확인 · 잠자기 해제 · `MATTE_SECRET` 주입 후 실행(상주는 launchd plist — 2단계에서 작성).
 3. `curl localhost:8000/health` → `./contract_test.sh http://127.0.0.1:8000 <샘플> --secret … --bench 5`.
 4. 터널(`matte-m1.monkos.ai`)·포털 dev `MATTE_API_URLS` 교체는 설계서 §4의 작가님 승인 사안.
+
+## 2단계 (iMac dev 시험 — ORDER_20261022 2단계)
+
+```bash
+./run_local.sh start          # ~/.monkos/vision-matte/에 바이너리 복사 + MATTE_SECRET(SM, secret.sh 경유) 주입 → :8000
+./run_local.sh status|stop
+# 판정 도구 (시크릿은 env VISION_MATTE_SECRET / RUNPOD_KEY — 값 출력 금지)
+python3 qa_compare.py bench   --vision http://127.0.0.1:8000 --img <3MP.jpg> --n 10 --conc 3
+python3 qa_compare.py quality --out <dir> --vision http://127.0.0.1:8000 [--runpod https://api.runpod.ai/v2/<id>] --img name=path ...
+```
+
+- `quality`는 흰·검정 배경 합성 2회로 알파를 복원해(`a = 1 − (C_w − C_b)/255`) 두 엔진을 같은 좌표에서 비교한다. 경계 띠는 참조(RunPod) 알파 0.5 경계 ±8px.
+- 응답 `meta.maskSize`: Vision 마스크는 입력과 무관하게 2016×1512/1512×2016 고정(10-22 실측). 4:3이 아닌 입력은 비등방 스케일된다.
+- python.org 파이썬은 CA 번들이 없을 수 있다 → RunPod 호출 시 `SSL_CERT_FILE=/etc/ssl/cert.pem`.
