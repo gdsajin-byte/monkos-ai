@@ -21,6 +21,14 @@ let MATTE_SECRET = env["MATTE_SECRET"] ?? ""
 // 4060은 MATTE_MAX_CONCURRENT(기본 1). 지시서는 MAX_CONCURRENT(기본 2) — 둘 다 받는다(앞쪽 우선).
 let MAX_CONCURRENT = max(1, Int(env["MATTE_MAX_CONCURRENT"] ?? env["MAX_CONCURRENT"] ?? "2") ?? 2)
 let MAX_BODY = 64 * 1024 * 1024
+// 흰 테두리 보정 (ORDER_20261022 Vision전환 §1). 원인 가설: 2016×1512 고정 마스크의 비등방·업스케일 소프트 띠에
+// 원본 배경색이 섞여 남는다. 처방 2종 — 둘 다 0이면 1단계와 같은 출력.
+//   기본값 수축 2 + 오염 제거 4 = 10-22 실측 채택(파란 배경 경계 ±3px 흰빛 픽셀 비율 s5 0.141→0.054·s1 0.098→0.055,
+//   흰 배경 출력 변화 MAE ≤1.2% — COMPLETION_20261022 막내10 Vision전환 §1).
+//   MATTE_EDGE_ERODE_PX : 알파 수축 반경(px, 출력 해상도 기준)
+//   MATTE_DECONTAM_PX   : 전경 색 오염 제거 반경 — 경계 픽셀 색을 주변 전경 평균(알파 가중)으로 치환. 0=끔
+let EDGE_ERODE_PX = Double(env["MATTE_EDGE_ERODE_PX"] ?? "") ?? 2
+let DECONTAM_PX = Double(env["MATTE_DECONTAM_PX"] ?? "") ?? 4
 
 let log = { (s: String) in
     let ts = ISO8601DateFormatter().string(from: Date())
@@ -76,6 +84,15 @@ enum MatteError: Error { case decode, segment, encode }
 
 let ciContext = CIContext()
 
+// f = mix(주변 전경 평균, 원본, a²) — 알파가 낮은 경계일수록 배경이 섞인 원본 대신 안쪽 전경 색을 쓴다.
+let decontamKernel = CIColorKernel(source: """
+kernel vec4 decontam(__sample c, __sample p, __sample ba, __sample m) {
+    float a = m.r;
+    vec3 fe = p.rgb / max(ba.r, 0.0001);
+    return vec4(mix(fe, c.rgb, a * a), 1.0);
+}
+""")!
+
 func hexToCIColor(_ hex: String) -> CIColor {
     // server.py hex_to_rgb와 동일: 6자리가 아니면 흰색
     var h = hex
@@ -99,11 +116,23 @@ func runMatte(_ data: Data, bgColor: String) throws -> (Data, Double, Int, Int, 
 
     let maskCI = CIImage(cvPixelBuffer: obs.pixelBuffer)
     let origCI = CIImage(cgImage: cg)
-    let mask = maskCI.transformed(by: CGAffineTransform(
-        scaleX: origCI.extent.width / maskCI.extent.width,
-        y: origCI.extent.height / maskCI.extent.height))
-    let bg = CIImage(color: hexToCIColor(bgColor)).cropped(to: origCI.extent)
-    let blended = origCI.applyingFilter("CIBlendWithMask", parameters: [
+    let ext = origCI.extent
+    var mask = maskCI.transformed(by: CGAffineTransform(
+        scaleX: ext.width / maskCI.extent.width,
+        y: ext.height / maskCI.extent.height))
+    if EDGE_ERODE_PX > 0 {
+        mask = mask.clampedToExtent().applyingFilter("CIMorphologyMinimum", parameters: ["inputRadius": EDGE_ERODE_PX]).cropped(to: ext)
+    }
+    var fg = origCI
+    if DECONTAM_PX > 0 {
+        let black = CIImage(color: CIColor(red: 0, green: 0, blue: 0)).cropped(to: ext)
+        let premult = origCI.applyingFilter("CIBlendWithMask", parameters: ["inputBackgroundImage": black, "inputMaskImage": mask])
+        let blurP = premult.clampedToExtent().applyingFilter("CIGaussianBlur", parameters: ["inputRadius": DECONTAM_PX]).cropped(to: ext)
+        let blurA = mask.clampedToExtent().applyingFilter("CIGaussianBlur", parameters: ["inputRadius": DECONTAM_PX]).cropped(to: ext)
+        if let out = decontamKernel.apply(extent: ext, arguments: [origCI, blurP, blurA, mask]) { fg = out }
+    }
+    let bg = CIImage(color: hexToCIColor(bgColor)).cropped(to: ext)
+    let blended = fg.applyingFilter("CIBlendWithMask", parameters: [
         "inputBackgroundImage": bg,
         "inputMaskImage": mask,
     ])
@@ -262,7 +291,7 @@ listener.newConnectionHandler = { conn in
 }
 listener.stateUpdateHandler = { st in
     switch st {
-    case .ready: log("vision-matte listening on \(HOST):\(PORT) (max_concurrent=\(MAX_CONCURRENT), secret=\(MATTE_SECRET.isEmpty ? "off" : "on"))")
+    case .ready: log("vision-matte listening on \(HOST):\(PORT) (max_concurrent=\(MAX_CONCURRENT), secret=\(MATTE_SECRET.isEmpty ? "off" : "on"), erode=\(EDGE_ERODE_PX)px, decontam=\(DECONTAM_PX)px)")
     case .failed(let e): log("❌ vision-matte: 리스너 실패 — \(e)"); exit(1)
     default: break
     }

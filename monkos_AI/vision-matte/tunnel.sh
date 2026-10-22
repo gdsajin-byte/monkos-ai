@@ -1,13 +1,15 @@
 #!/bin/zsh
 # vision-matte CF 터널 (2단계 — dev 시험 전용, 작가님 10-22 21:59 "C진행 승인")
 # 사용: ./tunnel.sh setup|start|stop|status
+#       ./tunnel.sh run   (launchd용 포그라운드 + 외부 헬스 워처 — 실패·복구 전이 때만 tg_notify 1줄, 최소 간격 10분)
 #   setup : API로 원격 관리형 터널 생성(없으면) + 인그레스 설정 + DNS CNAME(없으면). 멱등.
 #   start : 터널 토큰을 API로 받아 env(TUNNEL_TOKEN)로만 cloudflared에 넘긴다 — SM·파일·인자·출력 미기록.
 # 인증 = SM CF_API_TOKEN(+Cloudflare Tunnel: Edit) · CF_ACCOUNT_ID (secret.sh 경유, 값 미출력). 존 ID는 이름(monkos.ai)으로 API 조회.
 # 4060 터널(matte.monkos.ai)·기존 DNS는 건드리지 않는다: 이름·호스트가 정확히 일치하는 것만 다룬다.
 set -uo pipefail
 HERE="${0:A:h}"
-ROOT="$(git -C "$HERE" rev-parse --show-toplevel)"
+ROOT="${MONK_ROOT:-$(git -C "$HERE" rev-parse --show-toplevel 2>/dev/null)}"
+[ -n "$ROOT" ] && [ -f "$ROOT/scripts/secret.sh" ] || { echo "❌ tunnel: 레포 루트 탐지 실패 (MONK_ROOT)"; exit 1; }
 TUNNEL_NAME="${TUNNEL_NAME:-matte-imac}"
 ZONE_NAME="monkos.ai"
 HOSTNAME_FQDN="$TUNNEL_NAME.$ZONE_NAME"
@@ -53,6 +55,38 @@ tunnel_id() {
 
 alive() { [ -f "$PIDF" ] && kill -0 "$(cat "$PIDF")" 2>/dev/null; }
 
+fetch_tunnel_token() {
+  load_auth
+  TID="$(tunnel_id)" || exit 1
+  [ -n "$TID" ] || fail "터널 $TUNNEL_NAME 없음 — setup 먼저"
+  TK="$(api GET "/accounts/$CF_A/cfd_tunnel/$TID/token" | jget 'r')" || exit 1
+  unset CF_T
+}
+
+# 외부 헬스 워처 — 60초마다 /health 2회 히트(2차 판정, live-verify). 연속 2회 실패 = down.
+# 알림은 상태 전이(up→down, down→up) 때만, 직전 알림 후 10분 이내면 다음 주기로 보류 → 남발 방지.
+# 감시 대상 PID(=exec 뒤 cloudflared)가 죽으면 같이 끝난다(재기동 시 중복 워처 방지).
+health_watch() {
+  local target="$1" st="$HOME_DIR/health_state" last="$HOME_DIR/health_last_notify" fails=0 state=up new code now prev msg
+  sleep "${WATCH_GRACE_SEC:-90}"
+  while kill -0 "$target" 2>/dev/null; do
+    curl -s -o /dev/null -m 10 "https://$HOSTNAME_FQDN/health"
+    code="$(curl -s -o /dev/null -m 10 -w '%{http_code}' "https://$HOSTNAME_FQDN/health")"
+    if [ "$code" = 200 ]; then fails=0; new=up; else fails=$((fails+1)); if [ $fails -ge 2 ]; then new=down; else new=$state; fi; fi
+    if [ "$new" != "$state" ]; then
+      now=$(date +%s); prev=$(cat "$last" 2>/dev/null || echo 0)
+      if [ $((now - prev)) -ge 600 ]; then
+        if [ "$new" = down ]; then msg="🔴 matte-imac 헬스 실패(HTTP $code) — 포털 매팅은 RunPod로 폴백 중. iMac vision-matte·터널 확인"
+        else msg="✅ matte-imac 헬스 복구 — 매팅 1순위 Vision 재개"; fi
+        if bash "$ROOT/scripts/tools/tg_notify.sh" --text "$msg" >/dev/null 2>>"$HOME_DIR/health_watch.err"; then echo "$now" > "$last"
+        else echo "$(date '+%F %T') ❌ tg_notify 실패" >> "$HOME_DIR/health_watch.err"; fi
+        state=$new; echo "$(date '+%F %T') $state $code" > "$st"
+      fi
+    fi
+    sleep "${WATCH_INTERVAL_SEC:-60}"
+  done
+}
+
 case "${1:-status}" in
   setup)
     load_auth
@@ -78,14 +112,16 @@ case "${1:-status}" in
       fail "DNS $HOSTNAME_FQDN 기존 레코드($rec)가 이 터널과 다름 — 덮어쓰지 않고 중단"
     fi
     echo "$TID" > "$HOME_DIR/tunnel_id" ;;
+  run)
+    [ -x "$CFD" ] || fail "cloudflared 없음"
+    fetch_tunnel_token
+    echo "$(date '+%F %T') tunnel: launchd 기동"
+    health_watch $$ &
+    TUNNEL_TOKEN="$TK" exec "$CFD" --no-autoupdate tunnel run ;;
   start)
     if alive; then echo "ℹ️ tunnel: 이미 실행 중 pid=$(cat "$PIDF")"; exit 0; fi
     [ -x "$CFD" ] || fail "cloudflared 없음"
-    load_auth
-    TID="$(tunnel_id)" || exit 1
-    [ -n "$TID" ] || fail "터널 $TUNNEL_NAME 없음 — setup 먼저"
-    TK="$(api GET "/accounts/$CF_A/cfd_tunnel/$TID/token" | jget 'r')" || exit 1
-    unset CF_T
+    fetch_tunnel_token
     TUNNEL_TOKEN="$TK" nohup "$CFD" --no-autoupdate tunnel run >>"$LOG" 2>&1 &
     echo $! > "$PIDF"; unset TK
     sleep 6
@@ -96,5 +132,5 @@ case "${1:-status}" in
   status)
     alive && echo "✅ cloudflared pid=$(cat "$PIDF")" || echo "⏹ cloudflared 정지"
     curl -s -o /dev/null -w "health https://$HOSTNAME_FQDN/health → %{http_code}\n" "https://$HOSTNAME_FQDN/health" ;;
-  *) fail "setup|start|stop|status" ;;
+  *) fail "setup|run|start|stop|status" ;;
 esac
