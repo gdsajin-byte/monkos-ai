@@ -36,6 +36,7 @@ WR_RANGE = "0.03,0.97"  # 작가님 결정 전 임시 기본값
 
 SIZE = 19
 KOMI = 6.5
+OWN_THRESHOLD = 0.5  # 계가: 열린 빈 점을 집으로 셀 소유권 기준
 HANDICAP_KOMI = 0.5  # 한국 규칙 관행 — 접바둑은 덤 0.5
 HANDICAPS = [0] + list(range(2, 10))  # 0 = 호선
 # KataGo fixed_handicap 대신 쓰는 배치 — 3점은 한국·일본 관행(우상·좌하·우하, 빈 귀=좌상). 쌍아 결정 10-23
@@ -116,6 +117,18 @@ class Engine:
             for c, mv in moves:
                 self._cmd(f"play {c} {mv}")
             return setup
+
+    def ownership(self):
+        """신경망 소유권(8대칭 평균) — [y][x], 백 기준 -1~1. 계가에서 경계가 열린 빈 점 판정에 쓴다.
+        'kata-raw-nn all'은 대칭 블록을 빈 줄로 나눠 GTP 응답 경계가 깨지므로 대칭마다 따로 묻는다."""
+        acc = [[0.0] * SIZE for _ in range(SIZE)]
+        for sym in range(8):
+            out = self.cmd(f"kata-raw-nn {sym}").splitlines()
+            i = next(k for k, ln in enumerate(out) if ln.strip() == "whiteOwnership")
+            for r in range(SIZE):
+                for c, v in enumerate(out[i + 1 + r].split()):
+                    acc[r][c] += float(v) / 8
+        return acc
 
     def genmove(self, color):
         """kata-genmove_analyze — (수, 흑 기준 점수, 흑 승률)."""
@@ -237,6 +250,8 @@ class Game:
         self.score = None
         self.winrate = None
         self.result = None
+        self.final_count = None
+        self.scoring = None  # 계가 중이면 {"dead": set((x, y)), "kata": KataGo final_score}
         self.message = ""
         self.started = datetime.now()
         self.sgf_path = GAMES_DIR / f"{self.started:%Y%m%d_%H%M%S}_작가님_vs_KataGo.sgf"
@@ -265,6 +280,8 @@ class Game:
         self.setup = e.sync(self.moves, self.handicap, self.komi)
 
     def engine_move(self):
+        if self.scoring:  # 계가 중에는 엔진이 두지 않는다
+            return
         e = self.engine()
         if e is None or not e.ok:
             raise RuntimeError(e.error if e else self.human_reason)
@@ -282,17 +299,110 @@ class Game:
 
     def _check_end(self):
         if len(self.moves) >= 2 and all(m.lower() == "pass" for _, m in self.moves[-2:]):
-            try:
-                self.result = self.engine().cmd("final_score")
-            except RuntimeError as e:
-                self.result = "?"
-                self.message = str(e)
-            else:
-                self.message = f"대국 종료 — {result_ko(self.result)}"
+            self.start_scoring()
+            self.message = "양쪽이 패스했습니다 — 사석을 확인하고 '계가 확정'을 눌러 주세요."
+
+    # ---- 계가(한국 규칙 = 집 계산: 집 + 따낸 돌 + 사석, 백은 덤 더함)
+
+    def start_scoring(self):
+        if self.result:
+            raise RuntimeError("이미 끝난 대국입니다.")
+        if not self.moves:
+            raise RuntimeError("아직 둔 수가 없습니다.")
+        e = self.engine()
+        if e is None or not e.ok:
+            raise RuntimeError(e.error if e else self.human_reason)
+        dead = set()
+        for mv in e.cmd("final_status_list dead").split():
+            dead.add(to_xy(mv))
+        self.scoring = {"dead": dead, "kata": e.cmd("final_score"), "own": e.ownership()}
+        self.message = "계가 중 — KataGo가 고른 사석이 흐리게 보입니다. 돌을 누르면 사석/산 돌이 바뀝니다."
+
+    def toggle_dead(self, x, y):
+        if not self.scoring:
+            raise RuntimeError("계가 중이 아닙니다.")
+        g, _ = replay(self.moves, self.setup)
+        if not g[y][x]:
+            return
+        c = g[y][x]
+        group, st = {(x, y)}, [(x, y)]
+        while st:  # 같은 색으로 이어진 무리 전체를 함께 바꾼다
+            cx, cy = st.pop()
+            for nx, ny in ((cx + 1, cy), (cx - 1, cy), (cx, cy + 1), (cx, cy - 1)):
+                if 0 <= nx < SIZE and 0 <= ny < SIZE and g[ny][nx] == c and (nx, ny) not in group:
+                    group.add((nx, ny))
+                    st.append((nx, ny))
+        if (x, y) in self.scoring["dead"]:
+            self.scoring["dead"] -= group
+        else:
+            self.scoring["dead"] |= group
+
+    def count(self):
+        g, caps = replay(self.moves, self.setup)
+        prisoners = dict(caps)
+        for x, y in self.scoring["dead"]:
+            c = g[y][x]
+            if c:
+                prisoners["W" if c == "B" else "B"] += 1
+                g[y][x] = None
+        terr = {"B": [], "W": []}
+        seen = set()
+        for y0 in range(SIZE):
+            for x0 in range(SIZE):
+                if g[y0][x0] or (x0, y0) in seen:
+                    continue
+                region, border, st = [], set(), [(x0, y0)]
+                seen.add((x0, y0))
+                while st:
+                    cx, cy = st.pop()
+                    region.append((cx, cy))
+                    for nx, ny in ((cx + 1, cy), (cx - 1, cy), (cx, cy + 1), (cx, cy - 1)):
+                        if 0 <= nx < SIZE and 0 <= ny < SIZE:
+                            v = g[ny][nx]
+                            if v:
+                                border.add(v)
+                            elif (nx, ny) not in seen:
+                                seen.add((nx, ny))
+                                st.append((nx, ny))
+                if len(border) == 1:  # 한 색에만 둘러싸인 빈 곳 = 집
+                    terr[border.pop()].extend(region)
+                else:  # 경계가 아직 안 닫힌 곳 — KataGo 소유권이 확실한 점만 집으로(±0.5 미만은 공배)
+                    own = self.scoring["own"]
+                    for x, y in region:
+                        if own[y][x] >= OWN_THRESHOLD:
+                            terr["W"].append((x, y))
+                        elif own[y][x] <= -OWN_THRESHOLD:
+                            terr["B"].append((x, y))
+        b = len(terr["B"]) + prisoners["B"]
+        w = len(terr["W"]) + prisoners["W"] + self.komi
+        diff = b - w
+        res = "0" if diff == 0 else (f"B+{diff:g}" if diff > 0 else f"W+{-diff:g}")
+        return {"terrB": len(terr["B"]), "terrW": len(terr["W"]), "prisB": prisoners["B"], "prisW": prisoners["W"],
+                "komi": self.komi, "black": b, "white": w, "result": res, "resultKo": result_ko(res),
+                "kata": self.scoring["kata"], "kataKo": result_ko(self.scoring["kata"]),
+                "dead": sorted(self.scoring["dead"]),
+                "terr": [[x, y, "B"] for x, y in terr["B"]] + [[x, y, "W"] for x, y in terr["W"]]}
+
+    def confirm_score(self):
+        if not self.scoring:
+            raise RuntimeError("계가 중이 아닙니다.")
+        c = self.count()
+        self.result = c["result"]
+        self.final_count = c
+        self.scoring = None
+        self.message = (f"계가 확정 — 흑 {c['black']:g} · 백 {c['white']:g}(덤 {c['komi']:g} 포함) → {c['resultKo']}"
+                        f" (KataGo 판정 {c['kataKo']})")
+        self.save()
+
+    def cancel_score(self):
+        self.scoring = None
+        self.message = "계가를 취소했습니다. 이어서 두세요."
 
     def play(self, mv):
         if self.result:
             raise RuntimeError("대국이 끝났습니다. '새 판'을 눌러 주세요.")
+        if self.scoring:
+            raise RuntimeError("계가 중입니다 — '계가 확정' 또는 '계가 취소'를 눌러 주세요.")
         if self.to_move != self.user:
             raise RuntimeError("KataGo 차례입니다.")
         e = self.engine()
@@ -305,7 +415,7 @@ class Game:
         self.moves.append((self.user, mv))
         self.message = ""
         self._check_end()
-        if not self.result:
+        if not self.result and not self.scoring:
             self.engine_move()
         self.save()
 
@@ -321,6 +431,7 @@ class Game:
     def undo(self):
         if self.result:
             raise RuntimeError("끝난 대국은 무를 수 없습니다. '새 판'을 눌러 주세요.")
+        self.scoring = None
         # 내 차례가 될 때까지 되돌리되, 내 수를 최소 1개 무른다
         if not any(c == self.user for c, _ in self.moves):
             raise RuntimeError("무를 수가 없습니다.")
@@ -398,6 +509,9 @@ class Game:
                            or "급수 엔진이 꺼져 있음",
             "ranks": [{"v": r, "label": RANK_KO[r]} for r in RANKS],
             "review": REVIEWS.status(self),
+            "scoring": self.count() if self.scoring else None,
+            "finalCount": getattr(self, "final_count", None) if self.result else None,
+            "sounds": custom_sounds(),
             "testMode": TEST_MODE,
         }
 
@@ -534,6 +648,14 @@ class Reviews:
         return page.encode("utf-8")
 
 
+def custom_sounds():
+    """sounds/custom/ 에 넣은 작가님 녹음 — stone*.wav = 착수, capture*.wav = 따냄. 있으면 기본음 대신 쓴다."""
+    d = HERE / "sounds" / "custom"
+    names = sorted(f.stem for f in d.glob("*.wav") if re.fullmatch(r"[A-Za-z0-9_-]+", f.stem)) if d.exists() else []
+    return {"stone": [f"custom/{n}" for n in names if n.lower().startswith("stone")],
+            "capture": [f"custom/{n}" for n in names if n.lower().startswith("capture")]}
+
+
 def esc(s):
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
@@ -572,13 +694,13 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def do_GET(self):
-        if self.path in ("/", "/index.html"):
+        if self.path.split("?")[0] in ("/", "/index.html"):
             self._send(200, (HERE / "index.html").read_bytes(), "text/html; charset=utf-8")
         elif self.path == "/api/state":
             with GAME.lock:
                 self._send(200, json.dumps(GAME.state(), ensure_ascii=False))
-        elif re.fullmatch(r"/sounds/[a-z0-9_]+\.wav", self.path):
-            f = HERE / "sounds" / self.path.split("/")[-1]
+        elif re.fullmatch(r"/sounds/(custom/)?[A-Za-z0-9_-]+\.wav", self.path):
+            f = HERE / self.path.lstrip("/")
             if f.exists():
                 self._send(200, f.read_bytes(), "audio/wav")
             else:
@@ -621,6 +743,14 @@ class Handler(BaseHTTPRequestHandler):
                     if GAME.to_move != GAME.user:
                         GAME.engine_move()
                         GAME.save()
+                elif p == "/api/score":
+                    GAME.start_scoring()
+                elif p == "/api/score/toggle":
+                    GAME.toggle_dead(int(body["x"]), int(body["y"]))
+                elif p == "/api/score/confirm":
+                    GAME.confirm_score()
+                elif p == "/api/score/cancel":
+                    GAME.cancel_score()
                 elif p == "/api/resign":
                     GAME.resign()
                 elif p == "/api/undo":

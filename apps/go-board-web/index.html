@@ -53,7 +53,16 @@
       <button id="bUndo">한 수 무르기</button>
       <button id="bSwap">흑백 바꾸기</button>
       <button id="bReview" disabled>리뷰</button>
-      <button id="bResign" style="flex-basis:100%">기권</button>
+      <button id="bScore">계가</button>
+      <button id="bResign">기권</button>
+    </div>
+    <div id="scorePanel" hidden style="border:2px solid #c9bba5;border-radius:10px;padding:12px 14px;background:#fffaf0">
+      <div id="scoreSum" style="font-weight:700"></div>
+      <div class="small" id="scoreDetail"></div>
+      <div class="row" style="margin-top:10px">
+        <button id="bScoreOk" class="hl" style="flex:1">계가 확정</button>
+        <button id="bScoreCancel" style="flex:1">계가 취소</button>
+      </div>
     </div>
     <label class="small"><input type="checkbox" id="wrFilter" checked> 리뷰: 승부가 갈리기 전(승률 <span id="wrRange">3~97%</span>) 실수만 <span id="filterWhy"></span></label>
     <div class="small" id="reviewWhy"></div>
@@ -109,10 +118,23 @@ function drawBase() {
 function render() {
   drawBase();
   const g = S.board;
+  const sc = S.scoring;
+  const dead = new Set(sc ? sc.dead.map(([x, y]) => x + ',' + y) : []);
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
     const c = g[y][x]; if (!c) continue;
+    const isDead = dead.has(x + ',' + y);
     el('circle', { cx: P(x), cy: P(y), r: STEP * .47, fill: c === 'B' ? '#151515' : '#fafaf5',
-                   stroke: c === 'B' ? '#000' : '#888', 'stroke-width': .6 });
+                   stroke: c === 'B' ? '#000' : '#888', 'stroke-width': .6, opacity: isDead ? .35 : 1 });
+    if (isDead) {
+      const d = STEP * .22, col = '#c0392b';
+      el('line', { x1: P(x) - d, y1: P(y) - d, x2: P(x) + d, y2: P(y) + d, stroke: col, 'stroke-width': 1.6 });
+      el('line', { x1: P(x) - d, y1: P(y) + d, x2: P(x) + d, y2: P(y) - d, stroke: col, 'stroke-width': 1.6 });
+    }
+  }
+  if (sc) for (const [x, y, o] of sc.terr) {
+    const d = STEP * .18;
+    el('rect', { x: P(x) - d, y: P(y) - d, width: 2 * d, height: 2 * d, fill: o === 'B' ? '#151515' : '#fafaf5',
+                 stroke: o === 'B' ? '#000' : '#777', 'stroke-width': .5 });
   }
   if (S.last) {
     const [x, y] = S.last, c = g[y][x];
@@ -121,6 +143,7 @@ function render() {
   const me = S.user === 'B' ? '흑' : '백';
   let turn;
   if (S.result) turn = `대국 종료 — ${S.resultKo}`;
+  else if (S.scoring) turn = '계가 중';
   else if (busy) turn = 'KataGo 생각 중';
   else if (S.toMove === S.user) turn = `작가님(${me}) 차례`;
   else turn = 'KataGo 차례';
@@ -161,8 +184,18 @@ function render() {
   rb.disabled = !S.review.ok;
   rb.classList.toggle('hl', !!S.result && S.review.ok);  // 종국 후 리뷰로 시선 유도
   document.getElementById('bUndo').disabled = !!S.result;
+  document.getElementById('bScore').disabled = !!S.result || !!S.scoring || !S.moveNo;
+  const panel = document.getElementById('scorePanel');
+  panel.hidden = !sc;
+  if (sc) {
+    document.getElementById('scoreSum').textContent = `흑 ${sc.black}집 · 백 ${sc.white}집 → ${sc.resultKo}`;
+    document.getElementById('scoreDetail').textContent =
+      `흑 = 집 ${sc.terrB} + 따낸 돌·사석 ${sc.prisB} / 백 = 집 ${sc.terrW} + 따낸 돌·사석 ${sc.prisW} + 덤 ${sc.komi}` +
+      ` (한국 규칙 집 계산) · KataGo 판정: ${sc.kataKo}` +
+      (sc.result !== sc.kata ? ' — 결과가 다르면 사석 표시를 확인해 주세요(돌을 누르면 바뀝니다)' : '');
+  }
   document.getElementById('bResign').disabled = !!S.result || !S.moveNo;
-  document.getElementById('bPass').disabled = !!S.result;
+  document.getElementById('bPass').disabled = !!S.result || !!S.scoring;
   document.getElementById('reviewWhy').textContent = S.review.ok ? '' : S.review.reason;
   const wf = document.getElementById('wrFilter');
   wf.disabled = !S.review.filterOk;
@@ -178,53 +211,85 @@ function render() {
 }
 
 // ---- 착수음: 실녹음(Freesound CC0, 출처는 sounds/SOUNDS.md). 작가님 선택(10-23) = Hongsungbock 'baduk2'.
-// 3테이크를 돌려 쓰고 재생 속도·세기를 조금씩 흔들어 매번 같은 소리가 되지 않게 한다.
-const STONE_FILES = ['b_hongsungbock_1', 'b_hongsungbock_2', 'b_hongsungbock_3'];
-const CAPTURE_FILE = 'capture_mpooman471';
+// sounds/custom/ 에 stone*.wav·capture*.wav 를 넣으면 그 녹음을 대신 쓴다(서버가 목록을 알려 줌).
+// 지연 0을 위해: 페이지 열 때 받고 바로 디코딩해 두고, 재생은 기다림 없이 즉시 시작한다(디코딩 전이면 그 한 번만 무음).
+let STONE_FILES = ['b_hongsungbock_1', 'b_hongsungbock_2', 'b_hongsungbock_3'];
+let CAPTURE_FILES = ['capture_mpooman471'];
 let actx = null;
 let soundOn = true;
-const buffers = {};
+const decoded = {};
 try {
   soundOn = localStorage.getItem('goBoardSound') !== 'off';
 } catch (e) { /* 저장소 불가 — 기본값 */ }
 
 function audio() {
-  if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
-  if (actx.state === 'suspended') actx.resume();
+  if (!actx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    actx = new AC({ latencyHint: 'interactive' });
+  }
   return actx;
 }
 
-async function load(name) {
-  if (!buffers[name]) {
-    buffers[name] = fetch(`/sounds/${name}.wav`).then(r => r.arrayBuffer()).then(b => audio().decodeAudioData(b));
+function unlockAudio() {  // 브라우저는 첫 사용자 동작 전에는 소리를 막는다 — 첫 누름에서 연다
+  const a = audio();
+  if (a.state === 'suspended') a.resume();
+}
+
+function preloadSounds(sounds) {
+  if (sounds && sounds.stone && sounds.stone.length) STONE_FILES = sounds.stone;
+  if (sounds && sounds.capture && sounds.capture.length) CAPTURE_FILES = sounds.capture;
+  for (const f of [...STONE_FILES, ...CAPTURE_FILES]) {
+    if (decoded[f] !== undefined) continue;
+    decoded[f] = null;
+    fetch(`/sounds/${f}.wav`).then(r => r.arrayBuffer()).then(b => audio().decodeAudioData(b))
+      .then(buf => { decoded[f] = buf; }).catch(() => { delete decoded[f]; });
   }
-  return buffers[name];
 }
 
 const jitter = (v, r) => v * (1 + (Math.random() * 2 - 1) * r);
+const pick = list => list[Math.floor(Math.random() * list.length)];
 
-async function playFile(name, delay, gain, rate) {
-  const a = audio(), buf = await load(name);
+function playNow(name, delay, gain, rate) {
+  const buf = decoded[name];
+  if (!buf) return false;
+  const a = audio();
+  if (a.state === 'suspended') a.resume();
   const src = a.createBufferSource(), g = a.createGain();
   src.buffer = buf; src.playbackRate.value = rate; g.gain.value = gain;
   src.connect(g); g.connect(a.destination);
   src.start(a.currentTime + (delay || 0));
+  return true;
 }
 
 function stoneSound(delay) {
-  if (!soundOn) return;
-  playFile(STONE_FILES[Math.floor(Math.random() * STONE_FILES.length)], delay, jitter(0.9, 0.12), jitter(1, 0.03))
-    .catch(() => { /* 오디오 불가 — 무음 */ });
+  if (!soundOn) return false;
+  try { return playNow(pick(STONE_FILES), delay, jitter(0.9, 0.12), jitter(1, 0.03)); } catch (e) { return false; }
 }
 
 function captureSound(delay) {
-  if (!soundOn) return;
-  playFile(CAPTURE_FILE, (delay || 0) + 0.12, 0.7, jitter(1, 0.03)).catch(() => { /* 오디오 불가 — 무음 */ });
+  if (!soundOn) return false;
+  try { return playNow(pick(CAPTURE_FILES), (delay || 0) + 0.06, 0.7, jitter(1, 0.03)); } catch (e) { return false; }
 }
 
-// 첫 착수 지연을 없애려고 미리 받아 둔다(디코딩은 첫 사용자 동작 후)
-function preloadSounds() {
-  for (const f of [...STONE_FILES, CAPTURE_FILE]) load(f).catch(() => {});
+// 내 수로 잡히는 상대 돌 — 서버 왕복 전에 따냄 소리를 내고 판에서 바로 걷어내려고 브라우저에서 계산
+function capturedBy(board, x, y, c) {
+  const o = c === 'B' ? 'W' : 'B', out = [], seen = new Set();
+  const g = board.map(r => r.slice()); g[y][x] = c;
+  for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) {
+    if (nx < 0 || ny < 0 || nx >= N || ny >= N || g[ny][nx] !== o || seen.has(nx + ',' + ny)) continue;
+    const grp = [], st = [[nx, ny]]; let libs = 0; seen.add(nx + ',' + ny);
+    while (st.length) {
+      const [cx, cy] = st.pop(); grp.push([cx, cy]);
+      for (const [ax, ay] of [[cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]]) {
+        if (ax < 0 || ay < 0 || ax >= N || ay >= N) continue;
+        const v = g[ay][ax];
+        if (v === null) libs++;
+        else if (v === o && !seen.has(ax + ',' + ay)) { seen.add(ax + ',' + ay); st.push([ax, ay]); }
+      }
+    }
+    if (!libs) out.push(...grp);
+  }
+  return out;
 }
 
 function notice(text) {
@@ -249,34 +314,48 @@ async function call(path, body) {
   busy = false; render();
 }
 
-// 응답 전후 비교로 소리를 낸다: 내가 따냈으면 따냄 소리, 엔진이 돌을 놓았으면 딱(+따냄)
+// 응답 전후 비교로 엔진 수의 소리를 낸다(내 수의 딱·따냄은 누르는 순간에 이미 냈다)
 function playSounds(prev, cur, myStone) {
   if (!prev || cur.error && myStone) return;
   const me = cur.user, eng = me === 'B' ? 'W' : 'B';
-  const mine = (cur.captures[me] || 0) - (prev.captures[me] || 0);
   const theirs = (cur.captures[eng] || 0) - (prev.captures[eng] || 0);
-  if (myStone && mine > 0) captureSound(0, mine);
   const engMoved = cur.moveNo > prev.moveNo + (myStone ? 1 : 0) && cur.lastColor === eng && !cur.lastPass;
   if (engMoved && cur.moveNo > prev.moveNo) {
-    stoneSound(0.12);
-    if (theirs > 0) captureSound(0.12, theirs);
+    stoneSound();
+    if (theirs > 0) captureSound();
   }
 }
 
-document.addEventListener('pointerdown', () => preloadSounds(), { once: true });
-svg.addEventListener('click', ev => {
-  if (!S || S.result) return;
-  if (busy) { notice('상대가 생각 중입니다'); return; }
-  if (S.toMove !== S.user) return;
+document.addEventListener('pointerdown', unlockAudio, { once: true });
+document.addEventListener('keydown', unlockAudio, { once: true });
+
+function boardXY(ev) {
   const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
   const p = pt.matrixTransform(svg.getScreenCTM().inverse());
-  const x = Math.round((p.x - M) / STEP), y = Math.round((p.y - M) / STEP);
-  if (x < 0 || y < 0 || x >= N || y >= N || S.board[y][x]) return;
-  // 즉시 내 돌을 그려 반응을 보인다(서버 응답으로 덮어씀)
+  return [Math.round((p.x - M) / STEP), Math.round((p.y - M) / STEP)];
+}
+
+// 누르는 순간(pointerdown) 처리 — click(손을 뗄 때)보다 빠르다
+function tapAt(x, y) {
+  if (!S || S.result) return;
+  if (x < 0 || y < 0 || x >= N || y >= N) return;
+  if (S.scoring) {
+    if (S.board[y][x]) call('/api/score/toggle', { x, y });
+    return;
+  }
+  if (busy) { notice('상대가 생각 중입니다'); return; }
+  if (S.toMove !== S.user || S.board[y][x]) return;
+  const t0 = performance.now();
+  // 즉시 내 돌·따냄을 그리고 소리를 낸다(서버 응답으로 덮어씀)
+  const caps = capturedBy(S.board, x, y, S.user);
   S.board[y][x] = S.user; S.last = [x, y]; S.message = ''; S.error = null;
-  stoneSound();
+  for (const [cx, cy] of caps) S.board[cy][cx] = null;
+  const played = stoneSound();
+  if (caps.length) captureSound();
+  window.__lastTap = { ms: performance.now() - t0, played, caps: caps.length };  // 누름 → 재생 예약까지(실측용)
   call('/api/play', { x, y });
-});
+}
+svg.addEventListener('pointerdown', ev => { const [x, y] = boardXY(ev); tapAt(x, y); });
 document.getElementById('bNew').onclick = () => { filterDefaultFor = null; return call('/api/new', { handicap: Number(document.getElementById('handicap').value) }); };
 document.getElementById('bUndo').onclick = () => call('/api/undo');
 document.getElementById('bSwap').onclick = () => call('/api/swap');
@@ -299,9 +378,40 @@ soundBox.onchange = () => {
   if (soundOn) stoneSound();
 };
 document.getElementById('bPass').onclick = () => call('/api/play', { pass: true });
+document.getElementById('bScore').onclick = () => call('/api/score');
+document.getElementById('bScoreOk').onclick = () => call('/api/score/confirm');
+document.getElementById('bScoreCancel').onclick = () => call('/api/score/cancel');
 document.getElementById('level').onchange = e => call('/api/level', { level: e.target.value });
 
-fetch('/api/state').then(r => r.json()).then(s => { S = s; render(); })
+// 테스트 포트 전용 자가 측정(?selftest=1): 누름→재생 예약 지연·따냄 판정. 결과는 #selftest 에 남긴다
+async function selftest() {
+  const out = [], blank = () => Array.from({ length: N }, () => Array(N).fill(null));
+  unlockAudio();
+  for (let i = 0; i < 30 && Object.values(decoded).filter(Boolean).length < STONE_FILES.length + CAPTURE_FILES.length; i++) {
+    await new Promise(r => setTimeout(r, 100));
+  }
+  out.push('decoded=' + Object.values(decoded).filter(Boolean).length);
+  const b = blank(); b[0][0] = 'W'; b[1][0] = 'B';  // A19 백 1점, A18 흑 → B19 흑이면 따냄
+  const ts = [];
+  for (let i = 0; i < 20; i++) {
+    const t0 = performance.now();
+    const caps = capturedBy(b, 1, 0, 'B');
+    const ok = stoneSound(); if (caps.length) captureSound();
+    ts.push([performance.now() - t0, ok]);
+  }
+  const ms = ts.map(t => t[0]).sort((p, q) => p - q);
+  out.push(`tap_ms_median=${ms[10].toFixed(3)} max=${ms[19].toFixed(3)} played=${ts.filter(t => t[1]).length}/20`);
+  const b3 = blank(); b3[0][0] = 'W'; b3[0][1] = 'W'; b3[1][0] = 'B'; b3[1][1] = 'B';
+  out.push(`capture1=${capturedBy(b, 1, 0, 'B').length} capture2=${capturedBy(b3, 2, 0, 'B').length} negative=${capturedBy(b3, 5, 5, 'B').length}`);
+  out.push(`ctx=${actx.state} baseLatency=${(actx.baseLatency * 1000).toFixed(1)}ms outputLatency=${((actx.outputLatency || 0) * 1000).toFixed(1)}ms`);
+  const d = document.createElement('div'); d.id = 'selftest'; d.textContent = 'SELFTEST ' + out.join(' | ');
+  document.body.appendChild(d);
+}
+
+fetch('/api/state').then(r => r.json()).then(s => {
+  S = s; preloadSounds(S.sounds); render();
+  if (S.testMode && location.search.includes('selftest=1')) selftest();
+})
   .catch(() => { document.getElementById('turn').textContent = '서버 연결 실패'; });
 </script>
 </body>
