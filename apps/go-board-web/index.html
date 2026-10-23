@@ -711,7 +711,10 @@ document.getElementById('bNew').onclick = () => {
   for (const o of document.getElementById('dLevel').options) if (o.value !== 'strong') o.disabled = !S.humanOk;
   document.querySelector(`input[name="dWay"][value="${S.handicap ? 'handi' : 'even'}"]`).checked = true;
   document.getElementById('handicap').value = S.handicap || 2;
-  document.getElementById('dColor').value = S.user;
+  // 흑백선택은 지난번 고른 값(자동 돌가림 포함)을 기억 — 지난 판 결과색으로 덮지 않는다(10-23 작가님 "돌가리기가 적용 안 되는 듯")
+  let pickColor = null;
+  try { pickColor = localStorage.getItem('goBoardColorPick'); } catch (e) { /* 저장소 불가 */ }
+  document.getElementById('dColor').value = pickColor || S.user;
   const t = S.time || { main: 0, byo: 20, periods: 3 };
   document.getElementById('tMain').value = t.main; document.getElementById('tByo').value = t.byo;
   document.getElementById('tPer').value = t.periods; document.getElementById('tUnl').checked = !S.time;
@@ -730,7 +733,10 @@ document.getElementById('dOk').onclick = async () => {
     { main: Number(document.getElementById('tMain').value), byo: Number(document.getElementById('tByo').value),
       periods: Number(document.getElementById('tPer').value) };
   if (level !== S.level) await call('/api/level', { level });  // 새 판 첫 수를 새 상대가 두도록 먼저 바꾼다
-  await call('/api/new', { handicap: handi, time, color: handi ? 'B' : document.getElementById('dColor').value });
+  const colorPick = document.getElementById('dColor').value;
+  try { localStorage.setItem('goBoardColorPick', colorPick); } catch (e) { /* 이번 창에서만 */ }
+  await call('/api/new', { handicap: handi, time, color: handi ? 'B' : colorPick });
+  if (!handi && colorPick === 'auto' && S) notice(`돌 가림 결과 — 작가님 ${S.user === 'B' ? '흑(먼저 둠)' : '백'}`);
   initClocks();
   voice(SND && SND.start);
 };
