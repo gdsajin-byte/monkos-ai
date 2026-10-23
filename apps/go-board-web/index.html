@@ -642,6 +642,31 @@ function tapAt(x, y) {
   call('/api/play', { x, y });
 }
 svg.addEventListener('pointerdown', ev => { const [x, y] = boardXY(ev); tapAt(x, y); });
+
+// ---- 착수 미리보기(타이젬식 반투명 돌, 10-23 작가님): 내 차례·빈 점에서만 마우스 아래에 보인다
+let ghostAt = null;
+function canGhost(x, y) {
+  return S && !S.result && !S.scoring && !busy && S.toMove === S.user &&
+         x >= 0 && y >= 0 && x < N && y < N && !S.board[y][x];
+}
+function drawGhost() {
+  const old = document.getElementById('ghost');
+  if (old) old.remove();
+  if (!ghostAt || !canGhost(ghostAt[0], ghostAt[1])) return;
+  const n = svg.childNodes.length;
+  drawStone(ghostAt[0], ghostAt[1], S.user, 0.5);
+  const g = el('g', { id: 'ghost', 'pointer-events': 'none' });
+  while (svg.childNodes[n] !== g) g.appendChild(svg.childNodes[n]);  // 방금 그린 돌을 묶어 다음에 통째로 지운다
+}
+svg.addEventListener('pointermove', ev => {
+  if (ev.pointerType === 'touch') return;  // 터치는 미리보기 없이 바로 둔다
+  const p = boardXY(ev);
+  if (ghostAt && ghostAt[0] === p[0] && ghostAt[1] === p[1]) return;
+  ghostAt = p; drawGhost();
+});
+svg.addEventListener('pointerleave', () => { ghostAt = null; drawGhost(); });
+const renderBoard = render;
+render = function () { renderBoard(); drawGhost(); };  // 판을 다시 그려도 미리보기 유지(둔 자리는 빈 점이 아니라 자동으로 사라짐)
 document.getElementById('tabs').onclick = e => {
   const b = e.target.closest('button');
   if (b) { tab = b.dataset.tab; render(); }
