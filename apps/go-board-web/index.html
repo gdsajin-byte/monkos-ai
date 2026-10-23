@@ -202,9 +202,11 @@ const P = i => M + i * STEP;
 
 // ---- 판·돌 디자인(스킨): 기본 = 우리 SVG. 외부 스킨팩 = 레포 밖 ~/.monkos/go-board-skins/<팩>/ (규격 SKINS.md)
 // 판 이미지 위에 격자·화점은 늘 우리가 그린다. 돌은 스프라이트에서 칸을 잘라 판 칸 크기에 맞춰 늘린다.
+// 기본 팩(10-23 작가님 "타이젬에서 받은 소리·판·돌 적용") — 내부 실험 참조본, 출시 전 자체 디자인으로 교체(원장 191)
+const DEFAULT_PACK = 'tygem-ref';
 let skinName = 'builtin', skinBoard = null, skinStones = null;
 try {
-  skinName = localStorage.getItem('goBoardSkin') || 'builtin';
+  skinName = localStorage.getItem('goBoardSkin') || DEFAULT_PACK;  // 고른 적 없으면 설치된 참조 팩 — 없으면 skin()이 null → 우리 SVG
   skinBoard = localStorage.getItem('goBoardSkinBoard');
   skinStones = localStorage.getItem('goBoardSkinStones');
 } catch (e) { /* 저장소 불가 — 기본값 */ }
@@ -471,7 +473,7 @@ let packName = 'builtin';
 const decoded = {};
 try {
   soundOn = localStorage.getItem('goBoardSound') !== 'off';
-  packName = localStorage.getItem('goBoardPack') || 'builtin';
+  packName = localStorage.getItem('goBoardPack') || DEFAULT_PACK;  // 고른 적 없으면 참조 팩 — 없으면 buildSounds가 builtin으로 되돌림
 } catch (e) { /* 저장소 불가 — 기본값 */ }
 
 function audio() {
