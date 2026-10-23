@@ -280,9 +280,18 @@ class Game:
             self.engine_move()
         self.save()
 
+    def resign(self):
+        if self.result:
+            raise RuntimeError("이미 끝난 대국입니다.")
+        if not self.moves:
+            raise RuntimeError("아직 둔 수가 없습니다.")
+        self.result = f"{'W' if self.user == 'B' else 'B'}+R"
+        self.message = "기권했습니다." + (" '리뷰'로 이번 판을 돌아볼 수 있어요." if REVIEWS.status(self)["ok"] else "")
+        self.save()
+
     def undo(self):
         if self.result:
-            self.result = None
+            raise RuntimeError("끝난 대국은 무를 수 없습니다. '새 판'을 눌러 주세요.")
         # 내 차례가 될 때까지 되돌리되, 내 수를 최소 1개 무른다
         if not any(c == self.user for c, _ in self.moves):
             raise RuntimeError("무를 수가 없습니다.")
@@ -542,6 +551,8 @@ class Handler(BaseHTTPRequestHandler):
                     if GAME.to_move != GAME.user:
                         GAME.engine_move()
                         GAME.save()
+                elif p == "/api/resign":
+                    GAME.resign()
                 elif p == "/api/undo":
                     GAME.undo()
                 elif p == "/api/swap":
