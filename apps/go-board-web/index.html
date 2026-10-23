@@ -705,8 +705,10 @@ function notice(text) {
   document.getElementById('msg').textContent = text;
 }
 
+let stateGen = 0;  // 서버에 판을 바꾸는 요청을 보낼 때마다 +1 — 그 전에 보낸 조회 응답이 늦게 와도 새 판을 덮지 않게(10-24)
 async function call(path, body) {
   if (busy) { notice('상대가 생각 중입니다'); return; }
+  stateGen++;
   busy = true; render();
   try {
     const r = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
@@ -858,6 +860,10 @@ document.getElementById('dOk').onclick = async () => {
   if (level !== S.level) await call('/api/level', { level });  // 새 판 첫 수를 새 상대가 두도록 먼저 바꾼다
   const colorPick = document.getElementById('dColor').value;
   try { localStorage.setItem('goBoardColorPick', colorPick); } catch (e) { /* 이번 창에서만 */ }
+  // 새 대국: 서버가 (KataGo가 흑이면 첫 수까지) 답하기 전에 화면부터 빈 판으로 — 첫 돌은 생각 뒤 소리와 함께 놓인다(10-24)
+  S = { ...S, board: Array.from({ length: N }, () => Array(N).fill(null)), moveNo: 0, last: null, result: null, resultKo: null,
+        captures: { B: 0, W: 0 }, scoring: null, finalCount: null, stale: false };
+  render();
   await call('/api/new', { handicap: handi, time, color: handi ? 'B' : colorPick });
   if (!handi && colorPick === 'auto' && S) notice(`돌 가림 결과 — 작가님 ${S.user === 'B' ? '흑(먼저 둠)' : '백'}`);
   initClocks();
@@ -1031,7 +1037,9 @@ try {
 setInterval(() => {  // 판 상태를 2초마다 저장(다음 실행의 첫 화면용)
   try { if (S && !S.stale) localStorage.setItem('goBoardLastState', JSON.stringify(S)); } catch (e) { /* 용량·차단 — 무시 */ }
 }, 2000);
+const bootGen = stateGen;
 fetch('/api/state').then(r => r.json()).then(s => {
+  if (stateGen !== bootGen && S && !S.stale) return;  // 그사이 대국 신청·착수가 있었다 — 늦은 시작 응답은 버린다(10-24 '첫 수 뒤 빈 판' 회귀)
   const qs = new URLSearchParams(location.search);
   if (s.testMode && qs.get('skin')) { skinName = qs.get('skin'); skinBoard = qs.get('board'); skinStones = qs.get('stones'); }
   if (s.testMode && qs.get('tab')) tab = qs.get('tab');  // 캡처용
