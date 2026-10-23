@@ -538,6 +538,12 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/api/state":
             with GAME.lock:
                 self._send(200, json.dumps(GAME.state(), ensure_ascii=False))
+        elif re.fullmatch(r"/sounds/[a-z0-9_]+\.wav", self.path):
+            f = HERE / "sounds" / self.path.split("/")[-1]
+            if f.exists():
+                self._send(200, f.read_bytes(), "audio/wav")
+            else:
+                self._send(404, '{"error":"없음"}')
         elif self.path.startswith("/review/"):
             body = REVIEWS.page(self.path.split("/")[2])
             if body is None:

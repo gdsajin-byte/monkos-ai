@@ -72,7 +72,7 @@
       <span><button class="pass" id="bPass">패스</button> · <label><input type="checkbox" id="sound" checked> 소리</label></span></div>
     <div class="small" id="sgf"></div>
     <div id="voiceBox" class="small" hidden>
-      <b>소리 미리듣기 (작가님 선택용 임시)</b><br>
+      <b>소리 미리듣기 (작가님 선택용 임시 — 실녹음, 출처 sounds/SOUNDS.md)</b><br>
       <select id="voice" style="font-size:17px;padding:8px"></select>
       <button id="bPreview" style="font-size:17px;padding:8px 14px">미리듣기</button>
       <button id="bPreviewCap" style="font-size:17px;padding:8px 14px">따냄 소리</button>
@@ -170,20 +170,23 @@ function render() {
   document.getElementById('sgf').textContent = S.sgf ? `기보 자동 저장: ${S.sgf}` : '';
 }
 
-// ---- 착수음: WebAudio 합성(외부 음원 없음).
-// 한 번의 '탁' = ① 돌과 판이 닿는 순간의 짧은 잡음(트랜지언트) ② 돌 자체의 높은 울림 ③ 나무 판의 공명 대역 2~3개.
-// 매번 주파수·세기·감쇠를 조금씩 흔들어 같은 소리가 반복되지 않게 한다. 후보 3종은 작가님 청감 선택용(테스트 포트에 선택지).
+// ---- 착수음: 실녹음(Freesound CC0, 출처는 sounds/SOUNDS.md). 후보마다 3테이크를 돌려 쓰고
+// 재생 속도·세기를 조금씩 흔들어 매번 같은 소리가 되지 않게 한다. 후보 선택지는 테스트 포트에만(작가님 청감 선택용).
 const VOICES = {
-  kaya:  { label: 'A. 두꺼운 원목 판 — 깊은 탁', click: [0.004, 1800], stone: [3100, 0.018], modes: [[170, 0.16], [410, 0.10], [880, 0.05]], body: 0.55 },
-  shin:  { label: 'B. 얇은 판 — 맑은 딱',     click: [0.003, 2600], stone: [4200, 0.012], modes: [[290, 0.08], [690, 0.05], [1500, 0.03]], body: 0.35 },
-  table: { label: 'C. 테이블 위 판 — 가벼운 톡', click: [0.0025, 3200], stone: [3600, 0.010], modes: [[420, 0.05], [1150, 0.03]], body: 0.25 },
+  a: { label: 'A. 바둑돌 녹음 1 (billhails2)', files: ['a_billhails2_1', 'a_billhails2_2', 'a_billhails2_3'] },
+  b: { label: 'B. 바둑돌 녹음 2 (Hongsungbock)', files: ['b_hongsungbock_1', 'b_hongsungbock_2', 'b_hongsungbock_3'] },
+  c: { label: 'C. 바둑돌 녹음 3 (MPooman SE485)', files: ['c_mpooman485_1', 'c_mpooman485_2', 'c_mpooman485_3'] },
+  d: { label: 'D. 바둑돌 녹음 4 (MPooman SE471)', files: ['d_mpooman471_1', 'd_mpooman471_2', 'd_mpooman471_3'] },
 };
+const CAPTURE_FILE = 'capture_mpooman471';
 let actx = null;
 let soundOn = true;
-let voice = 'kaya';
+let voice = 'a';
+const buffers = {};
 try {
   soundOn = localStorage.getItem('goBoardSound') !== 'off';
-  voice = VOICES[localStorage.getItem('goBoardVoice')] ? localStorage.getItem('goBoardVoice') : 'kaya';
+  const v = localStorage.getItem('goBoardVoiceRec');
+  if (VOICES[v]) voice = v;
 } catch (e) { /* 저장소 불가 — 기본값 */ }
 
 function audio() {
@@ -192,52 +195,38 @@ function audio() {
   return actx;
 }
 
-const jitter = (v, r) => v * (1 + (Math.random() * 2 - 1) * r);
-
-// 감쇠 사인 하나(공명 모드)
-function mode(a, out, at, freq, decay, gain) {
-  const o = a.createOscillator(), g = a.createGain();
-  o.frequency.value = freq;
-  g.gain.setValueAtTime(0.0001, at);
-  g.gain.linearRampToValueAtTime(gain, at + 0.001);
-  g.gain.exponentialRampToValueAtTime(0.0001, at + decay * 5);
-  o.connect(g); g.connect(out);
-  o.start(at); o.stop(at + decay * 5 + 0.02);
+async function load(name) {
+  if (!buffers[name]) {
+    buffers[name] = fetch(`/sounds/${name}.wav`).then(r => r.arrayBuffer()).then(b => audio().decodeAudioData(b));
+  }
+  return buffers[name];
 }
 
-function strike(at, gain, v, bright) {
-  const a = audio(), out = a.createGain();
-  out.gain.value = jitter(gain, 0.15);
-  out.connect(a.destination);
-  // ① 트랜지언트: 고역 통과 잡음, 수 ms 감쇠
-  const [cDecay, cHp] = v.click;
-  const n = Math.floor(a.sampleRate * cDecay * 6), buf = a.createBuffer(1, n, a.sampleRate), d = buf.getChannelData(0);
-  const tau = a.sampleRate * jitter(cDecay, 0.2);
-  for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / tau);
-  const src = a.createBufferSource(), hp = a.createBiquadFilter();
-  src.buffer = buf; hp.type = 'highpass'; hp.frequency.value = jitter(cHp * (bright || 1), 0.1);
-  src.connect(hp); hp.connect(out); src.start(at);
-  // ② 돌 울림(조개·슬레이트 돌의 높은 짧은 울림, 비정수배 2성분)
-  const [sf, sd] = v.stone, f0 = jitter(sf * (bright || 1), 0.06);
-  mode(a, out, at, f0, jitter(sd, 0.2), 0.35);
-  mode(a, out, at, f0 * 1.47, jitter(sd * 0.6, 0.2), 0.18);
-  // ③ 판 공명
-  for (const [f, dec] of v.modes) mode(a, out, at, jitter(f, 0.04), jitter(dec, 0.15), v.body * jitter(1, 0.2));
+const jitter = (v, r) => v * (1 + (Math.random() * 2 - 1) * r);
+
+async function playFile(name, delay, gain, rate) {
+  const a = audio(), buf = await load(name);
+  const src = a.createBufferSource(), g = a.createGain();
+  src.buffer = buf; src.playbackRate.value = rate; g.gain.value = gain;
+  src.connect(g); g.connect(a.destination);
+  src.start(a.currentTime + (delay || 0));
 }
 
 function stoneSound(delay, which) {
   if (!soundOn && !which) return;
-  try { strike(audio().currentTime + (delay || 0), 0.8, VOICES[which || voice]); } catch (e) { /* 오디오 불가 — 무음 */ }
+  const files = VOICES[which || voice].files;
+  playFile(files[Math.floor(Math.random() * files.length)], delay, jitter(0.9, 0.12), jitter(1, 0.03))
+    .catch(() => { /* 오디오 불가 — 무음 */ });
 }
 
-// 따냄: 판 공명 없이 돌끼리 부딪히는 작은 소리 여러 번(손에 돌 집어 드는 느낌)
-function captureSound(delay, count) {
+function captureSound(delay) {
   if (!soundOn) return;
-  try {
-    const t = audio().currentTime + (delay || 0) + 0.08, v = VOICES[voice];
-    const pebble = { click: [0.0015, 3500], stone: [v.stone[0] * 1.3, 0.008], modes: [], body: 0 };
-    for (let i = 0; i < Math.min(2 + count, 6); i++) strike(t + i * jitter(0.06, 0.4), 0.3, pebble, jitter(1, 0.1));
-  } catch (e) { /* 오디오 불가 — 무음 */ }
+  playFile(CAPTURE_FILE, (delay || 0) + 0.12, 0.7, jitter(1, 0.03)).catch(() => { /* 오디오 불가 — 무음 */ });
+}
+
+// 첫 착수 지연을 없애려고 미리 받아 둔다(디코딩은 첫 사용자 동작 후)
+function preloadSounds() {
+  for (const f of [...VOICES[voice].files, CAPTURE_FILE]) load(f).catch(() => {});
 }
 
 function notice(text) {
@@ -276,6 +265,7 @@ function playSounds(prev, cur, myStone) {
   }
 }
 
+document.addEventListener('pointerdown', () => preloadSounds(), { once: true });
 svg.addEventListener('click', ev => {
   if (!S || S.result) return;
   if (busy) { notice('상대가 생각 중입니다'); return; }
@@ -315,11 +305,11 @@ for (const k in VOICES) voiceSel.add(new Option(VOICES[k].label, k));
 voiceSel.value = voice;
 voiceSel.onchange = () => {
   voice = voiceSel.value;
-  try { localStorage.setItem('goBoardVoice', voice); } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
+  try { localStorage.setItem('goBoardVoiceRec', voice); } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
   stoneSound(0, voice);
 };
-document.getElementById('bPreview').onclick = () => { for (let i = 0; i < 3; i++) stoneSound(i * 0.45, voice); };
-document.getElementById('bPreviewCap').onclick = () => { stoneSound(0, voice); captureSound(0.1, 3); };
+document.getElementById('bPreview').onclick = () => { for (let i = 0; i < 3; i++) stoneSound(i * 0.5, voice); };
+document.getElementById('bPreviewCap').onclick = () => { stoneSound(0, voice); if (soundOn) captureSound(0.1); else playFile(CAPTURE_FILE, 0.22, 0.7, 1); };
 document.getElementById('bPass').onclick = () => call('/api/play', { pass: true });
 document.getElementById('level').onchange = e => call('/api/level', { level: e.target.value });
 
