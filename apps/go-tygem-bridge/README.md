@@ -13,6 +13,7 @@
 | `tools/bridge.py` | 화면 판 읽기 ↔ KataGo GTP(`~/.monkos/katago`) ↔ CDP 클릭. `--color b|w --visits 300 --resume-log` |
 | `tools/clk.py` | CSS 좌표 클릭 + 캡처 |
 | `tools/clicktext.py` | DOM 텍스트로 찾아 클릭(대기실·대국 신청 창은 canvas라 미적용 — 로그인 페이지 등 DOM 화면용) |
+| `tools/live_view.py` + `tools/analysis_live.cfg` | 라이브 관전 — 브리지 로그 수순을 별도 KataGo 분석(160 visits, 흑 기준)으로 판·추천수 A/B/C·형세 그래프 표시. `python3 live_view.py` → http://127.0.0.1:8770/ (cfg는 `~/.monkos/katago/`에 둔다). 읽기 전용, 브리지와 GPU 공유 |
 | `tools/snap.py`·`inputs.py`·`clearfields.py`·`shape.py` | 캡처·입력 필드 조사 보조 |
 
 ## 실행 순서
