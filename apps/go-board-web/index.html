@@ -96,6 +96,9 @@
     <div class="stat small"><span id="moveNo">0수</span>
       <span><button class="pass" id="bPass">패스</button> · <label><input type="checkbox" id="sound" checked> 소리</label></span></div>
     <div class="small" id="sgf"></div>
+    <label class="small">판·돌 디자인 <select id="skin" style="font-size:16px;padding:6px"></select>
+      <select id="skinBoard" style="font-size:16px;padding:6px" hidden></select>
+      <select id="skinStones" style="font-size:16px;padding:6px" hidden></select></label>
     <label class="small">소리 <select id="pack" style="font-size:16px;padding:6px"></select> <span id="packNote"></span></label>
   </div>
 </div>
@@ -114,18 +117,60 @@ function el(tag, attrs, parent) {
 }
 const P = i => M + i * STEP;
 
+// ---- 판·돌 디자인(스킨): 기본 = 우리 SVG. 외부 스킨팩 = 레포 밖 ~/.monkos/go-board-skins/<팩>/ (규격 SKINS.md)
+// 판 이미지 위에 격자·화점은 늘 우리가 그린다. 돌은 스프라이트에서 칸을 잘라 판 칸 크기에 맞춰 늘린다.
+let skinName = 'builtin', skinBoard = null, skinStones = null;
+try {
+  skinName = localStorage.getItem('goBoardSkin') || 'builtin';
+  skinBoard = localStorage.getItem('goBoardSkinBoard');
+  skinStones = localStorage.getItem('goBoardSkinStones');
+} catch (e) { /* 저장소 불가 — 기본값 */ }
+
+function skin() {
+  const pk = S && S.skins && S.skins[skinName];
+  if (!pk) return null;
+  const board = pk.boards.includes(skinBoard) ? skinBoard : pk.spec.board;
+  const stones = pk.stones.includes(skinStones) ? skinStones : pk.spec.stones;
+  return { spec: pk.spec, board: board && `/skin/${skinName}/${board}`, stones: stones && `/skin/${skinName}/${stones}` };
+}
+
 function drawBase() {
   svg.innerHTML = '';
-  el('rect', { x: 0, y: 0, width: 400, height: 400, fill: 'var(--wood)' });
-  for (let i = 0; i < N; i++) {
-    el('line', { x1: P(0), y1: P(i), x2: P(N - 1), y2: P(i), stroke: 'var(--line)', 'stroke-width': .7 });
-    el('line', { x1: P(i), y1: P(0), x2: P(i), y2: P(N - 1), stroke: 'var(--line)', 'stroke-width': .7 });
+  const sk = skin(), line = sk ? sk.spec.grid : 'var(--line)', lw = sk ? sk.spec.gridWidth : .7;
+  if (sk && sk.board) {
+    el('image', { href: sk.board, x: 0, y: 0, width: 400, height: 400, preserveAspectRatio: 'xMidYMid slice' });
+  } else {
+    el('rect', { x: 0, y: 0, width: 400, height: 400, fill: 'var(--wood)' });
   }
-  for (const a of [3, 9, 15]) for (const b of [3, 9, 15]) el('circle', { cx: P(a), cy: P(b), r: 2.2, fill: 'var(--line)' });
-  for (let i = 0; i < N; i++) {
-    el('text', { x: P(i), y: 9, 'font-size': 7, 'text-anchor': 'middle', fill: 'var(--line)' }).textContent = COLS[i];
-    el('text', { x: 6, y: P(i) + 2.5, 'font-size': 7, 'text-anchor': 'middle', fill: 'var(--line)' }).textContent = N - i;
+  if (sk) {  // 돌 그림자
+    const sh = sk.spec.shadow || {}, defs = el('defs', {}), f = el('filter', { id: 'stoneShadow', x: '-20%', y: '-20%', width: '150%', height: '150%' }, defs);
+    el('feDropShadow', { dx: sh.dx || 0, dy: sh.dy || 0, stdDeviation: sh.blur || 0, 'flood-opacity': sh.opacity || 0 }, f);
   }
+  for (let i = 0; i < N; i++) {
+    el('line', { x1: P(0), y1: P(i), x2: P(N - 1), y2: P(i), stroke: line, 'stroke-width': lw });
+    el('line', { x1: P(i), y1: P(0), x2: P(i), y2: P(N - 1), stroke: line, 'stroke-width': lw });
+  }
+  for (const a of [3, 9, 15]) for (const b of [3, 9, 15]) el('circle', { cx: P(a), cy: P(b), r: 2.2, fill: line });
+  for (let i = 0; i < N; i++) {
+    el('text', { x: P(i), y: 9, 'font-size': 7, 'text-anchor': 'middle', fill: line }).textContent = COLS[i];
+    el('text', { x: 6, y: P(i) + 2.5, 'font-size': 7, 'text-anchor': 'middle', fill: line }).textContent = N - i;
+  }
+}
+
+function drawStone(x, y, c, opacity) {
+  const sk = skin();
+  if (sk && sk.stones) {
+    const cell = sk.spec[c === 'B' ? 'black' : 'white'], r = STEP * .5 * (sk.spec.stoneScale || 1);
+    const sp = sk.spec.sprite || [256, 240];
+    const g = el('g', { filter: 'url(#stoneShadow)', opacity });
+    // 0.5px 안쪽으로 잘라 옆 칸 픽셀이 보간으로 묻어나는 것을 막는다
+    const vb = [cell[0] + .5, cell[1] + .5, cell[2] - 1, cell[3] - 1].join(' ');
+    const box = el('svg', { x: P(x) - r, y: P(y) - r, width: 2 * r, height: 2 * r, viewBox: vb }, g);
+    el('image', { href: sk.stones, x: 0, y: 0, width: sp[0], height: sp[1] }, box);
+    return;
+  }
+  el('circle', { cx: P(x), cy: P(y), r: STEP * .47, fill: c === 'B' ? '#151515' : '#fafaf5',
+                 stroke: c === 'B' ? '#000' : '#888', 'stroke-width': .6, opacity });
 }
 
 function render() {
@@ -136,8 +181,7 @@ function render() {
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
     const c = g[y][x]; if (!c) continue;
     const isDead = dead.has(x + ',' + y);
-    el('circle', { cx: P(x), cy: P(y), r: STEP * .47, fill: c === 'B' ? '#151515' : '#fafaf5',
-                   stroke: c === 'B' ? '#000' : '#888', 'stroke-width': .6, opacity: isDead ? .35 : 1 });
+    drawStone(x, y, c, isDead ? .35 : 1);
     if (isDead) {
       const d = STEP * .22, col = '#c0392b';
       el('line', { x1: P(x) - d, y1: P(y) - d, x2: P(x) + d, y2: P(y) + d, stroke: col, 'stroke-width': 1.6 });
@@ -183,6 +227,31 @@ function render() {
     pk.add(new Option('기본 (바둑돌 녹음 B)', 'builtin'));
     for (const n in S.packs || {}) pk.add(new Option(`${n}${S.packs[n].note.includes('내부') ? ' (내부 실험 — 출시 전 교체)' : ''}`, n));
     pk.value = S.packs && S.packs[packName] ? packName : 'builtin';
+    const sk = document.getElementById('skin');
+    sk.add(new Option('기본 (MONK)', 'builtin'));
+    for (const n in S.skins || {}) sk.add(new Option(`${n}${S.skins[n].note.includes('내부') ? ' (내부 실험 — 출시 전 교체)' : ''}`, n));
+    sk.value = S.skins && S.skins[skinName] ? skinName : 'builtin';
+    const save = () => {
+      try {
+        localStorage.setItem('goBoardSkin', skinName);
+        if (skinBoard) localStorage.setItem('goBoardSkinBoard', skinBoard);
+        if (skinStones) localStorage.setItem('goBoardSkinStones', skinStones);
+      } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
+    };
+    const fillSub = () => {
+      const pkS = S.skins && S.skins[skinName], sb = document.getElementById('skinBoard'), ss = document.getElementById('skinStones');
+      sb.innerHTML = ''; ss.innerHTML = '';
+      sb.hidden = ss.hidden = !pkS;
+      if (!pkS) return;
+      for (const b of pkS.boards) sb.add(new Option(`판 ${b.replace(/\.\w+$/, '')}`, b));
+      for (const t of pkS.stones) ss.add(new Option(`돌 ${t.replace(/\.\w+$/, '')}`, t));
+      sb.value = pkS.boards.includes(skinBoard) ? skinBoard : pkS.spec.board;
+      ss.value = pkS.stones.includes(skinStones) ? skinStones : pkS.spec.stones;
+    };
+    fillSub();
+    sk.onchange = () => { skinName = sk.value; skinBoard = skinStones = null; fillSub(); save(); render(); };
+    document.getElementById('skinBoard').onchange = e => { skinBoard = e.target.value; save(); render(); };
+    document.getElementById('skinStones').onchange = e => { skinStones = e.target.value; save(); render(); };
     pk.onchange = () => {
       packName = pk.value;
       try { localStorage.setItem('goBoardPack', packName); } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
@@ -561,6 +630,8 @@ async function selftest() {
 }
 
 fetch('/api/state').then(r => r.json()).then(s => {
+  const qs = new URLSearchParams(location.search);
+  if (s.testMode && qs.get('skin')) { skinName = qs.get('skin'); skinBoard = qs.get('board'); skinStones = qs.get('stones'); }
   S = s; buildSounds(S); initClocks(); render();
   if (S.testMode && location.search.includes('selftest=1')) selftest();
 })

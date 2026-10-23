@@ -38,6 +38,11 @@ SIZE = 19
 KOMI = 6.5
 # 외부 사운드팩(레포 밖) — ~/.monkos/go-board-sounds/<팩>/*.mp3|wav. 내부 실험 팩은 출시 전 교체(원장 191)
 PACKS_DIR = Path.home() / ".monkos" / "go-board-sounds"
+# 외부 스킨팩(레포 밖) — ~/.monkos/go-board-skins/<팩>/ (skin.json 규격: SKINS.md). 내부 실험 팩은 출시 전 교체
+SKINS_DIR = Path.home() / ".monkos" / "go-board-skins"
+# skin.json 이 없는 팩의 기본 해석 — 256×240 스프라이트의 128px 칸(백 왼쪽·흑 오른쪽)
+SKIN_DEFAULT = {"grid": "#3a2c18", "gridWidth": 0.7, "white": [0, 112, 128, 128], "black": [128, 112, 128, 128],
+                "stoneScale": 1.0, "shadow": {"dx": 0.8, "dy": 1.2, "blur": 0.8, "opacity": 0.35}}
 # 시간 설정 기본값 — 타이젬 표기 '20초 3회'(기본시간 0분)
 DEFAULT_TIME = {"main": 0, "byo": 20, "periods": 3}
 OWN_THRESHOLD = 0.5  # 계가: 열린 빈 점을 집으로 셀 소유권 기준
@@ -532,6 +537,7 @@ class Game:
             "finalCount": getattr(self, "final_count", None) if self.result else None,
             "sounds": custom_sounds(),
             "packs": sound_packs(),
+            "skins": skin_packs(),
             "time": self.time,
             "testMode": TEST_MODE,
         }
@@ -693,6 +699,33 @@ def sound_packs():
     return out
 
 
+def skin_packs():
+    """레포 밖 스킨팩 — {팩: {boards, stones, spec, note}}. skin.json 이 있으면 그 값을 기본값 위에 덮는다."""
+    out = {}
+    if not SKINS_DIR.exists():
+        return out
+    for d in sorted(SKINS_DIR.iterdir()):
+        if not (d.is_dir() and re.fullmatch(r"[A-Za-z0-9_-]+", d.name)):
+            continue
+        names = sorted((f.name for f in d.iterdir() if re.fullmatch(r"[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)", f.name)),
+                       key=lambda n: (re.sub(r"\d+", "", n), int((re.findall(r"\d+", n) or ["0"])[-1])))
+        spec = dict(SKIN_DEFAULT)
+        if (d / "skin.json").exists():
+            try:
+                spec.update(json.loads((d / "skin.json").read_text(encoding="utf-8")))
+            except ValueError as e:
+                print(f"❌ go-board: {d.name}/skin.json 해석 실패 — {e}", file=sys.stderr)
+        boards = [n for n in names if n.endswith((".jpg", ".jpeg", ".webp")) or "board" in n]
+        stones = [n for n in names if n.endswith(".png") and "stone" in n]
+        # 기본 선택: skin.json 의 board/stones, 없으면 en* (현재 적용 스킨), 그다음 첫 파일
+        spec.setdefault("board", next((n for n in boards if n.startswith("en")), boards[0] if boards else None))
+        spec.setdefault("stones", next((n for n in stones if n.startswith("en")), stones[0] if stones else None))
+        note = (d / "README.txt").read_text(encoding="utf-8", errors="ignore").splitlines()[0] \
+            if (d / "README.txt").exists() else ""
+        out[d.name] = {"boards": boards, "stones": stones, "spec": spec, "note": note}
+    return out
+
+
 def custom_sounds():
     """sounds/custom/ 에 넣은 작가님 녹음 — stone*.wav = 착수, capture*.wav = 따냄. 있으면 기본음 대신 쓴다."""
     d = HERE / "sounds" / "custom"
@@ -759,6 +792,14 @@ class Handler(BaseHTTPRequestHandler):
             f = PACKS_DIR / pack / name
             if f.exists():
                 self._send(200, f.read_bytes(), "audio/mpeg" if name.endswith(".mp3") else "audio/wav")
+            else:
+                self._send(404, '{"error":"없음"}')
+        elif re.fullmatch(r"/skin/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)", self.path):
+            _, _, pack, name = self.path.split("/")
+            f = SKINS_DIR / pack / name
+            ctype = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png", "webp": "image/webp"}[name.rsplit(".", 1)[1]]
+            if f.exists():
+                self._send(200, f.read_bytes(), ctype)
             else:
                 self._send(404, '{"error":"없음"}')
         elif self.path.startswith("/review/"):
