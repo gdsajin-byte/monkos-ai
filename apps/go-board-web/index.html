@@ -32,6 +32,8 @@
   .bar .w { background: var(--bar-w); flex: 1; }
   .barlbl { display: flex; justify-content: space-between; font-size: 18px; color: var(--muted); }
   .small { font-size: 16px; color: var(--muted); }
+  .hl { border-color: var(--accent); color: #fff; background: var(--accent); font-weight: 700; }
+  .hl:hover:not(:disabled) { border-color: var(--ink); }
   .pass { background: none; border: none; padding: 0; color: var(--muted); text-decoration: underline; font-size: 17px; }
   /* 생각 중 표시는 판 밖 상태 문구의 점 애니메이션 하나뿐 — 판·화면을 흐리거나 가리지 않는다 */
   .dots::after { content: ''; animation: dots 1.2s steps(4) infinite; }
@@ -51,6 +53,7 @@
       <button id="bUndo">한 수 무르기</button>
       <button id="bSwap">흑백 바꾸기</button>
       <button id="bReview" disabled>리뷰</button>
+      <button id="bResign" style="flex-basis:100%">기권</button>
     </div>
     <label class="small"><input type="checkbox" id="wrFilter" checked> 리뷰: 승부가 갈리기 전(승률 <span id="wrRange">3~97%</span>) 실수만 <span id="filterWhy"></span></label>
     <div class="small" id="reviewWhy"></div>
@@ -65,7 +68,8 @@
       <div class="bar"><div class="b" id="barB" style="width:50%"></div><div class="w"></div></div>
     </div>
     <div class="stat"><span>흑이 따낸 돌 <b id="capB">0</b></span><span>백이 따낸 돌 <b id="capW">0</b></span></div>
-    <div class="stat small"><span id="moveNo">0수</span><button class="pass" id="bPass">패스</button></div>
+    <div class="stat small"><span id="moveNo">0수</span>
+      <span><button class="pass" id="bPass">패스</button> · <label><input type="checkbox" id="sound" checked> 소리</label></span></div>
     <div class="small" id="sgf"></div>
   </div>
 </div>
@@ -144,6 +148,10 @@ function render() {
   document.getElementById('levelWhy').textContent = S.humanOk ? '' : `급수 상대 비활성: ${S.humanReason}`;
   const rb = document.getElementById('bReview');
   rb.disabled = !S.review.ok;
+  rb.classList.toggle('hl', !!S.result && S.review.ok);  // 종국 후 리뷰로 시선 유도
+  document.getElementById('bUndo').disabled = !!S.result;
+  document.getElementById('bResign').disabled = !!S.result || !S.moveNo;
+  document.getElementById('bPass').disabled = !!S.result;
   document.getElementById('reviewWhy').textContent = S.review.ok ? '' : S.review.reason;
   const wf = document.getElementById('wrFilter');
   wf.disabled = !S.review.filterOk;
@@ -153,6 +161,46 @@ function render() {
     S.review.wrRange.split(',').map(v => Math.round(v * 100)).join('~') + '%';
   if (S.testMode) document.title = 'MONK 바둑판 (테스트)';
   document.getElementById('sgf').textContent = S.sgf ? `기보 자동 저장: ${S.sgf}` : '';
+}
+
+// ---- 착수음: WebAudio 합성(외부 음원 없음). 돌 = 짧은 잡음 펄스 + 공명, 따냄 = 돌 부딪히는 잔소리 연타
+let actx = null;
+let soundOn = true;
+try { soundOn = localStorage.getItem('goBoardSound') !== 'off'; } catch (e) { /* 저장소 불가 — 기본 켬 */ }
+
+function audio() {
+  if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+  if (actx.state === 'suspended') actx.resume();
+  return actx;
+}
+
+function tap(at, gain, freq) {
+  const a = audio(), n = Math.floor(a.sampleRate * 0.06);
+  const buf = a.createBuffer(1, n, a.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (a.sampleRate * 0.006));
+  const src = a.createBufferSource(); src.buffer = buf;
+  const bp = a.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = freq; bp.Q.value = 2.5;
+  const g = a.createGain(); g.gain.value = gain;
+  src.connect(bp); bp.connect(g); g.connect(a.destination);
+  // 판 울림 — 낮은 사인 감쇠
+  const o = a.createOscillator(), og = a.createGain();
+  o.frequency.value = freq / 7; og.gain.setValueAtTime(gain * 0.35, at);
+  og.gain.exponentialRampToValueAtTime(0.001, at + 0.09);
+  o.connect(og); og.connect(a.destination);
+  src.start(at); o.start(at); o.stop(at + 0.1);
+}
+
+function stoneSound(delay) {
+  if (!soundOn) return;
+  try { tap(audio().currentTime + (delay || 0), 0.9, 2200); } catch (e) { /* 오디오 불가 — 무음 */ }
+}
+
+function captureSound(delay, count) {
+  if (!soundOn) return;
+  try {
+    const t = audio().currentTime + (delay || 0);
+    for (let i = 0; i < Math.min(3 + count, 7); i++) tap(t + 0.05 + i * 0.045 + Math.random() * 0.02, 0.35, 3400 + Math.random() * 900);
+  } catch (e) { /* 오디오 불가 — 무음 */ }
 }
 
 function notice(text) {
@@ -170,9 +218,25 @@ async function call(path, body) {
       S = await (await fetch('/api/state')).json();
       render(); notice(j.error); return;
     }
+    const prev = S;
     S = j;
+    playSounds(prev, S, path === '/api/play' && !(body && body.pass));
   } catch (e) { S.error = '서버 연결 실패 — run.sh가 켜져 있는지 확인해 주세요'; }
   busy = false; render();
+}
+
+// 응답 전후 비교로 소리를 낸다: 내가 따냈으면 따냄 소리, 엔진이 돌을 놓았으면 딱(+따냄)
+function playSounds(prev, cur, myStone) {
+  if (!prev || cur.error && myStone) return;
+  const me = cur.user, eng = me === 'B' ? 'W' : 'B';
+  const mine = (cur.captures[me] || 0) - (prev.captures[me] || 0);
+  const theirs = (cur.captures[eng] || 0) - (prev.captures[eng] || 0);
+  if (myStone && mine > 0) captureSound(0, mine);
+  const engMoved = cur.moveNo > prev.moveNo + (myStone ? 1 : 0) && cur.lastColor === eng && !cur.lastPass;
+  if (engMoved && cur.moveNo > prev.moveNo) {
+    stoneSound(0.12);
+    if (theirs > 0) captureSound(0.12, theirs);
+  }
 }
 
 svg.addEventListener('click', ev => {
@@ -185,6 +249,7 @@ svg.addEventListener('click', ev => {
   if (x < 0 || y < 0 || x >= N || y >= N || S.board[y][x]) return;
   // 즉시 내 돌을 그려 반응을 보인다(서버 응답으로 덮어씀)
   S.board[y][x] = S.user; S.last = [x, y]; S.message = ''; S.error = null;
+  stoneSound();
   call('/api/play', { x, y });
 });
 document.getElementById('bNew').onclick = () => call('/api/new');
@@ -196,6 +261,17 @@ document.getElementById('bReview').onclick = async () => {
   await call('/api/review', { wrFilter: document.getElementById('wrFilter').checked });
   if (S.reviewJob && tab) tab.location = `/review/${S.reviewJob}`;
   else if (tab) tab.close();
+};
+document.getElementById('bResign').onclick = () => {
+  if (busy) { notice('상대가 생각 중입니다'); return; }
+  if (confirm('정말 기권하시겠어요? 이 판은 여기서 끝나고 기보에 기권으로 저장됩니다.')) call('/api/resign');
+};
+const soundBox = document.getElementById('sound');
+soundBox.checked = soundOn;
+soundBox.onchange = () => {
+  soundOn = soundBox.checked;
+  try { localStorage.setItem('goBoardSound', soundOn ? 'on' : 'off'); } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
+  if (soundOn) stoneSound();
 };
 document.getElementById('bPass').onclick = () => call('/api/play', { pass: true });
 document.getElementById('level').onchange = e => call('/api/level', { level: e.target.value });
