@@ -37,8 +37,16 @@ def load_sgf(path):
     moves = []
     for c, xy in re.findall(r";\s*([BW])\[([a-s]{0,2})\]", s):
         moves.append([c, "pass" if not xy else f"{COLS[ord(xy[0]) - 97]}{N - (ord(xy[1]) - 97)}"])
-    meta = {k: (re.search(k + r"\[([^\]]*)\]", s).group(1) if k + "[" in s else "") for k in ("PB", "PW", "DT")}
-    return {"id": os.path.basename(path), "moves": moves, "komi": komi, "rules": "korean", "meta": meta}
+    meta = {k: (re.search(k + r"\[([^\]]*)\]", s).group(1) if k + "[" in s else "") for k in ("PB", "PW", "DT", "HA")}
+    # 치석(접바둑): 루트 노드의 AB/AW → KataGo initialStones
+    root = s[s.find(";") + 1:]
+    root = root[:root.find(";")] if ";" in root else root
+    initial = []
+    for c, vals in re.findall(r"A([BW])((?:\s*\[[a-s]{2}\])+)", root):
+        for xy in re.findall(r"\[([a-s]{2})\]", vals):
+            initial.append([c, f"{COLS[ord(xy[0]) - 97]}{N - (ord(xy[1]) - 97)}"])
+    return {"id": os.path.basename(path), "moves": moves, "komi": komi, "rules": "korean", "meta": meta,
+            "initial": initial}
 
 
 def scan(eng, gm):
@@ -279,7 +287,10 @@ def export_sgf(gm, items, deep, out, model):
         return "".join(out_)
 
     m = gm["meta"]
-    head = (f";GM[1]FF[4]CA[UTF-8]SZ[19]KM[{gm['komi']}]PB[{sgf_text(m.get('PB', ''))}]PW[{sgf_text(m.get('PW', ''))}]"
+    stones = "".join(f"A{c}" + "".join(f"[{to_sgf_xy(p)}]" for cc, p in gm.get("initial", []) if cc == c)
+                     for c in ("B", "W") if any(cc == c for cc, _ in gm.get("initial", [])))
+    ha = f"HA[{m['HA']}]" if m.get("HA") else ""
+    head = (f";GM[1]FF[4]CA[UTF-8]SZ[19]KM[{gm['komi']}]{ha}{stones}PB[{sgf_text(m.get('PB', ''))}]PW[{sgf_text(m.get('PW', ''))}]"
             f"DT[{m.get('DT', '')}]GC[{sgf_text(f'KataGo b18 분석 + {model} 해설 (사실 목록 기반, 검증기 통과). 해설은 해당 수 코멘트, 최선수는 변화도.')}]")
     open(out, "w", encoding="utf-8").write(f"({head}{line(0)})\n")
 

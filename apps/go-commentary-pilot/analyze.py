@@ -70,8 +70,11 @@ def load_game(gid):
 
 
 def base_query(gm, qid):
-    return {"id": qid, "moves": gm["moves"], "rules": gm["rules"], "komi": gm["komi"],
-            "boardXSize": 19, "boardYSize": 19}
+    q = {"id": qid, "moves": gm["moves"], "rules": gm["rules"], "komi": gm["komi"],
+         "boardXSize": 19, "boardYSize": 19}
+    if gm.get("initial"):  # 접바둑 치석 (KataGo analysis 표준 필드)
+        q["initialStones"] = gm["initial"]
+    return q
 
 
 def scan(eng, gm):
