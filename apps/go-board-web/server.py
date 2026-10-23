@@ -36,6 +36,8 @@ WR_RANGE = "0.03,0.97"  # 작가님 결정 전 임시 기본값
 
 SIZE = 19
 KOMI = 6.5
+HANDICAP_KOMI = 0.5  # 한국 규칙 관행 — 접바둑은 덤 0.5
+HANDICAPS = [0] + list(range(2, 10))  # 0 = 호선
 COLS = "ABCDEFGHJKLMNOPQRST"  # GTP 좌표 — I 없음
 # 공통: 한국 규칙·흑 기준 수치 보고. 최강은 300 visits + 2.5초 상한(응수 3초 목표).
 COMMON_OVR = f"rules=korean,reportAnalysisWinratesAs=BLACK,logDir={KATA_DIR / 'gtp_logs'}"
@@ -99,12 +101,15 @@ class Engine:
             raise RuntimeError(f"{self.name}: {line} → {head[1:].strip()}")
         return "\n".join([head[1:].strip()] + out[1:]).strip()
 
-    def sync(self, moves):
+    def sync(self, moves, handicap=0, komi=KOMI):
+        """판을 처음부터 다시 맞춘다. 접바둑이면 표준 화점 치석(fixed_handicap)을 놓고 그 좌표를 돌려준다."""
         with self.lock:
             self._cmd("clear_board")
-            self._cmd(f"komi {KOMI}")
+            self._cmd(f"komi {komi}")
+            setup = self._cmd(f"fixed_handicap {handicap}").split() if handicap else []
             for c, mv in moves:
                 self._cmd(f"play {c} {mv}")
+            return setup
 
     def genmove(self, color):
         """kata-genmove_analyze — (수, 흑 기준 점수, 흑 승률)."""
@@ -163,9 +168,12 @@ def to_gtp(x, y):
     return f"{COLS[x]}{SIZE - y}"
 
 
-def replay(moves):
-    """수순 → (판, 흑이 따낸 수, 백이 따낸 수). 판[y][x] = 'B'/'W'/None."""
+def replay(moves, setup=()):
+    """치석 + 수순 → (판, 흑이 따낸 수, 백이 따낸 수). 판[y][x] = 'B'/'W'/None."""
     g = [[None] * SIZE for _ in range(SIZE)]
+    for mv in setup:
+        x, y = to_xy(mv)
+        g[y][x] = "B"
     caps = {"B": 0, "W": 0}
 
     def group(x, y):
@@ -207,9 +215,17 @@ class Game:
         self.lock = threading.Lock()
         self.user = "B"
         self.level = "strong"  # 'strong' | 랭크 문자열('5k' 등)
+        self.handicap = 0
         self.new()
 
-    def new(self):
+    def new(self, handicap=None):
+        if handicap is not None:
+            if handicap not in HANDICAPS:
+                raise RuntimeError("치수는 호선 또는 2~9점입니다.")
+            self.handicap = handicap
+            if handicap:
+                self.user = "B"  # 접바둑은 작가님이 하수(흑)로 시작 — 바꾸려면 '흑백 바꾸기'
+        self.setup = []  # 치석 좌표 — _sync 때 엔진이 놓은 자리로 채운다
         self.moves = []
         self.scores = []  # (수 번호, 흑 기준 점수)
         self.score = None
@@ -220,8 +236,15 @@ class Game:
         self.sgf_path = GAMES_DIR / f"{self.started:%Y%m%d_%H%M%S}_작가님_vs_KataGo.sgf"
 
     @property
+    def komi(self):
+        return HANDICAP_KOMI if self.handicap else KOMI
+
+    @property
     def to_move(self):
-        return "B" if len(self.moves) % 2 == 0 else "W"
+        first = "W" if self.handicap else "B"  # 접바둑은 백(상수)이 먼저
+        if len(self.moves) % 2 == 0:
+            return first
+        return "B" if first == "W" else "W"
 
     def engine(self):
         if self.level == "strong":
@@ -233,7 +256,7 @@ class Game:
 
     def _sync(self):
         e = self.engine()
-        e.sync(self.moves)
+        self.setup = e.sync(self.moves, self.handicap, self.komi)
 
     def engine_move(self):
         e = self.engine()
@@ -340,13 +363,15 @@ class Game:
             else:
                 x, y = to_xy(mv)
                 nodes.append(f";{c}[{chr(97 + x)}{chr(97 + y)}]")
-        head = (f"(;GM[1]FF[4]CA[UTF-8]SZ[{SIZE}]KM[{KOMI}]RU[Korean]"
-                f"DT[{self.started:%Y-%m-%d}]PB[{pb}]PW[{pw}]"
+        ab = "".join(f"[{chr(97 + x)}{chr(97 + y)}]" for x, y in map(to_xy, self.setup))
+        head = (f"(;GM[1]FF[4]CA[UTF-8]SZ[{SIZE}]KM[{self.komi}]RU[Korean]"
+                + (f"HA[{self.handicap}]AB{ab}" if self.handicap else "")
+                + f"DT[{self.started:%Y-%m-%d}]PB[{pb}]PW[{pw}]"
                 f"AP[MONK go-board-web]" + (f"RE[{self.result}]" if self.result else ""))
         self.sgf_path.write_text(head + "".join(nodes) + ")\n", encoding="utf-8")
 
     def state(self):
-        g, caps = replay(self.moves)
+        g, caps = replay(self.moves, self.setup)
         last = None
         if self.moves and self.moves[-1][1].lower() != "pass":
             last = list(to_xy(self.moves[-1][1]))
@@ -356,6 +381,7 @@ class Game:
             "lastPass": bool(self.moves) and self.moves[-1][1].lower() == "pass",
             "lastColor": self.moves[-1][0] if self.moves else None,
             "toMove": self.to_move, "user": self.user, "level": self.level,
+            "handicap": self.handicap, "komi": self.komi, "handicaps": HANDICAPS,
             "levelLabel": self.level_label(), "score": self.score, "winrate": self.winrate,
             "scores": self.scores, "result": self.result,
             "resultKo": result_ko(self.result) if self.result else None,
@@ -391,6 +417,11 @@ class Reviews:
             self._help = r.stdout if r.returncode == 0 else ""
         return self._help or ""
 
+    def handicap_ok(self):
+        """파일럿이 KataGo initialStones(치석)를 넘기는지 — 소스 문자열로 판정(막내11과 합의한 표지)."""
+        return any("initialStones" in f.read_text(encoding="utf-8", errors="ignore")
+                   for f in PILOT_DIR.glob("*.py"))
+
     def filter_ok(self):
         return "--wr-range" in self.help_text()
 
@@ -401,6 +432,8 @@ class Reviews:
         base = {"filterOk": self.filter_ok(), "wrRange": WR_RANGE,
                 "filterReason": None if self.filter_ok() else "리뷰 엔진에 승률 구간 옵션이 아직 없어 전 구간으로 봅니다",
                 "running": self.running}
+        if game.handicap and not self.handicap_ok():
+            return dict(base, ok=False, reason="접바둑 기보는 리뷰 준비 중 — 리뷰 엔진이 치석을 아직 읽지 못합니다")
         if self.running:
             return dict(base, ok=False, reason="리뷰 만드는 중 — 새 탭에서 진행 상황을 볼 수 있어요")
         if n < MIN_USER_MOVES:
@@ -538,6 +571,12 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/api/state":
             with GAME.lock:
                 self._send(200, json.dumps(GAME.state(), ensure_ascii=False))
+        elif re.fullmatch(r"/sounds/[a-z0-9_]+\.wav", self.path):
+            f = HERE / "sounds" / self.path.split("/")[-1]
+            if f.exists():
+                self._send(200, f.read_bytes(), "audio/wav")
+            else:
+                self._send(404, '{"error":"없음"}')
         elif self.path.startswith("/review/"):
             body = REVIEWS.page(self.path.split("/")[2])
             if body is None:
@@ -571,7 +610,7 @@ class Handler(BaseHTTPRequestHandler):
                     else:
                         GAME.play(to_gtp(int(body["x"]), int(body["y"])))
                 elif p == "/api/new":
-                    GAME.new()
+                    GAME.new(int(body["handicap"]) if "handicap" in body else None)
                     GAME._sync()
                     if GAME.to_move != GAME.user:
                         GAME.engine_move()
