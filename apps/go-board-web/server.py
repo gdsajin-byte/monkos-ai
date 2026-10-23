@@ -45,6 +45,11 @@ REVIEW_DIR = GAMES_DIR / "reviews"
 ROOMS_DIR = Path.home() / ".monkos" / "go-board" / ("_test" if TEST_MODE else "") / "rooms"
 ROOM_ID_RE = r"[A-Za-z0-9_-]{4,64}"
 EMPTY_ROOM_TTL = 600  # 빈 방(0수) 정리 기준 초
+# 접속 장애(10-24 작가님 "일반적으로는 멈추고 별도 시간으로 접속장애패"): 대국실이 5초마다 ping,
+# 마지막 ping 뒤 15초면 '접속 끊김' → 대국 시계 정지 + 접속 장애 시계(내 차례 동안만). 한도 넘기면 접속 장애패
+OFFLINE_AFTER = 15
+DC_LIMIT_DEFAULT = {"ai": 24 * 3600, "human": 5 * 60}  # 사람 대국 값은 단계 ③용
+DC_LIMIT_RANGE = (10, 48 * 3600)
 USER_LAG_GRACE = 2.0  # 서버 시계: 사람 수는 왕복 지연(터널 ~1초)만큼 덜 깎는다 — 화면 시계보다 먼저 시간패가 나지 않게
 # 리뷰 파이프라인(막내11 소관) — 호출만, 수정 금지
 PILOT_DIR = Path(os.environ.get("GO_BOARD_PILOT_DIR") or HERE.parent / "go-commentary-pilot")  # 환경변수는 미병합 브랜치 시험용
@@ -443,11 +448,19 @@ class Room:
         self.turn_since = time.time()
         self.reviews = []  # 리뷰 job id (REVIEWS.jobs)
         self.imported = False  # 단계 ① 이전 SGF에서 가져온 지난 대국
+        # 접속 장애 — seen: 마지막 ping(잠금 없이 갱신), offline: 끊김 판정, dc_used/dc_mark: 이번 끊김에 쓴 장애 시간
+        self.dc_limit = DC_LIMIT_DEFAULT["ai"]
+        self.seen = time.time()
+        self.offline = False
+        self.dc_used = 0.0
+        self.dc_mark = None  # 장애 시계가 도는 중이면 그 시작 시각
+        self.dc_saved = 0.0
+        self.result_reason = None  # 'disconnect' = 접속 장애패
 
     # ---- 만들기·저장
 
     @classmethod
-    def create(cls, level, handicap, time_ctl, color):
+    def create(cls, level, handicap, time_ctl, color, dc_limit=None):
         rid = f"{datetime.now():%Y%m%d-%H%M%S}-{secrets.token_hex(2)}"
         r = cls(rid)
         if level != "strong" and level not in RANKS:
@@ -470,6 +483,11 @@ class Room:
         if r.sgf_path.exists():  # 같은 초에 두 방 — 기보 이름 겹침 방지
             r.sgf_path = r.sgf_path.with_name(f"{r.sgf_path.stem}_{rid[-4:]}.sgf")
         r.clock = {"B": make_clock(r.time), "W": make_clock(r.time)} if r.time else None
+        if dc_limit is not None:
+            dc_limit = int(dc_limit)
+            if not DC_LIMIT_RANGE[0] <= dc_limit <= DC_LIMIT_RANGE[1]:
+                raise RuntimeError("접속 장애 한도 범위: 10초 ~ 48시간")
+            r.dc_limit = dc_limit
         return r
 
     def to_dict(self):
@@ -482,7 +500,9 @@ class Room:
                 "score": self.score, "winrate": self.winrate, "result": self.result, "finalCount": self.final_count,
                 "scoring": sc, "message": self.message, "started": self.started.isoformat(timespec="seconds"),
                 "updated": self.updated, "sgf": str(self.sgf_path), "clock": self.clock,
-                "reviews": [REVIEWS.dump(j) for j in self.reviews if j in REVIEWS.jobs], "imported": self.imported}
+                "reviews": [REVIEWS.dump(j) for j in self.reviews if j in REVIEWS.jobs], "imported": self.imported,
+                "dcLimit": self.dc_limit, "offline": self.offline, "dcUsed": round(self.dc_spent(), 2),
+                "dcCounting": self.dc_mark is not None, "resultReason": self.result_reason}
 
     @classmethod
     def from_dict(cls, d):
@@ -503,6 +523,12 @@ class Room:
         r.clock = d.get("clock")
         r.turn_since = time.time()  # 서버가 꺼져 있던 시간은 깎지 않는다
         r.imported = d.get("imported", False)
+        r.dc_limit = d.get("dcLimit", DC_LIMIT_DEFAULT["ai"])
+        r.result_reason = d.get("resultReason")
+        # 서버가 꺼져 있던 시간은 장애 시계에도 깎지 않는다 — 쓴 만큼만 들고 지금부터 다시 센다
+        r.offline, r.dc_used = d.get("offline", False), d.get("dcUsed", 0.0)
+        r.dc_mark = time.time() if d.get("dcCounting") else None
+        r.seen = time.time()  # 접속해 있던 대국자는 재기동 뒤 OFFLINE_AFTER 안에 ping 이 다시 온다
         for j in d.get("reviews") or []:
             r.reviews.append(REVIEWS.restore(j, r.id))
         return r
@@ -534,12 +560,75 @@ class Room:
         return {"moves": self.moves, "setup": self.setup, "komi": self.komi}
 
     def level_label(self):
-        return "KataGo 최강" if self.level == "strong" else f"KataGo 사람형 {RANK_KO[self.level]}"
+        return "KataGo 최강" if self.level == "strong" else f"KataGo {RANK_KO[self.level]}"  # 10-24 표기 단순화(옛 '사람형 N단')
 
     # ---- 시계: 차례가 바뀔 때마다 둔 쪽을 깎고, 초읽기면 그 회를 처음부터
 
     def _running(self):
-        return None if (self.result or self.scoring or not self.clock) else self.to_move
+        if self.result or self.scoring or not self.clock:
+            return None
+        c = self.to_move
+        return None if (c == self.user and self.offline) else c  # 접속이 끊긴 대국자의 시계는 멈춘다
+
+    # ---- 접속 장애: 대국 시계 대신 장애 시계(내 차례 동안만). 다시 들어오면 리셋, 한도 넘기면 접속 장애패
+
+    def _ongoing(self):
+        return not (self.result or self.scoring or self.imported)
+
+    def dc_spent(self, now=None):
+        return self.dc_used + ((now or time.time()) - self.dc_mark if self.dc_mark is not None else 0.0)
+
+    def dc_left(self, now=None):
+        return max(0.0, self.dc_limit - self.dc_spent(now))
+
+    def _dc_update(self, now):
+        counting = self.offline and self._ongoing() and self.to_move == self.user
+        if counting and self.dc_mark is None:
+            self.dc_mark = max(now, self.turn_since)
+        elif not counting and self.dc_mark is not None:
+            self.dc_used, self.dc_mark = self.dc_spent(now), None
+
+    def presence(self, now=None):
+        """끊김 판정·장애 시계 진행 — room.lock 을 잡고 부른다. 저장할 변화가 있으면 True."""
+        now = now or time.time()
+        changed = False
+        if not self.offline and now - self.seen > OFFLINE_AFTER and self._ongoing():
+            off = self.seen + OFFLINE_AFTER  # 끊긴 시각 = 마지막 ping + 15초 — 그때까지만 대국 시계를 깎는다
+            c = self._running()
+            if c == self.user and off > self.turn_since:
+                charge_clock(self.clock[c], self.time, off - self.turn_since, True)
+                self.turn_since = off
+            self.offline, changed = True, True
+            self._dc_update(off)
+        self._dc_update(now)
+        if self.dc_mark is not None and self.dc_left(now) <= 0:
+            self.dc_used, self.dc_mark = float(self.dc_limit), None
+            self.result = f"{self.eng_color}+F"
+            self.result_reason = "disconnect"
+            self.message = f"접속 장애패 — 접속이 끊긴 채 한도({fmt_dur(self.dc_limit)})를 넘겼습니다."
+            self.save_sgf()
+            changed = True
+        if self.dc_mark is not None and now - self.dc_saved > 10:  # 장애 시계 진행을 10초마다 남긴다(재기동 시 오차 ≤10초, 대국자 쪽 유리)
+            self.dc_saved, changed = now, True
+        return changed
+
+    def heartbeat(self, now=None):
+        """대국실 ping·대국자 동작 — 끊겨 있었으면 장애 시계 리셋, 대국 시계는 남은 시간 그대로 재개."""
+        now = now or time.time()
+        self.presence(now)
+        self.seen = now
+        if self.offline:
+            self.offline = False
+            self._dc_update(now)
+            self.dc_used = 0.0
+            self.turn_since = now  # 안내 문구는 두지 않는다 — 앱 복귀마다 한 줄이 생겨 하단 버튼이 흔들림(모바일 고정 화면)
+            return True
+        return False
+
+    def dc_state(self, now=None):
+        now = now or time.time()
+        return {"limit": self.dc_limit, "offline": self.offline, "counting": self.dc_mark is not None,
+                "left": round(self.dc_left(now), 1), "reason": self.result_reason}
 
     def _charge(self, reset):
         """지금 차례인 쪽에 흐른 시간을 깎는다. reset=True 면 방금 둔 것(초읽기 한 회 다시)."""
@@ -578,6 +667,7 @@ class Room:
         else:
             self.moves.append((c, mv))
             self._check_end()
+        self._dc_update(time.time())  # 엔진이 둔 사이 대국자가 끊겼으면 이제부터 장애 시계
 
     def _check_end(self):
         if len(self.moves) >= 2 and all(m.lower() == "pass" for _, m in self.moves[-2:]):
@@ -791,7 +881,8 @@ class Room:
                 + (f"HA[{self.handicap}]AB{ab}" if self.handicap else "")
                 + (f"TM[{self.time['main'] * 60}]OT[{self.time['periods']}x{self.time['byo']} byo-yomi]" if self.time else "")
                 + f"DT[{self.started:%Y-%m-%d}]PB[{pb}]PW[{pw}]"
-                f"AP[MONK go-board-web]" + (f"RE[{self.result}]" if self.result else ""))
+                f"AP[MONK go-board-web]" + (f"RE[{self.result}]" if self.result else "")
+                + (f"C[접속 장애패 — 작가님 접속이 끊긴 채 {fmt_dur(self.dc_limit)} 초과]" if self.result_reason == "disconnect" else ""))
         return head + "".join(nodes) + ")\n"
 
     def summary(self):
@@ -807,7 +898,8 @@ class Room:
                 "started": self.started.isoformat(timespec="minutes"), "updated": self.updated,
                 "imported": self.imported, "sgfUrl": f"/api/rooms/{self.id}/sgf" if self.moves else None,
                 "review": REVIEWS.status(self),
-                "lastReview": {"id": last["id"], "state": last["state"]} if last else None}
+                "lastReview": {"id": last["id"], "state": last["state"]} if last else None,
+                "dc": self.dc_state(), "resultReason": self.result_reason}
 
     def state(self):
         g, caps = replay(self.moves, self.setup)
@@ -833,6 +925,7 @@ class Room:
             "finalCount": self.final_count if self.result else None,
             "time": self.time,
             "clock": self.clock_state(),
+            "dc": self.dc_state(),
             **common_state(),
         }
 
@@ -906,7 +999,8 @@ def parse_sgf_room(path):
     r.setup = [g(v) for v in re.findall(r"\[([a-s]{2})\]", ab.group(1))] if ab else []
     r.user = "W" if prop("PW") == "작가님" else "B"
     opp = prop("PW" if r.user == "B" else "PB") or ""
-    r.level = next((k for k, v in RANK_KO.items() if opp.endswith(f"사람형 {v})")), "strong")
+    mr = re.search(r"KataGo (?:사람형 )?(\d+[급단])\)?$", opp)  # 옛 표기 '사람형 5급' · 새 표기 '5급' 둘 다
+    r.level = next((k for k, v in RANK_KO.items() if mr and v == mr.group(1)), "strong")
     tm, ot = prop("TM"), re.match(r"(\d+)x(\d+)", prop("OT") or "")
     r.time = {"main": int(float(tm)) // 60, "byo": int(ot.group(2)), "periods": int(ot.group(1))} if tm and ot else None
     r.result = prop("RE")
@@ -991,7 +1085,8 @@ class Rooms:
         """새 대국 창 기본값 — 가장 최근에 만든 방의 설정을 기억한다."""
         last = max((r for r in list(self.rooms.values()) if not r.imported), key=lambda r: r.started, default=None)
         return {"level": last.level if last else "strong", "handicap": last.handicap if last else 0,
-                "time": last.time if last else dict(DEFAULT_TIME), "user": last.user if last else "B"}
+                "time": last.time if last else dict(DEFAULT_TIME), "user": last.user if last else "B",
+                "dcLimit": last.dc_limit if last else DC_LIMIT_DEFAULT["ai"]}
 
 
 # ---------------------------------------------------------------- 리뷰 (review.py 호출)
@@ -1216,6 +1311,14 @@ def esc(s):
 REVIEWS = Reviews()
 
 
+def fmt_dur(sec):
+    """초 → '24시간' · '5분' · '20초' · '1시간 30분'."""
+    sec = int(sec)
+    h, m, s = sec // 3600, sec % 3600 // 60, sec % 60
+    parts = [f"{h}시간"] * bool(h) + [f"{m}분"] * bool(m) + [f"{s}초"] * bool(s)
+    return " ".join(parts) or "0초"
+
+
 def result_ko(r):
     if not r or r == "?":
         return "결과 미상"
@@ -1227,6 +1330,8 @@ def result_ko(r):
     who = "흑" if m.group(1) == "B" else "백"
     if m.group(2) == "R":
         return f"{who} 불계승"
+    if m.group(2) == "F":
+        return f"{who} 접속 장애승"
     if m.group(2) == "T":
         return f"{who} 시간승"
     return f"{who} {m.group(2)}집 승"
@@ -1237,7 +1342,7 @@ def result_ko(r):
 ENGINES = None  # EngineHub
 ROOMS = None  # Rooms
 ACTIONS = ("play", "engine", "score", "score/toggle", "score/confirm", "score/cancel", "hint", "judge",
-           "timeout", "resign", "undo", "swap", "level", "review")
+           "timeout", "resign", "undo", "swap", "level", "review", "ping")
 # 호환 경로(단계 ① 이전 화면·PWA 보관본·live_view --goboard): /api/state·/api/{동작}은 초점 방을 가리킨다.
 # 대국실은 /api/rooms/{id}/… 만 쓴다. 호환 경로는 보관본이 v3로 바뀐 뒤 제거 예정(단계 ②).
 LEGACY_ACTIONS = ACTIONS + ("new",)
@@ -1249,6 +1354,8 @@ def act(room, action, body):
     """방 1개에 동작 1개 — 호출 쪽이 room.lock 을 잡고 부른다. (오류, reviewJob, 덧붙일 값)"""
     err, jid, extra = None, None, {}
     try:
+        if action == "ping":  # 대국실 화면이 5초마다 — heartbeat 는 호출 쪽에서 이미 했다
+            return None, None, {}
         if action == "play":
             room.play("pass" if body.get("pass") else to_gtp(int(body["x"]), int(body["y"])))
         elif action == "engine":  # 엔진 차례면 둔다(새 방 첫 수 · 복원 뒤 엔진 차례)
@@ -1293,7 +1400,8 @@ def new_room(body, base=None):
     if t == "keep":
         t = base.time if base else d["time"]
         t = t or {"unlimited": True}
-    room = Room.create(level, handicap, t, body.get("color") or (base.user if base else d["user"]))
+    dc = body.get("dcLimit", base.dc_limit if base else d.get("dcLimit"))
+    room = Room.create(level, handicap, t, body.get("color") or (base.user if base else d["user"]), dc)
     room.cache = json.dumps(room.state(), ensure_ascii=False)  # 첫 조회가 엔진 생각과 겹쳐도 빈 판을 준다
     ROOMS.add(room)
     return room
@@ -1321,6 +1429,8 @@ class Handler(BaseHTTPRequestHandler):
         """방 상태 — 엔진이 그 방에서 생각하는 동안(최대 17초)은 잠금을 기다리지 않고 직전 상태를 준다(10-23)."""
         if room.lock.acquire(timeout=0.3):
             try:
+                if room.presence():  # 조회는 접속 신호가 아니다(분석판·대기실도 읽는다) — 판정만
+                    ROOMS.save(room)
                 room.cache = json.dumps(room.state(), ensure_ascii=False)
             finally:
                 room.lock.release()
@@ -1437,9 +1547,14 @@ class Handler(BaseHTTPRequestHandler):
         t0 = time.time()
         # 엔진이 이 방에서 생각 중이면 줄 세우지 않고 버린다 — 대기 클릭이 나중에 착수로 바뀌는 경합 차단
         if not room.lock.acquire(blocking=False):
+            if action == "ping":
+                room.seen = time.time()  # 잠금 없이 — 엔진이 이 방에서 생각 중이어도 접속은 살아 있다
+                return self._send(200, room.cache or json.dumps({"busy": True, "room": room.id}, ensure_ascii=False))
             return self._json({"busy": True, "error": "상대가 생각 중입니다", "room": room.id}, 409)
         try:
             ROOMS.focus = room.id
+            if room.heartbeat() and action == "ping":  # 대국자 동작·ping = 접속해 있음. 재접속은 ping 만으로도 저장
+                ROOMS.save(room)
             err, jid, extra = act(room, action, body)
             st = room.state()
             st["error"] = err
@@ -1450,6 +1565,23 @@ class Handler(BaseHTTPRequestHandler):
         finally:
             room.lock.release()
         self._send(200, room.cache)
+
+
+def presence_loop():
+    """2초마다 진행 중 방의 접속 판정·장애 시계·장애패 — 화면이 아무도 없어도 판정이 난다. 엔진 생각 중인 방은 건너뛴다."""
+    while True:
+        time.sleep(2)
+        for r in ROOMS.listing():
+            if not r._ongoing() or not r.lock.acquire(blocking=False):
+                continue
+            try:
+                if r.presence():
+                    r.cache = json.dumps(r.state(), ensure_ascii=False)
+                    ROOMS.save(r)
+            except Exception as e:  # noqa: BLE001 — 감시가 죽지 않게, 실패는 로그로
+                print(f"❌ go-board: 접속 판정 실패 {r.id} — {e}", file=sys.stderr, flush=True)
+            finally:
+                r.lock.release()
 
 
 def main():
@@ -1465,6 +1597,7 @@ def main():
     ENGINES = EngineHub(strong, human, human_reason)
     ROOMS = Rooms(LocalRoomStore(ROOMS_DIR))
     imported = ROOMS.load()
+    threading.Thread(target=presence_loop, daemon=True).start()
     live = sum(1 for r in ROOMS.rooms.values() if r.status != "ended")
     srv = ThreadingHTTPServer((HOST, PORT), Handler)
     print(f"✅ go-board: http://{HOST}:{PORT}/  (최강 {'OK' if strong.ok else '실패'}, "

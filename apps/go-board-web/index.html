@@ -297,8 +297,6 @@
         <div class="small" id="sgf"></div>
       </section>
       <section id="tab-more" hidden>
-        <label>상대 수준(지금 판) <select id="level"></select></label>
-        <div class="small" id="levelWhy"></div>
         <div class="row"><button id="bSwap">흑백 바꾸기(지금 판)</button></div>
         <label>판·돌 디자인 <select id="skin"></select>
           <select id="skinBoard" hidden></select> <select id="skinStones" hidden></select></label>
@@ -330,6 +328,8 @@
     </select></label>
     <label>대국시간 <label><input type="checkbox" id="tUnl"> 무제한</label>
       <select id="tMain"></select> <select id="tByo"></select> <select id="tPer"></select></label>
+    <label>접속 장애 한도 <select id="dDc"></select></label>
+    <div class="small">접속이 끊기면 대국 시계가 멈추고 이 시간 안에 다시 들어오면 이어 둡니다. 넘기면 접속 장애패.</div>
   </div>
   <div class="dlg-foot"><button id="dCancel">취소</button><button id="dOk" class="hl">신청</button></div>
 </dialog>
@@ -444,12 +444,15 @@ function setupWidgets() {  // 첫 상태를 받은 뒤 1회 — 선택지 채우
   for (const n of [1, 3, 5]) document.getElementById('tPer').add(new Option(`${n}회`, n));
   const hs = document.getElementById('handicap');
   for (const h of S.handicaps) if (h) hs.add(new Option(`${h}점`, h));
-  for (const id of ['level', 'dLevel']) {
-    const lv = document.getElementById(id);
+  {
+    const lv = document.getElementById('dLevel');
     lv.add(new Option('KataGo 최강', 'strong'));
-    // 강한 쪽부터(최강 → 9단 … 20급) — 10-23 작가님 "저급부터 나오니 힘들어"
-    for (const r of [...S.ranks].reverse()) lv.add(new Option(`사람처럼 두는 KataGo — ${r.label}`, r.v));
+    // 강한 쪽부터(최강 → 9단 … 20급) — 10-23 작가님 "저급부터 나오니 힘들어". 표기 'KataGo 9단'(10-24)
+    for (const r of [...S.ranks].reverse()) lv.add(new Option(`KataGo ${r.label}`, r.v));
   }
+  const dc = document.getElementById('dDc');
+  for (const [v, t] of [[300, '5분'], [1800, '30분'], [3600, '1시간'], [6 * 3600, '6시간'], [24 * 3600, '24시간']]) dc.add(new Option(t, v));
+  if (S.testMode) dc.add(new Option('20초 (테스트)', 20));
   const pk = document.getElementById('pack');
   pk.add(new Option('기본 (바둑돌 녹음 B)', 'builtin'));
   for (const n in S.packs || {}) pk.add(new Option(`${n}${S.packs[n].note.includes('내부') ? ' (내부 실험 — 출시 전 교체)' : ''}`, n));
@@ -547,7 +550,7 @@ function render() {
     const mine = col === S.user;
     document.getElementById('name' + col).textContent = mine ? '작가님' : 'KataGo';
     document.getElementById('rank' + col).textContent = mine ? '' :
-      (S.level === 'strong' ? '최강' : `${(S.ranks.find(r => r.v === S.level) || {}).label || S.level} · 사람처럼 두는 상대`);
+      (S.level === 'strong' ? '최강' : `${(S.ranks.find(r => r.v === S.level) || {}).label || S.level}`);
     document.getElementById('cap' + col).textContent = S.captures[col];
   }
 
@@ -604,11 +607,6 @@ function render() {
     '<div class="small">해설은 \'AI분석\' 탭에서 만듭니다.</div>';
   document.getElementById('sgf').innerHTML = S.sgfUrl ? `<a href="${S.sgfUrl}" download>기보 내려받기(SGF)</a> · 대기실 '지난 대국'에도 남습니다` : '';
 
-  // ⋯ 설정
-  const lv = document.getElementById('level');
-  for (const o of lv.options) if (o.value !== 'strong') o.disabled = !S.humanOk;
-  lv.value = S.level;
-  document.getElementById('levelWhy').textContent = S.humanOk ? '' : `급수 상대 비활성: ${S.humanReason}`;
 
   // 버튼 줄
   document.getElementById('bUndo').disabled = !!S.result;
@@ -903,6 +901,8 @@ document.getElementById('bNew').onclick = () => {
   const t = S.time || { main: 0, byo: 20, periods: 3 };
   document.getElementById('tMain').value = t.main; document.getElementById('tByo').value = t.byo;
   document.getElementById('tPer').value = t.periods; document.getElementById('tUnl').checked = !S.time;
+  const dcSel = document.getElementById('dDc'), dcV = String((S.dc && S.dc.limit) || S.dcLimit || 86400);
+  dcSel.value = [...dcSel.options].some(o => o.value === dcV) ? dcV : '86400';
   dlgSync();
   dlg.showModal();
 };
@@ -921,7 +921,8 @@ document.getElementById('dOk').onclick = async () => {
   notice('대국실을 여는 중…');
   try {
     const r = await fetch('/api/rooms', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                          body: JSON.stringify({ level, handicap: handi, time, color: handi ? 'B' : colorPick }) });
+                                          body: JSON.stringify({ level, handicap: handi, time, color: handi ? 'B' : colorPick,
+                                                                 dcLimit: Number(document.getElementById('dDc').value) }) });
     const j = await r.json();
     if (j.error || !j.id) { notice(j.error || '대국실을 만들지 못했습니다'); return; }
     try { sessionStorage.setItem('goBoardStartVoice', j.id); } catch (e) { /* 시작 음성 생략 */ }
@@ -966,7 +967,6 @@ soundBox.onchange = () => {
   try { localStorage.setItem('goBoardSound', soundOn ? 'on' : 'off'); } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
   if (soundOn) moveSound(0);
 };
-document.getElementById('level').onchange = e => call('/api/level', { level: e.target.value });
 
 // ---- 시계(초읽기): 화면이 재고 서버에는 시간패만 알린다. 엔진 시계는 표시만(초읽기 마지막 1초에서 멈춤 — 시간패 없음)
 let clocks = null, clockTimer = null, clockLast = 0;
@@ -1134,6 +1134,22 @@ if (ROOM) {
   boot();
 }
 
+// ---- 접속 신호(10-24 접속 장애 시계): 화면이 보이는 동안 5초마다 ping — 앱을 내리거나 대기실로 가면 끊김으로 본다
+if (ROOM) {
+  const ping = async () => {
+    if (document.visibilityState !== 'visible' || !S || S.stale || S.imported || S.result) return;
+    try {
+      const j = await (await fetch(api('/api/ping'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })).json();
+      if (!j.board || busy) return;
+      if (j.moveNo !== S.moveNo || j.result !== S.result || (S.dc && S.dc.offline)) { S = j; syncClocks(); render(); }  // 장애패·재접속·다른 기기 착수
+      else { S.clock = j.clock; S.dc = j.dc; syncClocks(); }
+    } catch (e) { /* 연결 끊김 — 서버가 15초 뒤 끊김 처리 */ }
+  };
+  setInterval(ping, 5000);
+  setTimeout(ping, 1500);  // 들어오자마자 한 번 — 끊겨 있던 판이면 바로 재개
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') ping(); });
+}
+
 // ---- 판 크기: − / 풀 / + (브라우저에 기억)
 (function boardSize() {
   const box = document.getElementById('boardBox'), full = document.getElementById('bSzFull');
@@ -1214,17 +1230,20 @@ setInterval(() => {
   const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const when = iso => { const d = new Date(iso); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
   const rule = r => `${r.handicap ? r.handicap + '점' : '호선'} · 작가님 ${r.user === 'B' ? '흑' : '백'}`;
+  const dur = sec => { sec = Math.max(0, Math.floor(sec)); const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), x = sec % 60;
+    return h ? `${h}:${String(m).padStart(2, '0')}:${String(x).padStart(2, '0')}` : `${m}:${String(x).padStart(2, '0')}`; };
   function row(r) {
     const live = r.status !== 'ended';
     const res = r.result ? `<span class="${r.win === true ? 'win' : r.win === false ? 'lose' : ''}">${esc(r.resultKo)}${r.win === true ? ' · 승' : r.win === false ? ' · 패' : ''}</span>`
       : (live ? (r.toMove === r.user ? '내 차례' : 'KataGo 차례') : '끝내지 않은 판');
+    const dcTxt = live && r.dc && r.dc.offline ? ` <span class="lose">· 접속 끊김${r.dc.counting ? ` · ${dur(r.dc.left)} 남음` : ''}</span>` : '';
     const rv = r.lastReview && r.lastReview.state === 'done' ? `<a class="btn" href="/review/${r.lastReview.id}" target="_blank">리뷰 열기</a>`
       : r.lastReview && r.lastReview.state === 'running' ? `<a class="btn" href="/review/${r.lastReview.id}" target="_blank">리뷰 중…</a>`
       : r.review && r.review.ok ? `<button data-review="${r.id}" data-handi="${r.handicap}">리뷰 만들기</button>` : '';
     const btns = live ? `<button class="hl" data-open="${r.id}">이어 두기</button>`
       : `${r.sgfUrl ? `<a class="btn" href="${r.sgfUrl}" download>기보</a>` : ''}${rv}`;
     return `<div class="box lobby-row${live ? ' live' : ''}" ${live ? `data-open="${r.id}"` : ''}><span class="dot ${r.user}"></span>` +
-      `<div class="grow"><div class="t1">${res}</div><div class="t2">${when(r.started)} · ${r.moveNo}수 · ${esc(r.levelLabel)} · ${rule(r)}${r.imported ? ' · 이전 기보' : ''}</div></div>` +
+      `<div class="grow"><div class="t1">${res}${dcTxt}</div><div class="t2">${when(r.started)} · ${r.moveNo}수 · ${esc(r.levelLabel)} · ${rule(r)}${r.imported ? ' · 이전 기보' : ''}</div></div>` +
       `<div class="btns">${btns}</div></div>`;
   }
   async function load() {
@@ -1232,7 +1251,7 @@ setInterval(() => {
       const d = await (await fetch('/api/rooms')).json();
       const df = d.defaults || {};
       // 신청 창은 대국실과 같은 것을 쓴다 — 기본값은 가장 최근 방의 설정
-      S = { ...d, level: df.level || 'strong', handicap: df.handicap || 0, time: df.time === undefined ? { main: 0, byo: 20, periods: 3 } : df.time, user: df.user || 'B' };
+      S = { ...d, level: df.level || 'strong', handicap: df.handicap || 0, time: df.time === undefined ? { main: 0, byo: 20, periods: 3 } : df.time, user: df.user || 'B', dcLimit: df.dcLimit };
       if (!widgetsReady) { setupWidgets(); widgetsReady = true; }
       const live = d.rooms.filter(r => r.status !== 'ended'), past = d.rooms.filter(r => r.status === 'ended');
       document.getElementById('lobbyLive').innerHTML = live.length ? live.map(row).join('') : '<div class="lobby-empty">진행 중인 대국이 없습니다 — 아래 \'새 대국\'으로 시작하세요.</div>';
