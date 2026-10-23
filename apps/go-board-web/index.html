@@ -3,6 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="/pwa/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/pwa/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MONK 바둑">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#2b3442">
 <title>MONK 바둑판</title>
 <style>
   /* 배치는 타이젬 대국 화면 구조를 따른다(기준표 monkos-ops/tech/rnd/go-commentary/UI_BENCH_20261023_타이젬웹.md):
@@ -1067,6 +1074,9 @@ setInterval(() => {
   open.onclick = () => document.body.classList.add('sheet-open');
   document.getElementById('bSheetX').onclick = () => document.body.classList.remove('sheet-open');
 })();
+
+// ---- PWA: 홈 화면에 추가하면 바로 판으로(10-23). 서비스 워커는 캐시 없이 설치 조건만 채운다
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => { /* 로컬 http 등 — 무시 */ });
 </script>
 </body>
 </html>

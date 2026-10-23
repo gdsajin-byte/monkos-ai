@@ -1,5 +1,5 @@
 # 바둑판 원격 접속(집·모바일) 설정 — Cloudflare Access(이메일 일회용 코드) + 원격 관리형 터널 + DNS. 멱등(있으면 재사용).
-# 사용: python3 remote_setup.py setup | token-run | status
+# 사용: python3 remote_setup.py setup | token-run | status | open | lock
 #   setup     : 일회용 코드 IdP → Access 앱(go.monkos.ai, 허용 이메일만) → 터널 go-imac(인그레스 go.monkos.ai → 127.0.0.1:8765) → DNS CNAME
 #   token-run : 터널 토큰을 API로 받아 env로만 cloudflared에 넘겨 exec (launchd ai.monkos.go-tunnel 용) — 토큰 미출력·미기록
 #   status    : 앱·터널·DNS 상태 + 외부 접근 대조(잠금이 로그인으로 보내는지, 2회 히트)
@@ -86,6 +86,19 @@ def setup():
         fail(f"DNS {HOST} 기존 레코드가 이 터널과 다름 — 덮어쓰지 않음")
 
 
+def set_open(is_open):
+    """open: 정책을 '모두 통과(bypass)'로 — 앱·터널은 그대로(되잠그기 쉬움). lock: 허용 이메일만으로 되돌림.
+    10-23 작가님 '지금은 나밖에 모르니 인증은 내일 붙이고' — PWA 우선, 테스터 모집 때 lock."""
+    apps = [x for x in api("GET", f"/accounts/{A}/access/apps") if x.get("domain") == HOST] or fail("앱 없음 — setup 먼저")
+    app = apps[0]
+    pol = ([{"name": "임시 개방(테스트)", "decision": "bypass", "include": [{"everyone": {}}]}] if is_open else
+           [{"name": "작가님만", "decision": "allow", "include": [{"email": {"email": e}} for e in ALLOW]}])
+    body = {k: app[k] for k in ("name", "domain", "type", "session_duration") if k in app}
+    body.update({"app_launcher_visible": False, "policies": pol})
+    r = api("PUT", f"/accounts/{A}/access/apps/{app['id']}", body)
+    print("✅", "임시 개방(bypass 모두)" if is_open else "잠금(허용 이메일만)", "· 정책", [p.get("decision") for p in r.get("policies", [])])
+
+
 def token_run():
     tid = tunnel_id() or fail("터널 없음 — setup 먼저")
     tok = api("GET", f"/accounts/{A}/cfd_tunnel/{tid}/token")
@@ -105,4 +118,4 @@ def status():
     print(f"외부 https://{HOST}/health (2차):", r, "→ 302 + cloudflareaccess 로그인이면 잠금 정상")
 
 
-{"setup": setup, "token-run": token_run, "status": status}.get(sys.argv[1] if len(sys.argv) > 1 else "status", status)()
+{"setup": setup, "token-run": token_run, "status": status, "open": lambda: set_open(True), "lock": lambda: set_open(False)}.get(sys.argv[1] if len(sys.argv) > 1 else "status", status)()

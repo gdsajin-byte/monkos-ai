@@ -831,6 +831,13 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def do_GET(self):
+        if self.path.split("?")[0] in ("/sw.js", "/pwa/sw.js"):  # PWA(10-23) — 서비스 워커는 범위를 위해 루트에서도 내보낸다
+            self._send(200, (HERE / "pwa" / "sw.js").read_bytes(), "text/javascript; charset=utf-8")
+            return
+        m = re.fullmatch(r"/pwa/([a-z0-9-]+\.(png|webmanifest))", self.path.split("?")[0])
+        if m:
+            self._send(200, (HERE / "pwa" / m.group(1)).read_bytes(), "image/png" if m.group(2) == "png" else "application/manifest+json")
+            return
         if self.path.split("?")[0] in ("/", "/index.html"):
             self._send(200, (HERE / "index.html").read_bytes(), "text/html; charset=utf-8")
         elif self.path == "/api/state":
