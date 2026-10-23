@@ -20,6 +20,7 @@ from facts import extract, board_at, KO, CO_BEST
 from sheet import svg_board
 from verify import check
 from teacher import WORKDIR
+from concepts import analyze_concepts, load_lexicon
 
 SYSTEM = """너는 바둑 해설가다. 판을 직접 보지 않는다. 주어진 '사실 목록'만 말로 옮긴다.
 규칙:
@@ -28,6 +29,20 @@ SYSTEM = """너는 바둑 해설가다. 판을 직접 보지 않는다. 주어�
 - 숫자는 사실에 나온 값 그대로 쓴다(반올림 금지). 좌표도 사실에 나온 표기 그대로.
 - 아마 = 급수 아마추어용 3~4문장: 무엇이 문제였는지(또는 왜 좋았는지)와 어디를 뒀어야 했는지.
 - 유단 = 유단자용 한 문장: 수순·급함과 큼·그룹 상태 중 핵심 하나.
+- 출력은 JSON 하나만: {"아마": ["문장", ...], "유단": ["문장"]}. 코드 블록·설명 금지."""
+
+# 정성 해설 (lexicon v0) — 수치는 기반, 말은 정성어
+SYSTEM_Q = """너는 다정하고 생생한 바둑 해설가다. 판을 직접 보지 않는다. 입력은 추임새 레벨, 사실 목록(F#), 발동 개념 목록(C#)이다.
+핵심: 몇 집 손해 같은 숫자는 기반일 뿐이고, 해설의 중심은 정성 평가다 — '두터워졌다', '날카롭다', '행마가 가볍다', '급소', 위기십결 같은 말로 왜 좋은지/아쉬운지를 들려준다.
+규칙:
+- 정성어·모양 이름·위기십결 이름은 '발동 개념 목록'에 있는 것만 쓴다. 목록에 없는 개념 이름(예: 발동 안 된 '두텁다')은 절대 쓰지 않는다.
+- 발동 개념은 그 근거를 쉬운 말로 풀어 준다(예: "주변 흑 돌이 단단해져서"). '쉬운 풀이:', '준수', '소유권' 같은 입력 표현을 그대로 옮기지 말고 자연스러운 말로 바꾼다.
+- 숫자는 뒷받침으로만: 아마 해설 전체에 숫자 2개 이하, 쓸 때는 사실·개념에 나온 값 그대로. 개념 3~4개를 골라 흐름 있게 엮고, 목록처럼 나열하지 않는다.
+- 위기십결이 발동했으면 이름과 쉬운 풀이를 함께 한 번 말한다. 준수면 칭찬, 위반이면 다음에 기억할 교훈으로.
+- 첫 문장은 추임새 레벨에 맞춰 시작한다: 와우 → "와우," 또는 "멋진 수네요," / 좋네요 → "좋네요," / 무난 → "무난해요," / 살짝 아쉬움 → "조금 아쉬워요," / 아쉬워요 → "아쉬워요," / 큰 실수 → "여기가 크게 아팠어요,".
+- 좌표는 사실에 나온 표기(예: Q16)만 쓴다. 사실·개념에 없는 수순·그룹·영역을 만들지 않는다.
+- 모든 문장 끝에 근거 ID를 대괄호로 붙인다. 예: [X2,F1]. ID(F#·X#)는 끝의 대괄호 안에만 쓰고 문장 본문에는 절대 쓰지 않는다(좌표와 헷갈린다).
+- 아마 = 급수 아마추어용 3~4문장. 유단 = 유단자용 한 문장(개념 중 핵심 하나를 수순과 연결).
 - 출력은 JSON 하나만: {"아마": ["문장", ...], "유단": ["문장"]}. 코드 블록·설명 금지."""
 
 
@@ -60,7 +75,7 @@ def scan(eng, gm):
             for r in rs]
 
 
-def pick(gm, t, color, top, wr_range=None, min_loss=analyze.MIN_LOSS):
+def pick(gm, t, color, top, wr_range=None, min_loss=analyze.MIN_LOSS, praise=1):
     """wr_range=(lo, hi): 실수·승부처 후보를 둔 쪽의 착수 전 승률이 이 구간 안인 수로 제한 (None = 전 구간)."""
     sign = 1 if color == "B" else -1
     rows = []
@@ -91,11 +106,11 @@ def pick(gm, t, color, top, wr_range=None, min_loss=analyze.MIN_LOSS):
             hit["kind"] = "실수 · 승부처"
         else:
             picked.append(dict(turn, kind="승부처"))
-    # 잘 둔 수 = 엔진 1순위와 일치 + 차선과의 차이가 가장 큰 수 (유일한 수에 가까울수록 가치).
-    # 정밀 분석에서 1순위가 바뀔 수 있어 후보 3개를 올리고 재판정에서 첫 통과 1개만 남긴다
+    # 잘 둔 수(칭찬 대상) = 손실 0.5집 이하 · 엔진 1순위 우선 · 차선과의 차이 큰 순.
+    # 정밀 분석에서 바뀔 수 있어 praise×2개를 올리고 재판정에서 praise개만 남긴다
     taken = {m["move_index"] for m in picked}
-    good = sorted((r for r in cand if r["move"] == r["best"] and r["move_index"] not in taken),
-                  key=lambda r: -r["gap2"])[:3]
+    good = sorted((r for r in cand if r["loss_scan"] <= 0.5 and r["move_index"] not in taken),
+                  key=lambda r: (r["move"] != r["best"], -r["gap2"]))[:praise * 2]
     for rank, g in enumerate(good):
         picked.append(dict(g, kind="잘 둔 수", good_rank=rank))
     for k, r in enumerate(picked, 1):
@@ -109,20 +124,20 @@ def deep_loss(d):
     return round(sign * (d["before"]["moveInfos"][0]["scoreLead"] - d["after"]["rootInfo"]["scoreLead"]), 1)
 
 
-def rejudge(deep, top, min_loss):
+def rejudge(deep, top, min_loss, praise=1, good_loss=0.5):
     """1차 스캔 선발을 정밀 분석으로 재판정: 최선수 = 실제 수이거나 손실 < min_loss인 '실수'는 제외, 상위 top만."""
-    keep, dropped, n, good_done = [], [], 0, False
+    keep, dropped, n, n_good = [], [], 0, 0
     order = lambda d: (0, -deep_loss(d)) if "실수" in d["pos"]["kind"] else (1, d["pos"].get("good_rank", 0))
     for d in sorted(deep, key=order):
         p = d["pos"]
         if p["kind"] == "잘 둔 수":
-            ok = d["before"]["moveInfos"][0]["move"] == p["move"] and len(d["before"]["moveInfos"]) > 1
-            if ok and not good_done:
-                good_done = True
+            ok = deep_loss(d) <= good_loss and len(d["before"]["moveInfos"]) > 1
+            if ok and n_good < praise:
+                n_good += 1
                 keep.append(d)
             else:
                 dropped.append({"move_number": p["move_number"], "move": p["move"], "kind": "잘 둔 수 후보",
-                                "reason": "정밀 분석 1순위 아님" if not ok else "후보 중 차순위"})
+                                "deep_loss": deep_loss(d), "reason": "정밀 손실 초과" if not ok else "후보 중 차순위"})
             continue
         if "실수" in p["kind"]:
             same = d["before"]["moveInfos"][0]["move"] == p["move"]
@@ -183,12 +198,19 @@ def good_facts(d, gm):
             "actual": pos["move"], "best": alt["move"], "facts": facts}
 
 
-def teach(model, fx, kind):
-    lines = [f"국면 {fx['pos_id']} ({kind}) — {KO[fx['color']]} {fx['move_number']}수째 {fx['actual']}", "사실 목록:"]
+def teach(model, fx, kind, con=None):
+    lines = [f"국면 {fx['pos_id']} ({kind}) — {KO[fx['color']]} {fx['move_number']}수째 {fx['actual']}"]
+    if con:
+        lines.append(f"추임새 레벨: {con['cheer']}")
+    lines.append("사실 목록:")
     lines += [f"[{f['id']}] ({f['type']}) {f['text']}" for f in fx["facts"]]
+    if con:
+        lines.append("발동 개념 목록 (이것만 정성어로 쓴다):")
+        lines += [f"[{c['cid']}] ({LAYER_KO[c['layer']]}) {c['text']}" for c in con["concepts"] if c.get("use", True)] \
+            or ["(발동 개념 없음 — 정성어 없이 사실만)"]
     t = time.time()
     r = subprocess.run(["claude", "-p", "--model", model, "--output-format", "json", "--tools", "",
-                        "--strict-mcp-config", "--no-session-persistence", "--system-prompt", SYSTEM],
+                        "--strict-mcp-config", "--no-session-persistence", "--system-prompt", SYSTEM_Q if con else SYSTEM],
                        input="\n".join(lines), capture_output=True, text=True, cwd=WORKDIR, timeout=300)
     text = json.loads(r.stdout).get("result", "")
     try:
@@ -196,6 +218,50 @@ def teach(model, fx, kind):
     except ValueError:
         out = None
     return out, round(time.time() - t, 1)
+
+
+LAYER_KO = {"shapes": "모양", "keypoints": "급소·맥", "proverbs": "위기십결", "qualities": "정성"}
+
+
+def deep_plus(eng, gm, c):
+    """정밀 분석 + 정책망 + '그 자리에서 손을 뺐다면(패스)' 소유권 기준선."""
+    d = analyze.deep(eng, gm, c, extra={"includePolicy": True})
+    d["after"].pop("policy", None)
+    q = base_query(gm, c["pos_id"] + "-pass")
+    q["moves"] = gm["moves"][:c["move_index"]] + [[c["color"], "pass"]]
+    q["analyzeTurns"] = [c["move_index"] + 1]
+    q["maxVisits"] = analyze.DEEP_VISITS // 2
+    q["includeOwnership"] = True
+    (r,) = eng.ask(q, 1)
+    d["pass_own"] = r["ownership"]
+    return d
+
+
+NEG = re.compile(r"^.{0,3}(지\s*않|지\s*못|지는\s*않|아니)")
+
+
+def term_errors(sentence, activated, source, lex):
+    """정성어·모양·위기십결 이름이 문장에 있는데 발동 목록에 없으면 오류. 근거 텍스트(사실·개념)에 그대로 있으면 허용."""
+    body = re.sub(r"\s*\[[^\]]*\]", "", sentence)
+    body = re.sub(r"최선수|차선수|선수순", "＿", body)
+    errs = []
+    layers = ("shapes", "keypoints", "proverbs", "qualities")
+    # 발동 항목의 패턴은 전부 허용 (손빼기 적기/부적기처럼 패턴을 공유하는 쌍)
+    allowed = {p for L in layers for e in lex[L] if e["name"] in activated for p in e.get("patterns", [])}
+    for layer in layers:
+        for e in lex[layer]:
+            for pat in e.get("patterns", []):
+                k = body.find(pat)
+                if k < 0:
+                    continue
+                if e["name"] in activated or pat in source or pat in allowed:
+                    break
+                opp = next((x["name"] for L in ("qualities", "shapes") for x in lex[L] if x["id"] == e.get("opposite")), None)
+                if opp in activated and NEG.match(body[k + len(pat):]):
+                    break
+                errs.append(f"미발동 개념 {e['name']}")
+                break
+    return errs
 
 
 def render(gm, items, out, model, color):
@@ -214,9 +280,26 @@ def render(gm, items, out, model, color):
         label = "차선" if it["kind"] == "잘 둔 수" else "최선"
         co = f" (≈ {fx['co_best']}, 어느 쪽도 최선)" if fx.get("co_best") else ""
         f1 = fx["facts"][0]["text"]
-        secs.append(f'''<section class="k-{"good" if it["kind"] == "잘 둔 수" else "bad"}"><h2><span class="tag">{esc(it["kind"])}</span> {KO[fx["color"]]} {fx["move_number"]}수 {fx["actual"]} · {label} {fx["best"]}{esc(co)}</h2>
+        con = it.get("con")
+        chips = evid = ""
+        if con:
+            chips = '<p class="chips">' + "".join(
+                f'<span class="chip l-{c["layer"]}{"" if c.get("use", True) else " off"}">{esc(c["name"])}{"" if not c["mode"] else (" ✓" if c["mode"] == "follow" else " ✗")}</span>'
+                for c in con["concepts"]) + "</p>"
+            sg = con["signals"]
+            keys = ["loss", "gap2", "prior", "rank", "local_gain", "territory_gain", "influence_gain", "sente", "reply",
+                    "prev_dist", "friends", "sphere", "cuts_own", "cuts_opp", "own_near", "opp_near", "my_group", "wr_before"]
+            evid = (f'<details><summary>발동 근거 — 개념 {len(con["concepts"])}개 · 신호값 (임계 보정용)</summary>'
+                    "<table class=ev><tr><th>개념</th><th>층</th><th>근거</th></tr>" + "".join(
+                        f'<tr><td>{esc(c["name"])}{"(" + ("준수" if c["mode"] == "follow" else "위반") + ")" if c["mode"] else ""}{"" if c.get("use", True) else " · 해설 미반영"}</td>'
+                        f'<td>{LAYER_KO[c["layer"]]}</td><td>{esc(json.dumps(c["evidence"], ensure_ascii=False))}</td></tr>'
+                        for c in con["concepts"]) + "</table><table class=ev><tr><th>신호</th><th>값</th></tr>" + "".join(
+                        f"<tr><td>{k}</td><td>{esc(json.dumps(sg.get(k), ensure_ascii=False))}</td></tr>" for k in keys)
+                    + "</table></details>")
+        tagtxt = it["kind"] + (f" · {con['cheer']}" if con else "")
+        secs.append(f'''<section class="k-{"good" if it["kind"] == "잘 둔 수" else "bad"}"><h2><span class="tag">{esc(tagtxt)}</span> {KO[fx["color"]]} {fx["move_number"]}수 {fx["actual"]} · {label} {fx["best"]}{esc(co)}</h2>
 <div class="row"><figure>{svg_board(gm, fx)}<figcaption>✕ 실제 수 {fx["actual"]} · 파란 원 {label}수 {fx["best"]} · 작은 점 직전 수</figcaption></figure>
-<div><p class="f1">{esc(f1)}</p>{"".join(body)}<details><summary>근거 사실 {len(fx["facts"])}개</summary><ol>{"".join(f"<li><b>{x['id']}</b> {esc(x['text'])}</li>" for x in fx["facts"])}</ol></details></div></div></section>''')
+<div>{chips}<p class="f1">{esc(f1)}</p>{"".join(body)}{evid}<details><summary>근거 사실 {len(fx["facts"])}개</summary><ol>{"".join(f"<li><b>{x['id']}</b> {esc(x['text'])}</li>" for x in fx["facts"])}</ol></details></div></div></section>''')
     m = gm["meta"]
     page = f"""<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>대국 리뷰</title><style>
@@ -232,6 +315,9 @@ h2{{font-size:17px;margin:0 0 12px}}.tag{{font-size:12px;padding:2px 8px;border-
 .sb{{fill:#111;stroke:#000}}.sw{{fill:#fafafa;stroke:#555;stroke-width:.8}}.lm{{fill:#e33}}.mb{{fill:none;stroke:#1d5fe0;stroke-width:3}}.ma{{stroke:#e0301d;stroke-width:3;stroke-linecap:round}}
 .f1{{font-weight:600;margin:0 0 8px}}h4{{margin:10px 0 2px;font-size:12.5px;color:var(--mut)}}h4+p{{margin:0}}details{{margin-top:10px;font-size:13px;color:var(--mut)}}details ol{{padding-left:18px}}
 .fail{{background:var(--badbg);color:var(--bad);text-decoration:underline dotted}}
+.chips{{margin:0 0 8px;display:flex;flex-wrap:wrap;gap:6px}}.chip{{font-size:12.5px;padding:2px 9px;border-radius:99px;border:1px solid var(--line)}}
+.chip.off{{opacity:.45}}.l-shapes{{border-color:#8a6d3b}}.l-keypoints{{border-color:#2a62c9;font-weight:600}}.l-proverbs{{border-color:#7b3fa0}}.l-qualities{{border-color:var(--good)}}
+table.ev{{border-collapse:collapse;width:100%;margin:6px 0;font-size:12px}}table.ev td,table.ev th{{border-bottom:1px solid var(--line);padding:3px 6px;text-align:left;vertical-align:top;word-break:break-all}}
 @media (max-width:720px){{.row{{grid-template-columns:1fr}}}}
 </style></head><body><main>
 <h1>대국 리뷰 — {esc(m.get("PB", ""))}(흑) 대 {esc(m.get("PW", ""))}(백)</h1>
@@ -257,7 +343,9 @@ def export_sgf(gm, items, deep, out, model):
         mi = d["before"]["moveInfos"]
         alt = mi[1] if it["kind"] == "잘 둔 수" else mi[0]
         tag = re.compile(r"\s*\[[^\]]*\]")
-        comment = f"[{it['kind']}] {it['fx']['facts'][0]['text']}\n\n" + " ".join(
+        con = it.get("con")
+        cc = f" · {con['cheer']} · " + ", ".join(c["name"] for c in con["concepts"]) if con and con["concepts"] else ""
+        comment = f"[{it['kind']}{cc}] {it['fx']['facts'][0]['text']}\n\n" + " ".join(
             tag.sub("", s) for s in (it["levels"] or {}).get("아마", []))
         yudan = " ".join(tag.sub("", s) for s in (it["levels"] or {}).get("유단", []))
         if yudan:
@@ -304,6 +392,9 @@ def main():
     ap.add_argument("--model", default="haiku")
     ap.add_argument("--sgf", dest="sgf_out", help="해설 코멘트 + 최선수 변화도 SGF 출력 경로")
     ap.add_argument("--min-loss", type=float, default=analyze.MIN_LOSS, help="실수로 볼 최소 손실(집, 기본 2.0)")
+    ap.add_argument("--praise", type=int, default=3, help="칭찬할 좋은 수 최대 개수 (기본 3)")
+    ap.add_argument("--reuse", action="store_true", help="{out}_work/의 분석 결과를 재사용(엔진 미기동) — 사전·임계·프롬프트 보정용")
+    ap.add_argument("--no-concepts", action="store_true", help="정성 개념(lexicon) 없이 정량 사실만으로 해설 (구 방식)")
     ap.add_argument("--wr-range", default="0.03,0.97",
                     help="실수·승부처를 둔 쪽 착수 전 승률이 이 구간인 수로 제한 (기본 0.03,0.97 = 승부가 살아 있는 구간, off = 전 구간)")
     a = ap.parse_args()
@@ -318,14 +409,22 @@ def main():
         wr_range = (lo, hi)
     gm = load_sgf(a.game)
     gm["meta"]["filter"] = f"착수 전 승률 {lo * 100:g}~{hi * 100:g}% 구간 실수만" if wr_range else "전 구간"
-    eng = Engine()
-    try:
-        t = scan(eng, gm)
-        picked = pick(gm, t, a.color, a.top, wr_range, a.min_loss)
-        deep = [analyze.deep(eng, gm, c) for c in picked]
-    finally:
-        eng.close()
-    deep, dropped = rejudge(deep, a.top, a.min_loss)
+    lex = None if a.no_concepts else load_lexicon()
+    cached = os.path.join(work, "deep.json")
+    if a.reuse and os.path.exists(cached):
+        deep = json.load(open(cached))
+        prev = json.load(open(os.path.join(work, "scan.json")))
+        t, picked, dropped = prev["scan"], prev["picked"], prev["dropped"]
+        print("재사용:", cached, len(deep), "국면", flush=True)
+    else:
+        eng = Engine()
+        try:
+            t = scan(eng, gm)
+            picked = pick(gm, t, a.color, a.top, wr_range, a.min_loss, a.praise)
+            deep = [deep_plus(eng, gm, c) for c in picked]
+        finally:
+            eng.close()
+        deep, dropped = rejudge(deep, a.top, a.min_loss, a.praise, lex["cheers"]["threshold"]["good_loss"] if lex else 0.5)
     for x in dropped:
         print("재판정 제외:", x, flush=True)
     json.dump({"scan": t, "picked": picked, "dropped": dropped}, open(os.path.join(work, "scan.json"), "w"),
@@ -334,21 +433,31 @@ def main():
     items = []
     for d in deep:
         kind = d["pos"]["kind"]
-        fx = good_facts(d, gm) if kind == "잘 둔 수" else extract(d, gm)
-        levels, secs = teach(a.model, fx, kind)
+        is_best = d["before"]["moveInfos"][0]["move"] == d["pos"]["move"]
+        fx = good_facts(d, gm) if kind == "잘 둔 수" and is_best else extract(d, gm)
+        con = None
+        if lex:
+            f3 = next((x["data"] for x in fx["facts"] if x["id"] == "F3"), None)
+            con = analyze_concepts(d, gm, lex, f3 if fx["facts"][0]["type"] == "손익" else None)
+        levels, secs = teach(a.model, fx, kind, con)
         facts = {x["id"]: x["text"] for x in fx["facts"]}
+        if con:
+            facts.update({c["cid"]: c["text"] for c in con["concepts"]})
         dd = {x["id"]: x["data"] for x in fx["facts"]}
         sem = {"f3": {r: v for r, v in dd["F3"]["lost"] + dd["F3"]["gained"]}, "f7": dd["F7"]["kind"]}
         header = f"{fx['move_number']} {fx['actual']} {fx['best']}"
         ver = {}
         for s in sum((levels or {}).values(), []):
             hard, _ = check(s, facts, header, sem)
+            if con:
+                hard += term_errors(s, {c["name"] for c in con["concepts"]}, " ".join(facts.values()), lex)
             if hard:
                 ver[s] = hard
-        items.append({"fx": fx, "kind": kind, "levels": levels, "verify": ver, "teach_secs": secs})
+        items.append({"fx": fx, "kind": kind, "levels": levels, "verify": ver, "teach_secs": secs, "con": con})
         n = len(sum((levels or {}).values(), []))
         print(fx["pos_id"], kind, fx["move_number"], fx["actual"], "→", fx["best"],
-              fx["facts"][0]["text"][:50], f"| 문장 {n} 탈락 {len(ver)} | {secs}s", flush=True)
+              fx["facts"][0]["text"][:40], f"| {con['cheer'] if con else ''} 개념 {[c['name'] for c in con['concepts']] if con else []}"
+              f" | 문장 {n} 탈락 {len(ver)} | {secs}s", flush=True)
     json.dump(items, open(os.path.join(work, "items.json"), "w"), ensure_ascii=False, indent=1)
     render(gm, items, a.out, a.model, a.color)
     print("→", a.out)
