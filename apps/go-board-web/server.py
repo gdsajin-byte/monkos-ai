@@ -6,6 +6,7 @@
 """
 import json
 import os
+import random
 import re
 import subprocess
 import sys
@@ -139,6 +140,33 @@ class Engine:
                     acc[r][c] += float(v) / 8
         return acc
 
+    def search(self, color, top=3):
+        """kata-search_analyze — 두지 않고 후보 상위 N(수·흑 승률·흑 기준 점수·탐색 수)."""
+        with self.lock:
+            if self.proc is None or self.proc.poll() is not None:
+                raise RuntimeError(f"{self.name} 엔진이 꺼져 있음")
+            self.proc.stdin.write(f"kata-search_analyze {color}\n")
+            self.proc.stdin.flush()
+            info = ""
+            while True:
+                ln = self.proc.stdout.readline()
+                if ln == "":
+                    raise RuntimeError(f"{self.name} 엔진 응답 끊김")
+                ln = ln.strip()
+                if ln.startswith("?"):
+                    raise RuntimeError(f"{self.name}: 추천수 → {ln[1:].strip()}")
+                if "info move" in ln:
+                    info = ln
+                if re.match(r"^(?:=\s*)?play \S+", ln):
+                    while self.proc.stdout.readline().strip() != "":
+                        pass
+                    break
+        out = []
+        for m in re.finditer(r"info move (\S+) visits (\d+) .*?winrate (\S+) .*?scoreLead (\S+) .*?order (\d+)", info):
+            out.append({"move": m.group(1), "visits": int(m.group(2)), "winrate": float(m.group(3)),
+                        "score": float(m.group(4)), "order": int(m.group(5))})
+        return sorted(out, key=lambda c: c["order"])[:top]
+
     def genmove(self, color):
         """kata-genmove_analyze — (수, 흑 기준 점수, 흑 승률)."""
         with self.lock:
@@ -247,7 +275,11 @@ class Game:
         self.time = dict(DEFAULT_TIME)  # None = 무제한
         self.new()
 
-    def new(self, handicap=None, time_ctl="keep"):
+    def new(self, handicap=None, time_ctl="keep", color=None):
+        if color in ("B", "W"):
+            self.user = color
+        elif color == "auto":  # 돌 가림
+            self.user = random.choice("BW")
         if time_ctl != "keep":
             self.time = parse_time(time_ctl)
         if handicap is not None:
@@ -430,6 +462,29 @@ class Game:
         if not self.result and not self.scoring:
             self.engine_move()
         self.save()
+
+    def hint(self):
+        """현재 국면 KataGo 추천 상위 3 — 늘 최강 엔진으로(급수 상대일 때도)."""
+        if self.result or self.scoring:
+            raise RuntimeError("대국 중에만 볼 수 있습니다.")
+        e = self.strong
+        if not e.ok:
+            raise RuntimeError(e.error or "최강 엔진이 꺼져 있음")
+        e.sync(self.moves, self.handicap, self.komi)
+        cands = e.search(self.to_move)
+        for c in cands:
+            c["xy"] = list(to_xy(c["move"])) if c["move"].lower() != "pass" else None
+        return {"color": self.to_move, "moveNo": len(self.moves), "cands": cands}
+
+    def judge(self):
+        """AI 판정 — 지금 끝낸다면 KataGo가 보는 결과(대국은 계속)."""
+        if not self.moves:
+            raise RuntimeError("아직 둔 수가 없습니다.")
+        e = self.engine()
+        if e is None or not e.ok:
+            raise RuntimeError(e.error if e else self.human_reason)
+        r = e.cmd("final_score")
+        return {"result": r, "resultKo": result_ko(r), "moveNo": len(self.moves)}
 
     def timeout(self, color):
         """작가님 시계가 다 됨 → 시간패. 엔진은 시간패 없음(시계 표시만, 화면에서 상한)."""
@@ -827,6 +882,7 @@ class Handler(BaseHTTPRequestHandler):
         try:
             err = None
             jid = None
+            extra = {}
             try:
                 p = self.path
                 if p == "/api/play":
@@ -835,7 +891,8 @@ class Handler(BaseHTTPRequestHandler):
                     else:
                         GAME.play(to_gtp(int(body["x"]), int(body["y"])))
                 elif p == "/api/new":
-                    GAME.new(int(body["handicap"]) if "handicap" in body else None, body.get("time", "keep"))
+                    GAME.new(int(body["handicap"]) if "handicap" in body else None, body.get("time", "keep"),
+                             body.get("color"))
                     GAME._sync()
                     if GAME.to_move != GAME.user:
                         GAME.engine_move()
@@ -848,6 +905,10 @@ class Handler(BaseHTTPRequestHandler):
                     GAME.confirm_score()
                 elif p == "/api/score/cancel":
                     GAME.cancel_score()
+                elif p == "/api/hint":
+                    extra = {"hint": GAME.hint()}
+                elif p == "/api/judge":
+                    extra = {"judge": GAME.judge()}
                 elif p == "/api/timeout":
                     GAME.timeout(str(body.get("color")))
                 elif p == "/api/resign":
@@ -868,6 +929,7 @@ class Handler(BaseHTTPRequestHandler):
             st["error"] = err
             st["elapsed"] = round(time.time() - t0, 2)
             st["reviewJob"] = jid
+            st.update(extra)
         finally:
             GAME.lock.release()
         self._send(200, json.dumps(st, ensure_ascii=False))

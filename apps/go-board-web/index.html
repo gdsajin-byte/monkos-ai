@@ -5,103 +5,186 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MONK 바둑판</title>
 <style>
+  /* 배치는 타이젬 대국 화면 구조를 따른다(기준표 monkos-ops/tech/rnd/go-commentary/UI_BENCH_20261023_타이젬웹.md):
+     상단 상태줄 / 좌 판 / 우상 시계 칸 + 대국자 카드 2장 / 탭 줄 / 버튼 줄 / 우하 내용 패널 */
   :root {
-    --bg: #f4efe6; --ink: #2b2620; --muted: #6f655a; --wood: #dcb36c; --line: #3a2c18;
-    --btn: #fff; --btn-ink: #2b2620; --accent: #b4462b; --bar-b: #222; --bar-w: #f7f7f2;
+    --bg: #eef0f3; --panel: #fff; --ink: #24272c; --muted: #6b7079; --line-ui: #d5d9e0; --wood: #dcb36c; --line: #3a2c18;
+    --head: #2f3a4a; --head-ink: #fff; --accent: #c0392b; --blue: #2a6fdb; --bar-b: #222; --bar-w: #f7f7f2;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink);
-         font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; font-size: 20px; }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 16px; display: flex; gap: 24px; flex-wrap: wrap; }
-  .board { flex: 1 1 640px; max-width: min(92vh, 760px); }
-  svg { width: 100%; height: auto; display: block; cursor: pointer; border-radius: 6px;
-        box-shadow: 0 6px 20px rgba(0,0,0,.18); }
-  .side { flex: 1 1 320px; display: flex; flex-direction: column; gap: 16px; }
-  h1 { font-size: 26px; margin: 0; }
-  .turn { font-size: 24px; font-weight: 700; min-height: 1.4em; }
-  .msg { color: var(--accent); min-height: 1.4em; }
-  .row { display: flex; gap: 12px; flex-wrap: wrap; }
-  button, select { font: inherit; font-size: 20px; padding: 14px 18px; border-radius: 10px;
-                   border: 2px solid #c9bba5; background: var(--btn); color: var(--btn-ink); cursor: pointer; }
+         font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; font-size: 18px; }
+  .status { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; padding: 10px 16px;
+            background: var(--head); color: var(--head-ink); font-size: 19px; }
+  .status b { font-weight: 700; }
+  .status .shape { opacity: .85; font-size: 17px; }
+  .status .grow { flex: 1; }
+  .status button { font-size: 17px; padding: 8px 14px; background: #fff; color: var(--head); border: 0; font-weight: 700; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 14px 16px; display: flex; gap: 18px; flex-wrap: wrap; }
+  .board { flex: 1 1 620px; max-width: min(90vh, 780px); }
+  svg#svg { width: 100%; height: auto; display: block; cursor: pointer; border-radius: 4px;
+            box-shadow: 0 4px 14px rgba(0,0,0,.18); }
+  .side { flex: 1 1 380px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .box { background: var(--panel); border: 1px solid var(--line-ui); border-radius: 8px; }
+  .top { display: flex; gap: 10px; }
+  .clockbox { flex: 0 0 110px; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+              gap: 6px; text-align: center; font-size: 15px; color: var(--muted); }
+  .clockbox .ico { font-size: 30px; line-height: 1; }
+  .cards { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .card { display: flex; gap: 12px; align-items: center; padding: 10px 12px; border: 2px solid transparent; }
+  .card.run { border-color: var(--blue); }
+  .card.urgent { border-color: var(--accent); }
+  .avatar { position: relative; flex: 0 0 46px; height: 46px; border-radius: 50%; }
+  .avatar.B { background: radial-gradient(circle at 35% 35%, #555, #111 70%); }
+  .avatar.W { background: radial-gradient(circle at 35% 35%, #fff, #cfcfcf 75%); border: 1px solid #aaa; }
+  .badge { position: absolute; right: -6px; bottom: -6px; min-width: 24px; height: 24px; padding: 0 5px; border-radius: 12px;
+           background: var(--accent); color: #fff; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .who { flex: 1; min-width: 0; }
+  .who .name { font-weight: 700; }
+  .who .rank { color: var(--muted); font-size: 15px; }
+  .who .time { font-variant-numeric: tabular-nums; font-size: 17px; }
+  .card.urgent .time { color: var(--accent); font-weight: 700; }
+  .msg { color: var(--accent); min-height: 1.3em; font-size: 16px; }
+  .tabs { display: flex; border-bottom: 2px solid var(--line-ui); }
+  .tabs button { flex: 1; border: 0; border-radius: 0; background: none; padding: 10px 4px; font-size: 17px; color: var(--muted);
+                 border-bottom: 3px solid transparent; margin-bottom: -2px; }
+  .tabs button.on { color: var(--ink); font-weight: 700; border-bottom-color: var(--blue); }
+  .actions { display: flex; gap: 6px; }
+  .actions button { flex: 1; padding: 12px 4px; font-size: 17px; }
+  button, select { font: inherit; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--line-ui);
+                   background: #fff; color: var(--ink); cursor: pointer; }
   button:hover:not(:disabled) { border-color: var(--ink); }
   button:disabled, select:disabled { opacity: .45; cursor: not-allowed; }
-  .btns button { flex: 1 1 45%; }
-  .stat { display: flex; justify-content: space-between; }
-  .bar { height: 30px; border-radius: 8px; overflow: hidden; display: flex; border: 2px solid #c9bba5; }
+  .hl { border-color: var(--accent) !important; color: #fff !important; background: var(--accent) !important; font-weight: 700; }
+  .panel { padding: 14px; min-height: 260px; display: flex; flex-direction: column; gap: 10px; }
+  .panel section { display: flex; flex-direction: column; gap: 10px; }
+  .panel section[hidden] { display: none; }
+  .small { font-size: 15px; color: var(--muted); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .bar { height: 26px; border-radius: 6px; overflow: hidden; display: flex; border: 1px solid var(--line-ui); }
   .bar .b { background: var(--bar-b); }
   .bar .w { background: var(--bar-w); flex: 1; }
-  .barlbl { display: flex; justify-content: space-between; font-size: 18px; color: var(--muted); }
-  .small { font-size: 16px; color: var(--muted); }
-  .hl { border-color: var(--accent); color: #fff; background: var(--accent); font-weight: 700; }
-  .hl:hover:not(:disabled) { border-color: var(--ink); }
-  .clock { flex: 1; padding: 10px 12px; border: 2px solid #c9bba5; border-radius: 10px; font-size: 18px; background: #fff; }
-  .clock.run { border-color: var(--ink); font-weight: 700; }
-  .clock.urgent { border-color: var(--accent); color: var(--accent); }
-  #tMain, #tByo, #tPer { font-size: 17px; padding: 8px; }
-  .pass { background: none; border: none; padding: 0; color: var(--muted); text-decoration: underline; font-size: 17px; }
-  /* 생각 중 표시는 판 밖 상태 문구의 점 애니메이션 하나뿐 — 판·화면을 흐리거나 가리지 않는다 */
+  .barlbl { display: flex; justify-content: space-between; font-size: 16px; color: var(--muted); }
+  .cand { display: flex; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line-ui); }
+  .cand .n { width: 26px; height: 26px; border-radius: 50%; background: var(--blue); color: #fff; display: flex;
+             align-items: center; justify-content: center; font-weight: 700; font-size: 15px; }
+  iframe#reviewFrame { width: 100%; height: 420px; border: 1px solid var(--line-ui); border-radius: 6px; background: #fff; }
+  dialog { border: 0; border-radius: 10px; padding: 0; width: min(560px, 94vw); box-shadow: 0 10px 40px rgba(0,0,0,.3); }
+  dialog::backdrop { background: rgba(20,24,30,.45); }
+  .dlg-head { background: var(--head); color: #fff; padding: 12px 16px; font-weight: 700; }
+  .dlg-body { padding: 14px 18px; display: flex; flex-direction: column; gap: 12px; }
+  .dlg-body h4 { margin: 4px 0 0; font-size: 16px; }
+  .dlg-body label { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .dlg-foot { padding: 12px 18px; display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid var(--line-ui); }
+  /* 생각 중 표시는 상태줄 문구의 점 애니메이션 하나뿐 — 판·화면을 흐리거나 가리지 않는다 */
   .dots::after { content: ''; animation: dots 1.2s steps(4) infinite; }
   @keyframes dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
 </style>
 </head>
 <body>
+<div class="status">
+  <span id="status">대국중</span>
+  <span class="shape" id="statusShape"></span>
+  <span class="grow"></span>
+  <span id="turn">불러오는 중…</span>
+  <button id="bNew">대국 신청</button>
+</div>
 <div class="wrap">
   <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg></div>
   <div class="side">
-    <h1>MONK 바둑판</h1>
-    <div class="turn" id="turn">불러오는 중…</div>
-    <div class="msg" id="msg"></div>
-
-    <div class="row btns">
-      <button id="bNew">새 판</button>
-      <button id="bUndo">한 수 무르기</button>
-      <button id="bSwap">흑백 바꾸기</button>
-      <button id="bReview" disabled>리뷰</button>
-      <button id="bScore">계가</button>
-      <button id="bResign">기권</button>
-    </div>
-    <div id="scorePanel" hidden style="border:2px solid #c9bba5;border-radius:10px;padding:12px 14px;background:#fffaf0">
-      <div id="scoreSum" style="font-weight:700"></div>
-      <div class="small" id="scoreDetail"></div>
-      <div class="row" style="margin-top:10px">
-        <button id="bScoreOk" class="hl" style="flex:1">계가 확정</button>
-        <button id="bScoreCancel" style="flex:1">계가 취소</button>
+    <div class="top">
+      <div class="box clockbox"><div class="ico">⏱</div><div id="timeMode">무제한</div></div>
+      <div class="cards">
+        <div class="box card" id="cardB">
+          <div class="avatar B"><span class="badge" id="capB">0</span></div>
+          <div class="who"><div class="name" id="nameB"></div><div class="rank" id="rankB"></div><div class="time" id="timeB"></div></div>
+        </div>
+        <div class="box card" id="cardW">
+          <div class="avatar W"><span class="badge" id="capW">0</span></div>
+          <div class="who"><div class="name" id="nameW"></div><div class="rank" id="rankW"></div><div class="time" id="timeW"></div></div>
+        </div>
       </div>
     </div>
-    <label class="small"><input type="checkbox" id="wrFilter" checked> 리뷰: 승부가 갈리기 전(승률 <span id="wrRange">3~97%</span>) 실수만 <span id="filterWhy"></span></label>
-    <div class="small" id="reviewWhy"></div>
+    <div class="msg" id="msg"></div>
 
-    <div id="clocks" class="row" hidden>
-      <div id="clockB" class="clock"></div><div id="clockW" class="clock"></div>
+    <div class="tabs" id="tabs">
+      <button data-tab="ai" class="on">AI분석</button>
+      <button data-tab="shape">형세분석</button>
+      <button data-tab="hint">추천수</button>
+      <button data-tab="review">대국검토</button>
+      <button data-tab="more" title="설정">⋯</button>
+    </div>
+    <div class="actions">
+      <button id="bUndo">무르기</button>
+      <button id="bPass">한수쉼</button>
+      <button id="bScore">계가신청</button>
+      <button id="bJudge">AI 판정</button>
+      <button id="bResign">기권</button>
     </div>
 
-    <label>시간 (다음 '새 판'부터) <input type="checkbox" id="tUnl"> 무제한<br>
-      <select id="tMain"></select> <select id="tByo"></select> <select id="tPer"></select>
-    </label>
-
-    <label>치수 (다음 '새 판'부터)<br>
-      <select id="handicap" style="width:100%"></select>
-    </label>
-
-    <label>상대 수준<br>
-      <select id="level" style="width:100%"></select>
-    </label>
-    <div class="small" id="levelWhy"></div>
-
-    <div>
-      <div class="barlbl"><span>흑</span><span id="scoreTxt">형세 —</span><span>백</span></div>
-      <div class="bar"><div class="b" id="barB" style="width:50%"></div><div class="w"></div></div>
+    <div class="box panel">
+      <section id="secScore" hidden>
+        <b>계가</b>
+        <div id="scoreSum" style="font-weight:700"></div>
+        <div class="small" id="scoreDetail"></div>
+        <div class="row">
+          <button id="bScoreOk" class="hl" style="flex:1">계가 확정</button>
+          <button id="bScoreCancel" style="flex:1">계가 취소</button>
+        </div>
+      </section>
+      <section id="tab-ai">
+        <div class="small">MONKOS 정성 해설 — 이 판의 실수·승부처·잘 둔 수를 말로 풀어 줍니다(보통 몇 분).</div>
+        <label class="small"><input type="checkbox" id="wrFilter" checked> 승부가 갈리기 전(승률 <span id="wrRange">3~97%</span>) 실수만 <span id="filterWhy"></span></label>
+        <div class="row"><button id="bReview" disabled>이 판 해설 만들기</button><a id="reviewOpen" target="_blank" hidden>새 탭에서 열기</a></div>
+        <div class="small" id="reviewWhy"></div>
+        <iframe id="reviewFrame" hidden title="해설"></iframe>
+      </section>
+      <section id="tab-shape" hidden>
+        <div class="barlbl"><span>흑</span><span id="scoreTxt">형세 —</span><span>백</span></div>
+        <div class="bar"><div class="b" id="barB" style="width:50%"></div><div class="w"></div></div>
+        <svg id="spark" viewBox="0 0 300 80" style="width:100%;height:90px;background:#fafbfc;border-radius:6px"></svg>
+        <div class="small">수마다 KataGo가 본 흑 기준 점수 흐름(위 = 흑 유리). AI 판정은 아래 버튼 줄의 'AI 판정'.</div>
+        <div class="small" id="judgeTxt"></div>
+      </section>
+      <section id="tab-hint" hidden>
+        <div class="row"><button id="bHint">추천수 보기</button><span class="small">지금 국면에서 KataGo(최강)가 보는 상위 3수 — 판에 파란 번호로 표시</span></div>
+        <div id="hintList"></div>
+      </section>
+      <section id="tab-review" hidden>
+        <div id="gameInfo"></div>
+        <div class="small" id="sgf"></div>
+      </section>
+      <section id="tab-more" hidden>
+        <label>상대 수준(지금 판) <select id="level"></select></label>
+        <div class="small" id="levelWhy"></div>
+        <div class="row"><button id="bSwap">흑백 바꾸기(지금 판)</button></div>
+        <label>판·돌 디자인 <select id="skin"></select>
+          <select id="skinBoard" hidden></select> <select id="skinStones" hidden></select></label>
+        <label>소리 <select id="pack"></select> <label><input type="checkbox" id="sound" checked> 켜기</label></label>
+      </section>
     </div>
-    <div class="stat"><span>흑이 따낸 돌 <b id="capB">0</b></span><span>백이 따낸 돌 <b id="capW">0</b></span></div>
-    <div class="stat small"><span id="moveNo">0수</span>
-      <span><button class="pass" id="bPass">패스</button> · <label><input type="checkbox" id="sound" checked> 소리</label></span></div>
-    <div class="small" id="sgf"></div>
-    <label class="small">판·돌 디자인 <select id="skin" style="font-size:16px;padding:6px"></select>
-      <select id="skinBoard" style="font-size:16px;padding:6px" hidden></select>
-      <select id="skinStones" style="font-size:16px;padding:6px" hidden></select></label>
-    <label class="small">소리 <select id="pack" style="font-size:16px;padding:6px"></select> <span id="packNote"></span></label>
   </div>
 </div>
+
+<dialog id="newDlg">
+  <div class="dlg-head" id="dlgTitle">작가님 VS KataGo</div>
+  <div class="dlg-body">
+    <h4>● 인공지능 설정</h4>
+    <label>컴퓨터 수준 <select id="dLevel"></select></label>
+    <h4>● 기본설정</h4>
+    <label>대국방법
+      <label><input type="radio" name="dWay" value="even" checked> 호선</label>
+      <label><input type="radio" name="dWay" value="handi"> 접바둑</label>
+      <select id="handicap"></select></label>
+    <div class="small" id="dKomi"></div>
+    <label>흑백선택 <select id="dColor">
+      <option value="B">작가님 흑</option><option value="W">작가님 백</option><option value="auto">자동 돌가림</option>
+    </select></label>
+    <label>대국시간 <label><input type="checkbox" id="tUnl"> 무제한</label>
+      <select id="tMain"></select> <select id="tByo"></select> <select id="tPer"></select></label>
+  </div>
+  <div class="dlg-foot"><button id="dCancel">취소</button><button id="dOk" class="hl">신청</button></div>
+</dialog>
 <script>
 const N = 19, M = 20, STEP = (400 - 2 * M) / (N - 1);
 const svg = document.getElementById('svg');
@@ -173,6 +256,58 @@ function drawStone(x, y, c, opacity) {
                  stroke: c === 'B' ? '#000' : '#888', 'stroke-width': .6, opacity });
 }
 
+let tab = 'ai', hint = null, judge = null, reviewJob = null;
+const komiText = k => { const i = Math.floor(k); return k % 1 ? (i ? `${i}집반` : '반집') : `${i}집`; };
+const colorKo = c => (c === 'B' ? '흑' : '백');
+
+function setupWidgets() {  // 첫 상태를 받은 뒤 1회 — 선택지 채우기
+  const tm = document.getElementById('tMain');
+  for (const m of [0, 1, 5, 10, 20, 30, 60]) tm.add(new Option(`기본 ${m}분`, m));
+  for (const b of [10, 20, 30, 40, 60]) document.getElementById('tByo').add(new Option(`초읽기 ${b}초`, b));
+  for (const n of [1, 3, 5]) document.getElementById('tPer').add(new Option(`${n}회`, n));
+  const hs = document.getElementById('handicap');
+  for (const h of S.handicaps) if (h) hs.add(new Option(`${h}점`, h));
+  for (const id of ['level', 'dLevel']) {
+    const lv = document.getElementById(id);
+    lv.add(new Option('KataGo 최강', 'strong'));
+    for (const r of S.ranks) lv.add(new Option(`사람처럼 두는 KataGo — ${r.label}`, r.v));
+  }
+  const pk = document.getElementById('pack');
+  pk.add(new Option('기본 (바둑돌 녹음 B)', 'builtin'));
+  for (const n in S.packs || {}) pk.add(new Option(`${n}${S.packs[n].note.includes('내부') ? ' (내부 실험 — 출시 전 교체)' : ''}`, n));
+  pk.value = S.packs && S.packs[packName] ? packName : 'builtin';
+  pk.onchange = () => {
+    packName = pk.value;
+    try { localStorage.setItem('goBoardPack', packName); } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
+    buildSounds(S); setTimeout(() => moveSound(0), 300);
+  };
+  const sk = document.getElementById('skin');
+  sk.add(new Option('기본 (MONK)', 'builtin'));
+  for (const n in S.skins || {}) sk.add(new Option(`${n}${S.skins[n].note.includes('내부') ? ' (내부 실험 — 출시 전 교체)' : ''}`, n));
+  sk.value = S.skins && S.skins[skinName] ? skinName : 'builtin';
+  const save = () => {
+    try {
+      localStorage.setItem('goBoardSkin', skinName);
+      if (skinBoard) localStorage.setItem('goBoardSkinBoard', skinBoard);
+      if (skinStones) localStorage.setItem('goBoardSkinStones', skinStones);
+    } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
+  };
+  const fillSub = () => {
+    const pkS = S.skins && S.skins[skinName], sb = document.getElementById('skinBoard'), ss = document.getElementById('skinStones');
+    sb.innerHTML = ''; ss.innerHTML = '';
+    sb.hidden = ss.hidden = !pkS;
+    if (!pkS) return;
+    for (const b of pkS.boards) sb.add(new Option(`판 ${b.replace(/\.\w+$/, '')}`, b));
+    for (const t of pkS.stones) ss.add(new Option(`돌 ${t.replace(/\.\w+$/, '')}`, t));
+    sb.value = pkS.boards.includes(skinBoard) ? skinBoard : pkS.spec.board;
+    ss.value = pkS.stones.includes(skinStones) ? skinStones : pkS.spec.stones;
+  };
+  fillSub();
+  sk.onchange = () => { skinName = sk.value; skinBoard = skinStones = null; fillSub(); save(); render(); };
+  document.getElementById('skinBoard').onchange = e => { skinBoard = e.target.value; save(); render(); };
+  document.getElementById('skinStones').onchange = e => { skinStones = e.target.value; save(); render(); };
+}
+
 function render() {
   drawBase();
   const g = S.board;
@@ -197,96 +332,51 @@ function render() {
     const [x, y] = S.last, c = g[y][x];
     el('circle', { cx: P(x), cy: P(y), r: STEP * .2, fill: 'none', stroke: c === 'B' ? '#fff' : '#c0392b', 'stroke-width': 1.8 });
   }
-  const me = S.user === 'B' ? '흑' : '백';
+  const hintLive = hint && hint.moveNo === S.moveNo && !S.result && !S.scoring;
+  if (hintLive) hint.cands.forEach((c, i) => {  // 추천수 — 파란 번호
+    if (!c.xy) return;
+    const [x, y] = c.xy;
+    el('circle', { cx: P(x), cy: P(y), r: STEP * .34, fill: '#2a6fdb', opacity: .92 });
+    el('text', { x: P(x), y: P(y) + 3.6, 'font-size': 10, 'text-anchor': 'middle', fill: '#fff', 'font-weight': 700 }).textContent = i + 1;
+  });
+
+  // 상단 상태줄 — 타이젬 표기: '대국중 - 호선 : 흑 6집반 공제 ( N수 진행중 )'
+  const ha = S.handicap ? `${S.handicap}점 접바둑` : '호선';
+  const st = S.result ? `대국종료(${S.resultKo})` : S.scoring ? '계가중' : '대국중';
+  document.getElementById('status').innerHTML =
+    `<b>${st}</b> - ${ha} : 흑 ${komiText(S.komi)} 공제 ( ${S.moveNo}수${S.result ? '' : ' 진행중'} )`;
+  const s = S.score;
+  document.getElementById('statusShape').textContent = s === null || s === undefined ? '' :
+    `형세 ${Math.abs(s) < 0.5 ? '거의 반반' : `${s > 0 ? '흑' : '백'} ${Math.abs(s).toFixed(1)}집 우세`}`;
+  const me = colorKo(S.user);
   let turn;
-  if (S.result) turn = `대국 종료 — ${S.resultKo}`;
-  else if (S.scoring) turn = '계가 중';
+  if (S.result) turn = '';
+  else if (S.scoring) turn = '사석을 확인하세요';
   else if (busy) turn = 'KataGo 생각 중';
   else if (S.toMove === S.user) turn = `작가님(${me}) 차례`;
   else turn = 'KataGo 차례';
   const turnEl = document.getElementById('turn');
   turnEl.textContent = turn;
   turnEl.classList.toggle('dots', busy && !S.result);
+  document.getElementById('bNew').classList.toggle('hl', !!S.result);
   let msg = S.error || S.message || '';
-  if (!S.error && S.lastPass && !S.result) msg = `${S.lastColor === 'B' ? '흑' : '백'}이 패스했습니다. ` + msg;
+  if (!S.error && S.lastPass && !S.result) msg = `${colorKo(S.lastColor)}이 한수쉼(패스)했습니다. ` + msg;
   if (!S.strongOk) msg = (S.strongError || '엔진 기동 실패') + ' ' + msg;
   document.getElementById('msg').textContent = msg;
-  document.getElementById('capB').textContent = S.captures.B;
-  document.getElementById('capW').textContent = S.captures.W;
-  const ha = S.handicap ? `${S.handicap}점 접바둑` : '호선';
-  document.getElementById('moveNo').textContent = `${S.moveNo}수 · ${ha} · 덤 ${S.komi} · 상대 ${S.levelLabel}`;
-  const tm = document.getElementById('tMain');
-  if (!tm.options.length) {
-    for (const m of [0, 1, 5, 10, 20, 30, 60]) tm.add(new Option(`기본 ${m}분`, m));
-    for (const b of [10, 20, 30, 40, 60]) document.getElementById('tByo').add(new Option(`초읽기 ${b}초`, b));
-    for (const n of [1, 3, 5]) document.getElementById('tPer').add(new Option(`${n}회`, n));
-    const t = S.time || { main: 0, byo: 20, periods: 3 };
-    tm.value = t.main; document.getElementById('tByo').value = t.byo; document.getElementById('tPer').value = t.periods;
-    document.getElementById('tUnl').checked = !S.time;
-    const pk = document.getElementById('pack');
-    pk.add(new Option('기본 (바둑돌 녹음 B)', 'builtin'));
-    for (const n in S.packs || {}) pk.add(new Option(`${n}${S.packs[n].note.includes('내부') ? ' (내부 실험 — 출시 전 교체)' : ''}`, n));
-    pk.value = S.packs && S.packs[packName] ? packName : 'builtin';
-    const sk = document.getElementById('skin');
-    sk.add(new Option('기본 (MONK)', 'builtin'));
-    for (const n in S.skins || {}) sk.add(new Option(`${n}${S.skins[n].note.includes('내부') ? ' (내부 실험 — 출시 전 교체)' : ''}`, n));
-    sk.value = S.skins && S.skins[skinName] ? skinName : 'builtin';
-    const save = () => {
-      try {
-        localStorage.setItem('goBoardSkin', skinName);
-        if (skinBoard) localStorage.setItem('goBoardSkinBoard', skinBoard);
-        if (skinStones) localStorage.setItem('goBoardSkinStones', skinStones);
-      } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
-    };
-    const fillSub = () => {
-      const pkS = S.skins && S.skins[skinName], sb = document.getElementById('skinBoard'), ss = document.getElementById('skinStones');
-      sb.innerHTML = ''; ss.innerHTML = '';
-      sb.hidden = ss.hidden = !pkS;
-      if (!pkS) return;
-      for (const b of pkS.boards) sb.add(new Option(`판 ${b.replace(/\.\w+$/, '')}`, b));
-      for (const t of pkS.stones) ss.add(new Option(`돌 ${t.replace(/\.\w+$/, '')}`, t));
-      sb.value = pkS.boards.includes(skinBoard) ? skinBoard : pkS.spec.board;
-      ss.value = pkS.stones.includes(skinStones) ? skinStones : pkS.spec.stones;
-    };
-    fillSub();
-    sk.onchange = () => { skinName = sk.value; skinBoard = skinStones = null; fillSub(); save(); render(); };
-    document.getElementById('skinBoard').onchange = e => { skinBoard = e.target.value; save(); render(); };
-    document.getElementById('skinStones').onchange = e => { skinStones = e.target.value; save(); render(); };
-    pk.onchange = () => {
-      packName = pk.value;
-      try { localStorage.setItem('goBoardPack', packName); } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
-      buildSounds(S); setTimeout(() => moveSound(0), 300);
-    };
+
+  // 대국자 카드 — 따낸 돌 배지·이름·급수(시계는 renderClocks)
+  for (const col of ['B', 'W']) {
+    const mine = col === S.user;
+    document.getElementById('name' + col).textContent = mine ? '작가님' : 'KataGo';
+    document.getElementById('rank' + col).textContent = mine ? '' :
+      (S.level === 'strong' ? '최강' : `${(S.ranks.find(r => r.v === S.level) || {}).label || S.level} · 사람처럼 두는 상대`);
+    document.getElementById('cap' + col).textContent = S.captures[col];
   }
-  const hs = document.getElementById('handicap');
-  if (!hs.options.length) {
-    for (const h of S.handicaps) hs.add(new Option(h ? `${h}점 (작가님 흑, 덤 0.5, 백 먼저)` : '호선 (덤 6.5)', h));
-    hs.value = S.handicap;
-  }
-  if (S.score !== null && S.score !== undefined) {
-    const s = S.score, pct = Math.max(3, Math.min(97, 50 + s * 2.5));
-    document.getElementById('barB').style.width = pct + '%';
-    const lead = Math.abs(s) < 0.5 ? '거의 반반' : `${s > 0 ? '흑' : '백'} ${Math.abs(s).toFixed(1)}집 우세`;
-    document.getElementById('scoreTxt').textContent = `형세: ${lead}`;
-  } else {
-    document.getElementById('barB').style.width = '50%';
-    document.getElementById('scoreTxt').textContent = '형세 —';
-  }
-  const lv = document.getElementById('level');
-  if (!lv.options.length) {
-    lv.add(new Option('KataGo 최강', 'strong'));
-    for (const r of S.ranks) lv.add(new Option(`사람처럼 두는 KataGo — ${r.label}`, r.v));
-  }
-  for (const o of lv.options) if (o.value !== 'strong') o.disabled = !S.humanOk;
-  lv.value = S.level;
-  document.getElementById('levelWhy').textContent = S.humanOk ? '' : `급수 상대 비활성: ${S.humanReason}`;
-  const rb = document.getElementById('bReview');
-  rb.disabled = !S.review.ok;
-  rb.classList.toggle('hl', !!S.result && S.review.ok);  // 종국 후 리뷰로 시선 유도
-  document.getElementById('bUndo').disabled = !!S.result;
-  document.getElementById('bScore').disabled = !!S.result || !!S.scoring || !S.moveNo;
-  const panel = document.getElementById('scorePanel');
-  panel.hidden = !sc;
+
+  // 탭
+  for (const b of document.querySelectorAll('#tabs button')) b.classList.toggle('on', b.dataset.tab === tab);
+  for (const t of ['ai', 'shape', 'hint', 'review', 'more']) document.getElementById('tab-' + t).hidden = t !== tab;
+  document.getElementById('secScore').hidden = !sc;
   if (sc) {
     document.getElementById('scoreSum').textContent = `흑 ${sc.black}집 · 백 ${sc.white}집 → ${sc.resultKo}`;
     document.getElementById('scoreDetail').textContent =
@@ -294,8 +384,66 @@ function render() {
       ` (한국 규칙 집 계산) · KataGo 판정: ${sc.kataKo}` +
       (sc.result !== sc.kata ? ' — 결과가 다르면 사석 표시를 확인해 주세요(돌을 누르면 바뀝니다)' : '');
   }
-  document.getElementById('bResign').disabled = !!S.result || !S.moveNo;
+
+  // 형세분석 — 막대 + 흐름 그래프
+  if (s !== null && s !== undefined) {
+    document.getElementById('barB').style.width = Math.max(3, Math.min(97, 50 + s * 2.5)) + '%';
+    document.getElementById('scoreTxt').textContent = `형세: ${Math.abs(s) < 0.5 ? '거의 반반' : `${s > 0 ? '흑' : '백'} ${Math.abs(s).toFixed(1)}집 우세`}`;
+  } else {
+    document.getElementById('barB').style.width = '50%';
+    document.getElementById('scoreTxt').textContent = '형세 —';
+  }
+  const sp = document.getElementById('spark');
+  sp.innerHTML = '';
+  const pts = S.scores || [];
+  const lim = Math.max(10, ...pts.map(p => Math.abs(p[1])));
+  const sx = i => 6 + (i / Math.max(1, pts.length - 1)) * 288, sy = v => 40 - (v / lim) * 34;
+  const line = (x1, y1, x2, y2, c, w) => { const l = document.createElementNS(NS, 'line'); for (const [k, v] of Object.entries({ x1, y1, x2, y2, stroke: c, 'stroke-width': w })) l.setAttribute(k, v); sp.appendChild(l); };
+  line(0, 40, 300, 40, '#c9ced6', 1);
+  for (let i = 1; i < pts.length; i++) line(sx(i - 1), sy(pts[i - 1][1]), sx(i), sy(pts[i][1]), '#24272c', 2);
+  document.getElementById('judgeTxt').textContent = judge ? `AI 판정(${judge.moveNo}수 시점): ${judge.resultKo}` : '';
+
+  // 추천수 목록 — 승률·점수는 지금 둘 쪽 기준
+  const hl = document.getElementById('hintList');
+  if (hintLive) {
+    const sgn = hint.color === 'B' ? 1 : -1;
+    hl.innerHTML = hint.cands.map((c, i) =>
+      `<div class="cand"><span class="n">${i + 1}</span><b>${c.move}</b><span>승률 ${(100 * (hint.color === 'B' ? c.winrate : 1 - c.winrate)).toFixed(1)}%</span>` +
+      `<span>${sgn * c.score >= 0 ? '+' : ''}${(sgn * c.score).toFixed(1)}집</span><span class="small">탐색 ${c.visits}</span></div>`).join('') +
+      `<div class="small">${colorKo(hint.color)} 차례 기준 · ${hint.moveNo}수 시점</div>`;
+  } else {
+    hl.innerHTML = hint ? '<div class="small">수가 바뀌었습니다 — 다시 눌러 보세요.</div>' : '';
+  }
+
+  // 대국검토 — 판 정보
+  const t = S.time;
+  const fc = S.finalCount;
+  document.getElementById('gameInfo').innerHTML =
+    `<div>${S.moveNo}수 · ${ha} · 덤 ${S.komi} · 작가님 ${me} · 상대 ${S.levelLabel}</div>` +
+    `<div class="small">시간 ${t ? `${t.main ? t.main + '분 + ' : ''}${t.byo}초 ${t.periods}회` : '무제한'}</div>` +
+    (S.result ? `<div><b>결과: ${S.resultKo}</b>${fc ? ` — 흑 ${fc.black} · 백 ${fc.white}(KataGo ${fc.kataKo})` : ''}</div>` : '') +
+    (reviewJob ? `<div><a href="/review/${reviewJob}" target="_blank">이 판 해설 열기</a></div>` : '') +
+    '<div class="small">해설은 \'AI분석\' 탭에서 만듭니다.</div>';
+  document.getElementById('sgf').textContent = S.sgf ? `기보 자동 저장: ${S.sgf}` : '';
+
+  // ⋯ 설정
+  const lv = document.getElementById('level');
+  for (const o of lv.options) if (o.value !== 'strong') o.disabled = !S.humanOk;
+  lv.value = S.level;
+  document.getElementById('levelWhy').textContent = S.humanOk ? '' : `급수 상대 비활성: ${S.humanReason}`;
+
+  // 버튼 줄
+  document.getElementById('bUndo').disabled = !!S.result;
   document.getElementById('bPass').disabled = !!S.result || !!S.scoring;
+  document.getElementById('bScore').disabled = !!S.result || !!S.scoring || !S.moveNo;
+  document.getElementById('bJudge').disabled = !S.moveNo;
+  document.getElementById('bResign').disabled = !!S.result || !S.moveNo;
+
+  // AI분석 — 정성 해설
+  const rb = document.getElementById('bReview');
+  rb.disabled = !S.review.ok;
+  rb.classList.toggle('hl', !!S.result && S.review.ok);  // 종국 후 해설로 시선 유도
+  document.querySelector('#tabs [data-tab="ai"]').classList.toggle('hl', !!S.result && S.review.ok && tab !== 'ai');
   document.getElementById('reviewWhy').textContent = S.review.ok ? '' : S.review.reason;
   const wf = document.getElementById('wrFilter');
   wf.disabled = !S.review.filterOk;
@@ -307,7 +455,7 @@ function render() {
   if (S.review.wrRange) document.getElementById('wrRange').textContent =
     S.review.wrRange.split(',').map(v => Math.round(v * 100)).join('~') + '%';
   if (S.testMode) document.title = 'MONK 바둑판 (테스트)';
-  document.getElementById('sgf').textContent = S.sgf ? `기보 자동 저장: ${S.sgf}` : '';
+  renderClocks();
 }
 
 // ---- 소리: 팩 3종 — ① 기본 = 레포 실녹음(Freesound CC0, sounds/SOUNDS.md, 작가님 선택 B)
@@ -484,23 +632,78 @@ function tapAt(x, y) {
   call('/api/play', { x, y });
 }
 svg.addEventListener('pointerdown', ev => { const [x, y] = boardXY(ev); tapAt(x, y); });
-document.getElementById('bNew').onclick = async () => {
-  filterDefaultFor = null;
+document.getElementById('tabs').onclick = e => {
+  const b = e.target.closest('button');
+  if (b) { tab = b.dataset.tab; render(); }
+};
+
+// ---- 대국 신청 창(타이젬 형식): 상대 수준·대국방법·치수·덤·흑백·시간을 한 창에서
+const dlg = document.getElementById('newDlg');
+function dlgSync() {
+  const handi = document.querySelector('input[name="dWay"]:checked').value === 'handi';
+  document.getElementById('handicap').disabled = !handi;
+  document.getElementById('dColor').disabled = handi;
+  if (handi) document.getElementById('dColor').value = 'B';
+  document.getElementById('dKomi').textContent = handi ? '덤: 흑 반집 공제 (접바둑 — 작가님 흑, 백이 먼저 둠)' : '덤: 흑 6집반 공제';
+  const unl = document.getElementById('tUnl').checked;
+  for (const id of ['tMain', 'tByo', 'tPer']) document.getElementById(id).disabled = unl;
+  const lv = document.getElementById('dLevel');
+  document.getElementById('dlgTitle').textContent = `작가님 VS ${lv.options[lv.selectedIndex].text}`;
+}
+document.getElementById('bNew').onclick = () => {
+  if (busy) { notice('상대가 생각 중입니다'); return; }
+  document.getElementById('dLevel').value = S.level;
+  for (const o of document.getElementById('dLevel').options) if (o.value !== 'strong') o.disabled = !S.humanOk;
+  document.querySelector(`input[name="dWay"][value="${S.handicap ? 'handi' : 'even'}"]`).checked = true;
+  document.getElementById('handicap').value = S.handicap || 2;
+  document.getElementById('dColor').value = S.user;
+  const t = S.time || { main: 0, byo: 20, periods: 3 };
+  document.getElementById('tMain').value = t.main; document.getElementById('tByo').value = t.byo;
+  document.getElementById('tPer').value = t.periods; document.getElementById('tUnl').checked = !S.time;
+  dlgSync();
+  dlg.showModal();
+};
+dlg.addEventListener('change', dlgSync);
+document.getElementById('dCancel').onclick = () => dlg.close();
+document.getElementById('dOk').onclick = async () => {
+  dlg.close();
+  filterDefaultFor = null; hint = null; judge = null; reviewJob = null;
+  document.getElementById('reviewFrame').hidden = true; document.getElementById('reviewOpen').hidden = true;
+  const level = document.getElementById('dLevel').value;
+  const handi = document.querySelector('input[name="dWay"]:checked').value === 'handi' ? Number(document.getElementById('handicap').value) : 0;
   const time = document.getElementById('tUnl').checked ? { unlimited: true } :
     { main: Number(document.getElementById('tMain').value), byo: Number(document.getElementById('tByo').value),
       periods: Number(document.getElementById('tPer').value) };
-  await call('/api/new', { handicap: Number(document.getElementById('handicap').value), time });
+  if (level !== S.level) await call('/api/level', { level });  // 새 판 첫 수를 새 상대가 두도록 먼저 바꾼다
+  await call('/api/new', { handicap: handi, time, color: handi ? 'B' : document.getElementById('dColor').value });
   initClocks();
   voice(SND && SND.start);
 };
+
 document.getElementById('bUndo').onclick = () => call('/api/undo');
 document.getElementById('bSwap').onclick = () => call('/api/swap');
+document.getElementById('bPass').onclick = () => call('/api/play', { pass: true });
+document.getElementById('bScore').onclick = () => { voice(SND && SND.counting); call('/api/score'); };
+document.getElementById('bScoreOk').onclick = () => call('/api/score/confirm');
+document.getElementById('bScoreCancel').onclick = () => call('/api/score/cancel');
+document.getElementById('bJudge').onclick = async () => {
+  await call('/api/judge');
+  if (S.judge) { judge = S.judge; notice(`AI 판정(${judge.moveNo}수 시점): ${judge.resultKo}`); render(); }
+};
+document.getElementById('bHint').onclick = async () => {
+  await call('/api/hint');
+  if (S.hint) { hint = S.hint; render(); }
+};
 document.getElementById('bReview').onclick = async () => {
   if (busy) { notice('상대가 생각 중입니다'); return; }
-  const tab = window.open('', '_blank');  // 클릭 순간에 열어야 팝업 차단을 피한다
   await call('/api/review', { wrFilter: document.getElementById('wrFilter').checked });
-  if (S.reviewJob && tab) tab.location = `/review/${S.reviewJob}`;
-  else if (tab) tab.close();
+  if (S.reviewJob) {
+    reviewJob = S.reviewJob;
+    const f = document.getElementById('reviewFrame'), a = document.getElementById('reviewOpen');
+    f.src = `/review/${reviewJob}`; f.hidden = false;
+    a.href = `/review/${reviewJob}`; a.hidden = false;
+    render();
+  }
 };
 document.getElementById('bResign').onclick = () => {
   if (busy) { notice('상대가 생각 중입니다'); return; }
@@ -513,10 +716,6 @@ soundBox.onchange = () => {
   try { localStorage.setItem('goBoardSound', soundOn ? 'on' : 'off'); } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
   if (soundOn) moveSound(0);
 };
-document.getElementById('bPass').onclick = () => call('/api/play', { pass: true });
-document.getElementById('bScore').onclick = () => { voice(SND && SND.counting); call('/api/score'); };
-document.getElementById('bScoreOk').onclick = () => call('/api/score/confirm');
-document.getElementById('bScoreCancel').onclick = () => call('/api/score/cancel');
 document.getElementById('level').onchange = e => call('/api/level', { level: e.target.value });
 
 // ---- 시계(초읽기): 화면이 재고 서버에는 시간패만 알린다. 엔진 시계는 표시만(초읽기 마지막 1초에서 멈춤 — 시간패 없음)
@@ -581,19 +780,17 @@ function fmt(sec) {
 }
 
 function renderClocks() {
-  const box = document.getElementById('clocks');
-  if (!box) return;
-  box.hidden = !clocks;
-  if (!clocks || !S) return;
+  if (!S) return;
+  const t = S.time;
+  document.getElementById('timeMode').textContent = t ? `${t.main ? t.main + '분 + ' : ''}${t.byo}초 ${t.periods}회` : '무제한';
   const eng = S.user === 'B' ? 'W' : 'B';
   const running = S.result || S.scoring ? null : (busy || S.toMove !== S.user ? eng : S.user);
   for (const col of ['B', 'W']) {
-    const c = clocks[col], el = document.getElementById('clock' + col);
-    const who = col === S.user ? '작가님' : 'KataGo';
-    const t = c.inByo ? `초읽기 ${fmt(c.period)} · ${c.left}회` : `${fmt(c.main)} + ${c.byo}초 ${c.left}회`;
-    el.textContent = `${col === 'B' ? '흑' : '백'} ${who} — ${t}`;
-    el.classList.toggle('run', running === col);
-    el.classList.toggle('urgent', running === col && c.inByo && c.period <= 10);
+    const c = clocks && clocks[col], card = document.getElementById('card' + col);
+    document.getElementById('time' + col).textContent = !c ? '무제한' :
+      c.inByo ? `초읽기 ${fmt(c.period)} · ${c.left}회` : `${fmt(c.main)} · ${c.byo}초 ${c.left}회`;
+    card.classList.toggle('run', running === col);
+    card.classList.toggle('urgent', !!c && running === col && c.inByo && c.period <= 10);
   }
 }
 
@@ -625,6 +822,12 @@ async function selftest() {
   for (let t = 0; t < 50; t++) tickClock(c, 0.1, e => ev.push(e));
   out.push(`clock_events=${ev.join(',')} flagged=${c.flagged}`);
   out.push(`ctx=${actx.state} baseLatency=${(actx.baseLatency * 1000).toFixed(1)}ms outputLatency=${((actx.outputLatency || 0) * 1000).toFixed(1)}ms`);
+  if (!S.result && S.moveNo) {  // 추천수 탭: 버튼 → 목록 3줄 + 판 위 파란 번호
+    tab = 'hint';
+    await document.getElementById('bHint').onclick();
+    const marks = [...svg.querySelectorAll('text')].filter(t => /^[123]$/.test(t.textContent) && t.getAttribute('fill') === '#fff').length;
+    out.push(`hint_rows=${document.querySelectorAll('#hintList .cand').length} hint_marks=${marks}`);
+  }
   const d = document.createElement('div'); d.id = 'selftest'; d.textContent = 'SELFTEST ' + out.join(' | ');
   document.body.appendChild(d);
 }
@@ -632,10 +835,12 @@ async function selftest() {
 fetch('/api/state').then(r => r.json()).then(s => {
   const qs = new URLSearchParams(location.search);
   if (s.testMode && qs.get('skin')) { skinName = qs.get('skin'); skinBoard = qs.get('board'); skinStones = qs.get('stones'); }
-  S = s; buildSounds(S); initClocks(); render();
+  if (s.testMode && qs.get('tab')) tab = qs.get('tab');  // 캡처용
+  if (s.testMode && qs.get('dlg')) setTimeout(() => document.getElementById('bNew').click(), 0);
+  S = s; buildSounds(S); setupWidgets(); initClocks(); render();
   if (S.testMode && location.search.includes('selftest=1')) selftest();
 })
-  .catch(() => { document.getElementById('turn').textContent = '서버 연결 실패'; });
+  .catch(() => { document.getElementById('turn').textContent = '서버 연결 실패 — run.sh가 켜져 있는지 확인해 주세요'; });
 </script>
 </body>
 </html>
