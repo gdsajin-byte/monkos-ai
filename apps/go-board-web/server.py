@@ -36,6 +36,10 @@ WR_RANGE = "0.03,0.97"  # 작가님 결정 전 임시 기본값
 
 SIZE = 19
 KOMI = 6.5
+# 외부 사운드팩(레포 밖) — ~/.monkos/go-board-sounds/<팩>/*.mp3|wav. 내부 실험 팩은 출시 전 교체(원장 191)
+PACKS_DIR = Path.home() / ".monkos" / "go-board-sounds"
+# 시간 설정 기본값 — 타이젬 표기 '20초 3회'(기본시간 0분)
+DEFAULT_TIME = {"main": 0, "byo": 20, "periods": 3}
 OWN_THRESHOLD = 0.5  # 계가: 열린 빈 점을 집으로 셀 소유권 기준
 HANDICAP_KOMI = 0.5  # 한국 규칙 관행 — 접바둑은 덤 0.5
 HANDICAPS = [0] + list(range(2, 10))  # 0 = 호선
@@ -235,9 +239,12 @@ class Game:
         self.user = "B"
         self.level = "strong"  # 'strong' | 랭크 문자열('5k' 등)
         self.handicap = 0
+        self.time = dict(DEFAULT_TIME)  # None = 무제한
         self.new()
 
-    def new(self, handicap=None):
+    def new(self, handicap=None, time_ctl="keep"):
+        if time_ctl != "keep":
+            self.time = parse_time(time_ctl)
         if handicap is not None:
             if handicap not in HANDICAPS:
                 raise RuntimeError("치수는 호선 또는 2~9점입니다.")
@@ -419,6 +426,17 @@ class Game:
             self.engine_move()
         self.save()
 
+    def timeout(self, color):
+        """작가님 시계가 다 됨 → 시간패. 엔진은 시간패 없음(시계 표시만, 화면에서 상한)."""
+        if self.result or not self.time:
+            raise RuntimeError("시간패를 적용할 수 없습니다.")
+        if color != self.user:
+            raise RuntimeError("KataGo는 시간패가 없습니다.")
+        self.scoring = None
+        self.result = f"{'W' if color == 'B' else 'B'}+T"
+        self.message = "시간이 다 됐습니다 — 시간패."
+        self.save()
+
     def resign(self):
         if self.result:
             raise RuntimeError("이미 끝난 대국입니다.")
@@ -483,6 +501,7 @@ class Game:
         ab = "".join(f"[{chr(97 + x)}{chr(97 + y)}]" for x, y in map(to_xy, self.setup))
         head = (f"(;GM[1]FF[4]CA[UTF-8]SZ[{SIZE}]KM[{self.komi}]RU[Korean]"
                 + (f"HA[{self.handicap}]AB{ab}" if self.handicap else "")
+                + (f"TM[{self.time['main'] * 60}]OT[{self.time['periods']}x{self.time['byo']} byo-yomi]" if self.time else "")
                 + f"DT[{self.started:%Y-%m-%d}]PB[{pb}]PW[{pw}]"
                 f"AP[MONK go-board-web]" + (f"RE[{self.result}]" if self.result else ""))
         self.sgf_path.write_text(head + "".join(nodes) + ")\n", encoding="utf-8")
@@ -512,6 +531,8 @@ class Game:
             "scoring": self.count() if self.scoring else None,
             "finalCount": getattr(self, "final_count", None) if self.result else None,
             "sounds": custom_sounds(),
+            "packs": sound_packs(),
+            "time": self.time,
             "testMode": TEST_MODE,
         }
 
@@ -648,6 +669,30 @@ class Reviews:
         return page.encode("utf-8")
 
 
+def parse_time(t):
+    """{'unlimited': True} → None, 아니면 {'main': 분, 'byo': 초, 'periods': 회} 범위 검사."""
+    if not t or t.get("unlimited"):
+        return None
+    main, byo, periods = int(t.get("main", 0)), int(t.get("byo", 20)), int(t.get("periods", 3))
+    if not (0 <= main <= 60 and 5 <= byo <= 120 and 1 <= periods <= 10):
+        raise RuntimeError("시간 설정 범위: 기본시간 0~60분, 초읽기 5~120초, 1~10회")
+    return {"main": main, "byo": byo, "periods": periods}
+
+
+def sound_packs():
+    """레포 밖 사운드팩 목록 — {팩 이름: [파일 이름…]}. README.txt 첫 줄은 표식으로 함께 준다."""
+    out = {}
+    if PACKS_DIR.exists():
+        for d in sorted(PACKS_DIR.iterdir()):
+            if d.is_dir() and re.fullmatch(r"[A-Za-z0-9_-]+", d.name):
+                files = sorted(f.name for f in d.iterdir()
+                               if f.suffix in (".mp3", ".wav") and re.fullmatch(r"[A-Za-z0-9_-]+\.(mp3|wav)", f.name))
+                note = (d / "README.txt").read_text(encoding="utf-8", errors="ignore").splitlines()[0] \
+                    if (d / "README.txt").exists() else ""
+                out[d.name] = {"files": files, "note": note}
+    return out
+
+
 def custom_sounds():
     """sounds/custom/ 에 넣은 작가님 녹음 — stone*.wav = 착수, capture*.wav = 따냄. 있으면 기본음 대신 쓴다."""
     d = HERE / "sounds" / "custom"
@@ -672,7 +717,11 @@ def result_ko(r):
     if not m:
         return r
     who = "흑" if m.group(1) == "B" else "백"
-    return f"{who} 불계승" if m.group(2) == "R" else f"{who} {m.group(2)}집 승"
+    if m.group(2) == "R":
+        return f"{who} 불계승"
+    if m.group(2) == "T":
+        return f"{who} 시간승"
+    return f"{who} {m.group(2)}집 승"
 
 
 # ---------------------------------------------------------------- HTTP
@@ -703,6 +752,13 @@ class Handler(BaseHTTPRequestHandler):
             f = HERE / self.path.lstrip("/")
             if f.exists():
                 self._send(200, f.read_bytes(), "audio/wav")
+            else:
+                self._send(404, '{"error":"없음"}')
+        elif re.fullmatch(r"/pack/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+\.(mp3|wav)", self.path):
+            _, _, pack, name = self.path.split("/")
+            f = PACKS_DIR / pack / name
+            if f.exists():
+                self._send(200, f.read_bytes(), "audio/mpeg" if name.endswith(".mp3") else "audio/wav")
             else:
                 self._send(404, '{"error":"없음"}')
         elif self.path.startswith("/review/"):
@@ -738,7 +794,7 @@ class Handler(BaseHTTPRequestHandler):
                     else:
                         GAME.play(to_gtp(int(body["x"]), int(body["y"])))
                 elif p == "/api/new":
-                    GAME.new(int(body["handicap"]) if "handicap" in body else None)
+                    GAME.new(int(body["handicap"]) if "handicap" in body else None, body.get("time", "keep"))
                     GAME._sync()
                     if GAME.to_move != GAME.user:
                         GAME.engine_move()
@@ -751,6 +807,8 @@ class Handler(BaseHTTPRequestHandler):
                     GAME.confirm_score()
                 elif p == "/api/score/cancel":
                     GAME.cancel_score()
+                elif p == "/api/timeout":
+                    GAME.timeout(str(body.get("color")))
                 elif p == "/api/resign":
                     GAME.resign()
                 elif p == "/api/undo":
