@@ -97,12 +97,12 @@ h2{font-size:13px;color:var(--mut);margin:0 0 8px;font-weight:600}
 table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}td{padding:4px 2px;border-top:1px solid var(--line)}
 .tag{display:inline-block;width:20px;height:20px;border-radius:50%;color:#fff;text-align:center;font-weight:700;font-size:12px;line-height:20px}
 .err{color:var(--bad);font-weight:600}.mut{color:var(--mut)}pre{margin:0;font-size:11px;white-space:pre-wrap;color:var(--mut)}
-svg{display:block;width:100%;height:auto}#board{max-height:64vh;margin:auto}
+svg{display:block;width:100%;height:auto}#board{max-height:64vh;margin:auto}.bar{display:flex;height:26px;border-radius:6px;overflow:hidden;border:1px solid #888;margin-top:12px;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}.bar div{display:flex;align-items:center;padding:0 8px;transition:width .6s;white-space:nowrap}#barb{background:#111;color:#fff}#barw{background:#fafafa;color:#111;justify-content:flex-end;flex:1}
 </style></head><body><div class="wrap">
 <div><div class="card"><div class="row" style="justify-content:space-between"><h2 id="title">대국 라이브</h2><span class="mut" id="mv"></span></div>
 <svg id="board" viewBox="0 0 400 400"></svg></div>
 <div class="card" style="margin-top:12px"><h2>형세 흐름 — 흑 승률(실선)·흑 기준 집 차이(점선)</h2><svg id="graph" viewBox="0 0 600 160"></svg></div></div>
-<div><div class="card"><h2>현재 형세</h2><div class="row"><div><div class="mut">흑 승률</div><div class="big" id="wr">–</div></div><div><div class="mut">집 차이</div><div class="big" id="sc">–</div></div></div><div id="err" class="err"></div></div>
+<div><div class="card"><h2>현재 형세</h2><div class="row"><div><div class="mut">흑 승률</div><div class="big" id="wr">–</div></div><div><div class="mut">집 차이</div><div class="big" id="sc">–</div></div></div><div class="bar"><div id="barb" style="width:50%">흑</div><div id="barw">백</div></div><div id="err" class="err"></div></div>
 <div class="card" style="margin-top:12px"><h2>추천수 (다음 차례 <span id="turn"></span>)</h2><table id="top"></table></div>
 <div class="card" style="margin-top:12px"><h2>브리지 로그</h2><pre id="tail"></pre></div></div></div>
 <script>
@@ -135,7 +135,7 @@ async function tick(){try{const s=await (await fetch("/api/state")).json();const
  document.getElementById("mv").textContent=`${n}수`;document.getElementById("err").textContent=s.error||"";
  board(s.moves,s.results);graph(n,s.results);
  const ks=Object.keys(s.results).map(Number).filter(k=>k<=n).sort((a,b)=>b-a);const r=s.results[String(n)]||s.results[String(ks[0])];
- if(r){document.getElementById("wr").textContent=(r.winrate*100).toFixed(1)+"%";const d=r.scoreLead;document.getElementById("sc").textContent=(d>=0?"흑 +":"백 +")+Math.abs(d).toFixed(1)}
+ if(r){document.getElementById("wr").textContent=(r.winrate*100).toFixed(1)+"%";const d=r.scoreLead;document.getElementById("sc").textContent=(d>=0?"흑 +":"백 +")+Math.abs(d).toFixed(1);const b=r.winrate*100;const bb=document.getElementById("barb");bb.style.width=Math.max(4,Math.min(96,b))+"%";bb.textContent="흑 "+b.toFixed(1)+"%";document.getElementById("barw").textContent="백 "+(100-b).toFixed(1)+"%"}
  document.getElementById("turn").textContent=n%2===0?"흑":"백";
  const cur=s.results[String(n)];document.getElementById("top").innerHTML=cur?cur.top.map((t,i)=>`<tr><td><span class="tag" style="background:${C[i]}">${i<3?"ABC"[i]:i+1}</span></td><td><b>${t.move}</b></td><td>${(t.winrate*100).toFixed(1)}%</td><td>${t.scoreLead>=0?"흑+":"백+"}${Math.abs(t.scoreLead).toFixed(1)}</td><td class="mut">${t.visits}v</td></tr>`).join(""):`<tr><td class="mut">분석 중…</td></tr>`;
  document.getElementById("tail").textContent=s.tail.join("\n")}catch(e){document.getElementById("err").textContent="❌ 서버 응답 없음"}}
