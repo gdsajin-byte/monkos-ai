@@ -705,3 +705,4 @@
 - **[2026-10-23 15:19 KST]** iMac/민아 — `reference_tailnet_node_map.md`를 표 사본에서 **정본 포인터**로 교체(레포 중복 금지). 요지: 디바이스 표 정본은 `devices/README.md`·SECRET_INVENTORY §Tailscale, ch1 4조는 약칭만. 인덱스 1행 갱신.
 | 2026-10-23 16:45 | 추가 | project_go_commentary_llm_vision.md — 바둑 해설 LLM 자산화 구상·인간적 AI 지향 | iMac/쌍아 |
 | 2026-10-23 22:51 | 추가 | project_legal_monitoring_practice.md — 법규 선제 수집·RAG화·개정 감시 절차 | iMac/쌍아 |
+| 2026-10-23 22:53 | 갱신 | feedback_license_warnings_at_launch.md — 기획 단계 규제 경보 선행 금지로 일반화(당일 2차 교정) | iMac/쌍아 |
