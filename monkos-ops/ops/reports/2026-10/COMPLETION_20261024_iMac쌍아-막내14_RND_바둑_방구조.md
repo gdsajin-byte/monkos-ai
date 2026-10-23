@@ -38,10 +38,11 @@ order: monkos-ops/ops/orders/2026-10/ORDER_20261023_iMac쌍아_막내_RND_바둑
 - `apps/go-board-web/README.md` — 단계 ① 절.
 
 ## 커밋
-- 구현 2d048d02 → main 병합·푸시 후 원격 대조는 §원격 대조에 기재.
+- 구현 `7d291570` · 보고 `60a4ae7f` (origin/main 위로 rebase 후 fast-forward 푸시 — 로컬 커밋 2d048d02/027fea4b는 rebase 전 SHA).
+- 원격 대조 05:37: fetch 후 `local 60a4ae7f = origin/main 60a4ae7f`, `merge-base --is-ancestor HEAD origin/main` 통과. 이 보고 갱신 커밋은 그 뒤에 1개 더 붙는다.
 
 ## 반영 대기 — 실사용(8765)
-- 반영 직전 실측 05:36: `curl 127.0.0.1:8765/api/state` → `moveNo 253 · result None`(진행 중) → **kickstart 하지 않음**(지시 규칙 (2)).
+- 반영 직전 실측 05:36·보고 시점 재측정 05:37: `curl 127.0.0.1:8765/api/state` → 두 번 모두 `moveNo 253 · result None`(진행 중) → **kickstart 하지 않음**(지시 규칙 (2)).
 - 대국이 끝난 뒤(결과가 나거나 판이 비었을 때) 다시 확인하고:
   `curl -s 127.0.0.1:8765/api/state` → 진행 중이 아니면 `launchctl kickstart -k gui/$(id -u)/ai.monkos.go-board`
   → 라이브 확인은 go.monkos.ai `/` 대기실·`/api/rooms` 2회 히트(live-verify 1조).
