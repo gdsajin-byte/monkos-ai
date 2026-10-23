@@ -109,3 +109,7 @@
 {"ts": "2026-10-23 10:12 KST", "id": 177, "event": "resolve", "evidence": "작가님 10-12 12:46 'Passfoto 포함 처리 완료, 더 보고하지 말라' 구두 선언(2026-10-12_iMac_민아.md:22) — 메일 밖 응대라 Gmail 스레드 기준 영구 미회신 오탐", "by": "iMac/쌍아"}
 {"ts": "2026-10-23 10:15 KST", "id": 131, "event": "note", "text": "작가님 10-23 10:13 확인: 복구 후속 안내도 Resend로 발송 완료, 환불 종결 — 완결", "by": "iMac/쌍아"}
 {"ts": "2026-10-23 13:48 KST", "id": 191, "event": "open", "axis": "content", "severity": "ℹ️", "title": "출시 게이트: 웹 바둑판 착수음 — 내부 실험용 소리(타이젬 녹음 등 포함 가능)는 공식 출시 전 자체 샘플링으로 교체·라이선스 점검", "owner": "쌍아", "by": "iMac/쌍아"}
+{"ts": "2026-10-24 06:31 KST", "id": 181, "event": "note", "text": "06:30 재측정 rev 00569-9mk 평문 의심 이름 6 유지(TX_API_KEY·AUTH_SECRET·LINE_MESSAGING_CHANNEL_SECRET·LINE_MESSAGING_ACCESS_TOKEN·GITHUB_TOKEN·GOOGLE_CLIENT_SECRET). GOOGLE_CLIENT_SECRET SM 없음(대조군 TX_API_KEY 있음)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-24 06:31 KST", "id": 187, "event": "note", "text": "06:31 origin/main b7ba63e0 기준 monkos_AI gemini-2.5-flash 22행(_legacy 제외, 전일 20)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-24 06:31 KST", "id": 189, "event": "note", "text": "06:30 claude agents: 쌍아-막내9 background blocked 유지, 기동 후 32.7h", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-24 06:31 KST", "id": 183, "event": "note", "text": "06:30 Pages monk-kr 시크릿 6 유지(CHAT_API_KEY·GEMINI_API_KEY·RESEND_API_KEY·TOSS_CLIENT_KEY·TOSS_SECRET_KEY·TX_API_KEY) — 변동 없음", "by": "iMac/민아-헤드리스"}
