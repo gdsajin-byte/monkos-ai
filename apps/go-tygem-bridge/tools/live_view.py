@@ -16,6 +16,21 @@ def latest_log():
     return logs[-1]
 
 
+def complexity(ri, infos, osd, n=99):
+    """복잡도 v0(휴리스틱, 보정 전) — 0~100.
+    ① 신경망이 스스로 예측한 단기 승률 오차(rawStWrError) ② 불확실한 점의 비율(ownershipStdev>0.6)
+    ③ 최선수와 5%p 안쪽 후보 수. 싸움터 표시용으로 점별 불확실성도 함께 돌려준다."""
+    st = min(1.0, ri.get("rawStWrError", 0) / 0.25)
+    contested = sum(1 for v in osd if v > 0.6) / 361 if osd else 0
+    ct = min(1.0, contested / 0.15)
+    best = max((m["winrate"] for m in infos), default=0)
+    tot = sum(m["visits"] for m in infos) or 1
+    close = sum(1 for m in infos if m["visits"] >= tot * 0.05 and best - m["winrate"] <= 0.05)
+    sp = min(1.0, max(0, close - 1) / 3) if n >= 40 else 0  # 포석은 좋은 수가 많아도 '쉬운' 국면 — 후보 수 가중 제외(10-23 4국 보정)
+    return {"cx": round(100 * (0.4 * st + 0.35 * ct + 0.25 * sp)),
+            "cxParts": [round(st, 2), round(contested, 3), close], "osd": [round(v, 2) for v in osd]}
+
+
 class Analyzer:
     def __init__(s, visits, komi=6.5):
         s.komi = komi
@@ -26,7 +41,8 @@ class Analyzer:
 
     def run(s, moves):
         q = {"id": str(len(moves)), "moves": [[c, m] for c, m in moves], "rules": "korean", "komi": s.komi,
-             "boardXSize": 19, "boardYSize": 19, "maxVisits": s.visits}
+             "boardXSize": 19, "boardYSize": 19, "maxVisits": s.visits,
+             "includeOwnership": True, "includeOwnershipStdev": True}
         s.p.stdin.write(json.dumps(q) + "\n")
         line = s.p.stdout.readline()
         if not line:
@@ -37,7 +53,8 @@ class Analyzer:
         ri = r["rootInfo"]
         top = [{"move": m["move"], "winrate": m["winrate"], "scoreLead": m["scoreLead"], "visits": m["visits"],
                 "pv": m.get("pv", [])[:6]} for m in sorted(r["moveInfos"], key=lambda m: m["order"])[:5]]
-        return {"winrate": ri["winrate"], "scoreLead": ri["scoreLead"], "top": top}
+        return {"winrate": ri["winrate"], "scoreLead": ri["scoreLead"], "top": top,
+                **complexity(ri, r["moveInfos"], r.get("ownershipStdev") or [], len(moves))}
 
 
 class State:
@@ -103,7 +120,8 @@ class State:
     def snapshot(s):
         with s.lock:
             return {"log": os.path.basename(s.log), "me": s.me, "moves": s.moves, "tail": s.tail, "error": s.err, "sys": s.sys,
-                    "results": {str(k): v for k, v in s.results.items()}}
+                    "results": {str(k): ({kk: vv for kk, vv in v.items() if kk != "osd"} if k != len(s.moves) else v)
+                                for k, v in s.results.items()}}
 
 
 PAGE = r"""<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -120,12 +138,12 @@ h2{font-size:13px;color:var(--mut);margin:0 0 8px;font-weight:600}
 table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}td{padding:4px 2px;border-top:1px solid var(--line)}
 .tag{display:inline-block;width:20px;height:20px;border-radius:50%;color:#fff;text-align:center;font-weight:700;font-size:12px;line-height:20px}
 .err{color:var(--bad);font-weight:600}.mut{color:var(--mut)}pre{margin:0;font-size:11px;white-space:pre-wrap;color:var(--mut)}
-svg{display:block;width:100%;height:auto}.chips{display:flex;flex-wrap:wrap;gap:6px;font-size:12px;font-variant-numeric:tabular-nums}.chip{padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--mut)}.chip b{color:var(--fg);font-weight:600}.chip.warn{border-color:var(--bad);color:var(--bad)}#board{max-height:64vh;margin:auto}.bar{display:flex;height:26px;border-radius:6px;overflow:hidden;border:1px solid #888;margin-top:12px;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}.bar div{display:flex;align-items:center;padding:0 8px;transition:width .6s;white-space:nowrap}#barb{background:#111;color:#fff}#barw{background:#fafafa;color:#111;justify-content:flex-end;flex:1}
+svg{display:block;width:100%;height:auto}.cxrow{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px}.cxbar{flex:1;height:8px;border-radius:4px;background:var(--line);overflow:hidden}#cxf{height:100%;width:0;background:linear-gradient(90deg,#3aa76d,#e0a43a,#d64545);transition:width .6s}.chips{display:flex;flex-wrap:wrap;gap:6px;font-size:12px;font-variant-numeric:tabular-nums}.chip{padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--mut)}.chip b{color:var(--fg);font-weight:600}.chip.warn{border-color:var(--bad);color:var(--bad)}#board{max-height:64vh;margin:auto}.bar{display:flex;height:26px;border-radius:6px;overflow:hidden;border:1px solid #888;margin-top:12px;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}.bar div{display:flex;align-items:center;padding:0 8px;transition:width .6s;white-space:nowrap}#barb{background:#111;color:#fff}#barw{background:#fafafa;color:#111;justify-content:flex-end;flex:1}
 </style></head><body><div class="wrap">
 <div><div class="card"><div class="row" style="justify-content:space-between"><h2 id="title">대국 라이브</h2><span class="mut" id="mv"></span></div>
 <svg id="board" viewBox="0 0 400 400"></svg></div>
-<div class="card" style="margin-top:12px"><h2>형세 흐름 — 흑 승률(실선)·흑 기준 집 차이(점선)</h2><svg id="graph" viewBox="0 0 600 160"></svg></div></div>
-<div><div class="card"><h2>현재 형세</h2><div class="row"><div><div class="mut">흑 승률</div><div class="big" id="wr">–</div></div><div><div class="mut">집 차이</div><div class="big" id="sc">–</div></div></div><div class="bar"><div id="barb" style="width:50%">흑</div><div id="barw">백</div></div><div id="err" class="err"></div></div>
+<div class="card" style="margin-top:12px"><h2>형세 흐름 — 흑 승률(파랑)·집 차이(점선)·복잡도(주황)</h2><svg id="graph" viewBox="0 0 600 160"></svg></div></div>
+<div><div class="card"><h2>현재 형세</h2><div class="row"><div><div class="mut">흑 승률</div><div class="big" id="wr">–</div></div><div><div class="mut">집 차이</div><div class="big" id="sc">–</div></div></div><div class="bar"><div id="barb" style="width:50%">흑</div><div id="barw">백</div></div><div class="cxrow"><span class="mut">복잡도</span><div class="cxbar"><div id="cxf"></div></div><b id="cxv">–</b><span id="cxl" class="mut"></span></div><div id="err" class="err"></div></div>
 <div class="card" style="margin-top:12px"><h2>추천수 (다음 차례 <span id="turn"></span>)</h2><table id="top"></table></div>
 <div class="card sys" style="margin-top:12px"><h2>시스템</h2><div id="sys" class="chips"></div></div></div></div>
 <script>
@@ -139,6 +157,7 @@ function board(moves,res){const g=[],st={};
  moves.forEach(([c,m],i)=>{if(m.toLowerCase()==="pass")return;const x=L.indexOf(m[0]),y=N-parseInt(m.slice(1));grid[y][x]=c;
   for(const[u,v]of nb(x,y)){if(grid[v][u]&&grid[v][u]!==c){const[s,l]=grp(u,v);if(l===0)s.forEach(k=>{const[a,b]=k.split(",").map(Number);grid[b][a]=null})}}});
  g.push(`<rect width="400" height="400" fill="${css('--wood')}" rx="6"/>`);
+ const rr=res[String(moves.length)];if(rr&&rr.osd&&rr.osd.length===361)rr.osd.forEach((v,i)=>{const a=Math.max(0,Math.min(.55,(v-.35)*.9));if(a>0.02)g.push(`<rect x="${O+(i%N)*S-S/2}" y="${O+Math.floor(i/N)*S-S/2}" width="${S}" height="${S}" fill="#e0453a" opacity="${a.toFixed(2)}"/>`)});
  for(let i=0;i<N;i++){g.push(`<line x1="${O}" y1="${O+i*S}" x2="${O+18*S}" y2="${O+i*S}" stroke="${css('--grid')}" stroke-width=".7"/><line x1="${O+i*S}" y1="${O}" x2="${O+i*S}" y2="${O+18*S}" stroke="${css('--grid')}" stroke-width=".7"/>`)}
  [3,9,15].forEach(a=>[3,9,15].forEach(b=>g.push(`<circle cx="${O+a*S}" cy="${O+b*S}" r="2.2" fill="${css('--grid')}"/>`)));
  for(let y=0;y<N;y++)for(let x=0;x<N;x++){const c=grid[y][x];if(c)g.push(`<circle cx="${O+x*S}" cy="${O+y*S}" r="9.4" fill="${c==="B"?"#111":"#fafafa"}" stroke="#222" stroke-width=".6"/>`)}
@@ -151,6 +170,7 @@ function graph(n,res){const W=600,H=160,P=24,g=[];const X=k=>P+(W-2*P)*k/Math.ma
  g.push(`<text x="2" y="${Y(1)+4}" font-size="10" fill="${css('--mut')}">100</text><text x="2" y="${Y(.5)+4}" font-size="10" fill="${css('--mut')}">50</text><text x="8" y="${Y(0)+4}" font-size="10" fill="${css('--mut')}">0</text>`);
  const ks=Object.keys(res).map(Number).sort((a,b)=>a-b);
  const wl=ks.map(k=>`${X(k)},${Y(res[k].winrate)}`).join(" ");const sl=ks.map(k=>`${X(k)},${Y(Math.max(0,Math.min(1,.5+res[k].scoreLead/60)))}`).join(" ");
+ const cl=ks.filter(k=>res[k].cx!=null).map(k=>`${X(k)},${Y(res[k].cx/100)}`).join(" ");g.push(`<polyline points="${cl}" fill="none" stroke="#e0a43a" stroke-width="1.2" opacity=".9"/>`);
  g.push(`<polyline points="${sl}" fill="none" stroke="${css('--mut')}" stroke-dasharray="4 3" stroke-width="1.2"/><polyline points="${wl}" fill="none" stroke="${css('--acc')}" stroke-width="2"/>`);
  document.getElementById("graph").innerHTML=g.join("")}
 async function tick(){try{const s=await (await fetch("/api/state")).json();const n=s.moves.length;
@@ -158,7 +178,8 @@ async function tick(){try{const s=await (await fetch("/api/state")).json();const
  document.getElementById("mv").textContent=`${n}수`;document.getElementById("err").textContent=s.error||"";
  board(s.moves,s.results);graph(n,s.results);
  const ks=Object.keys(s.results).map(Number).filter(k=>k<=n).sort((a,b)=>b-a);const r=s.results[String(n)]||s.results[String(ks[0])];
- if(r){document.getElementById("wr").textContent=(r.winrate*100).toFixed(1)+"%";const d=r.scoreLead;document.getElementById("sc").textContent=(d>=0?"흑 +":"백 +")+Math.abs(d).toFixed(1);const b=r.winrate*100;const bb=document.getElementById("barb");bb.style.width=Math.max(4,Math.min(96,b))+"%";bb.textContent="흑 "+b.toFixed(1)+"%";document.getElementById("barw").textContent="백 "+(100-b).toFixed(1)+"%"}
+ if(r){document.getElementById("wr").textContent=(r.winrate*100).toFixed(1)+"%";const d=r.scoreLead;document.getElementById("sc").textContent=(d>=0?"흑 +":"백 +")+Math.abs(d).toFixed(1);const b=r.winrate*100;const bb=document.getElementById("barb");bb.style.width=Math.max(4,Math.min(96,b))+"%";bb.textContent="흑 "+b.toFixed(1)+"%";document.getElementById("barw").textContent="백 "+(100-b).toFixed(1)+"%";
+  if(r.cx!=null){document.getElementById("cxf").style.width=r.cx+"%";document.getElementById("cxv").textContent=r.cx;document.getElementById("cxl").textContent=r.cx>=60?"복잡 — 승부처":r.cx>=30?"긴장":"평이"}}
  document.getElementById("turn").textContent=n%2===0?"흑":"백";
  const cur=s.results[String(n)];document.getElementById("top").innerHTML=cur?cur.top.map((t,i)=>`<tr><td><span class="tag" style="background:${C[i]}">${i<3?"ABC"[i]:i+1}</span></td><td><b>${t.move}</b></td><td>${(t.winrate*100).toFixed(1)}%</td><td>${t.scoreLead>=0?"흑+":"백+"}${Math.abs(t.scoreLead).toFixed(1)}</td><td class="mut">${t.visits}v</td></tr>`).join(""):`<tr><td class="mut">분석 중…</td></tr>`;
  const y=s.sys||{},ch=[];const c=(t,v,w)=>ch.push(`<span class="chip${w?" warn":""}">${t} <b>${v}</b></span>`);
