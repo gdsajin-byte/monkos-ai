@@ -115,6 +115,27 @@
   /* 생각 중 표시는 상태줄 문구의 점 애니메이션 하나뿐 — 판·화면을 흐리거나 가리지 않는다 */
   .dots::after { content: ''; animation: dots 1.2s steps(4) infinite; }
   @keyframes dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
+  /* 휴대폰 대국 화면(10-23 작가님 "원터치 착수는 미스 — 하단 착수 버튼, 정보 간추리고 시간은 보이게") — 기본 규칙 뒤에 둬야 이긴다 */
+  @media (max-width: 700px), (pointer: coarse) and (max-width: 1000px) {
+    .clockbox { display: none; }
+    .top { flex-wrap: nowrap; }
+    .cards { flex-direction: row; gap: 6px; }
+    .card { flex: 1 1 0; gap: 8px; padding: 6px 8px; }
+    .card .avatar { flex: 0 0 30px; height: 30px; }
+    .card .badge { min-width: 18px; height: 18px; font-size: 11px; right: -5px; bottom: -5px; }
+    .who .rank { display: none; }
+    .who .name { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .who .time { font-size: 16px; font-weight: 700; }
+    body.mobile-play { padding-bottom: 76px; }
+  }
+  #playBar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: none; gap: 8px; align-items: center;
+             padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: var(--head, #2b3442); color: #fff; }
+  body.mobile-play #playBar { display: flex; }
+  #playBar .pick { flex: 1; font-size: 15px; opacity: .9; }
+  #playBar button { font-size: 18px; font-weight: 700; padding: 12px 22px; border-radius: 10px; border: 0; }
+  #playBar #bPlace { background: #ffd66b; color: #1d1d1f; }
+  #playBar #bPlace:disabled { background: #6b7280; color: #d1d5db; }
+  #playBar #bPick0 { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.4); padding: 12px 14px; }
 </style>
 </head>
 <body>
@@ -126,6 +147,7 @@
   <span class="sz" title="판 크기"><button id="bSzDown" aria-label="판 작게">−</button><button id="bSzFull" aria-label="판 꽉 채우기">풀</button><button id="bSzUp" aria-label="판 크게">+</button></span>
   <button id="bNew">대국 신청</button>
 </div>
+<div id="playBar"><span class="pick" id="pickTxt">판을 눌러 자리를 고르세요</span><button id="bPick0" disabled>취소</button><button id="bPlace" disabled>착수</button></div>
 <div class="wrap">
   <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg></div>
   <div class="split" id="split" title="끌어서 판 크기 조정"></div>
@@ -677,7 +699,26 @@ function tapAt(x, y) {
   window.__lastTap = { ms: performance.now() - t0, played, caps: caps.length };  // 누름 → 재생 예약까지(실측용)
   call('/api/play', { x, y });
 }
-svg.addEventListener('pointerdown', ev => { const [x, y] = boardXY(ev); tapAt(x, y); });
+// 휴대폰: 누르면 자리 '선택'(반투명 돌), 하단 [착수]로 확정 — 원터치 오착 방지(10-23). 마우스는 기존대로 바로 착수
+const touchPlay = () => matchMedia('(pointer: coarse)').matches;
+let pickAt = null;
+function setPick(p) {
+  pickAt = p;
+  const ok = !!p;
+  document.getElementById('bPlace').disabled = !ok; document.getElementById('bPick0').disabled = !ok;
+  document.getElementById('pickTxt').textContent = ok ? `선택: ${'ABCDEFGHJKLMNOPQRST'[p[0]]}${19 - p[1]} — 착수를 누르세요` : '판을 눌러 자리를 고르세요';
+}
+svg.addEventListener('pointerdown', ev => {
+  const [x, y] = boardXY(ev);
+  if (ev.pointerType === 'touch' && touchPlay() && S && !S.scoring) {
+    if (typeof canGhost === 'function' && canGhost(x, y)) { ghostAt = [x, y]; setPick([x, y]); drawGhost(); }
+    return;
+  }
+  tapAt(x, y);
+});
+document.getElementById('bPlace').onclick = () => { if (!pickAt) return; const [x, y] = pickAt; setPick(null); ghostAt = null; tapAt(x, y); };
+document.getElementById('bPick0').onclick = () => { setPick(null); ghostAt = null; drawGhost(); };
+if (touchPlay()) document.body.classList.add('mobile-play');
 
 // ---- 착수 미리보기(타이젬식 반투명 돌, 10-23 작가님): 내 차례·빈 점에서만 마우스 아래에 보인다
 let ghostAt = null;
@@ -700,9 +741,9 @@ svg.addEventListener('pointermove', ev => {
   if (ghostAt && ghostAt[0] === p[0] && ghostAt[1] === p[1]) return;
   ghostAt = p; drawGhost();
 });
-svg.addEventListener('pointerleave', () => { ghostAt = null; drawGhost(); });
+svg.addEventListener('pointerleave', ev => { if (ev.pointerType === 'touch') return; ghostAt = null; drawGhost(); });  // 터치는 손을 떼도 선택 유지
 const renderBoard = render;
-render = function () { renderBoard(); drawGhost(); };  // 판을 다시 그려도 미리보기 유지(둔 자리는 빈 점이 아니라 자동으로 사라짐)
+render = function () { renderBoard(); if (pickAt && !canGhost(pickAt[0], pickAt[1])) setPick(null); drawGhost(); };  // 판을 다시 그려도 미리보기 유지(둔 자리는 빈 점이 아니라 자동으로 사라짐)
 document.getElementById('tabs').onclick = e => {
   const b = e.target.closest('button');
   if (b) { tab = b.dataset.tab; render(); }
