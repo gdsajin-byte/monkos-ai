@@ -58,6 +58,10 @@
     <label class="small"><input type="checkbox" id="wrFilter" checked> 리뷰: 승부가 갈리기 전(승률 <span id="wrRange">3~97%</span>) 실수만 <span id="filterWhy"></span></label>
     <div class="small" id="reviewWhy"></div>
 
+    <label>치수 (다음 '새 판'부터)<br>
+      <select id="handicap" style="width:100%"></select>
+    </label>
+
     <label>상대 수준<br>
       <select id="level" style="width:100%"></select>
     </label>
@@ -71,12 +75,6 @@
     <div class="stat small"><span id="moveNo">0수</span>
       <span><button class="pass" id="bPass">패스</button> · <label><input type="checkbox" id="sound" checked> 소리</label></span></div>
     <div class="small" id="sgf"></div>
-    <div id="voiceBox" class="small" hidden>
-      <b>소리 미리듣기 (작가님 선택용 임시 — 실녹음, 출처 sounds/SOUNDS.md)</b><br>
-      <select id="voice" style="font-size:17px;padding:8px"></select>
-      <button id="bPreview" style="font-size:17px;padding:8px 14px">미리듣기</button>
-      <button id="bPreviewCap" style="font-size:17px;padding:8px 14px">따냄 소리</button>
-    </div>
   </div>
 </div>
 <script>
@@ -134,7 +132,13 @@ function render() {
   document.getElementById('msg').textContent = msg;
   document.getElementById('capB').textContent = S.captures.B;
   document.getElementById('capW').textContent = S.captures.W;
-  document.getElementById('moveNo').textContent = `${S.moveNo}수 · 상대 ${S.levelLabel}`;
+  const ha = S.handicap ? `${S.handicap}점 접바둑` : '호선';
+  document.getElementById('moveNo').textContent = `${S.moveNo}수 · ${ha} · 덤 ${S.komi} · 상대 ${S.levelLabel}`;
+  const hs = document.getElementById('handicap');
+  if (!hs.options.length) {
+    for (const h of S.handicaps) hs.add(new Option(h ? `${h}점 (작가님 흑, 덤 0.5, 백 먼저)` : '호선 (덤 6.5)', h));
+    hs.value = S.handicap;
+  }
   if (S.score !== null && S.score !== undefined) {
     const s = S.score, pct = Math.max(3, Math.min(97, 50 + s * 2.5));
     document.getElementById('barB').style.width = pct + '%';
@@ -166,27 +170,18 @@ function render() {
   if (S.review.wrRange) document.getElementById('wrRange').textContent =
     S.review.wrRange.split(',').map(v => Math.round(v * 100)).join('~') + '%';
   if (S.testMode) document.title = 'MONK 바둑판 (테스트)';
-  document.getElementById('voiceBox').hidden = !S.testMode;
   document.getElementById('sgf').textContent = S.sgf ? `기보 자동 저장: ${S.sgf}` : '';
 }
 
-// ---- 착수음: 실녹음(Freesound CC0, 출처는 sounds/SOUNDS.md). 후보마다 3테이크를 돌려 쓰고
-// 재생 속도·세기를 조금씩 흔들어 매번 같은 소리가 되지 않게 한다. 후보 선택지는 테스트 포트에만(작가님 청감 선택용).
-const VOICES = {
-  a: { label: 'A. 바둑돌 녹음 1 (billhails2)', files: ['a_billhails2_1', 'a_billhails2_2', 'a_billhails2_3'] },
-  b: { label: 'B. 바둑돌 녹음 2 (Hongsungbock)', files: ['b_hongsungbock_1', 'b_hongsungbock_2', 'b_hongsungbock_3'] },
-  c: { label: 'C. 바둑돌 녹음 3 (MPooman SE485)', files: ['c_mpooman485_1', 'c_mpooman485_2', 'c_mpooman485_3'] },
-  d: { label: 'D. 바둑돌 녹음 4 (MPooman SE471)', files: ['d_mpooman471_1', 'd_mpooman471_2', 'd_mpooman471_3'] },
-};
+// ---- 착수음: 실녹음(Freesound CC0, 출처는 sounds/SOUNDS.md). 작가님 선택(10-23) = Hongsungbock 'baduk2'.
+// 3테이크를 돌려 쓰고 재생 속도·세기를 조금씩 흔들어 매번 같은 소리가 되지 않게 한다.
+const STONE_FILES = ['b_hongsungbock_1', 'b_hongsungbock_2', 'b_hongsungbock_3'];
 const CAPTURE_FILE = 'capture_mpooman471';
 let actx = null;
 let soundOn = true;
-let voice = 'a';
 const buffers = {};
 try {
   soundOn = localStorage.getItem('goBoardSound') !== 'off';
-  const v = localStorage.getItem('goBoardVoiceRec');
-  if (VOICES[v]) voice = v;
 } catch (e) { /* 저장소 불가 — 기본값 */ }
 
 function audio() {
@@ -212,10 +207,9 @@ async function playFile(name, delay, gain, rate) {
   src.start(a.currentTime + (delay || 0));
 }
 
-function stoneSound(delay, which) {
-  if (!soundOn && !which) return;
-  const files = VOICES[which || voice].files;
-  playFile(files[Math.floor(Math.random() * files.length)], delay, jitter(0.9, 0.12), jitter(1, 0.03))
+function stoneSound(delay) {
+  if (!soundOn) return;
+  playFile(STONE_FILES[Math.floor(Math.random() * STONE_FILES.length)], delay, jitter(0.9, 0.12), jitter(1, 0.03))
     .catch(() => { /* 오디오 불가 — 무음 */ });
 }
 
@@ -226,7 +220,7 @@ function captureSound(delay) {
 
 // 첫 착수 지연을 없애려고 미리 받아 둔다(디코딩은 첫 사용자 동작 후)
 function preloadSounds() {
-  for (const f of [...VOICES[voice].files, CAPTURE_FILE]) load(f).catch(() => {});
+  for (const f of [...STONE_FILES, CAPTURE_FILE]) load(f).catch(() => {});
 }
 
 function notice(text) {
@@ -279,7 +273,7 @@ svg.addEventListener('click', ev => {
   stoneSound();
   call('/api/play', { x, y });
 });
-document.getElementById('bNew').onclick = () => call('/api/new');
+document.getElementById('bNew').onclick = () => call('/api/new', { handicap: Number(document.getElementById('handicap').value) });
 document.getElementById('bUndo').onclick = () => call('/api/undo');
 document.getElementById('bSwap').onclick = () => call('/api/swap');
 document.getElementById('bReview').onclick = async () => {
@@ -300,16 +294,6 @@ soundBox.onchange = () => {
   try { localStorage.setItem('goBoardSound', soundOn ? 'on' : 'off'); } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
   if (soundOn) stoneSound();
 };
-const voiceSel = document.getElementById('voice');
-for (const k in VOICES) voiceSel.add(new Option(VOICES[k].label, k));
-voiceSel.value = voice;
-voiceSel.onchange = () => {
-  voice = voiceSel.value;
-  try { localStorage.setItem('goBoardVoiceRec', voice); } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
-  stoneSound(0, voice);
-};
-document.getElementById('bPreview').onclick = () => { for (let i = 0; i < 3; i++) stoneSound(i * 0.5, voice); };
-document.getElementById('bPreviewCap').onclick = () => { stoneSound(0, voice); if (soundOn) captureSound(0.1); else playFile(CAPTURE_FILE, 0.22, 0.7, 1); };
 document.getElementById('bPass').onclick = () => call('/api/play', { pass: true });
 document.getElementById('level').onchange = e => call('/api/level', { level: e.target.value });
 

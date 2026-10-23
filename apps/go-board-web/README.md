@@ -76,3 +76,9 @@ apps/go-board-web/run.sh      # http://127.0.0.1:8765/ 브라우저 자동 오�
 - Freesound CC0 녹음 4종(A~D) × 3테이크 + 따냄 1 — `sounds/`, 출처·라이선스 `sounds/SOUNDS.md`.
 - 재생: 테이크 무작위 + 속도 ±3%·세기 ±12%. 첫 화면 조작 때 미리 받아 둔다.
 - 후보 고르기: `run.sh --test` 화면 아래 '소리 미리듣기'. 고르면 `voice` 기본값을 그 후보로 바꾸고 선택지를 걷어낸다.
+
+## 접바둑 · 착수음 확정 (12:45)
+
+- 치수: '치수' 선택(호선 / 2~9점) → 다음 '새 판'부터. KataGo `fixed_handicap` 표준 배치, 덤 0.5, 백 먼저, 작가님 흑 시작. SGF에 `HA[]`·`AB[]`.
+- 접바둑 리뷰는 review.py가 치석(`initialStones`)을 읽게 될 때까지 막아 둠(이유 표시). 파일럿 소스에 `initialStones`가 생기면 자동으로 풀림.
+- 착수음: 작가님 선택 B(Hongsungbock 'baduk2') 고정, 따냄 = MPooman SE471. 후보 미리듣기 제거.

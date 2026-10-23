@@ -4,13 +4,15 @@
 > 전부 **CC0 1.0 (퍼블릭 도메인 헌정)** — 출처 표기 의무 없음. 그래도 추적을 위해 기록한다.
 > 라이선스는 각 소리 페이지의 라이선스 링크(`creativecommons.org/publicdomain/zero/1.0/`)를 2026-10-23에 직접 확인했다.
 
+**사용 중 (작가님 결정 2026-10-23 12:4x "착수음은 일단 B로")**: 착수 = B `b_hongsungbock_*`, 따냄 = `capture_mpooman471`. A·C·D 클립은 삭제했고(커밋 이력 094e4706에 남음) 출처 기록만 둔다.
+
 | 파일 | 원본 | 작성자 | 라이선스 | 잘라낸 지점(원본 기준, s) |
 |---|---|---|---|---|
-| `a_billhails2_{1,2,3}.wav` | [GoStoneSounds.ogg](https://freesound.org/people/billhails2/sounds/588317/) | billhails2 | CC0 1.0 | 0.135 · 1.42 · 2.765 |
-| `b_hongsungbock_{1,2,3}.wav` | [baduk2](https://freesound.org/people/Hongsungbock/sounds/840425/) | Hongsungbock | CC0 1.0 | 3.33 · 14.235 · 16.96 |
-| `c_mpooman485_{1,2,3}.wav` | [[ MPooman ] Play Go Sounds 2 (SE485)](https://freesound.org/people/MPooman/sounds/668942/) | MPooman | CC0 1.0 | 1.815 · 9.71 · 13.72 |
-| `d_mpooman471_{1,2,3}.wav` | [[ MPooman ] Play Go Sounds (SE471)](https://freesound.org/people/MPooman/sounds/664986/) | MPooman | CC0 1.0 | 5.15 · 18.195 · 41.795 |
-| `capture_mpooman471.wav` | 위 SE471 | MPooman | CC0 1.0 | 11.66 (돌 여러 개 부딪힘 구간, 0.95초) |
+| ~~`a_billhails2_{1,2,3}.wav`~~ 삭제(후보 탈락) | [GoStoneSounds.ogg](https://freesound.org/people/billhails2/sounds/588317/) | billhails2 | CC0 1.0 | 0.135 · 1.42 · 2.765 |
+| **`b_hongsungbock_{1,2,3}.wav` (착수음 — 사용)** | [baduk2](https://freesound.org/people/Hongsungbock/sounds/840425/) | Hongsungbock | CC0 1.0 | 3.33 · 14.235 · 16.96 |
+| ~~`c_mpooman485_{1,2,3}.wav`~~ 삭제(후보 탈락) | [[ MPooman ] Play Go Sounds 2 (SE485)](https://freesound.org/people/MPooman/sounds/668942/) | MPooman | CC0 1.0 | 1.815 · 9.71 · 13.72 |
+| ~~`d_mpooman471_{1,2,3}.wav`~~ 삭제(후보 탈락) | [[ MPooman ] Play Go Sounds (SE471)](https://freesound.org/people/MPooman/sounds/664986/) | MPooman | CC0 1.0 | 5.15 · 18.195 · 41.795 |
+| **`capture_mpooman471.wav` (따냄 — 사용)** | 위 SE471 | MPooman | CC0 1.0 | 11.66 (돌 여러 개 부딪힘 구간, 0.95초) |
 
 ## 가공
 
