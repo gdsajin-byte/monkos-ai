@@ -704,3 +704,4 @@
 - 신설 `reference_tailnet_node_map.md`: 테일넷 노드 ↔ 디바이스 대응. `macmini-macmini`=집 M1(민아가 M2 재등록으로 오판 → 작가님 교정), M2=`kku-macmini-m2-macmini` 100.81.38.20만, 4060=`monk-4060`. MEMORY.md 팀 인적 인프라 절에 포인터 1줄 추가.
 - **[2026-10-23 15:19 KST]** iMac/민아 — `reference_tailnet_node_map.md`를 표 사본에서 **정본 포인터**로 교체(레포 중복 금지). 요지: 디바이스 표 정본은 `devices/README.md`·SECRET_INVENTORY §Tailscale, ch1 4조는 약칭만. 인덱스 1행 갱신.
 | 2026-10-23 16:45 | 추가 | project_go_commentary_llm_vision.md — 바둑 해설 LLM 자산화 구상·인간적 AI 지향 | iMac/쌍아 |
+| 2026-10-23 22:51 | 추가 | project_legal_monitoring_practice.md — 법규 선제 수집·RAG화·개정 감시 절차 | iMac/쌍아 |
