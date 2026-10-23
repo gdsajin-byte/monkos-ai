@@ -33,7 +33,9 @@
   .barlbl { display: flex; justify-content: space-between; font-size: 18px; color: var(--muted); }
   .small { font-size: 16px; color: var(--muted); }
   .pass { background: none; border: none; padding: 0; color: var(--muted); text-decoration: underline; font-size: 17px; }
-  .busy { opacity: .6; pointer-events: none; }
+  /* 생각 중 표시는 판 밖 상태 문구의 점 애니메이션 하나뿐 — 판·화면을 흐리거나 가리지 않는다 */
+  .dots::after { content: ''; animation: dots 1.2s steps(4) infinite; }
+  @keyframes dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
 </style>
 </head>
 <body>
@@ -109,10 +111,12 @@ function render() {
   const me = S.user === 'B' ? '흑' : '백';
   let turn;
   if (S.result) turn = `대국 종료 — ${S.resultKo}`;
-  else if (busy) turn = 'KataGo 생각 중…';
+  else if (busy) turn = 'KataGo 생각 중';
   else if (S.toMove === S.user) turn = `작가님(${me}) 차례`;
   else turn = 'KataGo 차례';
-  document.getElementById('turn').textContent = turn;
+  const turnEl = document.getElementById('turn');
+  turnEl.textContent = turn;
+  turnEl.classList.toggle('dots', busy && !S.result);
   let msg = S.error || S.message || '';
   if (!S.error && S.lastPass && !S.result) msg = `${S.lastColor === 'B' ? '흑' : '백'}이 패스했습니다. ` + msg;
   if (!S.strongOk) msg = (S.strongError || '엔진 기동 실패') + ' ' + msg;
@@ -141,21 +145,32 @@ function render() {
   rb.disabled = !S.review.ok;
   document.getElementById('reviewWhy').textContent = S.review.ok ? '' : S.review.reason;
   document.getElementById('sgf').textContent = S.sgf ? `기보 자동 저장: ${S.sgf}` : '';
-  document.body.classList.toggle('busy', busy);
+}
+
+function notice(text) {
+  document.getElementById('msg').textContent = text;
 }
 
 async function call(path, body) {
-  if (busy) return;
+  if (busy) { notice('상대가 생각 중입니다'); return; }
   busy = true; render();
   try {
     const r = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
-    S = await r.json();
+    const j = await r.json();
+    if (j.busy) {  // 다른 탭 등에서 엔진이 생각 중 — 판은 서버 정본으로 다시 받는다
+      busy = false;
+      S = await (await fetch('/api/state')).json();
+      render(); notice(j.error); return;
+    }
+    S = j;
   } catch (e) { S.error = '서버 연결 실패 — run.sh가 켜져 있는지 확인해 주세요'; }
   busy = false; render();
 }
 
 svg.addEventListener('click', ev => {
-  if (!S || busy || S.result || S.toMove !== S.user) return;
+  if (!S || S.result) return;
+  if (busy) { notice('상대가 생각 중입니다'); return; }
+  if (S.toMove !== S.user) return;
   const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
   const p = pt.matrixTransform(svg.getScreenCTM().inverse());
   const x = Math.round((p.x - M) / STEP), y = Math.round((p.y - M) / STEP);

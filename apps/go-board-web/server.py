@@ -406,7 +406,10 @@ class Handler(BaseHTTPRequestHandler):
         except json.JSONDecodeError:
             body = {}
         t0 = time.time()
-        with GAME.lock:
+        # 엔진 생각 중 들어온 요청은 줄 세우지 않고 버린다 — 대기 클릭이 나중에 착수로 바뀌는 경합 차단
+        if not GAME.lock.acquire(blocking=False):
+            return self._send(409, json.dumps({"busy": True, "error": "상대가 생각 중입니다"}, ensure_ascii=False))
+        try:
             err = None
             try:
                 p = self.path
@@ -434,7 +437,9 @@ class Handler(BaseHTTPRequestHandler):
             st = GAME.state()
             st["error"] = err
             st["elapsed"] = round(time.time() - t0, 2)
-            self._send(200, json.dumps(st, ensure_ascii=False))
+        finally:
+            GAME.lock.release()
+        self._send(200, json.dumps(st, ensure_ascii=False))
 
 
 def main():
