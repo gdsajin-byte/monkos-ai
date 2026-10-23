@@ -126,16 +126,15 @@
     .who .rank { display: none; }
     .who .name { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .who .time { font-size: 16px; font-weight: 700; }
-    body.mobile-play { padding-bottom: 76px; }
   }
-  #playBar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: none; gap: 8px; align-items: center;
-             padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: var(--head, #2b3442); color: #fff; }
+  /* 착수 바: 판 바로 아래 가운데(10-23 작가님 "착수 버튼이 바둑판 바로 아래 중심 좀 더 크게") */
+  #playBar { position: relative; display: none; flex: 1 1 100%; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; margin: -2px 0 2px; }
   body.mobile-play #playBar { display: flex; }
-  #playBar .pick { flex: 1; font-size: 15px; opacity: .9; }
-  #playBar button { font-size: 18px; font-weight: 700; padding: 12px 22px; border-radius: 10px; border: 0; }
-  #playBar #bPlace { background: #ffd66b; color: #1d1d1f; }
-  #playBar #bPlace:disabled { background: #6b7280; color: #d1d5db; }
-  #playBar #bPick0 { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.4); padding: 12px 14px; }
+  #playBar #bPlace { order: 2; flex: 0 1 260px; font-size: 22px; font-weight: 800; padding: 14px 0; border-radius: 12px; border: 0;
+                     background: #ffd66b; color: #1d1d1f; box-shadow: 0 2px 6px rgba(0,0,0,.18); }
+  #playBar #bPlace:disabled { background: #d6d9de; color: #8a9099; box-shadow: none; }
+  #playBar #bPick0 { position: absolute; left: 0; top: 0; font-size: 15px; padding: 14px 14px; border-radius: 12px; border: 1px solid var(--line-ui, #d0d4da); background: #fff; }
+  #playBar .pick { order: 3; flex: 1 1 100%; text-align: center; font-size: 13px; color: var(--muted, #6b7280); }
   /* 휴대폰 상단 줄 고정(10-23 "대국 신청 버튼이 계속 있고 위치가 바뀌며 화면이 흔들려"): 높이·칸 고정, 글자는 한 줄 말줄임 */
   @media (max-width: 700px), (pointer: coarse) and (max-width: 1000px) {
     .status { display: grid; grid-template-columns: 1fr auto; grid-template-rows: 26px 24px; column-gap: 8px; row-gap: 2px;
@@ -148,6 +147,15 @@
     .status #bNew { grid-column: 2; grid-row: 1; padding: 4px 10px; font-size: 14px; }
     body.in-game .status #bNew { display: none; }  /* 대국 중엔 숨김 — 끝나면 다시 */
   }
+  /* 휴대폰 상단은 대국 정보 한 줄, 탭은 AI분석만(10-23 "AI분석에 모든 기능 — 그 버튼만 남기고 하단 기능만") */
+  @media (max-width: 700px), (pointer: coarse) and (max-width: 1000px) {
+    .status { grid-template-rows: 30px; height: 46px; }
+    .status #statusShape, .status #turn { display: none; }
+    .status #status { grid-column: 1; grid-row: 1; font-size: 15px; }
+    .status #bNew { grid-row: 1; }
+    #tabs button:not([data-tab="ai"]) { display: none; }
+    #tabs button[data-tab="ai"] { flex: 0 0 auto; }
+  }
 </style>
 </head>
 <body>
@@ -159,9 +167,9 @@
   <span class="sz" title="판 크기"><button id="bSzDown" aria-label="판 작게">−</button><button id="bSzFull" aria-label="판 꽉 채우기">풀</button><button id="bSzUp" aria-label="판 크게">+</button></span>
   <button id="bNew">대국 신청</button>
 </div>
-<div id="playBar"><span class="pick" id="pickTxt">판을 눌러 자리를 고르세요</span><button id="bPick0" disabled>취소</button><button id="bPlace" disabled>착수</button></div>
 <div class="wrap">
   <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg></div>
+  <div id="playBar"><button id="bPick0" disabled>취소</button><button id="bPlace" disabled>착수</button><span class="pick" id="pickTxt">판을 눌러 자리를 고르세요</span></div>
   <div class="split" id="split" title="끌어서 판 크기 조정"></div>
   <div class="side">
     <div class="top">
