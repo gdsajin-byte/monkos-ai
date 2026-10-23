@@ -153,9 +153,23 @@
     .status #statusShape, .status #turn { display: none; }
     .status #status { grid-column: 1; grid-row: 1; font-size: 15px; }
     .status #bNew { grid-row: 1; }
-    #tabs button:not([data-tab="ai"]) { display: none; }
-    #tabs button[data-tab="ai"] { flex: 0 0 auto; }
   }
+  /* 휴대폰 = 고정 화면·스크롤 없음, 'AI분석'을 누르면 시트로 형세분석·추천수·해설·실시간 분석(10-23 작가님) */
+  body.mobile-play { height: 100dvh; overflow: hidden; }
+  body.mobile-play .wrap { height: calc(100dvh - 46px); overflow: hidden; align-content: flex-start; }
+  body.mobile-play .side { overflow: hidden; max-height: none; gap: 8px; }
+  body.mobile-play .board, body.mobile-play.bfull .board, body.mobile-play.bsized .board { width: auto; max-width: min(100%, calc(100dvh - 356px)); margin: 0 auto; }  /* 작은 화면(SE 667)에서도 아래 버튼까지 한 화면 */
+  body.mobile-play .msg { min-height: 0; font-size: 14px; }
+  #bSheet { display: none; }
+  body.mobile-play #bSheet { display: block; width: 100%; font-size: 17px; font-weight: 700; padding: 12px; border-radius: 10px;
+                             border: 1px solid var(--line-ui, #d0d4da); background: #fff; color: var(--head, #2b3442); }
+  #sheet { position: fixed; left: 0; right: 0; bottom: 0; top: 46px; z-index: 30; background: var(--bg, #eef0f3);
+           transform: translateY(102%); transition: transform .25s ease; display: flex; flex-direction: column;
+           box-shadow: 0 -6px 20px rgba(0,0,0,.25); border-radius: 14px 14px 0 0; }
+  body.sheet-open #sheet { transform: none; }
+  #sheet .sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; font-weight: 700; font-size: 16px; }
+  #sheet .sheet-head button { font-size: 16px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line-ui, #d0d4da); background: #fff; }
+  #sheet .sheet-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 0 10px 20px; display: flex; flex-direction: column; gap: 10px; }
 </style>
 </head>
 <body>
@@ -1037,6 +1051,22 @@ setInterval(() => {
   const running = S.review && S.review.running === reviewJob;
   if (!running && f.hidden) { f.hidden = false; f.src = `/review/${reviewJob}`; }
 }, 2000);
+
+// ---- 휴대폰 시트: 탭·분석 패널·실시간 분석판을 시트로 옮기고 본 화면엔 'AI분석' 버튼만(고정 화면, 스크롤 없음)
+(function mobileSheet() {
+  if (!matchMedia('(pointer: coarse)').matches) return;
+  const side = document.querySelector('.side'), tabs = document.getElementById('tabs');
+  const panel = document.querySelector('.box.panel'), live = document.getElementById('liveBox'), acts = document.querySelector('.actions');
+  const sheet = document.createElement('div'); sheet.id = 'sheet';
+  sheet.innerHTML = '<div class="sheet-head"><span>AI분석</span><button id="bSheetX" aria-label="닫기">닫기 ✕</button></div><div class="sheet-body"></div>';
+  const body = sheet.querySelector('.sheet-body');
+  for (const el of [tabs, panel, live]) if (el) body.appendChild(el);
+  document.body.appendChild(sheet);
+  const open = document.createElement('button'); open.id = 'bSheet'; open.textContent = 'AI분석 ▴ 형세·추천수·해설·실시간 분석';
+  side.insertBefore(open, acts);
+  open.onclick = () => document.body.classList.add('sheet-open');
+  document.getElementById('bSheetX').onclick = () => document.body.classList.remove('sheet-open');
+})();
 </script>
 </body>
 </html>
