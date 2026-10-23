@@ -151,7 +151,8 @@
     .status #statusShape { grid-column: 1; grid-row: 2; font-size: 14px; }
     .status #turn { grid-column: 2; grid-row: 2; font-size: 14px; text-align: right; }
     .status .grow, .status .sz { display: none; }
-    .status #bNew { grid-column: 2; grid-row: 1; padding: 4px 10px; font-size: 14px; }
+    .status #topBtns { grid-column: 2; grid-row: 1; }
+    .status #bNew, .status #bLobby { padding: 4px 10px; font-size: 14px; }
     body.in-game .status #bNew { display: none; }  /* 대국 중엔 숨김 — 끝나면 다시 */
   }
   /* 휴대폰 상단은 대국 정보 한 줄, 탭은 AI분석만(10-23 "AI분석에 모든 기능 — 그 버튼만 남기고 하단 기능만") */
@@ -159,7 +160,7 @@
     .status { grid-template-rows: 30px; height: 46px; }
     .status #statusShape, .status #turn { display: none; }
     .status #status { grid-column: 1; grid-row: 1; font-size: 15px; }
-    .status #bNew { grid-row: 1; }
+    .status #topBtns { grid-row: 1; }
   }
   /* 휴대폰 = 고정 화면·스크롤 없음, 'AI분석'을 누르면 시트로 형세분석·추천수·해설·실시간 분석(10-23 작가님) */
   body.mobile-play { height: 100dvh; overflow: hidden; }
@@ -177,16 +178,52 @@
   #sheet .sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; font-weight: 700; font-size: 16px; }
   #sheet .sheet-head button { font-size: 16px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line-ui, #d0d4da); background: #fff; }
   #sheet .sheet-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 0 10px 20px; display: flex; flex-direction: column; gap: 10px; }
+  /* 대기실(10-24 단계 ①): 같은 화면 파일, 주소 '/'에서만. 고정 화면 — 목록만 안에서 스크롤, 새 대국은 하단 큰 버튼 */
+  #topBtns { display: inline-flex; gap: 6px; }
+  #lobby { display: none; }
+  body.lobby-mode #roomHead, body.lobby-mode .wrap { display: none; }
+  body.lobby-mode { height: 100dvh; overflow: hidden; }
+  body.lobby-mode #lobby { display: flex; flex-direction: column; height: 100dvh; }
+  #lobby .status { flex: 0 0 auto; }
+  .lobby-body { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 14px; display: flex;
+                flex-direction: column; gap: 10px; max-width: 760px; width: 100%; margin: 0 auto; }
+  .lobby-body h3 { margin: 6px 0 0; font-size: 16px; color: var(--muted); }
+  .lobby-row { display: flex; gap: 10px; align-items: center; padding: 10px 12px; }
+  .lobby-row .grow { flex: 1; min-width: 0; }
+  .lobby-row .t1 { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lobby-row .t2 { font-size: 14px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lobby-row .btns { display: flex; gap: 6px; flex: 0 0 auto; }
+  .lobby-row .btns button, .lobby-row .btns a { font-size: 14px; padding: 8px 10px; }
+  .lobby-row a.btn { border: 1px solid var(--line-ui); border-radius: 8px; color: var(--ink); text-decoration: none; background: #fff; }
+  .lobby-row.live { border-color: var(--blue); cursor: pointer; }
+  .lobby-row .dot { flex: 0 0 26px; height: 26px; border-radius: 50%; }
+  .lobby-row .dot.B { background: radial-gradient(circle at 35% 35%, #555, #111 70%); }
+  .lobby-row .dot.W { background: radial-gradient(circle at 35% 35%, #fff, #cfcfcf 75%); border: 1px solid #aaa; }
+  .win { color: var(--blue); } .lose { color: var(--accent); }
+  .lobby-foot { flex: 0 0 auto; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); display: flex; justify-content: center;
+                background: var(--bg); border-top: 1px solid var(--line-ui); }
+  .lobby-foot button { flex: 0 1 360px; font-size: 21px; font-weight: 800; padding: 14px 0; border-radius: 12px; border: 0;
+                       background: #ffd66b; color: #1d1d1f; box-shadow: 0 2px 6px rgba(0,0,0,.18); }
+  .lobby-empty { color: var(--muted); font-size: 15px; padding: 6px 2px; }
 </style>
 </head>
 <body>
-<div class="status">
+<div class="status" id="roomHead">
   <span id="status">대국중</span>
   <span class="shape" id="statusShape"></span>
   <span class="grow"></span>
   <span id="turn">불러오는 중…</span>
   <span class="sz" title="판 크기"><button id="bSzDown" aria-label="판 작게">−</button><button id="bSzFull" aria-label="판 꽉 채우기">풀</button><button id="bSzUp" aria-label="판 크게">+</button></span>
-  <button id="bNew">대국 신청</button>
+  <span id="topBtns"><button id="bLobby" title="대기실로">대기실</button><button id="bNew">대국 신청</button></span>
+</div>
+<div id="lobby">
+  <div class="status"><span><b>MONK 바둑</b> 대기실</span><span class="grow"></span><span class="small" id="lobbyEng" style="color:#cfd6e0"></span></div>
+  <div class="lobby-body">
+    <div class="msg" id="lobbyMsg"></div>
+    <h3>내 진행 중 대국</h3><div id="lobbyLive"><div class="lobby-empty">불러오는 중…</div></div>
+    <h3>지난 대국</h3><div id="lobbyPast"></div>
+  </div>
+  <div class="lobby-foot"><button id="bNewL">새 대국</button></div>
 </div>
 <div class="wrap">
   <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg></div>
@@ -298,6 +335,10 @@ const svg = document.getElementById('svg');
 const NS = 'http://www.w3.org/2000/svg';
 const COLS = 'ABCDEFGHJKLMNOPQRST';
 let S = null, busy = false;
+// 주소로 화면이 갈린다(10-24 단계 ①): '/' = 대기실, '/room/{id}' = 대국실. 대국실 API는 /api/rooms/{id}/…
+const ROOM = (location.pathname.match(/^\/room\/([A-Za-z0-9_-]{4,64})$/) || [])[1] || null;
+const api = p => (ROOM ? `/api/rooms/${ROOM}/${p.replace(/^\/api\//, '')}` : p);  // '/api/play' → '/api/rooms/{id}/play'
+if (!ROOM) document.body.classList.add('lobby-mode');
 let filterDefaultFor = null;  // 리뷰 구간 체크 기본값을 정한 판
 
 function el(tag, attrs, parent) {
@@ -557,7 +598,7 @@ function render() {
     (S.result ? `<div><b>결과: ${S.resultKo}</b>${fc ? ` — 흑 ${fc.black} · 백 ${fc.white}(KataGo ${fc.kataKo})` : ''}</div>` : '') +
     (reviewJob ? `<div><a href="/review/${reviewJob}" target="_blank">이 판 해설 열기</a></div>` : '') +
     '<div class="small">해설은 \'AI분석\' 탭에서 만듭니다.</div>';
-  document.getElementById('sgf').textContent = S.sgf ? `기보 자동 저장: ${S.sgf}` : '';
+  document.getElementById('sgf').innerHTML = S.sgfUrl ? `<a href="${S.sgfUrl}" download>기보 내려받기(SGF)</a> · 대기실 '지난 대국'에도 남습니다` : '';
 
   // ⋯ 설정
   const lv = document.getElementById('level');
@@ -702,7 +743,7 @@ function capturedBy(board, x, y, c) {
 }
 
 function notice(text) {
-  document.getElementById('msg').textContent = text;
+  document.getElementById(ROOM ? 'msg' : 'lobbyMsg').textContent = text;
 }
 
 let stateGen = 0;  // 서버에 판을 바꾸는 요청을 보낼 때마다 +1 — 그 전에 보낸 조회 응답이 늦게 와도 새 판을 덮지 않게(10-24)
@@ -711,16 +752,19 @@ async function call(path, body) {
   stateGen++;
   busy = true; render();
   try {
-    const r = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
+    const r = await fetch(api(path), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
     const j = await r.json();
+    if (j.noRoom) { busy = false; notice(j.error); return; }
     if (j.busy) {  // 다른 탭 등에서 엔진이 생각 중 — 판은 서버 정본으로 다시 받는다
       busy = false;
-      S = await (await fetch('/api/state')).json();
+      const s2 = await (await fetch(api('/api/state'))).json();
+      if (s2.board) { S = s2; syncClocks(); }
       render(); notice(j.error); return;
     }
     const prev = S;
     S = j;
     playSounds(prev, S, path === '/api/play' && !(body && body.pass));
+    syncClocks();
   } catch (e) { S.error = '서버 연결 실패 — run.sh가 켜져 있는지 확인해 주세요'; }
   busy = false; render();
 }
@@ -832,6 +876,7 @@ function dlgSync() {
 }
 document.getElementById('bNew').onclick = () => {
   if (busy) { notice('상대가 생각 중입니다'); return; }
+  if (!S) return;
   document.getElementById('dLevel').value = S.level;
   for (const o of document.getElementById('dLevel').options) if (o.value !== 'strong') o.disabled = !S.humanOk;
   document.querySelector(`input[name="dWay"][value="${S.handicap ? 'handi' : 'even'}"]`).checked = true;
@@ -848,27 +893,27 @@ document.getElementById('bNew').onclick = () => {
 };
 dlg.addEventListener('change', dlgSync);
 document.getElementById('dCancel').onclick = () => dlg.close();
+// 신청 = 새 방(10-24): 서버가 방을 만들면 그 대국실로 옮긴다 — 첫 수가 엔진이면 대국실이 빈 판부터 그리고 엔진을 부른다
 document.getElementById('dOk').onclick = async () => {
   dlg.close();
-  filterDefaultFor = null; hint = null; judge = null; reviewJob = null;
-  document.getElementById('reviewFrame').hidden = true; document.getElementById('reviewOpen').hidden = true;
   const level = document.getElementById('dLevel').value;
   const handi = document.querySelector('input[name="dWay"]:checked').value === 'handi' ? Number(document.getElementById('handicap').value) : 0;
   const time = document.getElementById('tUnl').checked ? { unlimited: true } :
     { main: Number(document.getElementById('tMain').value), byo: Number(document.getElementById('tByo').value),
       periods: Number(document.getElementById('tPer').value) };
-  if (level !== S.level) await call('/api/level', { level });  // 새 판 첫 수를 새 상대가 두도록 먼저 바꾼다
   const colorPick = document.getElementById('dColor').value;
   try { localStorage.setItem('goBoardColorPick', colorPick); } catch (e) { /* 이번 창에서만 */ }
-  // 새 대국: 서버가 (KataGo가 흑이면 첫 수까지) 답하기 전에 화면부터 빈 판으로 — 첫 돌은 생각 뒤 소리와 함께 놓인다(10-24)
-  S = { ...S, board: Array.from({ length: N }, () => Array(N).fill(null)), moveNo: 0, last: null, result: null, resultKo: null,
-        captures: { B: 0, W: 0 }, scoring: null, finalCount: null, stale: false };
-  render();
-  await call('/api/new', { handicap: handi, time, color: handi ? 'B' : colorPick });
-  if (!handi && colorPick === 'auto' && S) notice(`돌 가림 결과 — 작가님 ${S.user === 'B' ? '흑(먼저 둠)' : '백'}`);
-  initClocks();
-  voice(SND && SND.start);
+  notice('대국실을 여는 중…');
+  try {
+    const r = await fetch('/api/rooms', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({ level, handicap: handi, time, color: handi ? 'B' : colorPick }) });
+    const j = await r.json();
+    if (j.error || !j.id) { notice(j.error || '대국실을 만들지 못했습니다'); return; }
+    try { sessionStorage.setItem('goBoardStartVoice', j.id); } catch (e) { /* 시작 음성 생략 */ }
+    location.href = `/room/${j.id}`;
+  } catch (e) { notice('서버 연결 실패 — run.sh가 켜져 있는지 확인해 주세요'); }
 };
+document.getElementById('bLobby').onclick = () => { location.href = '/'; };
 
 document.getElementById('bUndo').onclick = () => call('/api/undo');
 document.getElementById('bSwap').onclick = () => call('/api/swap');
@@ -915,12 +960,26 @@ function makeClock(t) {
   return t ? { main: t.main * 60, byo: t.byo, periods: t.periods, left: t.periods, period: t.byo, inByo: t.main === 0, flagged: false } : null;
 }
 
-function initClocks() {
-  clocks = S.time ? { B: makeClock(S.time), W: makeClock(S.time) } : null;
+// 시계 정본은 서버(10-24) — 받은 값에 '지금 차례가 흐른 시간'을 더해 이어서 잰다. 새로고침·재기동에도 같은 시계
+function syncClocks() {
+  const k = S && S.clock, t = S && S.time;
+  clocks = k && t ? { B: null, W: null } : null;
+  if (clocks) for (const c of ['B', 'W']) {
+    const v = k[c];
+    clocks[c] = { main: v.main, byo: t.byo, periods: t.periods, left: v.left, period: v.period, inByo: v.inByo, flagged: false };
+  }
+  if (clocks && k.running && k.elapsed > 0) {
+    const isUser = k.running === S.user;
+    // 초 단위로 나눠 깎는다 — tickClock은 한 번에 초읽기 한 회만 넘기므로(앱을 오래 닫아 둔 판도 정확히)
+    const onEv = e => { if (e === 'flag' && isUser && !S.stale) setTimeout(() => call('/api/timeout', { color: S.user }), 0); };
+    for (let el = k.elapsed; el > 0 && !clocks[k.running].flagged; el -= 1) tickClock(clocks[k.running], Math.min(1, el), onEv);
+    if (!isUser && clocks[k.running].flagged) { clocks[k.running].flagged = false; clocks[k.running].left = 1; clocks[k.running].period = 1; }
+  }
   clockLast = performance.now();
   if (!clockTimer) clockTimer = setInterval(clockTick, 100);
   renderClocks();
 }
+const initClocks = syncClocks;
 
 function tickClock(c, dt, emit) {
   if (!c || c.flagged) return;
@@ -1030,24 +1089,35 @@ function bootWith(s) {
   if (!widgetsReady) { setupWidgets(); widgetsReady = true; }
   initClocks(); render();
 }
-try {
-  const cached = JSON.parse(localStorage.getItem('goBoardLastState') || 'null');
-  if (cached && cached.board) { cached.stale = true; bootWith(cached); }
-} catch (e) { /* 저장소 불가·손상 — 실시간 상태만 */ }
-setInterval(() => {  // 판 상태를 2초마다 저장(다음 실행의 첫 화면용)
-  try { if (S && !S.stale) localStorage.setItem('goBoardLastState', JSON.stringify(S)); } catch (e) { /* 용량·차단 — 무시 */ }
-}, 2000);
-const bootGen = stateGen;
-fetch('/api/state').then(r => r.json()).then(s => {
-  if (stateGen !== bootGen && S && !S.stale) return;  // 그사이 대국 신청·착수가 있었다 — 늦은 시작 응답은 버린다(10-24 '첫 수 뒤 빈 판' 회귀)
-  const qs = new URLSearchParams(location.search);
-  if (s.testMode && qs.get('skin')) { skinName = qs.get('skin'); skinBoard = qs.get('board'); skinStones = qs.get('stones'); }
-  if (s.testMode && qs.get('tab')) tab = qs.get('tab');  // 캡처용
-  if (s.testMode && qs.get('dlg')) setTimeout(() => document.getElementById('bNew').click(), 0);
-  bootWith(s);
-  if (S.testMode && location.search.includes('selftest=1')) selftest();
-})
-  .catch(() => { document.getElementById('turn').textContent = '서버 연결 실패 — run.sh가 켜져 있는지 확인해 주세요'; });
+const LAST_KEY = `goBoardLastState:${ROOM}`;  // 방마다 따로 — 다른 방의 판이 먼저 그려지지 않게
+if (ROOM) {
+  try {
+    const cached = JSON.parse(localStorage.getItem(LAST_KEY) || 'null');
+    if (cached && cached.board) { cached.stale = true; bootWith(cached); }
+  } catch (e) { /* 저장소 불가·손상 — 실시간 상태만 */ }
+  setInterval(() => {  // 판 상태를 2초마다 저장(다음 실행의 첫 화면용)
+    try { if (S && !S.stale) localStorage.setItem(LAST_KEY, JSON.stringify(S)); } catch (e) { /* 용량·차단 — 무시 */ }
+  }, 2000);
+  const bootGen = stateGen;
+  const boot = () => fetch(api('/api/state')).then(r => r.json()).then(s => {
+    if (!s.board && !s.noRoom) { setTimeout(boot, 1000); return; }  // 엔진 생각 중이라 판을 아직 못 받음 — 1초 뒤 다시
+    if (s.noRoom) { document.getElementById('turn').textContent = s.error; document.getElementById('status').textContent = '없는 방'; notice(s.error); return; }
+    if (stateGen !== bootGen && S && !S.stale) return;  // 그사이 대국 신청·착수가 있었다 — 늦은 시작 응답은 버린다(10-24 '첫 수 뒤 빈 판' 회귀)
+    const qs = new URLSearchParams(location.search);
+    if (s.testMode && qs.get('skin')) { skinName = qs.get('skin'); skinBoard = qs.get('board'); skinStones = qs.get('stones'); }
+    if (s.testMode && qs.get('tab')) tab = qs.get('tab');  // 캡처용
+    if (s.testMode && qs.get('dlg')) setTimeout(() => document.getElementById('bNew').click(), 0);
+    bootWith(s);
+    let fresh = false;  // 방금 신청한 방이면 시작 음성(첫 누름 뒤 — 브라우저 소리 잠금)
+    try { fresh = sessionStorage.getItem('goBoardStartVoice') === ROOM; sessionStorage.removeItem('goBoardStartVoice'); } catch (e) { /* 생략 */ }
+    if (fresh) document.addEventListener('pointerdown', () => voice(SND && SND.start), { once: true });
+    // 엔진 차례로 열린 방(새 방에서 KataGo가 흑 · 재기동으로 복원)은 엔진을 부른다 — 화면은 판부터 보이고 첫 돌은 생각 뒤 소리와 함께
+    if (!S.result && !S.scoring && !S.imported && S.toMove !== S.user) call('/api/engine');
+    if (S.testMode && location.search.includes('selftest=1')) selftest();
+  })
+    .catch(() => { document.getElementById('turn').textContent = '서버 연결 실패 — run.sh가 켜져 있는지 확인해 주세요'; });
+  boot();
+}
 
 // ---- 판 크기: − / 풀 / + (브라우저에 기억)
 (function boardSize() {
@@ -1083,6 +1153,7 @@ fetch('/api/state').then(r => r.json()).then(s => {
 
 // ---- 실시간 분석판(live_view 임베드): 서버가 살아 있을 때만 붙이고, 접힘 상태를 기억한다
 (function liveBox() {
+  if (!ROOM) return;
   // 이 컴퓨터에서 열면 로컬 분석판, 밖(모바일·터널)에서 열면 같은 잠금 뒤의 외부 주소(10-23)
   const LIVE = ['127.0.0.1', 'localhost'].includes(location.hostname) ? 'http://127.0.0.1:8770/' : '/live/';  // 밖에선 바둑판 서버가 /live/로 중계(Access 로그인 한 번)
   const box = document.getElementById('liveBox'), fr = document.getElementById('liveFrame'), off = document.getElementById('liveOff');
@@ -1094,7 +1165,7 @@ fetch('/api/state').then(r => r.json()).then(s => {
   tg.onclick = () => setFold(!folded);
   setFold(folded);
   fetch(LIVE + 'api/state', { mode: 'no-cors' })
-    .then(() => { fr.src = LIVE + '?embed=1'; })
+    .then(() => { fr.src = LIVE + `?embed=1&room=${ROOM}`; })  // ?room= — 분석판이 이 방을 따라가게(10-24)
     .catch(() => { fr.hidden = true; off.hidden = false; });
 })();
 
@@ -1108,7 +1179,7 @@ setInterval(() => {
 
 // ---- 휴대폰 시트: 탭·분석 패널·실시간 분석판을 시트로 옮기고 본 화면엔 'AI분석' 버튼만(고정 화면, 스크롤 없음)
 (function mobileSheet() {
-  if (!matchMedia('(pointer: coarse)').matches) return;
+  if (!ROOM || !matchMedia('(pointer: coarse)').matches) return;
   const side = document.querySelector('.side'), tabs = document.getElementById('tabs');
   const panel = document.querySelector('.box.panel'), live = document.getElementById('liveBox'), acts = document.querySelector('.actions');
   const sheet = document.createElement('div'); sheet.id = 'sheet';
@@ -1120,6 +1191,59 @@ setInterval(() => {
   side.insertBefore(open, acts);
   open.onclick = () => document.body.classList.add('sheet-open');
   document.getElementById('bSheetX').onclick = () => document.body.classList.remove('sheet-open');
+})();
+
+// ---- 대기실(10-24 단계 ①): 새 대국 · 내 진행 중 대국(이어 두기) · 지난 대국(결과·기보·리뷰)
+(function lobby() {
+  if (ROOM) return;
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const when = iso => { const d = new Date(iso); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+  const rule = r => `${r.handicap ? r.handicap + '점' : '호선'} · 작가님 ${r.user === 'B' ? '흑' : '백'}`;
+  function row(r) {
+    const live = r.status !== 'ended';
+    const res = r.result ? `<span class="${r.win === true ? 'win' : r.win === false ? 'lose' : ''}">${esc(r.resultKo)}${r.win === true ? ' · 승' : r.win === false ? ' · 패' : ''}</span>`
+      : (live ? (r.toMove === r.user ? '내 차례' : 'KataGo 차례') : '끝내지 않은 판');
+    const rv = r.lastReview && r.lastReview.state === 'done' ? `<a class="btn" href="/review/${r.lastReview.id}" target="_blank">리뷰 열기</a>`
+      : r.lastReview && r.lastReview.state === 'running' ? `<a class="btn" href="/review/${r.lastReview.id}" target="_blank">리뷰 중…</a>`
+      : r.review && r.review.ok ? `<button data-review="${r.id}" data-handi="${r.handicap}">리뷰 만들기</button>` : '';
+    const btns = live ? `<button class="hl" data-open="${r.id}">이어 두기</button>`
+      : `${r.sgfUrl ? `<a class="btn" href="${r.sgfUrl}" download>기보</a>` : ''}${rv}`;
+    return `<div class="box lobby-row${live ? ' live' : ''}" ${live ? `data-open="${r.id}"` : ''}><span class="dot ${r.user}"></span>` +
+      `<div class="grow"><div class="t1">${res}</div><div class="t2">${when(r.started)} · ${r.moveNo}수 · ${esc(r.levelLabel)} · ${rule(r)}${r.imported ? ' · 이전 기보' : ''}</div></div>` +
+      `<div class="btns">${btns}</div></div>`;
+  }
+  async function load() {
+    try {
+      const d = await (await fetch('/api/rooms')).json();
+      const df = d.defaults || {};
+      // 신청 창은 대국실과 같은 것을 쓴다 — 기본값은 가장 최근 방의 설정
+      S = { ...d, level: df.level || 'strong', handicap: df.handicap || 0, time: df.time === undefined ? { main: 0, byo: 20, periods: 3 } : df.time, user: df.user || 'B' };
+      if (!widgetsReady) { setupWidgets(); widgetsReady = true; }
+      const live = d.rooms.filter(r => r.status !== 'ended'), past = d.rooms.filter(r => r.status === 'ended');
+      document.getElementById('lobbyLive').innerHTML = live.length ? live.map(row).join('') : '<div class="lobby-empty">진행 중인 대국이 없습니다 — 아래 \'새 대국\'으로 시작하세요.</div>';
+      document.getElementById('lobbyPast').innerHTML = past.length ? past.map(row).join('') : '<div class="lobby-empty">아직 지난 대국이 없습니다.</div>';
+      document.getElementById('lobbyEng').textContent = d.strongOk ? '' : (d.strongError || '엔진 기동 실패');
+      if (d.testMode) document.title = 'MONK 바둑 대기실 (테스트)';
+    } catch (e) { notice('서버 연결 실패 — run.sh가 켜져 있는지 확인해 주세요'); }
+  }
+  document.getElementById('lobby').addEventListener('click', async e => {
+    const rv = e.target.closest('[data-review]');
+    if (rv) {
+      e.stopPropagation();
+      rv.disabled = true; notice('리뷰를 만드는 중 — 새 탭에서 진행 상황을 볼 수 있어요');
+      const tabWin = window.open('about:blank', '_blank');  // 팝업 차단 회피 — 누른 순간 연다
+      const j = await (await fetch(`/api/rooms/${rv.dataset.review}/review`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                                                           body: JSON.stringify({ wrFilter: rv.dataset.handi === '0' }) })).json();
+      if (j.reviewJob) { if (tabWin) tabWin.location.href = `/review/${j.reviewJob}`; }
+      else { if (tabWin) tabWin.close(); notice(j.error || '리뷰를 시작하지 못했습니다'); }
+      load(); return;
+    }
+    const op = e.target.closest('[data-open]');
+    if (op && !e.target.closest('a')) location.href = `/room/${op.dataset.open}`;
+  });
+  document.getElementById('bNewL').onclick = () => document.getElementById('bNew').onclick();
+  load();
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });  // 앱으로 돌아오면 목록 새로
 })();
 
 // ---- PWA: 홈 화면에 추가하면 바로 판으로(10-23). 서비스 워커는 캐시 없이 설치 조건만 채운다

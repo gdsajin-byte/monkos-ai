@@ -3,15 +3,26 @@
 
 표준 라이브러리만 쓴다. 127.0.0.1에만 붙는다(외부 공개 금지).
 엔진·모델·대국 기록은 전부 레포 밖 ~/.monkos/katago/ 에 있다.
+
+단계 ①(10-24, ORDER_20261023 방구조): 서버 1개 = 판 1개(전역 GAME)를 걷어내고 방(Room) 단위로 나눴다.
+  /            대기실 (새 대국 · 내 진행 중 대국 · 지난 대국)
+  /room/{id}   대국실 (지금 화면)
+  /api/rooms   방 목록·생성,  /api/rooms/{id}/state|play|…  방 범위 API
+방 상태는 수마다 ~/.monkos/go-board/rooms/{id}.json 에 원자적으로 저장되고 서버 기동 시 전부 복원된다.
+엔진은 EngineHub(무상태 경계) 뒤에 있다 — 방이 국면을 넘기면 수·분석만 돌려준다.
 """
 import json
 import os
 import random
 import re
+import secrets
 import subprocess
 import sys
 import threading
 import time
+import urllib.error
+import urllib.parse
+import urllib.request
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -30,6 +41,11 @@ TEST_MODE = os.environ.get("GO_BOARD_TEST") == "1"
 LIVE_PORT = 8765
 GAMES_DIR = KATA_DIR / "games" / ("_test" if TEST_MODE else "")
 REVIEW_DIR = GAMES_DIR / "reviews"
+# 방 저장소(단계 ① 로컬 — 단계 ⑤에서 Firestore·GCS로 이관, RoomStore 인터페이스만 바꾼다). 테스트는 _test/ 로 분리
+ROOMS_DIR = Path.home() / ".monkos" / "go-board" / ("_test" if TEST_MODE else "") / "rooms"
+ROOM_ID_RE = r"[A-Za-z0-9_-]{4,64}"
+EMPTY_ROOM_TTL = 600  # 빈 방(0수) 정리 기준 초
+USER_LAG_GRACE = 2.0  # 서버 시계: 사람 수는 왕복 지연(터널 ~1초)만큼 덜 깎는다 — 화면 시계보다 먼저 시간패가 나지 않게
 # 리뷰 파이프라인(막내11 소관) — 호출만, 수정 금지
 PILOT_DIR = Path(os.environ.get("GO_BOARD_PILOT_DIR") or HERE.parent / "go-commentary-pilot")  # 환경변수는 미병합 브랜치 시험용
 REVIEW_PY = PILOT_DIR / "review.py"
@@ -70,7 +86,10 @@ class Engine:
         self.name = name
         self.args = args
         self.proc = None
-        self.lock = threading.Lock()
+        self.lock = threading.Lock()  # GTP 명령 1개 단위
+        self.job = threading.Lock()  # 국면 맞추기 + 계산 1건 단위(EngineHub 줄 세우기)
+        self.key = None  # 엔진이 지금 들고 있는 국면 — 같으면 다시 맞추지 않는다
+        self.profile = None  # 급수 엔진에 마지막으로 건 humanSL 프로필
         self.error = None
 
     def start(self):
@@ -114,19 +133,25 @@ class Engine:
             raise RuntimeError(f"{self.name}: {line} → {head[1:].strip()}")
         return "\n".join([head[1:].strip()] + out[1:]).strip()
 
-    def sync(self, moves, handicap=0, komi=KOMI):
-        """판을 처음부터 다시 맞춘다. 접바둑이면 표준 화점 치석(fixed_handicap)을 놓고 그 좌표를 돌려준다."""
+    def sync(self, moves, setup=(), komi=KOMI):
+        """판을 처음부터 다시 맞춘다 — 치석(setup)은 방이 가진 좌표를 그대로 놓는다(엔진은 국면을 기억하지 않는다)."""
         with self.lock:
             self._cmd("clear_board")
             self._cmd(f"komi {komi}")
-            if handicap in FIXED_SETUP:
-                setup = FIXED_SETUP[handicap]
+            if setup:
                 self._cmd("set_free_handicap " + " ".join(setup))
-            else:
-                setup = self._cmd(f"fixed_handicap {handicap}").split() if handicap else []
             for c, mv in moves:
                 self._cmd(f"play {c} {mv}")
-            return setup
+
+    def handicap_setup(self, handicap):
+        """표준 화점 치석 좌표(fixed_handicap). 3점은 FIXED_SETUP 관행 배치."""
+        if not handicap:
+            return []
+        if handicap in FIXED_SETUP:
+            return list(FIXED_SETUP[handicap])
+        with self.lock:
+            self._cmd("clear_board")
+            return self._cmd(f"fixed_handicap {handicap}").split()
 
     def ownership(self):
         """신경망 소유권(8대칭 평균) — [y][x], 백 기준 -1~1. 계가에서 경계가 열린 빈 점 판정에 쓴다.
@@ -214,6 +239,104 @@ def build_engines():
     return strong, human, human_reason
 
 
+class EngineHub:
+    """엔진 무상태 경계(단계 ①) — 방이 국면(position)과 설정(level)을 넘기면 수·분석만 돌려준다.
+    방 상태는 여기 없다. 지금은 이 iMac의 KataGo GTP 프로세스 2개(최강·급수)이고, 동시 요청은 엔진별
+    job 잠금으로 줄 세운다(다른 방 상태 조회는 잠금 밖). 엔진 주소 교체(RunPod·4060)는 이 클래스만 바꾼다.
+    position = {"moves": [(색, 수)…], "setup": [치석…], "komi": 덤}"""
+
+    def __init__(self, strong, human, human_reason):
+        self.strong, self.human, self.human_reason = strong, human, human_reason
+
+    def _pick(self, level):
+        e = self.strong if level == "strong" else self.human
+        if e is None or not e.ok:
+            raise RuntimeError((e.error if e else self.human_reason) or f"{'최강' if level == 'strong' else '급수'} 엔진이 꺼져 있음")
+        return e
+
+    @staticmethod
+    def _key(pos):
+        return (pos["komi"], tuple(pos["setup"]), tuple(tuple(m) for m in pos["moves"]))
+
+    def _sync(self, e, pos):
+        key = self._key(pos)
+        if e.key == key:
+            return key
+        e.key = None
+        e.sync(pos["moves"], pos["setup"], pos["komi"])
+        e.key = key
+        return key
+
+    def _profile(self, e, level):
+        if level != "strong" and e.profile != level:
+            e.cmd(f"kata-set-param humanSLProfile rank_{level}")
+            e.profile = level
+
+    def setup(self, handicap):
+        e = self._pick("strong")
+        with e.job:
+            e.key = None
+            return e.handicap_setup(handicap)
+
+    def check_level(self, level):
+        e = self._pick(level)
+        with e.job:
+            self._profile(e, level)
+
+    def legal(self, pos, level, color, mv):
+        """둘 수 있는 자리인지(자충·패) — 엔진에 놓아 본다. 놓이면 엔진 국면도 그만큼 앞선다."""
+        e = self._pick(level)
+        with e.job:
+            key = self._sync(e, pos)
+            try:
+                e.cmd(f"play {color} {mv}")
+            except RuntimeError:
+                raise RuntimeError("둘 수 없는 자리입니다 (자충·패 등).")
+            e.key = (key[0], key[1], key[2] + ((color, mv),))
+
+    def move(self, pos, level, color):
+        """engine.move — (수, 흑 기준 점수, 흑 승률)."""
+        e = self._pick(level)
+        with e.job:
+            key = self._sync(e, pos)
+            self._profile(e, level)
+            try:
+                mv, score, wr = e.genmove(color)
+            except RuntimeError:
+                e.key = None
+                raise
+            e.key = key if mv.lower() == "resign" else (key[0], key[1], key[2] + ((color, mv),))
+            return mv, score, wr
+
+    def analyze(self, pos, color, top=3):
+        """engine.analyze — 후보 상위 N(늘 최강 엔진)."""
+        e = self._pick("strong")
+        with e.job:
+            self._sync(e, pos)
+            return e.search(color, top)
+
+    def final_score(self, pos, level):
+        e = self._pick(level)
+        with e.job:
+            self._sync(e, pos)
+            return e.cmd("final_score")
+
+    def scoring(self, pos, level):
+        """계가 재료 — 사석·KataGo 판정·소유권."""
+        e = self._pick(level)
+        with e.job:
+            self._sync(e, pos)
+            dead = {to_xy(mv) for mv in e.cmd("final_status_list dead").split()}
+            return {"dead": dead, "kata": e.cmd("final_score"), "own": e.ownership()}
+
+    @property
+    def human_ok(self):
+        return self.human is not None and self.human.ok
+
+    def human_why(self):
+        return None if self.human_ok else ((self.human.error if self.human else self.human_reason) or "급수 엔진이 꺼져 있음")
+
+
 # ---------------------------------------------------------------- 판 규칙(따낸 돌·표시용)
 
 def to_xy(mv):
@@ -263,42 +386,128 @@ def replay(moves, setup=()):
     return g, caps
 
 
-# ---------------------------------------------------------------- 대국 상태
+# ---------------------------------------------------------------- 시계(서버 정본 — 화면은 이 값을 받아 이어서 잰다)
 
-class Game:
-    def __init__(self, strong, human, human_reason):
-        self.strong, self.human, self.human_reason = strong, human, human_reason
+def make_clock(t):
+    return {"main": t["main"] * 60.0, "period": float(t["byo"]), "left": t["periods"], "inByo": t["main"] == 0}
+
+
+def charge_clock(c, t, dt, is_user):
+    """dt초를 깎는다. 마지막 초읽기를 넘기면 사람은 0초(화면이 시간패를 알린다), 엔진은 1초에 멈춘다(시간패 없음)."""
+    if dt <= 0:
+        return
+    if not c["inByo"]:
+        c["main"] -= dt
+        if c["main"] > 0:
+            return
+        dt, c["main"], c["inByo"], c["period"] = -c["main"], 0.0, True, float(t["byo"])
+    c["period"] -= dt
+    while c["period"] <= 0:
+        if c["left"] <= 1:
+            c["left"], c["period"] = 1, (0.0 if is_user else 1.0)
+            return
+        c["left"] -= 1
+        c["period"] += t["byo"]
+
+
+# ---------------------------------------------------------------- 방(대국 상태)
+
+STATUS_KO = {"waiting": "대기", "playing": "대국", "ended": "종료"}
+
+
+class Room:
+    """방 1개 = 판 1개. 종류는 단계 ①에서 'ai'만(초청·강의는 단계 ③④). 엔진은 ENGINES(무상태)로만 부른다."""
+
+    def __init__(self, rid):
+        self.id = rid
+        self.kind = "ai"
         self.lock = threading.Lock()
+        self.cache = None  # 마지막 상태 JSON(엔진 생각 중 조회용)
         self.user = "B"
         self.level = "strong"  # 'strong' | 랭크 문자열('5k' 등)
         self.handicap = 0
         self.time = dict(DEFAULT_TIME)  # None = 무제한
-        self.new()
-
-    def new(self, handicap=None, time_ctl="keep", color=None):
-        if color in ("B", "W"):
-            self.user = color
-        elif color == "auto":  # 돌 가림
-            self.user = random.choice("BW")
-        if time_ctl != "keep":
-            self.time = parse_time(time_ctl)
-        if handicap is not None:
-            if handicap not in HANDICAPS:
-                raise RuntimeError("치수는 호선 또는 2~9점입니다.")
-            self.handicap = handicap
-            if handicap:
-                self.user = "B"  # 접바둑은 작가님이 하수(흑)로 시작 — 바꾸려면 '흑백 바꾸기'
-        self.setup = []  # 치석 좌표 — _sync 때 엔진이 놓은 자리로 채운다
+        self.setup = []  # 치석 좌표
         self.moves = []
         self.scores = []  # (수 번호, 흑 기준 점수)
         self.score = None
         self.winrate = None
         self.result = None
         self.final_count = None
-        self.scoring = None  # 계가 중이면 {"dead": set((x, y)), "kata": KataGo final_score}
+        self.scoring = None  # 계가 중이면 {"dead": set((x, y)), "kata": KataGo final_score, "own": 소유권}
         self.message = ""
         self.started = datetime.now()
+        self.updated = time.time()
         self.sgf_path = GAMES_DIR / f"{self.started:%Y%m%d_%H%M%S}_작가님_vs_KataGo.sgf"
+        self.clock = None  # {"B": {...}, "W": {...}} — time 이 None 이면 None
+        self.turn_since = time.time()
+        self.reviews = []  # 리뷰 job id (REVIEWS.jobs)
+        self.imported = False  # 단계 ① 이전 SGF에서 가져온 지난 대국
+
+    # ---- 만들기·저장
+
+    @classmethod
+    def create(cls, level, handicap, time_ctl, color):
+        rid = f"{datetime.now():%Y%m%d-%H%M%S}-{secrets.token_hex(2)}"
+        r = cls(rid)
+        if level != "strong" and level not in RANKS:
+            raise RuntimeError("알 수 없는 수준")
+        if level != "strong":
+            ENGINES.check_level(level)
+        r.level = level
+        r.time = parse_time(time_ctl)
+        if handicap not in HANDICAPS:
+            raise RuntimeError("치수는 호선 또는 2~9점입니다.")
+        r.handicap = handicap
+        if handicap:
+            r.user = "B"  # 접바둑은 작가님이 하수(흑)로 시작 — 바꾸려면 '흑백 바꾸기'
+        elif color in ("B", "W"):
+            r.user = color
+        elif color == "auto":  # 돌 가림
+            r.user = random.choice("BW")
+            r.message = f"돌 가림 결과 — 작가님 {'흑(먼저 둠)' if r.user == 'B' else '백'}"
+        r.setup = ENGINES.setup(handicap)
+        if r.sgf_path.exists():  # 같은 초에 두 방 — 기보 이름 겹침 방지
+            r.sgf_path = r.sgf_path.with_name(f"{r.sgf_path.stem}_{rid[-4:]}.sgf")
+        r.clock = {"B": make_clock(r.time), "W": make_clock(r.time)} if r.time else None
+        return r
+
+    def to_dict(self):
+        sc = None
+        if self.scoring:
+            sc = {"dead": sorted(self.scoring["dead"]), "kata": self.scoring["kata"], "own": self.scoring["own"]}
+        return {"v": 1, "id": self.id, "kind": self.kind, "user": self.user, "level": self.level,
+                "handicap": self.handicap, "time": self.time, "setup": self.setup,
+                "moves": [list(m) for m in self.moves], "scores": [list(s) for s in self.scores],
+                "score": self.score, "winrate": self.winrate, "result": self.result, "finalCount": self.final_count,
+                "scoring": sc, "message": self.message, "started": self.started.isoformat(timespec="seconds"),
+                "updated": self.updated, "sgf": str(self.sgf_path), "clock": self.clock,
+                "reviews": [REVIEWS.dump(j) for j in self.reviews if j in REVIEWS.jobs], "imported": self.imported}
+
+    @classmethod
+    def from_dict(cls, d):
+        r = cls(d["id"])
+        r.kind = d.get("kind", "ai")
+        r.user, r.level, r.handicap, r.time = d["user"], d["level"], d["handicap"], d["time"]
+        r.setup = list(d.get("setup") or [])
+        r.moves = [tuple(m) for m in d.get("moves") or []]
+        r.scores = [tuple(s) for s in d.get("scores") or []]
+        r.score, r.winrate, r.result = d.get("score"), d.get("winrate"), d.get("result")
+        r.final_count = d.get("finalCount")
+        sc = d.get("scoring")
+        r.scoring = {"dead": {tuple(p) for p in sc["dead"]}, "kata": sc["kata"], "own": sc["own"]} if sc else None
+        r.message = d.get("message", "")
+        r.started = datetime.fromisoformat(d["started"])
+        r.updated = d.get("updated", time.time())
+        r.sgf_path = Path(d["sgf"])
+        r.clock = d.get("clock")
+        r.turn_since = time.time()  # 서버가 꺼져 있던 시간은 깎지 않는다
+        r.imported = d.get("imported", False)
+        for j in d.get("reviews") or []:
+            r.reviews.append(REVIEWS.restore(j, r.id))
+        return r
+
+    # ---- 판 정보
 
     @property
     def komi(self):
@@ -311,26 +520,55 @@ class Game:
             return first
         return "B" if first == "W" else "W"
 
-    def engine(self):
-        if self.level == "strong":
-            return self.strong
-        return self.human
+    @property
+    def eng_color(self):
+        return "W" if self.user == "B" else "B"
+
+    @property
+    def status(self):
+        if self.result or self.imported:
+            return "ended"
+        return "playing" if self.moves else "waiting"
+
+    def position(self):
+        return {"moves": self.moves, "setup": self.setup, "komi": self.komi}
 
     def level_label(self):
         return "KataGo 최강" if self.level == "strong" else f"KataGo 사람형 {RANK_KO[self.level]}"
 
-    def _sync(self):
-        e = self.engine()
-        self.setup = e.sync(self.moves, self.handicap, self.komi)
+    # ---- 시계: 차례가 바뀔 때마다 둔 쪽을 깎고, 초읽기면 그 회를 처음부터
+
+    def _running(self):
+        return None if (self.result or self.scoring or not self.clock) else self.to_move
+
+    def _charge(self, reset):
+        """지금 차례인 쪽에 흐른 시간을 깎는다. reset=True 면 방금 둔 것(초읽기 한 회 다시)."""
+        now = time.time()
+        c = self._running()
+        if c:
+            dt = now - self.turn_since - (USER_LAG_GRACE if c == self.user else 0)
+            charge_clock(self.clock[c], self.time, dt, c == self.user)
+            if reset and self.clock[c]["inByo"]:
+                self.clock[c]["period"] = float(self.time["byo"])
+        self.turn_since = now
+
+    def clock_state(self):
+        if not self.clock:
+            return None
+        c = self._running()
+        el = max(0.0, time.time() - self.turn_since - (USER_LAG_GRACE if c == self.user else 0)) if c else 0
+        return {"B": self.clock["B"], "W": self.clock["W"], "running": c, "elapsed": round(el, 2)}
+
+    # ---- 대국
 
     def engine_move(self):
-        if self.scoring:  # 계가 중에는 엔진이 두지 않는다
+        if self.scoring or self.result:  # 계가 중·종국 뒤에는 엔진이 두지 않는다
             return
-        e = self.engine()
-        if e is None or not e.ok:
-            raise RuntimeError(e.error if e else self.human_reason)
         c = self.to_move
-        mv, score, wr = e.genmove(c)
+        if c == self.user:
+            return
+        mv, score, wr = ENGINES.move(self.position(), self.level, c)
+        self._charge(reset=True)
         if score is not None:
             self.score, self.winrate = score, wr
             self.scores.append((len(self.moves) + 1, round(score, 1)))
@@ -353,13 +591,9 @@ class Game:
             raise RuntimeError("이미 끝난 대국입니다.")
         if not self.moves:
             raise RuntimeError("아직 둔 수가 없습니다.")
-        e = self.engine()
-        if e is None or not e.ok:
-            raise RuntimeError(e.error if e else self.human_reason)
-        dead = set()
-        for mv in e.cmd("final_status_list dead").split():
-            dead.add(to_xy(mv))
-        self.scoring = {"dead": dead, "kata": e.cmd("final_score"), "own": e.ownership()}
+        sc = ENGINES.scoring(self.position(), self.level)
+        self._charge(reset=False)
+        self.scoring = sc
         self.message = "계가 중 — KataGo가 고른 사석이 흐리게 보입니다. 돌을 누르면 사석/산 돌이 바뀝니다."
 
     def toggle_dead(self, x, y):
@@ -436,42 +670,35 @@ class Game:
         self.scoring = None
         self.message = (f"계가 확정 — 흑 {c['black']:g} · 백 {c['white']:g}(덤 {c['komi']:g} 포함) → {c['resultKo']}"
                         f" (KataGo 판정 {c['kataKo']})")
-        self.save()
+        self.save_sgf()
 
     def cancel_score(self):
         self.scoring = None
+        self.turn_since = time.time()  # 계가 동안 멈춘 시계를 다시
         self.message = "계가를 취소했습니다. 이어서 두세요."
 
     def play(self, mv):
         if self.result:
-            raise RuntimeError("대국이 끝났습니다. '새 판'을 눌러 주세요.")
+            raise RuntimeError("대국이 끝났습니다. '대국 신청'으로 새 대국을 시작해 주세요.")
         if self.scoring:
             raise RuntimeError("계가 중입니다 — '계가 확정' 또는 '계가 취소'를 눌러 주세요.")
         if self.to_move != self.user:
             raise RuntimeError("KataGo 차례입니다.")
-        e = self.engine()
-        if e is None or not e.ok:
-            raise RuntimeError(e.error if e else self.human_reason)
-        try:
-            e.cmd(f"play {self.user} {mv}")
-        except RuntimeError:
-            raise RuntimeError("둘 수 없는 자리입니다 (자충·패 등).")
+        ENGINES.legal(self.position(), self.level, self.user, mv)
+        self._charge(reset=True)
         self.moves.append((self.user, mv))
         self.message = ""
         self._check_end()
+        self.save_sgf()
         if not self.result and not self.scoring:
             self.engine_move()
-        self.save()
+        self.save_sgf()
 
     def hint(self):
         """현재 국면 KataGo 추천 상위 3 — 늘 최강 엔진으로(급수 상대일 때도)."""
         if self.result or self.scoring:
             raise RuntimeError("대국 중에만 볼 수 있습니다.")
-        e = self.strong
-        if not e.ok:
-            raise RuntimeError(e.error or "최강 엔진이 꺼져 있음")
-        e.sync(self.moves, self.handicap, self.komi)
-        cands = e.search(self.to_move)
+        cands = ENGINES.analyze(self.position(), self.to_move)
         for c in cands:
             c["xy"] = list(to_xy(c["move"])) if c["move"].lower() != "pass" else None
         return {"color": self.to_move, "moveNo": len(self.moves), "cands": cands}
@@ -480,10 +707,7 @@ class Game:
         """AI 판정 — 지금 끝낸다면 KataGo가 보는 결과(대국은 계속)."""
         if not self.moves:
             raise RuntimeError("아직 둔 수가 없습니다.")
-        e = self.engine()
-        if e is None or not e.ok:
-            raise RuntimeError(e.error if e else self.human_reason)
-        r = e.cmd("final_score")
+        r = ENGINES.final_score(self.position(), self.level)
         return {"result": r, "resultKo": result_ko(r), "moveNo": len(self.moves)}
 
     def timeout(self, color):
@@ -492,63 +716,67 @@ class Game:
             raise RuntimeError("시간패를 적용할 수 없습니다.")
         if color != self.user:
             raise RuntimeError("KataGo는 시간패가 없습니다.")
+        self._charge(reset=False)
         self.scoring = None
         self.result = f"{'W' if color == 'B' else 'B'}+T"
         self.message = "시간이 다 됐습니다 — 시간패."
-        self.save()
+        self.save_sgf()
 
     def resign(self):
         if self.result:
             raise RuntimeError("이미 끝난 대국입니다.")
         if not self.moves:
             raise RuntimeError("아직 둔 수가 없습니다.")
+        self._charge(reset=False)
         self.result = f"{'W' if self.user == 'B' else 'B'}+R"
         self.message = "기권했습니다." + (" '리뷰'로 이번 판을 돌아볼 수 있어요." if REVIEWS.status(self)["ok"] else "")
-        self.save()
+        self.save_sgf()
 
     def undo(self):
         if self.result:
-            raise RuntimeError("끝난 대국은 무를 수 없습니다. '새 판'을 눌러 주세요.")
-        self.scoring = None
+            raise RuntimeError("끝난 대국은 무를 수 없습니다. '대국 신청'으로 새 대국을 시작해 주세요.")
         # 내 차례가 될 때까지 되돌리되, 내 수를 최소 1개 무른다
         if not any(c == self.user for c, _ in self.moves):
             raise RuntimeError("무를 수가 없습니다.")
+        self._charge(reset=False)
+        self.scoring = None
         while self.moves:
             c, _ = self.moves.pop()
             if c == self.user:
                 break
         self.scores = [s for s in self.scores if s[0] <= len(self.moves)]
         self.message = "한 수 물렀습니다."
-        self._sync()
         if self.to_move != self.user:  # 엔진 수만 남은 경우
             self.engine_move()
-        self.save()
+        self.save_sgf()
 
     def swap(self):
-        self.user = "W" if self.user == "B" else "B"
+        if self.result:
+            raise RuntimeError("끝난 대국입니다.")
+        self._charge(reset=False)
+        self.user = self.eng_color
         self.message = f"이제 {'흑' if self.user == 'B' else '백'}을 잡으셨습니다."
-        if not self.result and self.to_move != self.user:
-            self._sync()
-            self.engine_move()
-        self.save()
+        self.engine_move()
+        self.save_sgf()
 
     def set_level(self, level):
         if level != "strong" and level not in RANKS:
             raise RuntimeError("알 수 없는 수준")
         if level != "strong":
-            if self.human is None or not self.human.ok:
-                raise RuntimeError(self.human.error if self.human else self.human_reason)
-            self.human.cmd(f"kata-set-param humanSLProfile rank_{level}")
+            ENGINES.check_level(level)
         self.level = level
-        self._sync()
         self.message = f"상대: {self.level_label()}"
-        if not self.result and self.to_move != self.user:
-            self.engine_move()
+        self.engine_move()
 
-    def save(self):
-        if not self.moves:
+    def save_sgf(self):
+        if not self.moves or self.imported:
             return
         GAMES_DIR.mkdir(parents=True, exist_ok=True)
+        self.sgf_path.write_text(self.sgf_text(), encoding="utf-8")
+
+    def sgf_text(self):
+        if self.imported and self.sgf_path.exists():
+            return self.sgf_path.read_text(encoding="utf-8")
         me, eng = "작가님", f"KataGo({self.level_label()})"
         pb, pw = (me, eng) if self.user == "B" else (eng, me)
         nodes = []
@@ -564,15 +792,31 @@ class Game:
                 + (f"TM[{self.time['main'] * 60}]OT[{self.time['periods']}x{self.time['byo']} byo-yomi]" if self.time else "")
                 + f"DT[{self.started:%Y-%m-%d}]PB[{pb}]PW[{pw}]"
                 f"AP[MONK go-board-web]" + (f"RE[{self.result}]" if self.result else ""))
-        self.sgf_path.write_text(head + "".join(nodes) + ")\n", encoding="utf-8")
+        return head + "".join(nodes) + ")\n"
+
+    def summary(self):
+        """대기실 목록 한 줄."""
+        last = REVIEWS.jobs.get(self.reviews[-1]) if self.reviews else None
+        win = None
+        if self.result and self.result[0] in "BW":
+            win = self.result[0] == self.user
+        return {"id": self.id, "kind": self.kind, "status": self.status, "statusKo": STATUS_KO[self.status],
+                "moveNo": len(self.moves), "toMove": self.to_move, "user": self.user, "level": self.level,
+                "levelLabel": self.level_label(), "handicap": self.handicap, "komi": self.komi, "time": self.time,
+                "result": self.result, "resultKo": result_ko(self.result) if self.result else None, "win": win,
+                "started": self.started.isoformat(timespec="minutes"), "updated": self.updated,
+                "imported": self.imported, "sgfUrl": f"/api/rooms/{self.id}/sgf" if self.moves else None,
+                "review": REVIEWS.status(self),
+                "lastReview": {"id": last["id"], "state": last["state"]} if last else None}
 
     def state(self):
         g, caps = replay(self.moves, self.setup)
         last = None
         if self.moves and self.moves[-1][1].lower() != "pass":
             last = list(to_xy(self.moves[-1][1]))
-        human_ok = self.human is not None and self.human.ok
         return {
+            "room": self.id, "kind": self.kind, "status": self.status, "statusKo": STATUS_KO[self.status],
+            "imported": self.imported,
             "board": g, "captures": caps, "last": last, "moveNo": len(self.moves),
             "lastPass": bool(self.moves) and self.moves[-1][1].lower() == "pass",
             "lastColor": self.moves[-1][0] if self.moves else None,
@@ -582,20 +826,172 @@ class Game:
             "scores": self.scores, "result": self.result,
             "resultKo": result_ko(self.result) if self.result else None,
             "message": self.message, "sgf": str(self.sgf_path) if self.moves else None,
-            "strongOk": self.strong.ok, "strongError": self.strong.error,
-            "humanOk": human_ok,
-            "humanReason": None if human_ok else (self.human.error if self.human else self.human_reason)
-                           or "급수 엔진이 꺼져 있음",
-            "ranks": [{"v": r, "label": RANK_KO[r]} for r in RANKS],
+            "sgfUrl": f"/api/rooms/{self.id}/sgf" if self.moves else None,
             "review": REVIEWS.status(self),
+            "reviews": [{"id": j, "state": REVIEWS.jobs[j]["state"]} for j in self.reviews if j in REVIEWS.jobs],
             "scoring": self.count() if self.scoring else None,
-            "finalCount": getattr(self, "final_count", None) if self.result else None,
-            "sounds": custom_sounds(),
-            "packs": sound_packs(),
-            "skins": skin_packs(),
+            "finalCount": self.final_count if self.result else None,
             "time": self.time,
-            "testMode": TEST_MODE,
+            "clock": self.clock_state(),
+            **common_state(),
         }
+
+
+def common_state():
+    """방과 무관한 화면 재료(엔진 상태·수준 목록·소리·스킨) — 대기실도 같은 값을 쓴다."""
+    return {"strongOk": ENGINES.strong.ok, "strongError": ENGINES.strong.error,
+            "humanOk": ENGINES.human_ok, "humanReason": ENGINES.human_why(),
+            "ranks": [{"v": r, "label": RANK_KO[r]} for r in RANKS], "handicaps": HANDICAPS,
+            "sounds": custom_sounds(), "packs": sound_packs(), "skins": skin_packs(), "testMode": TEST_MODE}
+
+
+# ---------------------------------------------------------------- 방 저장소·목록
+
+class LocalRoomStore:
+    """RoomStore 인터페이스(load_all / save / delete) — 단계 ① 로컬 파일. 단계 ⑤에서 Firestore 구현으로 바꾼다.
+    저장은 임시 파일 → rename(원자적): 쓰는 도중 꺼져도 직전 판본이 남는다."""
+
+    def __init__(self, root):
+        self.root = Path(root)
+
+    def load_all(self):
+        out = []
+        if not self.root.exists():
+            return out
+        for f in sorted(self.root.glob("*.json")):
+            try:
+                out.append(json.loads(f.read_text(encoding="utf-8")))
+            except (OSError, ValueError) as e:
+                print(f"❌ go-board: 방 파일 읽기 실패 {f.name} — {e}", file=sys.stderr, flush=True)
+        return out
+
+    def save(self, d):
+        self.root.mkdir(parents=True, exist_ok=True)
+        tmp = self.root / f".{d['id']}.json.tmp"
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(d, fh, ensure_ascii=False)
+            fh.flush()
+            os.fsync(fh.fileno())
+        os.replace(tmp, self.root / f"{d['id']}.json")
+
+    def delete(self, rid):
+        f = self.root / f"{rid}.json"
+        if f.exists():
+            f.unlink()
+
+
+def parse_sgf_room(path):
+    """단계 ① 이전 기보(SGF)를 '지난 대국' 방으로 — 수순·결과·치수·흑백·상대 수준만 읽는다."""
+    t = path.read_text(encoding="utf-8", errors="replace")
+    m = re.match(r"(\d{8})_(\d{6})", path.name)
+    if not m:
+        return None
+
+    def prop(k):
+        mm = re.search(rf"(?<![A-Z]){k}\[([^\]]*)\]", t)
+        return mm.group(1) if mm else None
+
+    g = lambda v: "pass" if not v else to_gtp(ord(v[0]) - 97, ord(v[1]) - 97)
+    moves = [(c, g(v)) for c, v in re.findall(r";([BW])\[([a-s]{0,2})\]", t)]
+    if not moves:
+        return None
+    r = Room(f"{m.group(1)}-{m.group(2)}-sgf")
+    r.imported = True
+    r.started = datetime.strptime(m.group(1) + m.group(2), "%Y%m%d%H%M%S")
+    r.updated = path.stat().st_mtime
+    r.sgf_path = path
+    r.moves = moves
+    r.handicap = int(prop("HA") or 0)
+    ab = re.search(r"AB((?:\[[a-s]{2}\])+)", t)
+    r.setup = [g(v) for v in re.findall(r"\[([a-s]{2})\]", ab.group(1))] if ab else []
+    r.user = "W" if prop("PW") == "작가님" else "B"
+    opp = prop("PW" if r.user == "B" else "PB") or ""
+    r.level = next((k for k, v in RANK_KO.items() if opp.endswith(f"사람형 {v})")), "strong")
+    tm, ot = prop("TM"), re.match(r"(\d+)x(\d+)", prop("OT") or "")
+    r.time = {"main": int(float(tm)) // 60, "byo": int(ot.group(2)), "periods": int(ot.group(1))} if tm and ot else None
+    r.result = prop("RE")
+    r.message = "이전 버전에서 둔 대국(기보에서 가져옴)" + ("" if r.result else " — 끝내지 않은 판")
+    for f in sorted(REVIEW_DIR.glob(f"{path.stem}_리뷰_*.html")) if REVIEW_DIR.exists() else []:
+        mm = re.fullmatch(rf"{re.escape(path.stem)}_리뷰_(\d{{6}})\.html", f.name)
+        if mm:
+            stem = f.with_suffix("")
+            r.reviews.append(REVIEWS.restore({"id": f"{m.group(1)}_{m.group(2)}_{mm.group(1)}", "html": str(f),
+                                              "sgf": str(stem.with_suffix(".sgf")), "log": str(stem.with_suffix(".log")),
+                                              "state": "done", "filter": False, "moves": len(moves)}, r.id))
+    return r
+
+
+class Rooms:
+    def __init__(self, store):
+        self.store = store
+        self.rooms = {}
+        self.lock = threading.Lock()
+        self.focus = None  # 실시간 분석판(live_view --goboard)이 따라갈 방 — 마지막으로 열거나 둔 방
+
+    def load(self):
+        """저장된 방 전부 복원 + 아직 방이 없는 이전 기보(SGF)를 지난 대국으로 1회 가져온다. 가져온 수를 돌려준다."""
+        for d in self.store.load_all():
+            try:
+                r = Room.from_dict(d)
+            except (KeyError, ValueError, TypeError) as e:
+                print(f"❌ go-board: 방 복원 실패 {d.get('id')} — {e}", file=sys.stderr, flush=True)
+                continue
+            r.cache = json.dumps(r.state(), ensure_ascii=False)
+            self.rooms[r.id] = r
+        known = {str(r.sgf_path) for r in self.rooms.values()}
+        n = 0
+        for f in sorted(GAMES_DIR.glob("*.sgf")) if GAMES_DIR.exists() else []:
+            if str(f) in known:
+                continue
+            try:
+                r = parse_sgf_room(f)
+            except (OSError, ValueError) as e:
+                print(f"❌ go-board: 기보 가져오기 실패 {f.name} — {e}", file=sys.stderr, flush=True)
+                continue
+            if r and r.id not in self.rooms:
+                self.rooms[r.id] = r
+                self.store.save(r.to_dict())
+                n += 1
+        return n
+
+    def get(self, rid):
+        return self.rooms.get(rid)
+
+    def save(self, room):
+        room.updated = time.time()
+        self.store.save(room.to_dict())
+
+    def add(self, room):
+        with self.lock:
+            # 한 수도 안 둔 채 10분 넘게 남겨 둔 방은 새 방을 만들 때 걷는다(지울 것이 없는 빈 판 — 막 만든 다른 방은 두고)
+            old = time.time() - EMPTY_ROOM_TTL
+            for r in list(self.rooms.values()):
+                if not r.moves and not r.result and not r.imported and r.updated < old and r.lock.acquire(blocking=False):
+                    try:
+                        del self.rooms[r.id]
+                        self.store.delete(r.id)
+                    finally:
+                        r.lock.release()
+            self.rooms[room.id] = room
+            self.focus = room.id
+        self.save(room)
+
+    def listing(self):
+        return sorted(list(self.rooms.values()), key=lambda r: r.updated, reverse=True)  # 복사본 — 생성과 겹쳐도 안전
+
+    def focus_room(self):
+        """호환 API(/api/state 등)가 가리킬 방 — 초점 방, 없으면 가장 최근 진행 중 방, 없으면 가장 최근 방."""
+        r = self.rooms.get(self.focus)
+        if r:
+            return r
+        rs = self.listing()
+        return next((r for r in rs if r.status != "ended"), rs[0] if rs else None)
+
+    def defaults(self):
+        """새 대국 창 기본값 — 가장 최근에 만든 방의 설정을 기억한다."""
+        last = max((r for r in list(self.rooms.values()) if not r.imported), key=lambda r: r.started, default=None)
+        return {"level": last.level if last else "strong", "handicap": last.handicap if last else 0,
+                "time": last.time if last else dict(DEFAULT_TIME), "user": last.user if last else "B"}
 
 
 # ---------------------------------------------------------------- 리뷰 (review.py 호출)
@@ -646,7 +1042,7 @@ class Reviews:
         st = self.status(game)
         if not st["ok"]:
             raise RuntimeError(st["reason"])
-        game.save()
+        game.save_sgf()
         REVIEW_DIR.mkdir(parents=True, exist_ok=True)
         jid = datetime.now().strftime("%Y%m%d_%H%M%S")
         stem = REVIEW_DIR / f"{game.sgf_path.stem}_리뷰_{jid[-6:]}"
@@ -658,12 +1054,32 @@ class Reviews:
             args += ["--wr-range", WR_RANGE if wr_filter else "off"]
         job = {"id": jid, "args": args, "html": stem.with_suffix(".html"), "sgf": stem.with_suffix(".sgf"),
                "log": stem.with_suffix(".log"), "started": time.time(), "state": "running",
-               "filter": bool(wr_filter and self.filter_ok()), "moves": len(game.moves)}
+               "filter": bool(wr_filter and self.filter_ok()), "moves": len(game.moves), "room": game.id}
         with self.lock:
             self.jobs[jid] = job
             self.running = jid
+        game.reviews.append(jid)  # 리뷰는 방에 묶인다 — 지난 대국에서 다시 연다
         threading.Thread(target=self._run, args=(job,), daemon=True).start()
         return jid
+
+    @staticmethod
+    def dump(jid):
+        j = REVIEWS.jobs[jid]
+        return {"id": j["id"], "html": str(j["html"]), "sgf": str(j["sgf"]), "log": str(j["log"]),
+                "started": j.get("started"), "state": j["state"], "filter": j["filter"], "moves": j["moves"],
+                "secs": j.get("secs"), "error": j.get("error")}
+
+    def restore(self, d, rid):
+        """방 파일의 리뷰 기록 → job. 서버가 꺼질 때 돌던 리뷰는 결과 파일이 있으면 완료, 없으면 중단."""
+        job = dict(d, html=Path(d["html"]), sgf=Path(d["sgf"]), log=Path(d["log"]), room=rid)
+        job.setdefault("started", time.time())
+        if job["state"] == "running":
+            job["state"] = "done" if job["html"].exists() else "failed"
+            if job["state"] == "failed":
+                job["error"] = "서버 재시작으로 중단됨 — 다시 만들어 주세요"
+        with self.lock:
+            self.jobs[job["id"]] = job
+        return job["id"]
 
     def _run(self, job):
         try:
@@ -680,6 +1096,10 @@ class Reviews:
             self.running = None
         print(f"{'✅' if job['state'] == 'done' else '❌'} go-board 리뷰 {job['id']}: {job['state']} "
               f"{job['secs']}s {job.get('error', '')}", file=sys.stderr, flush=True)
+        room = ROOMS.get(job.get("room"))
+        if room:  # 리뷰 결과를 방 파일에 남긴다(대국 중이면 그 수가 끝난 뒤)
+            with room.lock:
+                ROOMS.save(room)
 
     def page(self, jid):
         job = self.jobs.get(jid)
@@ -814,84 +1234,170 @@ def result_ko(r):
 
 # ---------------------------------------------------------------- HTTP
 
-GAME = None
+ENGINES = None  # EngineHub
+ROOMS = None  # Rooms
+ACTIONS = ("play", "engine", "score", "score/toggle", "score/confirm", "score/cancel", "hint", "judge",
+           "timeout", "resign", "undo", "swap", "level", "review")
+# 호환 경로(단계 ① 이전 화면·PWA 보관본·live_view --goboard): /api/state·/api/{동작}은 초점 방을 가리킨다.
+# 대국실은 /api/rooms/{id}/… 만 쓴다. 호환 경로는 보관본이 v3로 바뀐 뒤 제거 예정(단계 ②).
+LEGACY_ACTIONS = ACTIONS + ("new",)
+EMPTY_STATE = {"room": None, "sgf": None, "user": "B", "komi": KOMI, "moveNo": 0, "result": None,
+               "message": "진행 중인 방이 없습니다 — 대기실에서 새 대국을 시작해 주세요."}
 
 
-STATE_CACHE = {}  # 마지막으로 만든 /api/state 응답(엔진 생각 중 반환용)
+def act(room, action, body):
+    """방 1개에 동작 1개 — 호출 쪽이 room.lock 을 잡고 부른다. (오류, reviewJob, 덧붙일 값)"""
+    err, jid, extra = None, None, {}
+    try:
+        if action == "play":
+            room.play("pass" if body.get("pass") else to_gtp(int(body["x"]), int(body["y"])))
+        elif action == "engine":  # 엔진 차례면 둔다(새 방 첫 수 · 복원 뒤 엔진 차례)
+            room.engine_move()
+            room.save_sgf()
+        elif action == "score":
+            room.start_scoring()
+        elif action == "score/toggle":
+            room.toggle_dead(int(body["x"]), int(body["y"]))
+        elif action == "score/confirm":
+            room.confirm_score()
+        elif action == "score/cancel":
+            room.cancel_score()
+        elif action == "hint":
+            extra = {"hint": room.hint()}
+        elif action == "judge":
+            extra = {"judge": room.judge()}
+        elif action == "timeout":
+            room.timeout(str(body.get("color")))
+        elif action == "resign":
+            room.resign()
+        elif action == "undo":
+            room.undo()
+        elif action == "swap":
+            room.swap()
+        elif action == "level":
+            room.set_level(str(body.get("level")))
+        elif action == "review":
+            jid = REVIEWS.start(room, bool(body.get("wrFilter", True)))
+    except (RuntimeError, KeyError, ValueError) as e:
+        err = str(e)
+    ROOMS.save(room)
+    return err, jid, extra
+
+
+def new_room(body, base=None):
+    """대국 신청 → 방 생성. 첫 수가 엔진이면 대국실이 'engine'으로 부른다(화면은 빈 판부터)."""
+    d = ROOMS.defaults()
+    level = str(body.get("level") or (base.level if base else d["level"]))
+    handicap = int(body["handicap"]) if "handicap" in body else (base.handicap if base else d["handicap"])
+    t = body.get("time", "keep")
+    if t == "keep":
+        t = base.time if base else d["time"]
+        t = t or {"unlimited": True}
+    room = Room.create(level, handicap, t, body.get("color") or (base.user if base else d["user"]))
+    room.cache = json.dumps(room.state(), ensure_ascii=False)  # 첫 조회가 엔진 생각과 겹쳐도 빈 판을 준다
+    ROOMS.add(room)
+    return room
 
 
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *a):
         pass
 
-    def _send(self, code, body, ctype="application/json; charset=utf-8"):
+    def _send(self, code, body, ctype="application/json; charset=utf-8", headers=None):
         data = body if isinstance(body, bytes) else body.encode("utf-8")
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(data)))
         self.send_header("Cache-Control", "no-store")
+        for k, v in (headers or {}).items():
+            self.send_header(k, v)
         self.end_headers()
         self.wfile.write(data)
 
+    def _json(self, obj, code=200):
+        self._send(code, json.dumps(obj, ensure_ascii=False))
+
+    def _state(self, room):
+        """방 상태 — 엔진이 그 방에서 생각하는 동안(최대 17초)은 잠금을 기다리지 않고 직전 상태를 준다(10-23)."""
+        if room.lock.acquire(timeout=0.3):
+            try:
+                room.cache = json.dumps(room.state(), ensure_ascii=False)
+            finally:
+                room.lock.release()
+        return room.cache or json.dumps({"error": "상대가 생각 중입니다", "busy": True, "room": room.id}, ensure_ascii=False)
+
     def do_GET(self):
-        if self.path.split("?")[0] in ("/sw.js", "/pwa/sw.js"):  # PWA(10-23) — 서비스 워커는 범위를 위해 루트에서도 내보낸다
+        path, _, query = self.path.partition("?")
+        if path in ("/sw.js", "/pwa/sw.js"):  # PWA(10-23) — 서비스 워커는 범위를 위해 루트에서도 내보낸다
             self._send(200, (HERE / "pwa" / "sw.js").read_bytes(), "text/javascript; charset=utf-8")
             return
-        m = re.fullmatch(r"/pwa/([a-z0-9-]+\.(png|webmanifest))", self.path.split("?")[0])
+        m = re.fullmatch(r"/pwa/([a-z0-9-]+\.(png|webmanifest))", path)
         if m:
             self._send(200, (HERE / "pwa" / m.group(1)).read_bytes(), "image/png" if m.group(2) == "png" else "application/manifest+json")
             return
-        if self.path.split("?")[0] in ("/", "/index.html"):
+        if path in ("/", "/index.html") or re.fullmatch(rf"/room/{ROOM_ID_RE}", path):
+            # 대기실·대국실은 같은 화면 파일 — 주소로 갈린다(PWA 보관본 1개)
             self._send(200, (HERE / "index.html").read_bytes(), "text/html; charset=utf-8")
-        elif self.path == "/api/state":
-            # 엔진이 생각하는 동안(최대 17초) 락을 기다리지 않고 직전 상태를 바로 준다(10-23 — 새로고침·분석판이 그동안 멈추던 문제)
-            if GAME.lock.acquire(timeout=0.3):
-                try:
-                    body = json.dumps(GAME.state(), ensure_ascii=False)
-                    STATE_CACHE["json"] = body
-                finally:
-                    GAME.lock.release()
+        elif path == "/api/rooms":
+            self._json({"rooms": [r.summary() for r in ROOMS.listing()], "defaults": ROOMS.defaults(), **common_state()})
+        elif m := re.fullmatch(rf"/api/rooms/({ROOM_ID_RE})/(state|sgf)", path):
+            room = ROOMS.get(m.group(1))
+            if not room:
+                return self._json({"error": "없는 방입니다 — 대기실로 돌아가 주세요.", "noRoom": True}, 404)
+            if m.group(2) == "state":
+                ROOMS.focus = room.id  # 실시간 분석판이 지금 보는 방을 따라가게
+                self._send(200, self._state(room))
             else:
-                body = STATE_CACHE.get("json") or json.dumps({"error": "상대가 생각 중입니다", "busy": True}, ensure_ascii=False)
-            self._send(200, body)
-        elif re.fullmatch(r"/sounds/(custom/)?[A-Za-z0-9_-]+\.wav", self.path):
-            f = HERE / self.path.lstrip("/")
+                if not room.moves:
+                    return self._json({"error": "아직 둔 수가 없습니다."}, 404)
+                name = room.sgf_path.name
+                self._send(200, room.sgf_text().encode("utf-8"), "application/x-go-sgf; charset=utf-8",
+                           {"Content-Disposition": f"attachment; filename=\"{room.id}.sgf\"; "
+                                                   f"filename*=UTF-8''{urllib.parse.quote(name)}"})
+        elif path == "/api/state":  # 호환(초점 방) — live_view --goboard 가 이 주소를 읽는다
+            room = ROOMS.focus_room()
+            self._send(200, self._state(room) if room else json.dumps(EMPTY_STATE, ensure_ascii=False))
+        elif re.fullmatch(r"/sounds/(custom/)?[A-Za-z0-9_-]+\.wav", path):
+            f = HERE / path.lstrip("/")
             if f.exists():
                 self._send(200, f.read_bytes(), "audio/wav")
             else:
                 self._send(404, '{"error":"없음"}')
-        elif re.fullmatch(r"/pack/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+\.(mp3|wav)", self.path):
-            _, _, pack, name = self.path.split("/")
+        elif re.fullmatch(r"/pack/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+\.(mp3|wav)", path):
+            _, _, pack, name = path.split("/")
             f = PACKS_DIR / pack / name
             if f.exists():
                 self._send(200, f.read_bytes(), "audio/mpeg" if name.endswith(".mp3") else "audio/wav")
             else:
                 self._send(404, '{"error":"없음"}')
-        elif re.fullmatch(r"/skin/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)", self.path):
-            _, _, pack, name = self.path.split("/")
+        elif re.fullmatch(r"/skin/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)", path):
+            _, _, pack, name = path.split("/")
             f = SKINS_DIR / pack / name
             ctype = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png", "webp": "image/webp"}[name.rsplit(".", 1)[1]]
             if f.exists():
                 self._send(200, f.read_bytes(), ctype)
             else:
                 self._send(404, '{"error":"없음"}')
-        elif self.path.startswith("/review/"):
-            body = REVIEWS.page(self.path.split("/")[2])
+        elif path.startswith("/review/"):
+            body = REVIEWS.page(path.split("/")[2])
             if body is None:
                 self._send(404, "리뷰 없음", "text/plain; charset=utf-8")
             else:
                 self._send(200, body, "text/html; charset=utf-8")
-        elif self.path == "/live" or self.path.startswith("/live/"):
+        elif path == "/live" or path.startswith("/live/"):
             # 실시간 분석판(live_view, 127.0.0.1:8770) 중계 — 외부(터널·Access)에서 주소 하나로 쓰게(10-23)
-            import urllib.request, urllib.error
+            # ?room= 이 붙으면 그 방을 초점으로 — live_view 는 /api/state(초점 방)를 읽는다(10-24)
+            rid = urllib.parse.parse_qs(query).get("room", [None])[0]
+            if rid and ROOMS.get(rid):
+                ROOMS.focus = rid
             try:
                 with urllib.request.urlopen("http://127.0.0.1:8770" + (self.path[5:] or "/"), timeout=15) as r:
                     self._send(r.status, r.read(), r.headers.get("Content-Type", "application/octet-stream"))
             except (urllib.error.URLError, OSError) as e:
                 self._send(502, f"분석판(8770) 응답 없음 — {e}", "text/plain; charset=utf-8")
-        elif self.path == "/health":
-            self._send(200, json.dumps({"ok": True, "strong": GAME.strong.ok,
-                                        "human": bool(GAME.human and GAME.human.ok)}))
+        elif path == "/health":
+            self._send(200, json.dumps({"ok": True, "strong": ENGINES.strong.ok, "human": ENGINES.human_ok,
+                                        "rooms": len(ROOMS.rooms)}))
         else:
             self._send(404, '{"error":"없음"}')
 
@@ -901,69 +1407,53 @@ class Handler(BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(n) or b"{}")
         except json.JSONDecodeError:
             body = {}
-        t0 = time.time()
-        # 엔진 생각 중 들어온 요청은 줄 세우지 않고 버린다 — 대기 클릭이 나중에 착수로 바뀌는 경합 차단
-        if not GAME.lock.acquire(blocking=False):
-            return self._send(409, json.dumps({"busy": True, "error": "상대가 생각 중입니다"}, ensure_ascii=False))
-        try:
-            err = None
-            jid = None
-            extra = {}
+        path = self.path.partition("?")[0]
+        if path == "/api/rooms":
             try:
-                p = self.path
-                if p == "/api/play":
-                    if body.get("pass"):
-                        GAME.play("pass")
-                    else:
-                        GAME.play(to_gtp(int(body["x"]), int(body["y"])))
-                elif p == "/api/new":
-                    GAME.new(int(body["handicap"]) if "handicap" in body else None, body.get("time", "keep"),
-                             body.get("color"))
-                    GAME._sync()
-                    if GAME.to_move != GAME.user:
-                        GAME.engine_move()
-                        GAME.save()
-                elif p == "/api/score":
-                    GAME.start_scoring()
-                elif p == "/api/score/toggle":
-                    GAME.toggle_dead(int(body["x"]), int(body["y"]))
-                elif p == "/api/score/confirm":
-                    GAME.confirm_score()
-                elif p == "/api/score/cancel":
-                    GAME.cancel_score()
-                elif p == "/api/hint":
-                    extra = {"hint": GAME.hint()}
-                elif p == "/api/judge":
-                    extra = {"judge": GAME.judge()}
-                elif p == "/api/timeout":
-                    GAME.timeout(str(body.get("color")))
-                elif p == "/api/resign":
-                    GAME.resign()
-                elif p == "/api/undo":
-                    GAME.undo()
-                elif p == "/api/swap":
-                    GAME.swap()
-                elif p == "/api/level":
-                    GAME.set_level(str(body.get("level")))
-                elif p == "/api/review":
-                    jid = REVIEWS.start(GAME, bool(body.get("wrFilter", True)))
-                else:
-                    return self._send(404, '{"error":"없음"}')
+                room = new_room(body)
             except (RuntimeError, KeyError, ValueError) as e:
-                err = str(e)
-            st = GAME.state()
+                return self._json({"error": str(e)})
+            return self._json({"id": room.id, "url": f"/room/{room.id}"})
+        m = re.fullmatch(rf"/api/rooms/({ROOM_ID_RE})/(.+)", path)
+        lm = re.fullmatch(r"/api/(.+)", path)
+        if m and m.group(2) in ACTIONS:
+            room, action = ROOMS.get(m.group(1)), m.group(2)
+            if not room:
+                return self._json({"error": "없는 방입니다 — 대기실로 돌아가 주세요.", "noRoom": True}, 404)
+        elif lm and lm.group(1) in LEGACY_ACTIONS:  # 호환(초점 방)
+            room, action = ROOMS.focus_room(), lm.group(1)
+            if action == "new":
+                try:
+                    room = new_room(body, room)
+                except (RuntimeError, KeyError, ValueError) as e:
+                    return self._json({"error": str(e)})
+                action = "engine"
+            if not room:
+                return self._json(dict(EMPTY_STATE, error=EMPTY_STATE["message"]))
+        else:
+            return self._send(404, '{"error":"없음"}')
+        if room.imported and action not in ("review",):
+            return self._json({"error": "지난 대국(가져온 기보)은 볼 수만 있습니다 — 새 대국을 시작해 주세요."})
+        t0 = time.time()
+        # 엔진이 이 방에서 생각 중이면 줄 세우지 않고 버린다 — 대기 클릭이 나중에 착수로 바뀌는 경합 차단
+        if not room.lock.acquire(blocking=False):
+            return self._json({"busy": True, "error": "상대가 생각 중입니다", "room": room.id}, 409)
+        try:
+            ROOMS.focus = room.id
+            err, jid, extra = act(room, action, body)
+            st = room.state()
             st["error"] = err
             st["elapsed"] = round(time.time() - t0, 2)
             st["reviewJob"] = jid
             st.update(extra)
+            room.cache = json.dumps(st, ensure_ascii=False)
         finally:
-            GAME.lock.release()
-        STATE_CACHE["json"] = json.dumps(st, ensure_ascii=False)
-        self._send(200, STATE_CACHE["json"])
+            room.lock.release()
+        self._send(200, room.cache)
 
 
 def main():
-    global GAME
+    global ENGINES, ROOMS
     if TEST_MODE and PORT == LIVE_PORT:
         sys.exit(f"❌ go-board: 테스트 모드는 실사용 포트 {LIVE_PORT}를 쓸 수 없음")
     strong, human, human_reason = build_engines()
@@ -972,12 +1462,14 @@ def main():
         t.start()
     for t in ths:
         t.join()
-    GAME = Game(strong, human, human_reason)
-    if strong.ok:
-        GAME._sync()
+    ENGINES = EngineHub(strong, human, human_reason)
+    ROOMS = Rooms(LocalRoomStore(ROOMS_DIR))
+    imported = ROOMS.load()
+    live = sum(1 for r in ROOMS.rooms.values() if r.status != "ended")
     srv = ThreadingHTTPServer((HOST, PORT), Handler)
     print(f"✅ go-board: http://{HOST}:{PORT}/  (최강 {'OK' if strong.ok else '실패'}, "
-          f"급수 {'OK' if human and human.ok else '비활성: ' + str(GAME.state()['humanReason'])})",
+          f"급수 {'OK' if ENGINES.human_ok else '비활성: ' + str(ENGINES.human_why())}) · "
+          f"방 {len(ROOMS.rooms)}개 복원(진행 중 {live}, 이전 기보 가져옴 {imported}) · 저장소 {ROOMS_DIR}",
           flush=True)
     try:
         srv.serve_forever()

@@ -82,3 +82,17 @@ apps/go-board-web/run.sh      # http://127.0.0.1:8765/ 브라우저 자동 오�
 - 치수: '치수' 선택(호선 / 2~9점) → 다음 '새 판'부터. KataGo `fixed_handicap` 표준 배치, 덤 0.5, 백 먼저, 작가님 흑 시작. SGF에 `HA[]`·`AB[]`.
 - 접바둑 리뷰는 review.py가 치석(`initialStones`)을 읽게 될 때까지 막아 둠(이유 표시). 파일럿 소스에 `initialStones`가 생기면 자동으로 풀림.
 - 착수음: 작가님 선택 B(Hongsungbock 'baduk2') 고정, 따냄 = MPooman SE471. 후보 미리듣기 제거.
+
+## 단계 ① 방 구조 · 기보 저장 (2026-10-24, 쌍아-막내14 — ORDER_20261023 방구조)
+
+- 주소: `/` 대기실(새 대국 · 내 진행 중 대국 · 지난 대국) / `/room/{id}` 대국실(현행 화면 그대로 + 상단 '대기실'). 같은 `index.html`이 주소로 갈린다.
+- API: `GET/POST /api/rooms`(목록·생성) · `GET /api/rooms/{id}/state|sgf` · `POST /api/rooms/{id}/play|engine|score|…|review`.
+  호환 `GET /api/state`·`POST /api/{동작}`은 **초점 방**(마지막으로 열거나 둔 방 → 없으면 최근 진행 중 방) — live_view `--goboard`·구 PWA 보관본용, 단계 ②에서 제거 예정.
+- 저장: 방마다 `~/.monkos/go-board/rooms/{id}.json`(테스트 `…/go-board/_test/rooms/`) — 동작마다 임시 파일 → rename. 기동 시 전부 복원.
+  저장 계층 = `LocalRoomStore`(load_all/save/delete) — 단계 ⑤ Firestore 구현으로 교체.
+- 이전 기보: 기동 시 방이 없는 `games/*.sgf`를 '지난 대국'(보기 전용)으로 1회 가져오고 기존 리뷰 HTML도 연결.
+- 엔진: `EngineHub`(무상태) — 방이 국면(수순·치석·덤)을 넘기면 `move`/`analyze`/`final_score`/`scoring`/`legal`만 돌려준다. 엔진별 job 잠금으로 줄 세움, 같은 국면이면 다시 맞추지 않음. 엔진 교체는 이 클래스만.
+- 시계: 서버가 정본(차례 바뀔 때 둔 쪽 차감, 사람 수는 왕복 지연 2초 공제). 화면은 받은 값 + 경과로 이어서 잰다 → 새로고침·재기동에도 같은 시계. 서버가 꺼져 있던 시간은 깎지 않는다. 화면을 닫아 둬도 내 차례 시계는 흐른다(타이젬과 같음).
+- 빈 방(0수)은 10분 넘게 방치되면 다음 방을 만들 때 걷는다.
+- 분석판: 대국실 iframe이 `/live/?embed=1&room={id}` — 중계가 그 방을 초점으로 → live_view가 읽는 `/api/state`가 그 방.
+- PWA: SW v3 — `/`·`/room/*` 셸 1벌 보관, 시작 URL = 대기실.

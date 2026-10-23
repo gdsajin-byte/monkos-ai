@@ -1,8 +1,10 @@
 // MONK 바둑 PWA 서비스 워커(10-23)
 // - 판·돌 이미지·소리·아이콘: 폰에 보관(캐시 우선)
-// - 페이지(/): 보관본을 바로 띄우고 뒤에서 새 판본을 받아 둔다(다음 실행에 반영) — 터널 왕복(~1초) 없이 즉시 열림
-// - 판 상태·엔진(/api/*)·리뷰: 늘 네트워크
-const VERSION = 'monk-go-static-v2';
+// - 페이지(/ 대기실 · /room/{id} 대국실 — 같은 화면 파일, 10-24 v3): 보관본을 바로 띄우고 뒤에서 새 판본을 받아 둔다
+//   (다음 실행에 반영) — 터널 왕복(~1초) 없이 즉시 열림. 보관 키는 '/' 하나(셸 1벌)
+// - 판 상태·엔진(/api/*)·리뷰·기보: 늘 네트워크
+const VERSION = 'monk-go-static-v3';
+const SHELL = /^\/(index\.html|room\/[A-Za-z0-9_-]{4,64})?$/;
 const STATIC = /^\/(skin|pack|pwa|sounds)\//;
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil((async () => {
@@ -12,7 +14,7 @@ self.addEventListener('activate', e => e.waitUntil((async () => {
 self.addEventListener('fetch', e => {
   const u = new URL(e.request.url);
   if (e.request.method !== 'GET' || u.origin !== location.origin) return;
-  if (u.pathname === '/' || u.pathname === '/index.html') {
+  if (SHELL.test(u.pathname)) {
     e.respondWith((async () => {
       const c = await caches.open(VERSION);
       const net = fetch(e.request).then(r => { if (r.ok) c.put('/', r.clone()); return r; });
