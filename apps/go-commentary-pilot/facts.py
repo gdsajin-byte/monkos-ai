@@ -108,6 +108,9 @@ def extract(d, gm):
     txt = (f"최선수와 비교한 손실은 주로 {', '.join(parts)}이다." if parts else "손실이 한 영역에 몰려 있지 않고 판 전체에 흩어져 있다.")
     if gained:
         txt += f" 반대로 실제 수는 {gained[0][0]}에서 약 {-gained[0][1]:.1f}집을 더 얻었다."
+    # 영역 값은 서로 상쇄된다 — 합계를 같이 적어 F1 총 손익과 혼동하지 않게 한다
+    total = sum(by_reg.values())
+    txt += f" 9개 영역을 모두 더한 순손실은 약 {total:.1f}집이다(근사치 — 총 손익은 F1이 정본)."
     add("F3", "손익 위치", txt + " (소유권 기대값 차이의 집 환산 근사)",
         {"lost": [[r, round(v, 1)] for r, v in lost], "gained": [[r, round(-v, 1)] for r, v in gained]})
 
@@ -175,8 +178,28 @@ def extract(d, gm):
     add("F9", "후보 순위", f"실제 수 {actual}는 KataGo 후보 {rank}위였다." if rank else
         f"실제 수 {actual}는 KataGo 상위 후보 {len(before['moveInfos'])}개 안에 없었다.", {"rank": rank})
 
+    # F10 공동 최선: 1·2순위 기대 집 차이가 CO_BEST 미만이면 어느 쪽도 최선 (탐색 흔들림 대비)
+    co = co_best(before, color, exclude=actual)
+    if co:
+        add("F10", "공동 최선", f"KataGo 1·2순위 {best['move']}와 {co['move']}는 기대 집 차이 {co['gap']}집으로 "
+            f"사실상 같은 수다 — 어느 쪽도 최선이다.", co)
+
     return {"pos_id": pos["pos_id"], "game": pos["game"], "move_number": pos["move_number"],
-            "color": color, "actual": actual, "best": best["move"], "facts": facts}
+            "color": color, "actual": actual, "best": best["move"], "co_best": co["move"] if co else None,
+            "facts": facts}
+
+
+CO_BEST = 0.5
+
+
+def co_best(before, color, exclude=None):
+    """1순위와 기대 집 차이 CO_BEST 미만인 2순위 수 (실제 수는 제외)."""
+    sign = 1 if color == "B" else -1
+    mi = before["moveInfos"]
+    if len(mi) < 2 or mi[1]["move"] == exclude:
+        return None
+    gap = round(sign * (mi[0]["scoreLead"] - mi[1]["scoreLead"]), 1)
+    return {"move": mi[1]["move"], "gap": gap} if gap < CO_BEST else None
 
 
 def main():

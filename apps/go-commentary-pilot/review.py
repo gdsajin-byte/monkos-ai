@@ -16,7 +16,7 @@ import time
 import analyze
 from analyze import Engine, base_query
 from board import N, COLS, gtp_to_xy, region
-from facts import extract, board_at, KO
+from facts import extract, board_at, KO, CO_BEST
 from sheet import svg_board
 from verify import check
 from teacher import WORKDIR
@@ -52,7 +52,8 @@ def scan(eng, gm):
             for r in rs]
 
 
-def pick(gm, t, color, top):
+def pick(gm, t, color, top, wr_range=None, min_loss=analyze.MIN_LOSS):
+    """wr_range=(lo, hi): 실수·승부처 후보를 둔 쪽의 착수 전 승률이 이 구간 안인 수로 제한 (None = 전 구간)."""
     sign = 1 if color == "B" else -1
     rows = []
     for i, (c, mv) in enumerate(gm["moves"]):
@@ -62,29 +63,76 @@ def pick(gm, t, color, top):
         wr_a = t[i + 1]["winrate"] if color == "B" else 1 - t[i + 1]["winrate"]
         rows.append({"game": gm["id"], "move_index": i, "move_number": i + 1, "color": c, "move": mv,
                      "best": t[i]["best"], "loss_scan": round(sign * (t[i]["lead"] - t[i + 1]["lead"]), 2),
-                     "wr_drop": round(wr_b - wr_a, 3), "gap2": round(sign * t[i]["gap2"], 2)})
+                     "wr_before": round(wr_b, 3), "wr_drop": round(wr_b - wr_a, 3),
+                     "gap2": round(sign * t[i]["gap2"], 2)})
+    cand = rows if wr_range is None else [r for r in rows if wr_range[0] <= r["wr_before"] <= wr_range[1]]
     mistakes = []
-    for r in sorted(rows, key=lambda r: -r["loss_scan"]):
+    for r in sorted(cand, key=lambda r: -r["loss_scan"]):
+        if r["loss_scan"] < min_loss:
+            break
         if r["move"] != r["best"] and all(abs(r["move_index"] - m["move_index"]) >= 4 for m in mistakes):
             mistakes.append(dict(r, kind="실수"))
-        if len(mistakes) == top:
+        if len(mistakes) == top * 2:  # 정밀 분석 재판정으로 탈락할 몫까지 여유 선발
             break
     # 승부처 = 승률 하락이 가장 큰 수. 실수 상위와 겹치면 그 국면에 표시만 한다
-    turn = max(rows, key=lambda r: r["wr_drop"])
     picked = mistakes[:]
-    hit = next((m for m in picked if m["move_index"] == turn["move_index"]), None)
-    if hit:
-        hit["kind"] = "실수 · 승부처"
-    else:
-        picked.append(dict(turn, kind="승부처"))
-    # 잘 둔 수 = 엔진 1순위와 일치 + 차선과의 차이가 가장 큰 수 (유일한 수에 가까울수록 가치)
-    good = [r for r in rows if r["move"] == r["best"]]
-    if good:
-        picked.append(dict(max(good, key=lambda r: r["gap2"]), kind="잘 둔 수"))
-    picked.sort(key=lambda r: r["move_index"])
+    if cand:
+        turn = max(cand, key=lambda r: r["wr_drop"])
+        hit = next((m for m in picked if m["move_index"] == turn["move_index"]), None)
+        if hit:
+            hit["kind"] = "실수 · 승부처"
+        else:
+            picked.append(dict(turn, kind="승부처"))
+    # 잘 둔 수 = 엔진 1순위와 일치 + 차선과의 차이가 가장 큰 수 (유일한 수에 가까울수록 가치).
+    # 정밀 분석에서 1순위가 바뀔 수 있어 후보 3개를 올리고 재판정에서 첫 통과 1개만 남긴다
+    taken = {m["move_index"] for m in picked}
+    good = sorted((r for r in cand if r["move"] == r["best"] and r["move_index"] not in taken),
+                  key=lambda r: -r["gap2"])[:3]
+    for rank, g in enumerate(good):
+        picked.append(dict(g, kind="잘 둔 수", good_rank=rank))
     for k, r in enumerate(picked, 1):
-        r["pos_id"] = f"R{k}"
+        r["pos_id"] = f"C{k}"  # 임시 — 재판정 후 R 번호를 다시 매긴다
     return picked
+
+
+def deep_loss(d):
+    """정밀 분석 기준 손실 = 최선수 기대 집 − 실제 수 후 기대 집 (둔 쪽 관점)."""
+    sign = 1 if d["pos"]["color"] == "B" else -1
+    return round(sign * (d["before"]["moveInfos"][0]["scoreLead"] - d["after"]["rootInfo"]["scoreLead"]), 1)
+
+
+def rejudge(deep, top, min_loss):
+    """1차 스캔 선발을 정밀 분석으로 재판정: 최선수 = 실제 수이거나 손실 < min_loss인 '실수'는 제외, 상위 top만."""
+    keep, dropped, n, good_done = [], [], 0, False
+    order = lambda d: (0, -deep_loss(d)) if "실수" in d["pos"]["kind"] else (1, d["pos"].get("good_rank", 0))
+    for d in sorted(deep, key=order):
+        p = d["pos"]
+        if p["kind"] == "잘 둔 수":
+            ok = d["before"]["moveInfos"][0]["move"] == p["move"] and len(d["before"]["moveInfos"]) > 1
+            if ok and not good_done:
+                good_done = True
+                keep.append(d)
+            else:
+                dropped.append({"move_number": p["move_number"], "move": p["move"], "kind": "잘 둔 수 후보",
+                                "reason": "정밀 분석 1순위 아님" if not ok else "후보 중 차순위"})
+            continue
+        if "실수" in p["kind"]:
+            same = d["before"]["moveInfos"][0]["move"] == p["move"]
+            loss = deep_loss(d)
+            if same or loss < min_loss or n >= top:
+                if "승부처" in p["kind"]:  # 승부처는 승률 기준이라 남기되 실수 표기만 뗀다
+                    p["kind"] = "승부처"
+                    keep.append(d)
+                else:
+                    dropped.append({"move_number": p["move_number"], "move": p["move"], "deep_loss": loss,
+                                    "reason": "최선수와 같음" if same else ("손실 미달" if loss < min_loss else "상위 밖")})
+                continue
+            n += 1
+        keep.append(d)
+    keep.sort(key=lambda d: d["pos"]["move_index"])
+    for k, d in enumerate(keep, 1):
+        d["pos"]["pos_id"] = f"R{k}"
+    return keep, dropped
 
 
 def good_facts(d, gm):
@@ -103,9 +151,17 @@ def good_facts(d, gm):
             dv = sign * (best["ownership"][y * N + x] - alt["ownership"][y * N + x])
             by[region((x, y))] = by.get(region((x, y)), 0) + dv
     won = sorted(((r, v) for r, v in by.items() if v >= 1.0), key=lambda t: -t[1])[:2]
-    facts.append({"id": "F3", "type": "이득 위치", "text": ("차선과 비교한 이득은 주로 " + ", ".join(f"{r}에서 약 {v:.1f}집" for r, v in won) + "이다."
-                  if won else "차선과의 차이가 한 영역에 몰려 있지 않다.") + " (소유권 기대값 차이의 집 환산 근사)",
+    gave = sorted(((r, v) for r, v in by.items() if v <= -1.0), key=lambda t: t[1])[:1]
+    txt = ("차선과 비교해 영역별로 이 수가 더 얻은 곳은 " + ", ".join(f"{r}에서 약 {v:.1f}집" for r, v in won) + "이다."
+           if won else "차선과의 차이가 한 영역에 몰려 있지 않다.")
+    if gave:
+        txt += f" 대신 {gave[0][0]}에서는 약 {-gave[0][1]:.1f}집을 내줬다."
+    txt += f" 9개 영역을 모두 더한 순이득은 약 {sum(by.values()):.1f}집이다(근사치 — 총 차이는 F1이 정본)."
+    facts.append({"id": "F3", "type": "이득 위치", "text": txt + " (소유권 기대값 차이의 집 환산 근사)",
                   "data": {"lost": [], "gained": []}})
+    if gap < CO_BEST:
+        facts.append({"id": "F10", "type": "공동 최선", "text": f"차선 {alt['move']}와의 기대 집 차이는 {gap}집으로 사실상 같은 수다 — "
+                      f"이 수는 '유일한 수'가 아니라 좋은 수 중 하나다.", "data": {}})
     pv = before["moveInfos"][0]["pv"][:5]
     c, seq = color, []
     for m in pv:
@@ -148,8 +204,9 @@ def render(gm, items, out, model, color):
                              if bad else esc(re.sub(r"\s*\[[^\]]*\]", "", s)))
             body.append(f'<h4>{name}</h4><p>{" ".join(sents) or "(생성 실패)"}</p>')
         label = "차선" if it["kind"] == "잘 둔 수" else "최선"
+        co = f" (≈ {fx['co_best']}, 어느 쪽도 최선)" if fx.get("co_best") else ""
         f1 = fx["facts"][0]["text"]
-        secs.append(f'''<section class="k-{"good" if it["kind"] == "잘 둔 수" else "bad"}"><h2><span class="tag">{esc(it["kind"])}</span> {KO[fx["color"]]} {fx["move_number"]}수 {fx["actual"]} · {label} {fx["best"]}</h2>
+        secs.append(f'''<section class="k-{"good" if it["kind"] == "잘 둔 수" else "bad"}"><h2><span class="tag">{esc(it["kind"])}</span> {KO[fx["color"]]} {fx["move_number"]}수 {fx["actual"]} · {label} {fx["best"]}{esc(co)}</h2>
 <div class="row"><figure>{svg_board(gm, fx)}<figcaption>✕ 실제 수 {fx["actual"]} · 파란 원 {label}수 {fx["best"]} · 작은 점 직전 수</figcaption></figure>
 <div><p class="f1">{esc(f1)}</p>{"".join(body)}<details><summary>근거 사실 {len(fx["facts"])}개</summary><ol>{"".join(f"<li><b>{x['id']}</b> {esc(x['text'])}</li>" for x in fx["facts"])}</ol></details></div></div></section>''')
     m = gm["meta"]
@@ -170,7 +227,7 @@ h2{{font-size:17px;margin:0 0 12px}}.tag{{font-size:12px;padding:2px 8px;border-
 @media (max-width:720px){{.row{{grid-template-columns:1fr}}}}
 </style></head><body><main>
 <h1>대국 리뷰 — {esc(m.get("PB", ""))}(흑) 대 {esc(m.get("PW", ""))}(백)</h1>
-<p class="sub">{esc(m.get("DT", ""))} · {len(gm["moves"])}수 · 덤 {gm["komi"]} · 분석 KataGo b18(OpenCL, 정밀 {analyze.DEEP_VISITS} visits) · 해설 {model} (사실 목록 기반, 검증기 통과) · {KO[color]} 수만 대상 · 손실은 KataGo 기대 집 차이</p>
+<p class="sub">{esc(m.get("DT", ""))} · {len(gm["moves"])}수 · 덤 {gm["komi"]} · 분석 KataGo b18(OpenCL, 정밀 {analyze.DEEP_VISITS} visits) · 해설 {model} (사실 목록 기반, 검증기 통과) · {KO[color]} 수만 대상 · {esc(m.get("filter", "전 구간"))} · 손실은 KataGo 기대 집 차이</p>
 {"".join(secs)}</main></body></html>"""
     open(out, "w").write(page)
 
@@ -235,19 +292,33 @@ def main():
     ap.add_argument("--top", type=int, default=5)
     ap.add_argument("--model", default="haiku")
     ap.add_argument("--sgf", dest="sgf_out", help="해설 코멘트 + 최선수 변화도 SGF 출력 경로")
+    ap.add_argument("--min-loss", type=float, default=analyze.MIN_LOSS, help="실수로 볼 최소 손실(집, 기본 2.0)")
+    ap.add_argument("--wr-range", default="0.03,0.97",
+                    help="실수·승부처를 둔 쪽 착수 전 승률이 이 구간인 수로 제한 (기본 0.03,0.97 = 승부가 살아 있는 구간, off = 전 구간)")
     a = ap.parse_args()
     work = os.path.splitext(a.out)[0] + "_work"
     os.makedirs(work, exist_ok=True)
     os.makedirs(WORKDIR, exist_ok=True)
+    wr_range = None
+    if a.wr_range and a.wr_range.lower() != "off":
+        lo, hi = (float(x) for x in a.wr_range.split(","))
+        if not 0 <= lo < hi <= 1:
+            ap.error("--wr-range는 0 ≤ lo < hi ≤ 1")
+        wr_range = (lo, hi)
     gm = load_sgf(a.game)
+    gm["meta"]["filter"] = f"착수 전 승률 {lo * 100:g}~{hi * 100:g}% 구간 실수만" if wr_range else "전 구간"
     eng = Engine()
     try:
         t = scan(eng, gm)
-        picked = pick(gm, t, a.color, a.top)
+        picked = pick(gm, t, a.color, a.top, wr_range, a.min_loss)
         deep = [analyze.deep(eng, gm, c) for c in picked]
     finally:
         eng.close()
-    json.dump({"scan": t, "picked": picked}, open(os.path.join(work, "scan.json"), "w"), ensure_ascii=False)
+    deep, dropped = rejudge(deep, a.top, a.min_loss)
+    for x in dropped:
+        print("재판정 제외:", x, flush=True)
+    json.dump({"scan": t, "picked": picked, "dropped": dropped}, open(os.path.join(work, "scan.json"), "w"),
+              ensure_ascii=False)
     json.dump(deep, open(os.path.join(work, "deep.json"), "w"))
     items = []
     for d in deep:
