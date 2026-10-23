@@ -1,0 +1,5 @@
+[
+ {"id": 90180016, "band": "입문", "black": "20k", "white": "17k", "rules": "japanese", "komi": 6.5, "moves": 86, "result": "불계", "url": "https://online-go.com/game/90180016"},
+ {"id": 26605382, "band": "중급", "black": "10k", "white": "11k", "rules": "chinese", "komi": 7.5, "moves": 238, "result": "불계", "url": "https://online-go.com/game/26605382"},
+ {"id": 69749439, "band": "유단", "black": "8d", "white": "8d", "rules": "aga", "komi": 7.5, "moves": 180, "result": "불계", "url": "https://online-go.com/game/69749439"}
+]
