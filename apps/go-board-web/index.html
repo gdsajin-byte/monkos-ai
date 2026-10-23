@@ -27,10 +27,18 @@
   .status .sz button { font-size: 15px; padding: 6px 10px; min-width: 34px; }
   .status .sz button.on { background: #ffd66b; }
   body.bfull .wrap, body.bsized .wrap { max-width: none; }
+  /* 넓은 화면: 페이지는 고정, 사이드바만 안에서 스크롤(10-23 작가님 "컨테이너가 스크롤로 넘어가는 문제") */
+  @media (min-width: 1000px) {
+    .wrap { flex-wrap: nowrap; align-items: flex-start; }
+    .side { max-height: calc(100vh - 84px); overflow-y: auto; padding-right: 4px; }
+  }
+  .split { flex: 0 0 10px; align-self: stretch; cursor: col-resize; border-radius: 5px; margin: 0 -9px; position: relative; z-index: 1; }
+  .split:hover, .split.drag { background: rgba(60, 90, 160, .18); }
+  @media (max-width: 999px) { .split { display: none; } }
   .live { padding: 8px 10px; }
   .live-head { display: flex; align-items: center; gap: 8px; }
   .live-head .small { flex: 1; }
-  .live iframe { width: 100%; height: 640px; border: 0; margin-top: 6px; border-radius: 6px; background: #17181a; }
+  .live iframe { width: 100%; height: 540px; border: 0; margin-top: 6px; border-radius: 6px; background: #17181a; }
   .live.folded iframe { display: none; }
   body.bfull .board { flex: 0 0 auto; width: min(calc(100vh - 80px), calc(100vw - 32px)); max-width: none; }
   body.bsized .board { flex: 0 0 auto; width: min(var(--bw), calc(100vw - 32px)); max-width: none; }
@@ -80,7 +88,7 @@
   .cand { display: flex; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line-ui); }
   .cand .n { width: 26px; height: 26px; border-radius: 50%; background: var(--blue); color: #fff; display: flex;
              align-items: center; justify-content: center; font-weight: 700; font-size: 15px; }
-  iframe#reviewFrame { width: 100%; height: 420px; border: 1px solid var(--line-ui); border-radius: 6px; background: #fff; }
+  iframe#reviewFrame { width: 100%; height: 380px; border: 1px solid var(--line-ui); border-radius: 6px; background: #fff; }
   dialog { border: 0; border-radius: 10px; padding: 0; width: min(560px, 94vw); box-shadow: 0 10px 40px rgba(0,0,0,.3); }
   dialog::backdrop { background: rgba(20,24,30,.45); }
   .dlg-head { background: var(--head); color: #fff; padding: 12px 16px; font-weight: 700; }
@@ -104,6 +112,7 @@
 </div>
 <div class="wrap">
   <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg></div>
+  <div class="split" id="split" title="끌어서 판 크기 조정"></div>
   <div class="side">
     <div class="top">
       <div class="box clockbox"><div class="ico">⏱</div><div id="timeMode">무제한</div></div>
@@ -746,7 +755,7 @@ document.getElementById('bReview').onclick = async () => {
   if (S.reviewJob) {
     reviewJob = S.reviewJob;
     const f = document.getElementById('reviewFrame'), a = document.getElementById('reviewOpen');
-    f.src = `/review/${reviewJob}`; f.hidden = false;
+    f.src = `/review/${reviewJob}`; f.hidden = true;  // 진행 중엔 숨김 — reviewFrameSync가 완성 시 연다
     a.href = `/review/${reviewJob}`; a.hidden = false;
     render();
   }
@@ -910,6 +919,14 @@ fetch('/api/state').then(r => r.json()).then(s => {
   document.getElementById('bSzDown').onclick = () => step(-60);
   document.getElementById('bSzUp').onclick = () => step(60);
   full.onclick = () => { mode = mode === 'full' ? 'auto' : 'full'; apply(); };
+  const sp = document.getElementById('split');
+  sp.addEventListener('pointerdown', e => {
+    e.preventDefault(); sp.setPointerCapture(e.pointerId); sp.classList.add('drag');
+    const left = box.getBoundingClientRect().left;
+    const move = ev => { mode = String(Math.round(Math.max(360, Math.min(maxPx(), ev.clientX - left)))); apply(); };
+    const up = () => { sp.classList.remove('drag'); sp.removeEventListener('pointermove', move); sp.removeEventListener('pointerup', up); };
+    sp.addEventListener('pointermove', move); sp.addEventListener('pointerup', up);
+  });
   apply();
 })();
 
@@ -928,6 +945,14 @@ fetch('/api/state').then(r => r.json()).then(s => {
     .then(() => { fr.src = LIVE + '?embed=1'; })
     .catch(() => { fr.hidden = true; off.hidden = false; });
 })();
+
+// ---- 리뷰 창: 만드는 동안은 상태 한 줄만, 완성되면 창을 펼친다(10-23 작가님 "메시지창이 너무 커")
+setInterval(() => {
+  const f = document.getElementById('reviewFrame');
+  if (!reviewJob || !S || !f.src) return;
+  const running = S.review && S.review.running === reviewJob;
+  if (!running && f.hidden) { f.hidden = false; f.src = `/review/${reviewJob}`; }
+}, 2000);
 </script>
 </body>
 </html>

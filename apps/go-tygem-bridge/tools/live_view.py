@@ -71,7 +71,7 @@ class State:
 
     def read_goboard(s):
         import urllib.request
-        st = json.load(urllib.request.urlopen(s.goboard, timeout=5))
+        st = json.load(urllib.request.urlopen(s.goboard, timeout=15))
         sgf = open(st["sgf"], encoding="utf-8").read() if st.get("sgf") and os.path.exists(st["sgf"]) else ""
         if st.get("sgf") != s.log:  # 새 판 — 결과 초기화
             with s.lock:
@@ -112,9 +112,16 @@ class State:
                         s.results[k] = res
                         s.err = None
                     continue
-            except Exception as e:  # 실패 가시화 — 화면 상단에 표시
-                with s.lock:
-                    s.err = f"❌ live_view: {e}"
+            except Exception as e:  # 실패 가시화 — 연속 3회부터 화면에 표시(바둑판 서버가 엔진 응답 중이면 잠깐 늦을 수 있음)
+                s.fails = getattr(s, "fails", 0) + 1
+                if s.fails >= 3:
+                    with s.lock:
+                        s.err = f"❌ live_view: {e} (연속 {s.fails}회)"
+                time.sleep(1.0)
+                continue
+            s.fails = 0
+            with s.lock:
+                s.err = None
             time.sleep(1.0)
 
     def sysmon(s):
