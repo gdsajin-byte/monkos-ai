@@ -17,7 +17,7 @@ import analyze
 from analyze import Engine, base_query
 from board import N, COLS, gtp_to_xy, region
 from facts import extract, board_at, KO, CO_BEST
-from sheet import svg_board
+from sheet import svg_board, esc
 from verify import check
 from teacher import WORKDIR
 from concepts import analyze_concepts, load_lexicon
@@ -264,22 +264,103 @@ def term_errors(sentence, activated, source, lex):
     return errs
 
 
+
+# ---- 해설식 표기(10-23 작가님 "E4 좌표는 불편 — A·B·수순 번호로"): 실전도·참고도 + 본문 좌표 → 표지
+COORD_RE = re.compile(r"(?<![A-Za-z0-9])([A-HJ-T](?:1[0-9]|[1-9]))(?![0-9])")  # 한글 조사가 바로 붙어도 잡는다(\b는 한글을 글자로 봐 놓침)
+SEQ_RE = re.compile(r"([흑백]) ([A-HJ-T](?:1[0-9]|[1-9]))(?![0-9])")
+
+
+def fact_seq(fx, fid):
+    f = next((x for x in fx["facts"] if x["id"] == fid), None)
+    return [("B" if c == "흑" else "W", m) for c, m in SEQ_RE.findall(f["text"])] if f else []
+
+
+def diagram(gm, fx, numbered, mark_a=None, title="", extra=None):
+    """국면(착수 전) 위에 numbered=[(색, 좌표, 번호)] 돌을 번호와 함께 놓고, mark_a 자리에 파란 A."""
+    i = fx["move_number"] - 1
+    b = board_at(gm, i)
+    cell, pad = 20, 22
+    size = pad * 2 + cell * (N - 1)
+    o = [f'<svg viewBox="0 0 {size} {size}" class="bd" role="img" aria-label="{esc(title)}">',
+         f'<rect width="{size}" height="{size}" fill="var(--wood)"/>']
+    for k in range(N):
+        a = pad + k * cell
+        o.append(f'<line x1="{pad}" y1="{a}" x2="{size - pad}" y2="{a}" class="ln"/><line x1="{a}" y1="{pad}" x2="{a}" y2="{size - pad}" class="ln"/>')
+        o.append(f'<text x="{a}" y="12" class="lb">{COLS[k]}</text><text x="8" y="{a + 3}" class="lb">{N - k}</text>')
+    for x in (3, 9, 15):
+        for y in (3, 9, 15):
+            o.append(f'<circle cx="{pad + x * cell}" cy="{pad + y * cell}" r="2.5" class="hs"/>')
+    for (x, y), c in b.s.items():
+        o.append(f'<circle cx="{pad + x * cell}" cy="{pad + y * cell}" r="9.3" class="{"sb" if c == "B" else "sw"}"/>')
+    used = set(b.s)
+    if mark_a:
+        pa = gtp_to_xy(mark_a)
+        if pa and pa not in used:
+            cx, cy = pad + pa[0] * cell, pad + pa[1] * cell
+            o.append(f'<circle cx="{cx}" cy="{cy}" r="8.5" class="ma2"/><text x="{cx}" y="{cy + 4}" class="la">A</text>')
+            used.add(pa)
+    for m, t in (extra or {}).items():  # 본문에 나온 그 밖의 자리 — B, C…
+        p = gtp_to_xy(m)
+        if p and p not in used:
+            cx, cy = pad + p[0] * cell, pad + p[1] * cell
+            o.append(f'<circle cx="{cx}" cy="{cy}" r="8.5" class="mx"/><text x="{cx}" y="{cy + 4}" class="la">{t}</text>')
+            used.add(p)
+    for c, m, n in numbered:
+        p = gtp_to_xy(m)
+        if not p or p in used:
+            continue  # 따냄 뒤 같은 자리 재착수 등은 생략(번호 겹침 방지)
+        used.add(p)
+        cx, cy = pad + p[0] * cell, pad + p[1] * cell
+        o.append(f'<circle cx="{cx}" cy="{cy}" r="9.3" class="{"sb" if c == "B" else "sw"}"/>'
+                 f'<text x="{cx}" y="{cy + 3.5}" class="{"nb" if c == "B" else "nw"}">{n}</text>')
+    o.append("</svg>")
+    return "".join(o)
+
+
+def label_map(fx, kind):
+    """좌표 → 해설 표지. 우선순위: 실전 수 > A(최선·차선) > 실전도 번호 > 참고도 번호."""
+    n0, act = fx["move_number"], fx["actual"]
+    lab = {act: "실전 수", fx["best"]: "A"}
+    cont = fact_seq(fx, "F5")
+    if cont and cont[0][1] == act:
+        cont = cont[1:]
+    real = [(c, m, n0 + k) for k, (c, m) in enumerate(cont, 1)]
+    ref = [(c, m, k) for k, (c, m) in enumerate(fact_seq(fx, "F6"), 1)] if kind != "잘 둔 수" else []
+    for c, m, n in real:
+        lab.setdefault(m, f"실전도 {n}")
+    for c, m, n in ref:
+        lab.setdefault(m, f"참고도 {n}")
+    return lab, real, ref
+
+
+def relabel(text, lab):
+    text = re.sub(r"실제 수 ([A-HJ-T](?:1[0-9]|[1-9]))(?![0-9])", lambda m: "실전 수" if lab.get(m.group(1)) == "실전 수" else m.group(0), text)
+    text = re.sub(r"(\d+)수 ([A-HJ-T](?:1[0-9]|[1-9]))(?=[는은이가를의,. ]|$)", lambda m: m.group(1) + "수" if m.group(2) in lab else m.group(0), text)
+    return COORD_RE.sub(lambda m: lab.get(m.group(1), m.group(1)), text)
+
 def render(gm, items, out, model, color):
     esc = lambda s: html.escape(s, quote=True)
     secs = []
     for it in items:
         fx, lv, v = it["fx"], it["levels"], it["verify"]
+        lab, real, ref = label_map(fx, it["kind"])
+        extra = {}
+        prose = " ".join([fx["facts"][0]["text"]] + [x for name in ("아마", "유단") for x in (lv or {}).get(name, [])])
+        for m in COORD_RE.findall(re.sub(r"\[[^\]]*\]", "", prose)):
+            if m not in lab and m not in extra and len(extra) < 6:
+                extra[m] = "BCDEFG"[len(extra)]
+        lab.update(extra)
         body = []
         for name in ("아마", "유단"):
             sents = []
             for s in (lv or {}).get(name, []):
                 bad = v.get(s)
-                sents.append(f'<span class="fail" title="검증 탈락: {esc(", ".join(bad))}">{esc(re.sub(r"\s*\[[^\]]*\]", "", s))}</span>'
-                             if bad else esc(re.sub(r"\s*\[[^\]]*\]", "", s)))
+                txt = relabel(re.sub(r"\s*\[[^\]]*\]", "", s), lab)
+                sents.append(f'<span class="fail" title="검증 탈락: {esc(", ".join(bad))}">{esc(txt)}</span>' if bad else esc(txt))
             body.append(f'<h4>{name}</h4><p>{" ".join(sents) or "(생성 실패)"}</p>')
         label = "차선" if it["kind"] == "잘 둔 수" else "최선"
         co = f" (≈ {fx['co_best']}, 어느 쪽도 최선)" if fx.get("co_best") else ""
-        f1 = fx["facts"][0]["text"]
+        f1 = relabel(fx["facts"][0]["text"], lab)
         con = it.get("con")
         chips = evid = ""
         if con:
@@ -297,8 +378,9 @@ def render(gm, items, out, model, color):
                         f"<tr><td>{k}</td><td>{esc(json.dumps(sg.get(k), ensure_ascii=False))}</td></tr>" for k in keys)
                     + "</table></details>")
         tagtxt = it["kind"] + (f" · {con['cheer']}" if con else "")
-        secs.append(f'''<section class="k-{"good" if it["kind"] == "잘 둔 수" else "bad"}"><h2><span class="tag">{esc(tagtxt)}</span> {KO[fx["color"]]} {fx["move_number"]}수 {fx["actual"]} · {label} {fx["best"]}{esc(co)}</h2>
-<div class="row"><figure>{svg_board(gm, fx)}<figcaption>✕ 실제 수 {fx["actual"]} · 파란 원 {label}수 {fx["best"]} · 작은 점 직전 수</figcaption></figure>
+        secs.append(f'''<section class="k-{"good" if it["kind"] == "잘 둔 수" else "bad"}"><h2><span class="tag">{esc(tagtxt)}</span> {KO[fx["color"]]} {fx["move_number"]}수 · {label} A{esc(relabel(co, lab))}</h2>
+<div class="row"><div class="figs"><figure>{diagram(gm, fx, [(fx["color"], fx["actual"], fx["move_number"])] + real, fx["best"], "실전도", extra)}<figcaption>실전도 — {KO[fx["color"]]} {fx["move_number"]}(실전 수){" · " + str(real[0][2]) + "~" + str(real[-1][2]) + " 예상 진행" if real else ""} · A {label}{" · " + "·".join(extra.values()) + " 본문 언급" if extra else ""}</figcaption></figure>
+{f'<figure>{diagram(gm, fx, ref, None, "참고도")}<figcaption>참고도 — {label} 진행(1=A)</figcaption></figure>' if ref else ""}</div>
 <div>{chips}<p class="f1">{esc(f1)}</p>{"".join(body)}{evid}<details><summary>근거 사실 {len(fx["facts"])}개</summary><ol>{"".join(f"<li><b>{x['id']}</b> {esc(x['text'])}</li>" for x in fx["facts"])}</ol></details></div></div></section>''')
     m = gm["meta"]
     page = f"""<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -312,7 +394,7 @@ section{{background:var(--card);border:1px solid var(--line);border-left:4px sol
 h2{{font-size:17px;margin:0 0 12px}}.tag{{font-size:12px;padding:2px 8px;border-radius:99px;background:var(--badbg);color:var(--bad);margin-right:6px;vertical-align:2px}}.k-good .tag{{color:var(--good);background:transparent;border:1px solid var(--good)}}
 .row{{display:grid;grid-template-columns:minmax(220px,360px) 1fr;gap:18px}}figure{{margin:0}}figcaption{{font-size:12px;color:var(--mut)}}
 .bd{{width:100%;height:auto;display:block;border-radius:4px}}.ln{{stroke:var(--grid);stroke-width:.8}}.lb{{font-size:8px;fill:var(--grid);text-anchor:middle}}.hs{{fill:var(--grid)}}
-.sb{{fill:#111;stroke:#000}}.sw{{fill:#fafafa;stroke:#555;stroke-width:.8}}.lm{{fill:#e33}}.mb{{fill:none;stroke:#1d5fe0;stroke-width:3}}.ma{{stroke:#e0301d;stroke-width:3;stroke-linecap:round}}
+.sb{{fill:#111;stroke:#000}}.sw{{fill:#fafafa;stroke:#555;stroke-width:.8}}.lm{{fill:#e33}}.mx{{fill:#2f8f5b;stroke:#fff;stroke-width:1}}.ma2{{fill:#1d5fe0;stroke:#fff;stroke-width:1}}.la{{font-size:10px;font-weight:700;fill:#fff;text-anchor:middle}}.nb{{font-size:9px;font-weight:700;fill:#fff;text-anchor:middle}}.nw{{font-size:9px;font-weight:700;fill:#111;text-anchor:middle}}.figs{{display:flex;flex-direction:column;gap:10px}}.mb{{fill:none;stroke:#1d5fe0;stroke-width:3}}.ma{{stroke:#e0301d;stroke-width:3;stroke-linecap:round}}
 .f1{{font-weight:600;margin:0 0 8px}}h4{{margin:10px 0 2px;font-size:12.5px;color:var(--mut)}}h4+p{{margin:0}}details{{margin-top:10px;font-size:13px;color:var(--mut)}}details ol{{padding-left:18px}}
 .fail{{background:var(--badbg);color:var(--bad);text-decoration:underline dotted}}
 .chips{{margin:0 0 8px;display:flex;flex-wrap:wrap;gap:6px}}.chip{{font-size:12.5px;padding:2px 9px;border-radius:99px;border:1px solid var(--line)}}
@@ -393,6 +475,7 @@ def main():
     ap.add_argument("--sgf", dest="sgf_out", help="해설 코멘트 + 최선수 변화도 SGF 출력 경로")
     ap.add_argument("--min-loss", type=float, default=analyze.MIN_LOSS, help="실수로 볼 최소 손실(집, 기본 2.0)")
     ap.add_argument("--praise", type=int, default=3, help="칭찬할 좋은 수 최대 개수 (기본 3)")
+    ap.add_argument("--render-only", action="store_true", help="{out}_work/items.json으로 HTML만 다시 그림(엔진·LLM 미호출) — 표기·그림 보정용")
     ap.add_argument("--reuse", action="store_true", help="{out}_work/의 분석 결과를 재사용(엔진 미기동) — 사전·임계·프롬프트 보정용")
     ap.add_argument("--no-concepts", action="store_true", help="정성 개념(lexicon) 없이 정량 사실만으로 해설 (구 방식)")
     ap.add_argument("--wr-range", default="0.03,0.97",
@@ -409,6 +492,10 @@ def main():
         wr_range = (lo, hi)
     gm = load_sgf(a.game)
     gm["meta"]["filter"] = f"착수 전 승률 {lo * 100:g}~{hi * 100:g}% 구간 실수만" if wr_range else "전 구간"
+    if a.render_only:
+        render(gm, json.load(open(os.path.join(work, "items.json"))), a.out, a.model, a.color)
+        print("→", a.out, "(다시 그림)")
+        return
     lex = None if a.no_concepts else load_lexicon()
     cached = os.path.join(work, "deep.json")
     if a.reuse and os.path.exists(cached):
