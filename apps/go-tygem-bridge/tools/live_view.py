@@ -43,8 +43,9 @@ class State:
     def __init__(s, log, visits):
         s.log, s.lock = log, threading.Lock()
         s.moves, s.results, s.me, s.tail, s.err = [], {}, "b", [], None
-        s.an = Analyzer(visits)
+        s.an, s.sys = Analyzer(visits), {}
         threading.Thread(target=s.loop, daemon=True).start()
+        threading.Thread(target=s.sysmon, daemon=True).start()
 
     def read_log(s):
         moves, tail = [], []
@@ -77,9 +78,30 @@ class State:
                     s.err = f"❌ live_view: {e}"
             time.sleep(1.0)
 
+    def sysmon(s):
+        while True:
+            info = {}
+            try:
+                io = subprocess.run(["ioreg", "-r", "-d", "1", "-c", "IOAccelerator"], capture_output=True, text=True, timeout=5).stdout
+                u = [int(x) for x in re.findall(r'"Device Utilization %"=(\d+)', io)]
+                info["gpu"] = max(u) if u else None
+                info["load"] = round(os.getloadavg()[0], 1)
+                th = subprocess.run(["pmset", "-g", "therm"], capture_output=True, text=True, timeout=5).stdout
+                m = re.search(r"CPU_Speed_Limit\s*=\s*(\d+)", th)
+                info["speed"] = int(m.group(1)) if m else 100
+                ts = [(time.strptime(l[:8], "%H:%M:%S"), MOVE_RE.search(l)) for l in open(s.log, encoding="utf-8", errors="replace") if MOVE_RE.search(l)]
+                think = [time.mktime(ts[i][0]) - time.mktime(ts[i - 1][0]) for i in range(1, len(ts)) if ts[i][1].group(2) == "우리"]
+                info["think"] = think[-1] if think else None
+                info["thinkAvg"] = round(sum(think[-10:]) / len(think[-10:]), 1) if think else None
+            except Exception as e:
+                info["err"] = str(e)
+            with s.lock:
+                s.sys = info
+            time.sleep(3)
+
     def snapshot(s):
         with s.lock:
-            return {"log": os.path.basename(s.log), "me": s.me, "moves": s.moves, "tail": s.tail, "error": s.err,
+            return {"log": os.path.basename(s.log), "me": s.me, "moves": s.moves, "tail": s.tail, "error": s.err, "sys": s.sys,
                     "results": {str(k): v for k, v in s.results.items()}}
 
 
@@ -97,14 +119,14 @@ h2{font-size:13px;color:var(--mut);margin:0 0 8px;font-weight:600}
 table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}td{padding:4px 2px;border-top:1px solid var(--line)}
 .tag{display:inline-block;width:20px;height:20px;border-radius:50%;color:#fff;text-align:center;font-weight:700;font-size:12px;line-height:20px}
 .err{color:var(--bad);font-weight:600}.mut{color:var(--mut)}pre{margin:0;font-size:11px;white-space:pre-wrap;color:var(--mut)}
-svg{display:block;width:100%;height:auto}#board{max-height:64vh;margin:auto}.bar{display:flex;height:26px;border-radius:6px;overflow:hidden;border:1px solid #888;margin-top:12px;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}.bar div{display:flex;align-items:center;padding:0 8px;transition:width .6s;white-space:nowrap}#barb{background:#111;color:#fff}#barw{background:#fafafa;color:#111;justify-content:flex-end;flex:1}
+svg{display:block;width:100%;height:auto}.chips{display:flex;flex-wrap:wrap;gap:6px;font-size:12px;font-variant-numeric:tabular-nums}.chip{padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--mut)}.chip b{color:var(--fg);font-weight:600}.chip.warn{border-color:var(--bad);color:var(--bad)}#board{max-height:64vh;margin:auto}.bar{display:flex;height:26px;border-radius:6px;overflow:hidden;border:1px solid #888;margin-top:12px;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}.bar div{display:flex;align-items:center;padding:0 8px;transition:width .6s;white-space:nowrap}#barb{background:#111;color:#fff}#barw{background:#fafafa;color:#111;justify-content:flex-end;flex:1}
 </style></head><body><div class="wrap">
 <div><div class="card"><div class="row" style="justify-content:space-between"><h2 id="title">대국 라이브</h2><span class="mut" id="mv"></span></div>
 <svg id="board" viewBox="0 0 400 400"></svg></div>
 <div class="card" style="margin-top:12px"><h2>형세 흐름 — 흑 승률(실선)·흑 기준 집 차이(점선)</h2><svg id="graph" viewBox="0 0 600 160"></svg></div></div>
 <div><div class="card"><h2>현재 형세</h2><div class="row"><div><div class="mut">흑 승률</div><div class="big" id="wr">–</div></div><div><div class="mut">집 차이</div><div class="big" id="sc">–</div></div></div><div class="bar"><div id="barb" style="width:50%">흑</div><div id="barw">백</div></div><div id="err" class="err"></div></div>
 <div class="card" style="margin-top:12px"><h2>추천수 (다음 차례 <span id="turn"></span>)</h2><table id="top"></table></div>
-<div class="card" style="margin-top:12px"><h2>브리지 로그</h2><pre id="tail"></pre></div></div></div>
+<div class="card sys" style="margin-top:12px"><h2>시스템</h2><div id="sys" class="chips"></div></div></div></div>
 <script>
 const L="ABCDEFGHJKLMNOPQRST",C=["#2f6fdb","#1f9d55","#c98a12","#8a5cd6","#888"],N=19,S=20,O=20;
 const xy=m=>{if(!m||m.toLowerCase()==="pass")return null;const x=L.indexOf(m[0]),y=N-parseInt(m.slice(1));return[O+x*S,O+y*S]};
@@ -138,7 +160,10 @@ async function tick(){try{const s=await (await fetch("/api/state")).json();const
  if(r){document.getElementById("wr").textContent=(r.winrate*100).toFixed(1)+"%";const d=r.scoreLead;document.getElementById("sc").textContent=(d>=0?"흑 +":"백 +")+Math.abs(d).toFixed(1);const b=r.winrate*100;const bb=document.getElementById("barb");bb.style.width=Math.max(4,Math.min(96,b))+"%";bb.textContent="흑 "+b.toFixed(1)+"%";document.getElementById("barw").textContent="백 "+(100-b).toFixed(1)+"%"}
  document.getElementById("turn").textContent=n%2===0?"흑":"백";
  const cur=s.results[String(n)];document.getElementById("top").innerHTML=cur?cur.top.map((t,i)=>`<tr><td><span class="tag" style="background:${C[i]}">${i<3?"ABC"[i]:i+1}</span></td><td><b>${t.move}</b></td><td>${(t.winrate*100).toFixed(1)}%</td><td>${t.scoreLead>=0?"흑+":"백+"}${Math.abs(t.scoreLead).toFixed(1)}</td><td class="mut">${t.visits}v</td></tr>`).join(""):`<tr><td class="mut">분석 중…</td></tr>`;
- document.getElementById("tail").textContent=s.tail.join("\n")}catch(e){document.getElementById("err").textContent="❌ 서버 응답 없음"}}
+ const y=s.sys||{},ch=[];const c=(t,v,w)=>ch.push(`<span class="chip${w?" warn":""}">${t} <b>${v}</b></span>`);
+ if(y.gpu!=null)c("GPU",y.gpu+"%");if(y.load!=null)c("부하",y.load,y.load>12);c("CPU 속도",(y.speed??100)+"%",(y.speed??100)<100);
+ if(y.think!=null)c("우리 생각",y.think+"초 · 최근10 "+y.thinkAvg+"초");if(y.err)c("측정 오류",y.err,1);
+ document.getElementById("sys").innerHTML=ch.join("")}catch(e){document.getElementById("err").textContent="❌ 서버 응답 없음"}}
 tick();setInterval(tick,2000);
 </script></body></html>"""
 
