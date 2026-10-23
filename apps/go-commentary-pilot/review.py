@@ -338,6 +338,42 @@ def relabel(text, lab):
     text = re.sub(r"(\d+)수 ([A-HJ-T](?:1[0-9]|[1-9]))(?=[는은이가를의,. ]|$)", lambda m: m.group(1) + "수" if m.group(2) in lab else m.group(0), text)
     return COORD_RE.sub(lambda m: lab.get(m.group(1), m.group(1)), text)
 
+
+def line_frames(gm, fx, steps):
+    """steps=[(색, 좌표, 번호)] → 단계별 판 [{s:[[x,y,c]], n:[[x,y,번호]]}] (따냄 반영, 0단계 = 착수 전)."""
+    b = board_at(gm, fx["move_number"] - 1).copy()
+    nums, out = {}, []
+    snap = lambda: {"s": [[x, y, c] for (x, y), c in b.s.items()], "n": [[x, y, n] for (x, y), n in nums.items() if (x, y) in b.s]}
+    out.append(snap())
+    for c, m, n in steps:
+        xy = gtp_to_xy(m)
+        if not xy or xy in b.s:
+            break
+        b.play(c, xy)
+        nums[xy] = n
+        out.append(snap())
+    return out
+
+
+def interactive(gm, fx, idx, real, ref, extra, label):
+    """실전도·참고도 한 판 — A를 누르면 참고도 수순이 한 수씩 펼쳐진다(10-23 작가님)."""
+    lines = {"real": line_frames(gm, fx, [(fx["color"], fx["actual"], fx["move_number"])] + real)}
+    if ref:
+        lines["A"] = line_frames(gm, fx, ref)
+    i = fx["move_number"] - 1
+    last = gtp_to_xy(gm["moves"][i - 1][1]) if i > 0 else None
+    marks = {"A": gtp_to_xy(fx["best"])}
+    marks.update({t: gtp_to_xy(m) for m, t in extra.items()})
+    data = {"lines": lines, "marks": {k: v for k, v in marks.items() if v}, "last": last}
+    btn_a = f'<button data-line="A">참고도 — A {label} 진행</button>' if ref else ""
+    return (f'<figure class="ia" id="ia{idx}"><svg viewBox="0 0 404 404" class="bd" role="img" aria-label="실전도·참고도"></svg>'
+            f'<div class="ctl"><button data-line="real" class="on">실전도</button>{btn_a}'
+            f'<span class="sp"></span><button data-step="-1" aria-label="한 수 뒤로">◀</button><span class="stepno"></span>'
+            f'<button data-step="1" aria-label="한 수 앞으로">▶</button><button data-play aria-label="처음부터 재생">⟲ 재생</button></div>'
+            f'<figcaption>{"A를 누르거나 참고도 버튼으로 수순을 펼칩니다 · " if ref else ""}번호 = 수순 · 파란 A {label}'
+            f'{" · 녹색 " + "·".join(extra.values()) + " 본문 언급" if extra else ""}</figcaption>'
+            f'<script type="application/json" class="iad">{json.dumps(data, ensure_ascii=False)}</script></figure>')
+
 def render(gm, items, out, model, color):
     esc = lambda s: html.escape(s, quote=True)
     secs = []
@@ -379,8 +415,7 @@ def render(gm, items, out, model, color):
                     + "</table></details>")
         tagtxt = it["kind"] + (f" · {con['cheer']}" if con else "")
         secs.append(f'''<section class="k-{"good" if it["kind"] == "잘 둔 수" else "bad"}"><h2><span class="tag">{esc(tagtxt)}</span> {KO[fx["color"]]} {fx["move_number"]}수 · {label} A{esc(relabel(co, lab))}</h2>
-<div class="row"><div class="figs"><figure>{diagram(gm, fx, [(fx["color"], fx["actual"], fx["move_number"])] + real, fx["best"], "실전도", extra)}<figcaption>실전도 — {KO[fx["color"]]} {fx["move_number"]}(실전 수){" · " + str(real[0][2]) + "~" + str(real[-1][2]) + " 예상 진행" if real else ""} · A {label}{" · " + "·".join(extra.values()) + " 본문 언급" if extra else ""}</figcaption></figure>
-{f'<figure>{diagram(gm, fx, ref, None, "참고도")}<figcaption>참고도 — {label} 진행(1=A)</figcaption></figure>' if ref else ""}</div>
+<div class="row"><div class="figs">{interactive(gm, fx, len(secs), real, ref, extra, label)}</div>
 <div>{chips}<p class="f1">{esc(f1)}</p>{"".join(body)}{evid}<details><summary>근거 사실 {len(fx["facts"])}개</summary><ol>{"".join(f"<li><b>{x['id']}</b> {esc(x['text'])}</li>" for x in fx["facts"])}</ol></details></div></div></section>''')
     m = gm["meta"]
     page = f"""<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -394,7 +429,7 @@ section{{background:var(--card);border:1px solid var(--line);border-left:4px sol
 h2{{font-size:17px;margin:0 0 12px}}.tag{{font-size:12px;padding:2px 8px;border-radius:99px;background:var(--badbg);color:var(--bad);margin-right:6px;vertical-align:2px}}.k-good .tag{{color:var(--good);background:transparent;border:1px solid var(--good)}}
 .row{{display:grid;grid-template-columns:minmax(220px,360px) 1fr;gap:18px}}figure{{margin:0}}figcaption{{font-size:12px;color:var(--mut)}}
 .bd{{width:100%;height:auto;display:block;border-radius:4px}}.ln{{stroke:var(--grid);stroke-width:.8}}.lb{{font-size:8px;fill:var(--grid);text-anchor:middle}}.hs{{fill:var(--grid)}}
-.sb{{fill:#111;stroke:#000}}.sw{{fill:#fafafa;stroke:#555;stroke-width:.8}}.lm{{fill:#e33}}.mx{{fill:#2f8f5b;stroke:#fff;stroke-width:1}}.ma2{{fill:#1d5fe0;stroke:#fff;stroke-width:1}}.la{{font-size:10px;font-weight:700;fill:#fff;text-anchor:middle}}.nb{{font-size:9px;font-weight:700;fill:#fff;text-anchor:middle}}.nw{{font-size:9px;font-weight:700;fill:#111;text-anchor:middle}}.figs{{display:flex;flex-direction:column;gap:10px}}.mb{{fill:none;stroke:#1d5fe0;stroke-width:3}}.ma{{stroke:#e0301d;stroke-width:3;stroke-linecap:round}}
+.sb{{fill:#111;stroke:#000}}.sw{{fill:#fafafa;stroke:#555;stroke-width:.8}}.lm{{fill:#e33}}.mx{{fill:#2f8f5b;stroke:#fff;stroke-width:1}}.ma2{{fill:#1d5fe0;stroke:#fff;stroke-width:1}}.la{{font-size:10px;font-weight:700;fill:#fff;text-anchor:middle}}.nb{{font-size:9px;font-weight:700;fill:#fff;text-anchor:middle}}.nw{{font-size:9px;font-weight:700;fill:#111;text-anchor:middle}}.figs{{display:flex;flex-direction:column;gap:10px}}.ctl{{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0 2px}}.ctl button{{font:inherit;font-size:12.5px;padding:3px 9px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer}}.ctl button.on{{border-color:#1d5fe0;color:#1d5fe0;font-weight:700}}.ctl .sp{{flex:1}}.stepno{{font-size:12px;color:var(--mut);min-width:44px;text-align:center}}.ia svg .hit{{cursor:pointer}}.mb{{fill:none;stroke:#1d5fe0;stroke-width:3}}.ma{{stroke:#e0301d;stroke-width:3;stroke-linecap:round}}
 .f1{{font-weight:600;margin:0 0 8px}}h4{{margin:10px 0 2px;font-size:12.5px;color:var(--mut)}}h4+p{{margin:0}}details{{margin-top:10px;font-size:13px;color:var(--mut)}}details ol{{padding-left:18px}}
 .fail{{background:var(--badbg);color:var(--bad);text-decoration:underline dotted}}
 .chips{{margin:0 0 8px;display:flex;flex-wrap:wrap;gap:6px}}.chip{{font-size:12.5px;padding:2px 9px;border-radius:99px;border:1px solid var(--line)}}
@@ -404,7 +439,35 @@ table.ev{{border-collapse:collapse;width:100%;margin:6px 0;font-size:12px}}table
 </style></head><body><main>
 <h1>대국 리뷰 — {esc(m.get("PB", ""))}(흑) 대 {esc(m.get("PW", ""))}(백)</h1>
 <p class="sub">{esc(m.get("DT", ""))} · {len(gm["moves"])}수 · 덤 {gm["komi"]} · 분석 KataGo b18(OpenCL, 정밀 {analyze.DEEP_VISITS} visits) · 해설 {model} (사실 목록 기반, 검증기 통과) · {KO[color]} 수만 대상 · {esc(m.get("filter", "전 구간"))} · 손실은 KataGo 기대 집 차이</p>
-{"".join(secs)}</main></body></html>"""
+{"".join(secs)}</main><script>
+// 실전도·참고도 — 단계별 판 그리기. A(또는 참고도 버튼)를 누르면 참고도 수순이 한 수씩 펼쳐진다
+(function(){{const N=19,C=20,P=22,COLS="ABCDEFGHJKLMNOPQRST";
+const sv=(t,a)=>{{const e=document.createElementNS("http://www.w3.org/2000/svg",t);for(const k in a)e.setAttribute(k,a[k]);return e}};
+document.querySelectorAll("figure.ia").forEach(fig=>{{
+ const D=JSON.parse(fig.querySelector(".iad").textContent),svg=fig.querySelector("svg"),no=fig.querySelector(".stepno");
+ let line="real",k=Math.min(1,D.lines.real.length-1),timer=null;  // 처음엔 실전 수 한 점 + A(누를 수 있게) — ▶로 이후 진행
+ function draw(){{const L=D.lines[line],f=L[k];svg.replaceChildren();
+  svg.append(sv("rect",{{width:404,height:404,fill:"var(--wood)"}}));
+  for(let i=0;i<N;i++){{const a=P+i*C;svg.append(sv("line",{{x1:P,y1:a,x2:P+18*C,y2:a,class:"ln"}}),sv("line",{{x1:a,y1:P,x2:a,y2:P+18*C,class:"ln"}}));
+   const t1=sv("text",{{x:a,y:12,class:"lb"}});t1.textContent=COLS[i];const t2=sv("text",{{x:8,y:a+3,class:"lb"}});t2.textContent=N-i;svg.append(t1,t2)}}
+  for(const x of[3,9,15])for(const y of[3,9,15])svg.append(sv("circle",{{cx:P+x*C,cy:P+y*C,r:2.5,class:"hs"}}));
+  const occ=new Set(f.s.map(([x,y])=>x+","+y));
+  for(const[x,y,c]of f.s)svg.append(sv("circle",{{cx:P+x*C,cy:P+y*C,r:9.3,class:c==="B"?"sb":"sw"}}));
+  const col={{}};for(const[x,y,c]of f.s)col[x+","+y]=c;
+  for(const[x,y,n]of f.n){{const t=sv("text",{{x:P+x*C,y:P+y*C+3.5,class:col[x+","+y]==="B"?"nb":"nw"}});t.textContent=n;svg.append(t)}}
+  if(k===0&&D.last&&occ.has(D.last.join(",")))svg.append(sv("circle",{{cx:P+D.last[0]*C,cy:P+D.last[1]*C,r:3.5,class:"lm"}}));
+  for(const m in D.marks){{const[x,y]=D.marks[m];if(occ.has(x+","+y))continue;
+   const g=sv("g",{{class:m==="A"&&D.lines.A?"hit":""}});g.append(sv("circle",{{cx:P+x*C,cy:P+y*C,r:8.5,class:m==="A"?"ma2":"mx"}}));
+   const t=sv("text",{{x:P+x*C,y:P+y*C+4,class:"la"}});t.textContent=m;g.append(t);if(m==="A"&&D.lines.A)g.onclick=()=>pick("A",true);svg.append(g)}}
+  no.textContent=(line==="A"?"참고도 ":"실전도 ")+k+"/"+(L.length-1);
+  fig.querySelectorAll("[data-line]").forEach(b=>b.classList.toggle("on",b.dataset.line===line))}}
+ function pick(l,play){{clearInterval(timer);line=l;k=l==="real"?Math.min(1,D.lines.real.length-1):0;draw();run()}}
+ function run(){{clearInterval(timer);timer=setInterval(()=>{{if(k>=D.lines[line].length-1)return clearInterval(timer);k++;draw()}},650)}}
+ fig.querySelectorAll("[data-line]").forEach(b=>b.onclick=()=>pick(b.dataset.line,b.dataset.line==="A"));
+ fig.querySelectorAll("[data-step]").forEach(b=>b.onclick=()=>{{clearInterval(timer);k=Math.max(0,Math.min(D.lines[line].length-1,k+Number(b.dataset.step)));draw()}});
+ fig.querySelector("[data-play]").onclick=()=>{{k=0;draw();run()}};
+ draw()}})}})();
+</script></body></html>"""
     open(out, "w").write(page)
 
 
