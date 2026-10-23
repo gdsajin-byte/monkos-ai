@@ -78,18 +78,36 @@ class GTP:
         return b
 
 
-async def read_screen(c):
-    r = await c.send("Page.captureScreenshot", format="png")
-    im = np.asarray(Image.open(io.BytesIO(base64.b64decode(r["data"]))).convert("RGB")).astype(int)
-    try:
-        gx0, gy0, sx, sy = calibrate(im)
-    except RuntimeError as e:
-        if not GEOM:
-            raise
-        log("⚠️ 판 위치 재측정 실패 — 직전 값 사용:", e)
-        gx0, gy0, sx, sy = GEOM["x0"], GEOM["y0"], GEOM["sx"], GEOM["sy"]
-    dpr = im.shape[1] / (await c.send("Runtime.evaluate", expression="window.innerWidth", returnByValue=True))["result"]["value"]
-    GEOM.update(x0=gx0, y0=gy0, sx=sx, sy=sy, dpr=dpr)
+READS = [0]
+FULL_EVERY = 15  # 판 위치 재측정 주기(읽기 횟수) — 그 사이는 판 영역만 캡처
+
+
+async def read_screen(c, full=False):
+    """10-23 최적화: 전체 PNG(372ms·1.2MB) → 평소엔 판 영역만 JPEG 80(66ms·0.2MB), FULL_EVERY회마다·요청 시 전체 JPEG로 재측정.
+    JPEG 80·60 판독은 저장 화면 2장(돌 290·163)에서 PNG와 불일치 0(10-23 실측)."""
+    READS[0] += 1
+    if full or not GEOM or READS[0] % FULL_EVERY == 0:
+        r = await c.send("Page.captureScreenshot", format="jpeg", quality=80)
+        im = np.asarray(Image.open(io.BytesIO(base64.b64decode(r["data"]))).convert("RGB")).astype(int)
+        try:
+            gx0, gy0, sx, sy = calibrate(im)
+        except RuntimeError as e:
+            if not GEOM:
+                raise
+            log("⚠️ 판 위치 재측정 실패 — 직전 값 사용:", e)
+            gx0, gy0, sx, sy = GEOM["x0"], GEOM["y0"], GEOM["sx"], GEOM["sy"]
+        dpr = im.shape[1] / (await c.send("Runtime.evaluate", expression="window.innerWidth", returnByValue=True))["result"]["value"]
+        GEOM.update(x0=gx0, y0=gy0, sx=sx, sy=sy, dpr=dpr)
+        ox = oy = 0
+    else:
+        gx0, gy0, sx, sy, dpr = GEOM["x0"], GEOM["y0"], GEOM["sx"], GEOM["sy"], GEOM["dpr"]
+        cx, cy = (gx0 - sx) / dpr, (gy0 - sy) / dpr  # 판 바깥 한 칸 여유
+        cw, ch = 20 * sx / dpr, 20 * sy / dpr
+        r = await c.send("Page.captureScreenshot", format="jpeg", quality=80,
+                         clip={"x": cx, "y": cy, "width": cw, "height": ch, "scale": 1})
+        im = np.asarray(Image.open(io.BytesIO(base64.b64decode(r["data"]))).convert("RGB")).astype(int)
+        ox, oy = cx * dpr, cy * dpr  # 전체 화면 px → 잘라낸 그림 px
+        gx0, gy0 = gx0 - ox, gy0 - oy
     off = int(min(sx, sy) * 0.22)
     b = {}
     for i in range(19):
@@ -150,19 +168,19 @@ async def main():
             if mv.lower() in ("pass", "resign"):
                 log("⏸ 우리 엔진이", mv, "— 화면 조작은 하지 않고 중단(작가님 판단)"); break
             i, j = from_gtp(mv)
-            await read_screen(c)  # 클릭 직전 격자 재측정
+            await read_screen(c, full=True)  # 클릭 직전 격자 재측정(전체 화면)
             gm = GEOM
             await click(c, (gm["x0"] + i * gm["sx"]) / gm["dpr"], (gm["y0"] + j * gm["sy"]) / gm["dpr"])
             ok = False
-            for _ in range(10):
-                await asyncio.sleep(0.5)
+            for _ in range(25):  # 0.2초 간격 확인(최대 5초) — 고정 0.5초 대기 제거
+                await asyncio.sleep(0.2)
                 if (await read_screen(c)).get((i, j)) == me: ok = True; break
             if not ok:
                 log("❌ 착점이 화면에 안 보임 — 중단"); break
         else:
             exp = g.board(); t0 = time.time(); got = None
             while time.time() - t0 < 120:
-                await asyncio.sleep(1.0)
+                await asyncio.sleep(0.3)  # 상대 수 확인 간격 1.0 → 0.3초(판 영역 캡처라 가볍다)
                 s = await read_screen(c)
                 new = [p for p, col in s.items() if col == op and exp.get(p) != op]
                 if len(new) == 1: got = new[0]; break
@@ -173,7 +191,7 @@ async def main():
             mv = gtp_coord(*got); g.cmd(f"play {op} {mv}"); moves.append((op, mv))
             log(f"#{len(moves)} 상대 {op.upper()} {mv}")
             # 따냄 반영 후 화면·엔진 판 일치 확인
-            await asyncio.sleep(0.8)
+            await asyncio.sleep(0.5)  # 따냄 애니메이션 여유 0.8 → 0.5초
             s = await read_screen(c); e = g.board()
             diff = [p for p in set(s) | set(e) if s.get(p) != e.get(p)]
             if diff:

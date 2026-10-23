@@ -50,5 +50,6 @@ async def ev(c, expr):
 
 async def click(c, x, y):
     await c.send("Input.dispatchMouseEvent", type="mouseMoved", x=x, y=y)
+    await asyncio.sleep(0.05)  # 호버 반응(착점 미리보기 등) 뒤에 누른다 — 2국 #143 클릭 미반영 대비
     for t in ("mousePressed", "mouseReleased"):
         await c.send("Input.dispatchMouseEvent", type=t, x=x, y=y, button="left", clickCount=1)
