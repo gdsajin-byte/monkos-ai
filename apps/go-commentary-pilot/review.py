@@ -195,7 +195,7 @@ def good_facts(d, gm):
     facts.append({"id": "F8", "type": "승률", "text": f"이 수 뒤 {KO[color]} 승률은 {wa * 100:.0f}%다.", "data": {}})
     facts.append({"id": "F7", "type": "급함 vs 큼", "text": "해당 없음(실수가 아닌 수).", "data": {"kind": "해당 없음"}})
     return {"pos_id": pos["pos_id"], "game": pos["game"], "move_number": pos["move_number"], "color": color,
-            "actual": pos["move"], "best": alt["move"], "facts": facts}
+            "actual": pos["move"], "best": alt["move"], "facts": facts, "alt_line": d.get("alt_line", [])}
 
 
 def teach(model, fx, kind, con=None):
@@ -234,6 +234,15 @@ def deep_plus(eng, gm, c):
     q["includeOwnership"] = True
     (r,) = eng.ask(q, 1)
     d["pass_own"] = r["ownership"]
+    # 차선(2순위) 수순 — 잘 둔 수의 참고도용(10-23). 2순위는 탐색이 얕아 pv가 1수뿐이라, 차선을 둔 뒤 국면을 따로 읽는다
+    mi = d["before"]["moveInfos"]
+    if len(mi) > 1:
+        q = base_query(gm, c["pos_id"] + "-alt")
+        q["moves"] = gm["moves"][:c["move_index"]] + [[c["color"], mi[1]["move"]]]
+        q["analyzeTurns"] = [c["move_index"] + 1]
+        q["maxVisits"] = analyze.DEEP_VISITS // 2
+        (r,) = eng.ask(q, 1)
+        d["alt_line"] = [mi[1]["move"]] + (r["moveInfos"][0]["pv"][:4] if r.get("moveInfos") else [])
     return d
 
 
@@ -325,9 +334,17 @@ def label_map(fx, kind):
     if cont and cont[0][1] == act:
         cont = cont[1:]
     real = [(c, m, n0 + k) for k, (c, m) in enumerate(cont, 1)]
-    ref = [(c, m, k) for k, (c, m) in enumerate(fact_seq(fx, "F6"), 1)] if kind != "잘 둔 수" else []
+    if kind != "잘 둔 수":
+        ref = [(c, m, k) for k, (c, m) in enumerate(fact_seq(fx, "F6"), 1)]
+    else:  # 차선 A를 뒀다면 — deep_plus가 남긴 차선 수순(구 리뷰엔 없음)
+        opp = "W" if fx["color"] == "B" else "B"
+        ref = [((fx["color"], opp)[k % 2], m, k + 1) for k, m in enumerate(fx.get("alt_line") or [])] if len(fx.get("alt_line") or []) > 1 else []
     for c, m, n in real:
+        if m == fx["best"] and c != fx["color"] and "_dual" not in lab:
+            lab["_dual"] = (m, f"A(실전도 {n})", KO[c])  # 상대가 A 자리에 두는 진행 — 문맥으로 가른다(relabel)
         lab.setdefault(m, f"실전도 {n}")
+    if fx.get("co_best") and fx["co_best"] not in lab:
+        lab[fx["co_best"]] = "A′"
     for c, m, n in ref:
         lab.setdefault(m, f"참고도 {n}")
     return lab, real, ref
@@ -336,7 +353,13 @@ def label_map(fx, kind):
 def relabel(text, lab):
     text = re.sub(r"실제 수 ([A-HJ-T](?:1[0-9]|[1-9]))(?![0-9])", lambda m: "실전 수" if lab.get(m.group(1)) == "실전 수" else m.group(0), text)
     text = re.sub(r"(\d+)수 ([A-HJ-T](?:1[0-9]|[1-9]))(?=[는은이가를의,. ]|$)", lambda m: m.group(1) + "수" if m.group(2) in lab else m.group(0), text)
-    return COORD_RE.sub(lambda m: lab.get(m.group(1), m.group(1)), text)
+    dual = lab.get("_dual")
+
+    def sub(m):
+        if dual and m.group(1) == dual[0] and dual[2] in text[max(0, m.start() - 12):m.start()]:
+            return dual[1]
+        return lab.get(m.group(1), m.group(1))
+    return COORD_RE.sub(sub, text)
 
 
 def line_frames(gm, fx, steps):
@@ -364,6 +387,8 @@ def interactive(gm, fx, idx, real, ref, extra, label):
     last = gtp_to_xy(gm["moves"][i - 1][1]) if i > 0 else None
     marks = {"A": gtp_to_xy(fx["best"])}
     marks.update({t: gtp_to_xy(m) for m, t in extra.items()})
+    if fx.get("co_best"):
+        marks["A′"] = gtp_to_xy(fx["co_best"])
     data = {"lines": lines, "marks": {k: v for k, v in marks.items() if v}, "last": last}
     btn_a = f'<button data-line="A">참고도 — A {label} 진행</button>' if ref else ""
     return (f'<figure class="ia" id="ia{idx}"><svg viewBox="0 0 404 404" class="bd" role="img" aria-label="실전도·참고도"></svg>'
@@ -383,7 +408,7 @@ def render(gm, items, out, model, color):
         extra = {}
         prose = " ".join([fx["facts"][0]["text"]] + [x for name in ("아마", "유단") for x in (lv or {}).get(name, [])])
         for m in COORD_RE.findall(re.sub(r"\[[^\]]*\]", "", prose)):
-            if m not in lab and m not in extra and len(extra) < 6:
+            if m not in lab and m not in extra and len(extra) < 6:  # (lab의 "_dual"은 좌표가 아니라 무관)
                 extra[m] = "BCDEFG"[len(extra)]
         lab.update(extra)
         body = []
@@ -457,7 +482,7 @@ document.querySelectorAll("figure.ia").forEach(fig=>{{
   for(const[x,y,n]of f.n){{const t=sv("text",{{x:P+x*C,y:P+y*C+3.5,class:col[x+","+y]==="B"?"nb":"nw"}});t.textContent=n;svg.append(t)}}
   if(k===0&&D.last&&occ.has(D.last.join(",")))svg.append(sv("circle",{{cx:P+D.last[0]*C,cy:P+D.last[1]*C,r:3.5,class:"lm"}}));
   for(const m in D.marks){{const[x,y]=D.marks[m];if(occ.has(x+","+y))continue;
-   const g=sv("g",{{class:m==="A"&&D.lines.A?"hit":""}});g.append(sv("circle",{{cx:P+x*C,cy:P+y*C,r:8.5,class:m==="A"?"ma2":"mx"}}));
+   const g=sv("g",{{class:m==="A"&&D.lines.A?"hit":""}});g.append(sv("circle",{{cx:P+x*C,cy:P+y*C,r:8.5,class:m.startsWith("A")?"ma2":"mx"}}));
    const t=sv("text",{{x:P+x*C,y:P+y*C+4,class:"la"}});t.textContent=m;g.append(t);if(m==="A"&&D.lines.A)g.onclick=()=>pick("A",true);svg.append(g)}}
   no.textContent=(line==="A"?"참고도 ":"실전도 ")+k+"/"+(L.length-1);
   fig.querySelectorAll("[data-line]").forEach(b=>b.classList.toggle("on",b.dataset.line===line))}}
