@@ -1,6 +1,6 @@
 # 타이젬 웹 AI 대국 브리지 — 화면 판 읽기 ↔ 우리 KataGo(GTP) ↔ CDP 클릭
 # 상대는 타이젬 '인공지능' 대국(KataGo AI)만. 사람 대국에는 쓰지 않는다.
-# 사용: python3 bridge.py [--color b|w] [--max-moves N] [--visits V] [--komi 6.5|0]
+# 사용: python3 bridge.py [--color b|w] [--max-moves N] [--visits V] [--komi 6.5|0] [--byo 20]
 import asyncio, base64, io, subprocess, sys, time, argparse, os
 import numpy as np
 from PIL import Image
@@ -40,10 +40,10 @@ def calibrate(im):
 GEOM = {}
 
 class GTP:
-    def __init__(s, visits):
+    def __init__(s, visits, max_time=0):
         s.p = subprocess.Popen([f"{K}/katago-ocl", "gtp", "-model",
             f"{K}/kata1-b18c384nbt-s9996604416-d4316597426.bin.gz", "-config", f"{K}/gtp_play.cfg",
-            "-override-config", f"maxVisits={visits},rules=korean"],
+            "-override-config", f"maxVisits={visits},rules=korean" + (f",maxTime={max_time}" if max_time else "")],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
 
     def cmd(s, c):
@@ -111,9 +111,10 @@ def from_gtp(v): return COLS.index(v[0]), 19 - int(v[1:])
 async def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--color", default="b")
     ap.add_argument("--max-moves", type=int, default=400); ap.add_argument("--visits", type=int, default=300); ap.add_argument("--resume-log"); ap.add_argument("--komi", type=float, default=6.5)  # 호선 6.5 · 정선 0
+    ap.add_argument("--byo", type=float, default=0)  # 자체 초읽기(초) — 타이젬 AI 대국실은 시간 설정이 없어(무제한) 우리 쪽에서 지킨다. 화면 판독·클릭 여유 3초를 뺀 값을 엔진 생각 상한으로
     a = ap.parse_args()
     me, op = a.color, ("w" if a.color == "b" else "b")
-    g = GTP(a.visits); g.cmd("boardsize 19"); g.cmd("clear_board"); g.cmd(f"komi {a.komi}")
+    g = GTP(a.visits, max(1.0, a.byo - 3) if a.byo else 0); g.cmd("boardsize 19"); g.cmd("clear_board"); g.cmd(f"komi {a.komi}")
     c, _ = await connect()
     scr = await read_screen(c); moves = []
     if a.resume_log:
@@ -136,7 +137,7 @@ async def main():
             g.cmd(f"play {col} {gtp_coord(i, j)}")
         nb = sum(1 for v in scr.values() if v == "b"); nw = len(scr) - nb
         turn = "b" if nb == nw else "w"
-        log(f"이어 두기 — 화면 흑 {nb}·백 {nw}, 다음 {turn.upper()}")
+        log(f"이어 두기 — 화면 흑 {nb}·백 {nw}, 다음 {turn.upper()} · 복원 돌: " + ",".join(f"{col.upper()} {gtp_coord(i, j)}" for (i, j), col in scr.items()))  # live_view --pre에 그대로 쓴다(1수만 복원일 때 수순 확정)
         e = g.board(); diff = [p for p in set(scr) | set(e) if scr.get(p) != e.get(p)]
         if diff: log("❌ 복원 불일치", diff[:6], "— 중단"); return
     else:
@@ -179,8 +180,8 @@ async def main():
                 log("⚠️ 판 불일치", [(gtp_coord(*p), s.get(p), e.get(p)) for p in diff][:6])
                 if len(diff) > 2: log("❌ 불일치 과다 — 중단"); break
         turn = op if turn == me else me
-    sgf = "(;GM[1]FF[4]SZ[19]KM[%g]PB[%s]PW[%s]" % (a.komi, ("MONK-KataGo %dv" % a.visits if me == "b" else "Tygem KataGo"),
-          ("MONK-KataGo %dv" % a.visits if me == "w" else "Tygem KataGo"))
+    sgf = "(;GM[1]FF[4]SZ[19]KM[%g]PB[%s]PW[%s]" % (a.komi, ("MONK-KataGo %dv%s" % (a.visits, " byo%gs" % a.byo if a.byo else "") if me == "b" else "Tygem KataGo"),
+          ("MONK-KataGo %dv%s" % (a.visits, " byo%gs" % a.byo if a.byo else "") if me == "w" else "Tygem KataGo"))
     for col, mv in moves:
         if mv.lower() in ("pass", "resign"): continue
         i, j = from_gtp(mv); sgf += ";%s[%s%s]" % (col.upper(), "abcdefghijklmnopqrs"[i], "abcdefghijklmnopqrs"[j])

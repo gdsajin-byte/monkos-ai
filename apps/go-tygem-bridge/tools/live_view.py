@@ -1,5 +1,5 @@
 # 타이젬 대국 라이브 관전 — 브리지 로그의 수순을 읽어 별도 KataGo 분석(가벼운 visits)으로 형세·추천수를 띄운다.
-# 사용: python3 live_view.py [브리지로그] [--port 8770] [--visits 160] [--komi 6.5|0]   → http://127.0.0.1:8770/
+# 사용: python3 live_view.py [브리지로그] [--port 8770] [--visits 160] [--komi 6.5|0] [--pre "B D3"]   → http://127.0.0.1:8770/
 # 브리지(대국)와 GPU를 나눠 쓴다. 판정·착수에는 관여하지 않는다(읽기 전용).
 import argparse, glob, json, os, re, subprocess, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -58,7 +58,8 @@ class Analyzer:
 
 
 class State:
-    def __init__(s, log, visits, komi=6.5):
+    def __init__(s, log, visits, komi=6.5, pre=()):
+        s.pre = list(pre)  # 브리지가 이어 두기로 시작해 로그에 없는 앞 수들
         s.log, s.lock = log, threading.Lock()
         s.moves, s.results, s.me, s.tail, s.err = [], {}, "b", [], None
         s.an, s.sys = Analyzer(visits, komi), {}
@@ -66,12 +67,12 @@ class State:
         threading.Thread(target=s.sysmon, daemon=True).start()
 
     def read_log(s):
-        moves, tail = [], []
+        moves, tail = list(s.pre), []
         for l in open(s.log, encoding="utf-8", errors="replace"):
             l = l.rstrip("\n")
             tail.append(l)
             m = MOVE_RE.search(l)
-            if m and int(m.group(1)) == len(moves) + 1:
+            if m and int(m.group(1)) == len(moves) - len(s.pre) + 1:
                 moves.append((m.group(3), m.group(4).upper()))
             if "나:" in l:
                 s.me = "w" if "나: w" in l else "b"
@@ -196,8 +197,9 @@ def main():
     ap.add_argument("--port", type=int, default=8770)
     ap.add_argument("--visits", type=int, default=160)
     ap.add_argument("--komi", type=float, default=6.5)
+    ap.add_argument("--pre", default="", help="로그 앞에 놓을 수, 예: B D3,W Q16")
     a = ap.parse_args()
-    st = State(a.log or latest_log(), a.visits, a.komi)
+    st = State(a.log or latest_log(), a.visits, a.komi, [tuple(x.split()) for x in a.pre.split(",") if x.strip()])
 
     class H(BaseHTTPRequestHandler):
         def log_message(self, *x):
