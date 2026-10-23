@@ -787,7 +787,8 @@ function tickClock(c, dt, emit) {
   }
   const before = c.period;
   c.period -= dt;
-  for (let k = 10; k >= 1; k--) if (before > k && c.period <= k) emit('count' + k);
+  // 마지막 10초는 '하나'부터 센다(10-23 작가님 "초읽기 하나부터"): 10초 남음=하나 … 1초 남음=열
+  for (let k = 10; k >= 1; k--) if (before > k && c.period <= k) emit('count' + (11 - k));
   if (c.period <= 0) {
     c.left -= 1;
     if (c.left <= 0) { c.flagged = true; c.period = 0; emit('flag'); return; }
