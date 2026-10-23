@@ -23,8 +23,16 @@ MAIN_MODEL = KATA_DIR / "kata1-b18c384nbt-s9996604416-d4316597426.bin.gz"
 HUMAN_MODEL = KATA_DIR / "b18c384nbt-humanv0.bin.gz"
 PLAY_CFG = KATA_DIR / "gtp_play.cfg"
 HUMAN_CFG = KATA_DIR / "configs" / "gtp_human5k_example.cfg"
-GAMES_DIR = KATA_DIR / "games"
 HERE = Path(__file__).resolve().parent
+# 테스트 모드(run.sh --test): 실사용 포트 금지, 기보는 games/_test/ 로 분리
+TEST_MODE = os.environ.get("GO_BOARD_TEST") == "1"
+LIVE_PORT = 8765
+GAMES_DIR = KATA_DIR / "games" / ("_test" if TEST_MODE else "")
+REVIEW_DIR = GAMES_DIR / "reviews"
+# 리뷰 파이프라인(막내11 소관) — 호출만, 수정 금지
+PILOT_DIR = HERE.parent / "go-commentary-pilot"
+REVIEW_PY = PILOT_DIR / "review.py"
+WR_RANGE = "0.03,0.97"  # 작가님 결정 전 임시 기본값
 
 SIZE = 19
 KOMI = 6.5
@@ -348,13 +356,116 @@ class Game:
             "humanReason": None if human_ok else (self.human.error if self.human else self.human_reason)
                            or "급수 엔진이 꺼져 있음",
             "ranks": [{"v": r, "label": RANK_KO[r]} for r in RANKS],
-            "review": {"ok": False, "reason": REVIEW_REASON},
+            "review": REVIEWS.status(self),
+            "testMode": TEST_MODE,
         }
 
 
-# 리뷰: apps/go-commentary-pilot(막내11 소관)은 OGS games.json 기반 배치라 SGF 1판 입력 인터페이스가 아직 없다.
-# 인터페이스가 생기면 여기서 호출만 한다(그쪽 코드 수정 금지).
-REVIEW_REASON = "리뷰 준비 중 — 해설 파이프라인에 기보 1판 입력 창구가 아직 없습니다"
+# ---------------------------------------------------------------- 리뷰 (review.py 호출)
+
+MIN_USER_MOVES = 5
+
+
+class Reviews:
+    """review.py를 별도 프로세스로 1건씩 돌린다. 대국 락은 잡지 않는다(분석 중에도 둘 수 있음)."""
+
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.jobs = {}
+        self.running = None
+        self._help = None
+
+    def help_text(self):
+        if self._help is None and REVIEW_PY.exists():
+            r = subprocess.run([sys.executable, str(REVIEW_PY), "--help"], cwd=PILOT_DIR,
+                               capture_output=True, text=True, timeout=60)
+            self._help = r.stdout if r.returncode == 0 else ""
+        return self._help or ""
+
+    def filter_ok(self):
+        return "--wr-range" in self.help_text()
+
+    def status(self, game):
+        if not REVIEW_PY.exists():
+            return {"ok": False, "reason": f"리뷰 준비 중 — {REVIEW_PY.name} 없음"}
+        n = sum(1 for c, _ in game.moves if c == game.user)
+        base = {"filterOk": self.filter_ok(), "wrRange": WR_RANGE,
+                "filterReason": None if self.filter_ok() else "리뷰 엔진에 승률 구간 옵션이 아직 없어 전 구간으로 봅니다",
+                "running": self.running}
+        if self.running:
+            return dict(base, ok=False, reason="리뷰 만드는 중 — 새 탭에서 진행 상황을 볼 수 있어요")
+        if n < MIN_USER_MOVES:
+            return dict(base, ok=False, reason=f"작가님 수가 {MIN_USER_MOVES}수 이상이면 리뷰할 수 있어요")
+        return dict(base, ok=True, reason="")
+
+    def start(self, game, wr_filter):
+        st = self.status(game)
+        if not st["ok"]:
+            raise RuntimeError(st["reason"])
+        game.save()
+        REVIEW_DIR.mkdir(parents=True, exist_ok=True)
+        jid = datetime.now().strftime("%Y%m%d_%H%M%S")
+        stem = REVIEW_DIR / f"{game.sgf_path.stem}_리뷰_{jid[-6:]}"
+        src = stem.with_suffix(".input.sgf")
+        src.write_bytes(game.sgf_path.read_bytes())  # 진행 중 판이 바뀌어도 리뷰 입력은 고정
+        args = [sys.executable, str(REVIEW_PY), str(src), str(stem.with_suffix(".html")),
+                "--sgf", str(stem.with_suffix(".sgf")), "--color", game.user]
+        if wr_filter and self.filter_ok():
+            args += ["--wr-range", WR_RANGE]
+        job = {"id": jid, "args": args, "html": stem.with_suffix(".html"), "sgf": stem.with_suffix(".sgf"),
+               "log": stem.with_suffix(".log"), "started": time.time(), "state": "running",
+               "filter": bool(wr_filter and self.filter_ok()), "moves": len(game.moves)}
+        with self.lock:
+            self.jobs[jid] = job
+            self.running = jid
+        threading.Thread(target=self._run, args=(job,), daemon=True).start()
+        return jid
+
+    def _run(self, job):
+        try:
+            with open(job["log"], "w", encoding="utf-8") as lf:
+                rc = subprocess.run(job["args"], cwd=PILOT_DIR, stdout=lf, stderr=subprocess.STDOUT,
+                                    timeout=1800).returncode
+            job["state"] = "done" if rc == 0 and job["html"].exists() else "failed"
+            if job["state"] == "failed":
+                job["error"] = f"review.py 종료 코드 {rc}"
+        except Exception as e:  # noqa: BLE001 — 실패는 리뷰 탭에 그대로 보인다
+            job["state"], job["error"] = "failed", str(e)
+        job["secs"] = round(time.time() - job["started"])
+        with self.lock:
+            self.running = None
+        print(f"{'✅' if job['state'] == 'done' else '❌'} go-board 리뷰 {job['id']}: {job['state']} "
+              f"{job['secs']}s {job.get('error', '')}", file=sys.stderr, flush=True)
+
+    def page(self, jid):
+        job = self.jobs.get(jid)
+        if not job:
+            return None
+        if job["state"] == "done":
+            return job["html"].read_bytes()
+        tail = ""
+        if job["log"].exists():
+            lines = job["log"].read_text(encoding="utf-8", errors="replace").strip().splitlines()
+            tail = "\n".join(lines[-6:])
+        el = round(time.time() - job["started"])
+        head = ("리뷰를 만들고 있어요" if job["state"] == "running" else "리뷰 만들기에 실패했어요")
+        refresh = '<meta http-equiv="refresh" content="3">' if job["state"] == "running" else ""
+        err = f"<p style='color:#b4462b'>{esc(job.get('error', ''))}</p>" if job["state"] == "failed" else ""
+        flt = f"승률 {WR_RANGE.replace(',', '~')} 구간 실수만" if job["filter"] else "전 구간"
+        return (f"<!doctype html><html lang='ko'><head><meta charset='utf-8'>{refresh}<title>대국 리뷰</title>"
+                f"<style>body{{font:20px -apple-system,'Apple SD Gothic Neo',sans-serif;background:#f4efe6;"
+                f"color:#2b2620;max-width:760px;margin:40px auto;padding:0 16px}}pre{{font-size:14px;"
+                f"white-space:pre-wrap;color:#6f655a}}</style></head><body><h1>{head}</h1>"
+                f"<p>{job['moves']}수 대국 · {flt} · {el}초 경과 (보통 몇 분 걸려요 — 이 탭은 3초마다 새로 고칩니다)</p>"
+                f"{err}<pre>{esc(tail)}</pre><p style='font-size:15px;color:#6f655a'>결과 저장 위치: "
+                f"{esc(str(job['html']))}<br>해설 기보: {esc(str(job['sgf']))}</p></body></html>").encode("utf-8")
+
+
+def esc(s):
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+REVIEWS = Reviews()
 
 
 def result_ko(r):
@@ -393,6 +504,12 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/api/state":
             with GAME.lock:
                 self._send(200, json.dumps(GAME.state(), ensure_ascii=False))
+        elif self.path.startswith("/review/"):
+            body = REVIEWS.page(self.path.split("/")[2])
+            if body is None:
+                self._send(404, "리뷰 없음", "text/plain; charset=utf-8")
+            else:
+                self._send(200, body, "text/html; charset=utf-8")
         elif self.path == "/health":
             self._send(200, json.dumps({"ok": True, "strong": GAME.strong.ok,
                                         "human": bool(GAME.human and GAME.human.ok)}))
@@ -411,6 +528,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(409, json.dumps({"busy": True, "error": "상대가 생각 중입니다"}, ensure_ascii=False))
         try:
             err = None
+            jid = None
             try:
                 p = self.path
                 if p == "/api/play":
@@ -430,6 +548,8 @@ class Handler(BaseHTTPRequestHandler):
                     GAME.swap()
                 elif p == "/api/level":
                     GAME.set_level(str(body.get("level")))
+                elif p == "/api/review":
+                    jid = REVIEWS.start(GAME, bool(body.get("wrFilter", True)))
                 else:
                     return self._send(404, '{"error":"없음"}')
             except (RuntimeError, KeyError, ValueError) as e:
@@ -437,6 +557,7 @@ class Handler(BaseHTTPRequestHandler):
             st = GAME.state()
             st["error"] = err
             st["elapsed"] = round(time.time() - t0, 2)
+            st["reviewJob"] = jid
         finally:
             GAME.lock.release()
         self._send(200, json.dumps(st, ensure_ascii=False))
@@ -444,6 +565,8 @@ class Handler(BaseHTTPRequestHandler):
 
 def main():
     global GAME
+    if TEST_MODE and PORT == LIVE_PORT:
+        sys.exit(f"❌ go-board: 테스트 모드는 실사용 포트 {LIVE_PORT}를 쓸 수 없음")
     strong, human, human_reason = build_engines()
     ths = [threading.Thread(target=e.start) for e in (strong, human) if e and not e.error]
     for t in ths:
