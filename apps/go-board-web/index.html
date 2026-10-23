@@ -379,7 +379,8 @@ function setupWidgets() {  // 첫 상태를 받은 뒤 1회 — 선택지 채우
   for (const id of ['level', 'dLevel']) {
     const lv = document.getElementById(id);
     lv.add(new Option('KataGo 최강', 'strong'));
-    for (const r of S.ranks) lv.add(new Option(`사람처럼 두는 KataGo — ${r.label}`, r.v));
+    // 강한 쪽부터(최강 → 9단 … 20급) — 10-23 작가님 "저급부터 나오니 힘들어"
+    for (const r of [...S.ranks].reverse()) lv.add(new Option(`사람처럼 두는 KataGo — ${r.label}`, r.v));
   }
   const pk = document.getElementById('pack');
   pk.add(new Option('기본 (바둑돌 녹음 B)', 'builtin'));
