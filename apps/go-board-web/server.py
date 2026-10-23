@@ -52,9 +52,9 @@ HANDICAPS = [0] + list(range(2, 10))  # 0 = 호선
 # KataGo fixed_handicap 대신 쓰는 배치 — 3점은 한국·일본 관행(우상·좌하·우하, 빈 귀=좌상). 쌍아 결정 10-23
 FIXED_SETUP = {3: ["Q16", "D4", "Q4"]}
 COLS = "ABCDEFGHJKLMNOPQRST"  # GTP 좌표 — I 없음
-# 공통: 한국 규칙·흑 기준 수치 보고. 최강은 300 visits + 2.5초 상한(응수 3초 목표).
+# 공통: 한국 규칙·흑 기준 수치 보고. 최강은 1500 visits + 17초 상한(초읽기 20초 안 — 10-23 타이젬 P9단 대등선 실측, 작가님 지시).
 COMMON_OVR = f"rules=korean,reportAnalysisWinratesAs=BLACK,logDir={KATA_DIR / 'gtp_logs'}"
-STRONG_OVR = COMMON_OVR + ",maxVisits=300,maxTime=2.5"
+STRONG_OVR = COMMON_OVR + ",maxVisits=1500,maxTime=17"
 HUMAN_OVR = COMMON_OVR + ",humanSLProfile=rank_5k,delayMoveScale=0,delayMoveMax=0"
 
 RANKS = [f"{k}k" for k in range(20, 0, -1)] + [f"{d}d" for d in range(1, 10)]
