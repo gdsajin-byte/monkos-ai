@@ -1,0 +1,293 @@
+# 바둑 정성 개념 사전 v0 — 2026-10-23 iMac/쌍아-막내11
+# 출처: 작가님 2026-10-23 12:4x iMac 쌍아 세션 사람 턴(정성 평가가 핵심 · 위기십결·행마·모양 이름이 중요) → 쌍아 경량 지시.
+#
+# 원칙: 정량(KataGo 소유권·정책망·손익)은 기반 데이터, 해설은 정성어로 말한다.
+#       정성어는 '발동'된 것만 쓴다 — 발동 = 아래 rule이 신호값으로 참. 임계값(threshold)은 작가님 라벨로 보정 예정.
+# 층: shapes(가) 모양·수 이름 — 기하 패턴, 결정적(shapes.py) / keypoints(나) 급소·맥 / proverbs(다) 위기십결
+#     qualities 정성 평가어 / cheers 추임새 레벨
+# 정의 출처 표기: 정의는 일반 바둑 용어 지식 기반(작성자 서술). 대조용 참고처 — Sensei's Library(senseis.xmp.net) 해당 항목,
+#     위기십결은 당나라 왕적신(王積薪) 작으로 전해지는 바둑 격언(전승, 저자 설은 이설 있음). 링크 대조는 미실시(v0).
+#
+# 신호 정의 (concepts.py, 둔 쪽 관점, 소유권 +1 = 둔 쪽 땅):
+#   loss          정밀 분석 손실(집) = 최선수 기대 집 − 실제 수 후 기대 집
+#   gap2          최선수와 차선의 기대 집 차 (클수록 '이 수밖에 없는' 자리)
+#   prior·rank    정책망(직관) 확률·순위 — 낮을수록 찾기 어려운 수
+#   vs_pass       실제 수 후 소유권 − '그 자리에서 손을 뺐다면(패스)'의 소유권 → 그 수가 판에 한 일
+#   local_gain    착점 반경 4 안 vs_pass 합 (집 환산 근사)
+#   territory_gain 반경 4 안 빈 점 중 1~3선 · 소유권 0.7 이상으로 굳은 점의 vs_pass 합
+#   influence_gain 반경 5 안 빈 점 중 4선 이상 · 소유권 0.2~0.75(아직 집이 아닌 영향권)의 vs_pass 합
+#   own_near      착점 반경 3 안 자기 그룹들: 최소 활로·평균 소유권·평균 vs_pass
+#   opp_near      착점 반경 3 안 상대 그룹들: 평균 소유권 변화(vs_pass, 상대 관점 → 음수면 약해짐)
+#   cuts_own/opp  착점 반경 4 안 끊음점 수(빈 점이 같은 색 서로 다른 그룹 2개 이상에 닿음), 착수 전후 차
+#   sente         상대 최선 응수가 착점 반경 3 안이면 참(받아야 하는 수 = 선수)
+#   prev_dist     직전 상대 수와의 거리(체비쇼프)
+
+version: v0
+
+cheers:
+  good:
+    - {level: 와우, rule: "loss ≤ 0.3 and (gap2 ≥ 2.0 or prior ≤ 0.10 or 급소·맥 발동)", words: ["와우", "멋진 수네요", "이걸 찾으셨네요"]}
+    - {level: 좋네요, rule: "loss ≤ 0.5", words: ["좋네요", "좋은 수예요"]}
+    - {level: 무난, rule: "loss ≤ 1.5", words: ["무난해요", "괜찮은 수예요"]}
+  bad:
+    - {level: 살짝 아쉬움, rule: "1.5 < loss < 2.0", words: ["조금 아쉬워요"]}
+    - {level: 아쉬워요, rule: "2.0 ≤ loss < 5.0", words: ["아쉬워요"]}
+    - {level: 큰 실수, rule: "loss ≥ 5.0", words: ["여기가 크게 아팠어요"]}
+  threshold: {wow_loss: 0.3, wow_gap2: 2.0, wow_prior: 0.10, good_loss: 0.5, ok_loss: 1.5, regret_loss: 2.0, big_loss: 5.0}
+
+# ── (가) 모양·수 이름 — shapes.py 규칙과 1:1, 테스트 test_shapes.py ──
+shapes:
+  - {id: one_space, name: 한칸뛰기, patterns: [한칸뛰, 한 칸 뛰], definition: "자기 돌에서 한 칸 띄워 일직선으로 두는 행마. 끊기지 않으면서 빠르다.", rule: "붙은 돌 없음 · 자기 돌과 (0,2) · 사이 빈 점", opposite: null}
+  - {id: two_space, name: 두칸뛰기, patterns: [두칸뛰, 두 칸 뛰], definition: "두 칸 띄운 일직선 행마. 빠르지만 사이가 엷다.", rule: "붙은 돌 없음 · (0,3) · 사이 두 점 빈 점", opposite: null}
+  - {id: knight, name: 날일자, patterns: [날일자], definition: "자기 돌과 날 일(日)자 모양(1,2)으로 두는 행마. 가볍고 빠르다.", rule: "붙은 돌 없음 · (1,2)", opposite: null}
+  - {id: large_knight, name: 눈목자, patterns: [눈목자], definition: "눈 목(目)자 모양(1,3)의 행마. 더 빠르지만 더 엷다.", rule: "붙은 돌 없음 · (1,3)", opposite: null}
+  - {id: diagonal, name: 마늘모, patterns: [마늘모], definition: "자기 돌과 대각선으로 두는 수. 느리지만 끊기지 않는다.", rule: "붙은 돌 없음 · (1,1) · 공통 이웃 두 점 모두 빈 점", opposite: null}
+  - {id: attach, name: 붙이기, patterns: [붙이, 붙여, 붙임], definition: "상대 돌에 바로 붙여 두는 수. 수습·타개의 시작.", rule: "상대 돌에 붙고 자기 돌엔 안 붙음 · 더 구체적 이름(젖힘·끊음 등)이 있으면 생략", opposite: null}
+  - {id: connect, name: 이음, patterns: [이음], definition: "떨어진 자기 그룹 둘 이상을 하나로 잇는 수.", rule: "착점이 서로 다른 자기 그룹 2개 이상에 닿음", opposite: cut}
+  - {id: cut, name: 끊기, patterns: [끊기, 끊음, 끊는 수], definition: "상대 그룹 둘 사이를 갈라 연결을 막는 수.", rule: "착점이 서로 다른 상대 그룹 2개 이상에 닿음", opposite: connect}
+  - {id: hane, name: 젖히기, patterns: [젖히, 젖혀, 젖힘], definition: "상대 돌 머리 쪽으로 대각선 자기 돌에서 돌아 막는 수.", rule: "대각 자기 돌 · 그 돌과의 공통 이웃에 상대 돌", opposite: null}
+  - {id: bump, name: 치받기, patterns: [치받], definition: "자기 돌에서 상대 돌 정면으로 맞부딪치는 수. 상대 행마를 막는다.", rule: "자기 돌–착점–상대 돌 일직선", opposite: null}
+  - {id: turn, name: 꼬부리기, patterns: [꼬부리, 꼬부려, 꼬부림], definition: "자기 돌 줄에서 직각으로 꺾어 상대 돌에 닿는 수.", rule: "자기 돌 q의 자기 이웃이 착점 방향과 수직 · 착점이 상대 돌에 닿음", opposite: null}
+  - {id: tiger, name: 호구, patterns: [호구], definition: "빈 점 하나를 자기 돌 셋이 감싸는 모양. 끊기지 않는 탄력 있는 연결.", rule: "착점 옆 빈 점의 네 이웃 중 셋이 자기 돌", opposite: null}
+  - {id: two_head, name: 두점머리, patterns: [두점머리, 두 점 머리], definition: "일렬로 선 상대 두 점의 머리를 두드리는 수. '두 점 머리는 두들겨라'.", rule: "상대 두 점 일렬의 연장선 머리(세 점째 없음)", opposite: null}
+  - {id: atari, name: 단수, patterns: [단수], definition: "상대 그룹의 활로를 하나만 남기는 수.", rule: "착수 후 이웃 상대 그룹 활로 1", opposite: null}
+  - {id: capture, name: 따냄, patterns: [따냄, 따내, 따낸], definition: "활로가 없어진 상대 돌을 들어내는 수.", rule: "착수로 상대 돌 제거", opposite: null}
+  - {id: ponnuki, name: 빵따냄, patterns: [빵따, 빵 따], definition: "한 점을 따내 마름모 모양 네 돌이 남는 모양. '빵따냄 30집'이라 할 만큼 두텁다.", rule: "1점 따냄 · 따낸 점 네 이웃 모두 자기 돌", opposite: null}
+  - {id: ladder, name: 축, patterns: [축으로, 축이, 축머리, 축에], definition: "단수를 계속 이어 지그재그로 몰아 잡는 수순.", rule: "단수 후 상대가 뻗어도 계속 단수로 몰려 잡힘(수읽기, 3점 이하)", opposite: null}
+  - {id: net, name: 장문, patterns: [장문], definition: "붙지 않고 길목을 막아 어느 쪽으로 뻗어도 잡히게 가두는 수.", rule: "붙지 않은 대각 · 상대 3점 이하 활로 2 · 어느 활로로 뻗어도 잡힘(3수 깊이)", opposite: null}
+  - {id: snapback, name: 환격, patterns: [환격], definition: "한 점을 일부러 따내게 한 뒤 되따내 더 많이 잡는 수.", rule: "자기 1점 단수 상태로 들어감 · 상대가 따내면 그 그룹이 활로 1(2점 이상)", opposite: null}
+  - {id: throw_in, name: 먹여치기, patterns: [먹여치, 먹여 치], definition: "상대 안쪽에 일부러 잡히는 돌을 넣어 모양을 무너뜨리는 수.", rule: "자기 1점 · 활로 1 · 상대 돌에 닿음(환격이 아니면)", opposite: null}
+  - {id: connect_die, name: 촉촉수, patterns: [촉촉수], definition: "단수를 이어도 다시 단수가 되어 결국 잡히는 수.", rule: "단수 후 상대가 활로에 이어도 여전히 활로 1", opposite: null}
+
+# ── (나) 급소·맥 ──
+keypoints:
+  - id: vital
+    name: 급소
+    patterns: [급소]
+    definition: "양쪽 모두에게 가장 중요한 한 점. 사활·연결이 그 한 점에 걸린 자리."
+    plain: "여기 하나에 돌들의 삶과 연결이 걸려 있는 자리예요."
+    rule: "실제 수 = 엔진 최선 · gap2 ≥ t.gap2 · (opp_near 약화 ≥ t.swing 또는 own_near 강화 ≥ t.swing)"
+    threshold: {gap2: 1.5, swing: 0.2}
+    templates: ["{move}가 급소였어요 — {why}.", "여기가 바로 급소예요. {why}.", "급소를 정확히 짚었네요, {why}."]
+    opposite: null
+  - id: tesuji
+    name: 맥
+    patterns: [맥점, 맥이, "맥을"]
+    definition: "보통 눈에 잘 안 띄지만 국면을 단번에 바꾸는 수(手筋)."
+    plain: "얼핏 안 보이지만 딱 들어맞는 기술이에요."
+    rule: "실제 수 = 엔진 최선 · prior ≤ t.prior · gap2 ≥ t.gap2 · 상대 돌에 닿는 수"
+    threshold: {prior: 0.15, gap2: 1.0}
+    templates: ["맥을 찾으셨네요 — {why}.", "직관으로는 잘 안 보이는 {move}, 이게 맥이에요.", "{move}, 바둑판 위의 기술이죠. {why}."]
+    opposite: null
+
+# ── (다) 위기십결 — 원리별 정량 근사. 준수(follow)·위반(break) 두 방향 ──
+proverbs:
+  - id: no_greed
+    name: 부득탐승
+    patterns: [부득탐승]
+    definition: "이기려고 너무 탐하지 마라."
+    plain: "앞서 있을 땐 욕심내기보다 안전하게 두는 게 이기는 길이에요."
+    rule: {break: "착수 전 승률 ≥ t.lead_wr · loss ≥ t.loss · 상대 돌에 닿는 공격 수"}
+    threshold: {lead_wr: 0.70, loss: 3.0}
+    templates: ["앞서 있을 때 너무 욕심을 냈어요 — 부득탐승, {why}.", "부득탐승이라는 말처럼 {why}.", "이길 땐 안전하게, 부득탐승이에요. {why}."]
+  - id: enter_gently
+    name: 입계의완
+    patterns: [입계의완]
+    definition: "상대 세력권에 들어갈 때는 가볍고 부드럽게."
+    plain: "상대 땅에 들어갈 땐 살짝, 가볍게 들어가야 해요."
+    rule: {follow: "착점이 상대 영향권(vs 패스 기준 소유권 ≤ −t.sphere) · 붙지 않음 · loss ≤ t.ok", break: "상대 영향권 · 붙는 수 · loss ≥ t.bad"}
+    threshold: {sphere: 0.4, ok: 1.0, bad: 2.0}
+    templates: ["입계의완, 상대 땅에 가볍게 들어갔네요 — {why}.", "상대 진영에 너무 세게 붙었어요. 입계의완이죠 — {why}.", "{move}로 살짝 들어간 게 입계의완이에요."]
+  - id: defend_first
+    name: 공피고아
+    patterns: [공피고아]
+    definition: "상대를 공격하기 전에 내 약점부터 돌보라."
+    plain: "공격하기 전에 내 약한 돌부터 챙겨야 해요."
+    rule: {follow: "자기 약한 그룹(평균 소유권 t.weak_lo~t.weak_hi, t.size점↑) 반경 2 안 착수 · loss ≤ t.ok", break: "약한 그룹 방치 · 상대 돌에 닿는 공격 · loss ≥ t.bad · 최선수가 그 약한 그룹 반경 2 안"}
+    threshold: {weak_lo: -0.3, weak_hi: 0.4, size: 3, ok: 1.0, bad: 2.0}
+    templates: ["공피고아 — 공격 전에 {where} 약점부터 챙겼어야 해요.", "내 약한 돌을 먼저 보강했네요, 공피고아예요.", "{why} — 공피고아를 잊었어요."]
+  - id: sente_first
+    name: 기자쟁선
+    patterns: [기자쟁선]
+    definition: "돌 몇 점을 버리더라도 선수를 잡아라."
+    plain: "상대가 꼭 받아야 하는 수로 주도권(선수)을 쥐는 거예요."
+    rule: {follow: "sente · loss ≤ t.ok", break: "상대 최선 응수가 반경 t.far 밖(후수) · t.slack_lo ≤ loss < t.slack_hi"}
+    threshold: {ok: 1.0, far: 6, slack_lo: 1.0, slack_hi: 3.0}
+    templates: ["기자쟁선, 선수를 잡아 다음 큰 곳으로 갈 수 있어요.", "상대가 받아야 하는 수예요 — 기자쟁선.", "후수가 되어 주도권을 넘겼어요. 기자쟁선을 기억해요."]
+  - id: small_for_big
+    name: 사소취대
+    patterns: [사소취대, 소탐대실]
+    definition: "작은 것을 버리고 큰 것을 취하라. (반대: 소탐대실)"
+    plain: "작은 곳은 내주고 큰 곳을 차지하는 판단이에요."
+    rule: {follow: "vs 패스 영역별: 어떤 영역 손실 ≥ t.give · 다른 영역 이득 ≥ 손실 × t.ratio · loss ≤ t.ok", break: "최선 대비: 이득 영역 있음 · 손실 영역 ≥ 이득 × t.ratio (소탐대실)"}
+    threshold: {give: 1.0, ratio: 2.0, ok: 1.0}
+    templates: ["사소취대 — {small}은 내줬지만 {big}을 얻었어요.", "{small}을 챙기다 {big}을 잃었어요, 소탐대실이죠.", "작은 것보다 큰 것, 사소취대예요."]
+  - id: sacrifice_danger
+    name: 봉위수기
+    patterns: [봉위수기]
+    definition: "위험을 만나면 버려라."
+    plain: "살리기 어려운 돌은 미련 없이 버리는 게 나아요."
+    rule: {follow: "위험한 자기 그룹(평균 소유권 ≤ t.danger, 2점↑) 있음 · 착점이 그 그룹에서 t.far 이상 · loss ≤ t.ok", break: "위험한 그룹에 붙어 살리러 감 · loss ≥ t.bad"}
+    threshold: {danger: -0.3, far: 5, ok: 1.0, bad: 3.0}
+    templates: ["봉위수기, 어려운 돌은 버리고 {where}로 돌아선 판단이 좋아요.", "살리기 어려운 돌을 끌고 나가다 더 잃었어요 — 봉위수기.", "버릴 돌은 버리는 것, 봉위수기예요."]
+  - id: not_hasty
+    name: 신물경속
+    patterns: [신물경속]
+    definition: "가볍게 서두르지 말고 신중하게 두라."
+    plain: "상대 수에 바로 반응하기 전에 한 번 더 생각해요."
+    rule: {break: "loss ≥ t.bad · prev_dist ≤ t.near(상대 수에 바로 응수) · 최선수는 착점에서 t.far 이상"}
+    threshold: {bad: 2.0, near: 2, far: 5}
+    templates: ["상대 수에 바로 따라갔어요 — 신물경속, 서두르지 말아요.", "{best}처럼 다른 곳이 더 급했어요. 신물경속이죠.", "한 박자 쉬어 갈 자리였어요, 신물경속."]
+  - id: coordinate
+    name: 동수상응
+    patterns: [동수상응]
+    definition: "돌과 돌이 서로 호응하게 두라."
+    plain: "새 돌이 주변 내 돌들과 손잡고 함께 일하게 하는 거예요."
+    rule: {follow: "반경 4 안 자기 돌 ≥ t.friends · loss ≤ t.ok · local_gain ≥ t.gain", break: "반경 4 안 자기 돌 0(외딴 수) · loss ≥ t.bad"}
+    threshold: {friends: 3, ok: 0.5, gain: 1.0, bad: 2.0}
+    templates: ["주변 돌과 손발이 맞아요 — 동수상응.", "혼자 떨어진 돌이 됐어요. 동수상응을 생각해요.", "{move}가 주변 돌들과 호응하네요."]
+  - id: careful_strong
+    name: 피강자보
+    patterns: [피강자보]
+    definition: "상대가 강한 곳에서는 스스로를 지켜라."
+    plain: "상대가 튼튼한 곳 근처에선 무리하지 말고 안전하게 가요."
+    rule: {follow: "반경 3 안 상대 강한 그룹(상대 관점 소유권 ≥ t.strong, t.size점↑) · loss ≤ t.ok", break: "같은 조건 · loss ≥ t.bad"}
+    threshold: {strong: 0.8, size: 4, ok: 0.5, bad: 2.0}
+    templates: ["상대가 두터운 곳 근처에서 무리했어요 — 피강자보.", "강한 상대 옆에서 안전하게 처리했네요, 피강자보예요.", "피강자보, 센 곳에선 몸조심이에요."]
+  - id: seek_peace
+    name: 세고취화
+    patterns: [세고취화]
+    definition: "세가 외로우면(고립되면) 화평을 취하라 — 약한 돌은 먼저 안정시켜라."
+    plain: "외로운 돌은 싸우기보다 먼저 살아 두는 게 좋아요."
+    rule: {follow: "착점이 붙은 자기 약한 그룹(평균 소유권 t.lo~t.hi, t.size점↑)의 평균 vs_pass ≥ t.lift · loss ≤ t.ok"}
+    threshold: {lo: -0.2, hi: 0.5, size: 3, lift: 0.25, ok: 1.0}
+    templates: ["세고취화, 외로운 돌을 먼저 안정시켰어요.", "{where} 약한 돌이 한숨 돌렸네요 — 세고취화.", "싸우기 전에 사는 것, 세고취화예요."]
+
+# ── 정성 평가어 ──
+qualities:
+  - id: thick
+    name: 두텁다
+    patterns: [두텁, 두터, 두께]
+    definition: "약점이 없고 단단해 주변에 영향력을 미치는 상태."
+    plain: "약점 없이 단단해서 주변까지 힘이 미쳐요."
+    rule: "own_near 최소 활로 ≥ t.libs · own_near 평균 소유권 ≥ t.own · cuts_own 증가 ≤ 0 · influence_gain ≥ t.infl"
+    threshold: {libs: 4, own: 0.7, infl: 1.5}
+    templates: ["{where}가 두터워졌어요.", "두텁게 받아서 {why}.", "이 수로 {where} 흑이 아주 두텁네요."]
+    opposite: thin
+  - id: thin
+    name: 엷다
+    patterns: [엷, 얇]
+    definition: "끊음점·약점이 많아 공격받기 쉬운 상태."
+    plain: "끊길 곳이 많아 약한 모양이에요."
+    rule: "cuts_own(착수 후) ≥ t.cuts · 또는 own_near 평균 소유권 ≤ t.own(3점↑)"
+    threshold: {cuts: 3, own: 0.2}  # v0 1차(2·0.3)는 13국면 중 10회 발동 — 과발동으로 상향
+    templates: ["{where}가 엷어요 — 끊길 곳이 {n}군데예요.", "모양이 엷어서 {why}.", "엷은 곳을 남겼어요."]
+    opposite: thick
+  - id: sharp
+    name: 날카롭다
+    patterns: [날카]
+    definition: "상대 약점을 정확히 찔러 상대 돌을 곤란하게 만드는 수."
+    plain: "상대 약한 곳을 콕 찔렀어요."
+    rule: "opp_near 평균 약화 ≥ t.swing · 또는 (끊기·단수·젖히기 모양 · loss ≤ t.ok)"
+    threshold: {swing: 0.25, ok: 1.0}
+    templates: ["날카로운 수예요 — {why}.", "{move}, 상대 약점을 날카롭게 찔렀네요.", "날카롭게 파고들었어요."]
+    opposite: null
+  - id: good_shape_move
+    name: 행마가 좋다
+    patterns: [행마가 좋, 행마가 가볍, 좋은 행마, 멋진 행마]
+    definition: "돌의 움직임이 모양 좋고 효율적이다."
+    plain: "돌이 지나가는 길이 모양 좋고 효율적이에요."
+    rule: "모양 ∈ {한칸뛰기·날일자·눈목자·마늘모·호구} · loss ≤ t.ok · own_near 평균 vs_pass ≥ t.lift"
+    threshold: {ok: 0.5, lift: 0.15}
+    templates: ["{shape}로 행마가 좋네요.", "와우, 멋진 행마예요 — {why}.", "가볍고 좋은 행마예요."]
+    opposite: heavy
+  - id: heavy
+    name: 무겁다
+    patterns: [무겁, 무거]
+    definition: "돌이 뭉쳐 버리기도 살리기도 어려운 짐이 된 상태."
+    plain: "돌이 뭉쳐서 버리지도 못하고 끌려다니는 모양이에요."
+    rule: "착점 그룹 크기 ≥ t.size · 활로 ≤ t.libs · 평균 소유권 ≤ t.own · loss ≥ t.loss"
+    threshold: {size: 5, libs: 3, own: 0.5, loss: 1.0}
+    templates: ["돌이 무거워졌어요 — {why}.", "무겁게 끌고 나갔어요.", "{where} 돌이 무거운 짐이 됐어요."]
+    opposite: light
+  - id: light
+    name: 가볍다
+    patterns: [가볍, 가벼]
+    definition: "언제든 버릴 수 있게 가볍게 처리해 부담이 없는 상태."
+    plain: "버려도 아깝지 않게 가볍게 둔 수예요."
+    rule: "모양 ∈ {한칸뛰기·두칸뛰기·날일자·눈목자·마늘모} · loss ≤ t.ok · 착점 그룹 평균 소유권 t.lo~t.hi(아직 미정)"
+    threshold: {ok: 1.0, lo: -0.2, hi: 0.7}
+    templates: ["{shape}로 가볍게 처리했어요.", "가볍게 두어서 {why}.", "부담 없이 가볍게 갔네요."]
+    opposite: heavy
+  - id: territory
+    name: 실리
+    patterns: [실리]
+    definition: "이미 확정에 가까운 집(주로 변·귀)."
+    plain: "확실하게 내 집이 된 곳이에요."
+    rule: "territory_gain ≥ t.gain"
+    threshold: {gain: 2.0}
+    templates: ["{where} 실리를 챙겼어요.", "실리로 {n}집쯤 굳었어요.", "실리가 커졌네요."]
+    opposite: influence
+  - id: influence
+    name: 세력
+    patterns: [세력]
+    definition: "아직 집은 아니지만 장래 집·공격에 쓰일 영향력(주로 중앙 쪽)."
+    plain: "아직 집은 아니지만 앞으로 힘이 될 영향권이에요."
+    rule: "influence_gain ≥ t.gain"
+    threshold: {gain: 2.0}
+    templates: ["{where}에 세력을 쌓았어요.", "세력이 생겨서 {why}.", "중앙 쪽 세력이 좋아졌어요."]
+    opposite: territory
+  - id: slack
+    name: 완착
+    patterns: [완착, 느슨]
+    definition: "나쁜 수는 아니지만 느슨해 손해를 보는 수."
+    plain: "틀린 수는 아니지만 한 박자 느린 수예요."
+    rule: "t.lo ≤ loss < t.hi · 후수(상대 응수가 멀리) · local_gain ≤ t.gain"
+    threshold: {lo: 1.0, hi: 3.0, gain: 1.0}
+    templates: ["완착이에요 — {why}.", "조금 느슨했어요. {best}가 더 컸어요.", "한 박자 느린 완착이었어요."]
+    opposite: null
+  - id: overplay
+    name: 과수
+    patterns: [과수, 무리수, 무리한]
+    definition: "자기 형편보다 지나치게 욕심낸 수. 되레 자기 돌이 위험해진다."
+    plain: "욕심이 지나쳐 오히려 내 돌이 위험해졌어요."
+    rule: "loss ≥ t.loss · own_near 평균 vs_pass ≤ −t.drop"
+    threshold: {loss: 3.0, drop: 0.2}
+    templates: ["과수였어요 — {why}.", "무리하게 나가다 {where} 내 돌이 약해졌어요.", "욕심이 과했어요."]
+    opposite: null
+  - id: good_tenuki
+    name: 손빼기 적기
+    patterns: [손빼, 손을 빼, 손을 뺀]
+    definition: "국지전에서 손을 빼 더 큰 곳으로 가는 판단이 맞은 경우."
+    plain: "지금 싸움을 잠시 두고 더 큰 곳으로 간 판단이 맞았어요."
+    rule: "prev_dist ≥ t.far · loss ≤ t.ok"
+    threshold: {far: 6, ok: 0.5}
+    templates: ["손을 빼고 {where}로 간 판단이 좋아요.", "손빼기 적기 — {why}.", "받지 않고 큰 곳으로, 좋은 손빼기예요."]
+    opposite: bad_tenuki
+  - id: bad_tenuki
+    name: 손빼기 부적기
+    patterns: [손빼, 손을 빼, 손을 뺀]
+    definition: "받아야 할 곳에서 손을 빼 손해를 본 경우."
+    plain: "받아야 할 곳에서 손을 빼서 손해를 봤어요."
+    rule: "prev_dist ≥ t.far · loss ≥ t.bad"
+    threshold: {far: 6, bad: 2.0}
+    templates: ["여기서 손을 빼면 안 됐어요 — {why}.", "{best}로 받았어야 했어요.", "손뺀 대가가 컸어요."]
+    opposite: good_tenuki
+  - id: cut_effect
+    name: 끊음의 효과
+    patterns: [끊음의 효과, 끊어서, 끊으니]
+    definition: "끊어서 상대 그룹을 약하게 만든 효과."
+    plain: "끊어서 상대 돌들을 갈라놓았어요."
+    rule: "모양 끊기 · opp_near 평균 약화 ≥ t.swing"
+    threshold: {swing: 0.2}
+    templates: ["끊으니 {where} 상대 돌이 약해졌어요.", "끊음의 효과가 커요 — {why}.", "끊어서 갈라놓았어요."]
+    opposite: null
+  - id: sente_move
+    name: 선수
+    patterns: [선수]
+    definition: "상대가 받아야 하는 수 — 다음에 다시 내가 둘 수 있다."
+    plain: "상대가 꼭 받아야 해서 다음에도 내 차례가 돌아와요."
+    rule: "sente · loss ≤ t.ok"
+    threshold: {ok: 1.0}
+    templates: ["선수예요 — 상대가 받아야 해요.", "선수로 처리했어요.", "선수를 잡았네요."]
+    opposite: null

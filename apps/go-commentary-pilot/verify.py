@@ -17,7 +17,7 @@ import re
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")
 
-TAG = re.compile(r"\[\s*(F\d+(?:\s*[,，]\s*F\d+)*)\s*\]")
+TAG = re.compile(r"\[\s*([FX]\d+(?:\s*[,，]\s*[FX]\d+)*)\s*\]")  # F=사실, X=발동 개념(바둑판 열 A~T와 겹치지 않는 글자)
 NUM = re.compile(r"\d+(?:\.\d+)?")
 COORD = re.compile(r"(?<![A-Za-z])([A-HJ-T](?:1[0-9]|[1-9]))(?![0-9A-Za-z])")
 REGIONS = ["좌상귀", "우상귀", "좌하귀", "우하귀", "좌변", "우변", "상변", "하변", "중앙"]

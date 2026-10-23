@@ -139,8 +139,9 @@ def select(n, games):
     return picked
 
 
-def deep(eng, gm, c):
+def deep(eng, gm, c, extra=None):
     q = base_query(gm, c["pos_id"])
+    q.update(extra or {})
     q["analyzeTurns"] = [c["move_index"], c["move_index"] + 1]
     q["maxVisits"] = DEEP_VISITS
     q["includeOwnership"] = True
