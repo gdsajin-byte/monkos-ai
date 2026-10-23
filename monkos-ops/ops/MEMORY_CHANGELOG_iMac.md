@@ -697,3 +697,5 @@
 - **[2026-10-23 05:23 KST]** iMac/쌍아 — feedback_constitution_art4_intent.md 갱신: 4조 2항도 취지 해석(합의·기록·백업 시 이력 재작성 가능, 작가님 10-23).
 
 - **[2026-10-23 05:33 KST]** iMac/쌍아 — project_monkos_sovereignty.md에 '로컬=소유' 단락 추가(작가님 10-23).
+
+- **[2026-10-23 13:48 KST]** iMac/쌍아 — 신규 메모리 feedback_license_warnings_at_launch + 인덱스 1행(작가님 10-23).
