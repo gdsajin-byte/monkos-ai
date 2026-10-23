@@ -335,15 +335,11 @@ function skin() {
 function drawBase() {
   svg.innerHTML = '';
   const sk = skin(), line = sk ? sk.spec.grid : 'var(--line)', lw = sk ? sk.spec.gridWidth : .7;
-  // 나무색 바탕을 늘 먼저 깐다 — 판 이미지가 늦게 와도 흰 판이 보이지 않게(10-23 "앱 열면 흰 판이었다가 채색")
-  el('rect', { x: 0, y: 0, width: 400, height: 400, fill: 'var(--wood)' });
-  if (sk && sk.board) {
-    el('image', { href: sk.board, x: 0, y: 0, width: 400, height: 400, preserveAspectRatio: 'xMidYMid slice' });
-  }
-  if (sk) {  // 돌 그림자
-    const sh = sk.spec.shadow || {}, defs = el('defs', {}), f = el('filter', { id: 'stoneShadow', x: '-20%', y: '-20%', width: '150%', height: '150%' }, defs);
-    el('feDropShadow', { dx: sh.dx || 0, dy: sh.dy || 0, stdDeviation: sh.blur || 0, 'flood-opacity': sh.opacity || 0 }, f);
-  }
+  // 판 이미지는 SVG 안이 아니라 판의 CSS 배경으로 — 한 번만 해독되고 다시 그릴 때 깜빡이지 않는다(10-23 "위에서 아래로 그려지는 체감")
+  const bg = sk && sk.board ? `url("${sk.board}")` : '';
+  if (svg.style.backgroundImage !== bg) { svg.style.backgroundImage = bg; svg.style.backgroundSize = 'cover'; svg.style.backgroundPosition = 'center'; }
+  if (!bg) el('rect', { x: 0, y: 0, width: 400, height: 400, fill: 'var(--wood)' });
+  if (sk && sk.stones) prepStones(sk);
   for (let i = 0; i < N; i++) {
     el('line', { x1: P(0), y1: P(i), x2: P(N - 1), y2: P(i), stroke: line, 'stroke-width': lw });
     el('line', { x1: P(i), y1: P(0), x2: P(i), y2: P(N - 1), stroke: line, 'stroke-width': lw });
@@ -355,16 +351,37 @@ function drawBase() {
   }
 }
 
+// 돌 그림: 스프라이트에서 흑·백 한 칸씩 잘라 그림자까지 구워 둔 그림 2장을 모든 돌이 같이 쓴다
+// (예전: 돌마다 SVG 안 그림+그림자 필터 → 사파리가 다시 그릴 때마다 해독·필터를 반복해 느리게 채워짐)
+let stoneArt = { key: null, B: null, W: null, pad: 0 };
+function prepStones(sk) {
+  const key = sk.stones + JSON.stringify([sk.spec.black, sk.spec.white, sk.spec.shadow]);
+  if (stoneArt.key === key) return;
+  stoneArt = { key, B: null, W: null, pad: 0 };
+  const im = new Image();
+  im.onload = () => {
+    if (stoneArt.key !== key) return;
+    const D = 128, pad = 16, sh = sk.spec.shadow || {}, k = D / 20;  // 판 400 단위 → 그림 px(칸 20 ≈ STEP)
+    for (const c of ['B', 'W']) {
+      const cell = sk.spec[c === 'B' ? 'black' : 'white'];
+      const cv = document.createElement('canvas'); cv.width = cv.height = D + 2 * pad;
+      const g = cv.getContext('2d');
+      g.shadowColor = `rgba(0,0,0,${sh.opacity ?? 0.35})`; g.shadowBlur = (sh.blur ?? 0.8) * k * 2;
+      g.shadowOffsetX = (sh.dx ?? 0.8) * k; g.shadowOffsetY = (sh.dy ?? 1.2) * k;
+      g.drawImage(im, cell[0] + .5, cell[1] + .5, cell[2] - 1, cell[3] - 1, pad, pad, D, D);
+      stoneArt[c] = cv.toDataURL('image/png');
+    }
+    stoneArt.pad = pad / D;
+    render();
+  };
+  im.src = sk.stones;
+}
+
 function drawStone(x, y, c, opacity) {
   const sk = skin();
-  if (sk && sk.stones) {
-    const cell = sk.spec[c === 'B' ? 'black' : 'white'], r = STEP * .5 * (sk.spec.stoneScale || 1);
-    const sp = sk.spec.sprite || [256, 240];
-    const g = el('g', { filter: 'url(#stoneShadow)', opacity });
-    // 0.5px 안쪽으로 잘라 옆 칸 픽셀이 보간으로 묻어나는 것을 막는다
-    const vb = [cell[0] + .5, cell[1] + .5, cell[2] - 1, cell[3] - 1].join(' ');
-    const box = el('svg', { x: P(x) - r, y: P(y) - r, width: 2 * r, height: 2 * r, viewBox: vb }, g);
-    el('image', { href: sk.stones, x: 0, y: 0, width: sp[0], height: sp[1] }, box);
+  if (sk && sk.stones && stoneArt[c]) {
+    const r = STEP * .5 * (sk.spec.stoneScale || 1), m = 2 * r * stoneArt.pad;
+    el('image', { href: stoneArt[c], x: P(x) - r - m, y: P(y) - r - m, width: 2 * (r + m), height: 2 * (r + m), opacity });
     return;
   }
   el('circle', { cx: P(x), cy: P(y), r: STEP * .47, fill: c === 'B' ? '#151515' : '#fafaf5',
