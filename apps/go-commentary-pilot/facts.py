@@ -37,6 +37,8 @@ def state(v):
 
 def board_at(gm, turn):
     b = Board()
+    for color, mv in gm.get("initial", []):
+        b.s[gtp_to_xy(mv)] = color
     for color, mv in gm["moves"][:turn]:
         b.play(color, gtp_to_xy(mv))
     return b
