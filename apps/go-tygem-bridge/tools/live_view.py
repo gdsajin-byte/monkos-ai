@@ -1,5 +1,5 @@
 # 타이젬 대국 라이브 관전 — 브리지 로그의 수순을 읽어 별도 KataGo 분석(가벼운 visits)으로 형세·추천수를 띄운다.
-# 사용: python3 live_view.py [브리지로그] [--port 8770] [--visits 160]   → http://127.0.0.1:8770/
+# 사용: python3 live_view.py [브리지로그] [--port 8770] [--visits 160] [--komi 6.5|0]   → http://127.0.0.1:8770/
 # 브리지(대국)와 GPU를 나눠 쓴다. 판정·착수에는 관여하지 않는다(읽기 전용).
 import argparse, glob, json, os, re, subprocess, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -17,14 +17,15 @@ def latest_log():
 
 
 class Analyzer:
-    def __init__(s, visits):
+    def __init__(s, visits, komi=6.5):
+        s.komi = komi
         s.p = subprocess.Popen([f"{K}/katago-ocl", "analysis", "-config", f"{K}/analysis_live.cfg",
                                 "-model", f"{K}/kata1-b18c384nbt-s9996604416-d4316597426.bin.gz"],
                                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, bufsize=1)
         s.visits = visits
 
     def run(s, moves):
-        q = {"id": str(len(moves)), "moves": [[c, m] for c, m in moves], "rules": "korean", "komi": 6.5,
+        q = {"id": str(len(moves)), "moves": [[c, m] for c, m in moves], "rules": "korean", "komi": s.komi,
              "boardXSize": 19, "boardYSize": 19, "maxVisits": s.visits}
         s.p.stdin.write(json.dumps(q) + "\n")
         line = s.p.stdout.readline()
@@ -40,10 +41,10 @@ class Analyzer:
 
 
 class State:
-    def __init__(s, log, visits):
+    def __init__(s, log, visits, komi=6.5):
         s.log, s.lock = log, threading.Lock()
         s.moves, s.results, s.me, s.tail, s.err = [], {}, "b", [], None
-        s.an, s.sys = Analyzer(visits), {}
+        s.an, s.sys = Analyzer(visits, komi), {}
         threading.Thread(target=s.loop, daemon=True).start()
         threading.Thread(target=s.sysmon, daemon=True).start()
 
@@ -173,8 +174,9 @@ def main():
     ap.add_argument("log", nargs="?")
     ap.add_argument("--port", type=int, default=8770)
     ap.add_argument("--visits", type=int, default=160)
+    ap.add_argument("--komi", type=float, default=6.5)
     a = ap.parse_args()
-    st = State(a.log or latest_log(), a.visits)
+    st = State(a.log or latest_log(), a.visits, a.komi)
 
     class H(BaseHTTPRequestHandler):
         def log_message(self, *x):
