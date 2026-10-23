@@ -22,6 +22,13 @@
   .status button { font-size: 17px; padding: 8px 14px; background: #fff; color: var(--head); border: 0; font-weight: 700; }
   .wrap { max-width: 1280px; margin: 0 auto; padding: 14px 16px; display: flex; gap: 18px; flex-wrap: wrap; }
   .board { flex: 1 1 620px; max-width: min(90vh, 780px); }
+  /* 판 크기(10-23 작가님 "판 사이즈 풀, 크기 조정") — 'auto'=기존, 'full'=화면 높이에 맞춤, 숫자=px */
+  .status .sz { display: inline-flex; gap: 2px; }
+  .status .sz button { font-size: 15px; padding: 6px 10px; min-width: 34px; }
+  .status .sz button.on { background: #ffd66b; }
+  body.bfull .wrap, body.bsized .wrap { max-width: none; }
+  body.bfull .board { flex: 0 0 auto; width: min(calc(100vh - 80px), calc(100vw - 32px)); max-width: none; }
+  body.bsized .board { flex: 0 0 auto; width: min(var(--bw), calc(100vw - 32px)); max-width: none; }
   svg#svg { width: 100%; height: auto; display: block; cursor: pointer; border-radius: 4px;
             box-shadow: 0 4px 14px rgba(0,0,0,.18); }
   .side { flex: 1 1 380px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
@@ -87,6 +94,7 @@
   <span class="shape" id="statusShape"></span>
   <span class="grow"></span>
   <span id="turn">불러오는 중…</span>
+  <span class="sz" title="판 크기"><button id="bSzDown" aria-label="판 작게">−</button><button id="bSzFull" aria-label="판 꽉 채우기">풀</button><button id="bSzUp" aria-label="판 크게">+</button></span>
   <button id="bNew">대국 신청</button>
 </div>
 <div class="wrap">
@@ -843,6 +851,30 @@ fetch('/api/state').then(r => r.json()).then(s => {
   if (S.testMode && location.search.includes('selftest=1')) selftest();
 })
   .catch(() => { document.getElementById('turn').textContent = '서버 연결 실패 — run.sh가 켜져 있는지 확인해 주세요'; });
+
+// ---- 판 크기: − / 풀 / + (브라우저에 기억)
+(function boardSize() {
+  const box = document.getElementById('boardBox'), full = document.getElementById('bSzFull');
+  let mode = 'auto';
+  try { mode = localStorage.getItem('goBoardSize') || 'auto'; } catch (e) { /* 저장소 불가 — 기본값 */ }
+  const maxPx = () => Math.max(360, Math.min(window.innerHeight - 80, window.innerWidth - 32));
+  function apply() {
+    document.body.classList.toggle('bfull', mode === 'full');
+    document.body.classList.toggle('bsized', !isNaN(Number(mode)));
+    if (!isNaN(Number(mode))) document.body.style.setProperty('--bw', mode + 'px');
+    full.classList.toggle('on', mode === 'full');
+    try { localStorage.setItem('goBoardSize', mode); } catch (e) { /* 이번 창에서만 */ }
+  }
+  function step(d) {
+    const cur = box.getBoundingClientRect().width;
+    mode = String(Math.round(Math.max(360, Math.min(maxPx(), cur + d))));
+    apply();
+  }
+  document.getElementById('bSzDown').onclick = () => step(-60);
+  document.getElementById('bSzUp').onclick = () => step(60);
+  full.onclick = () => { mode = mode === 'full' ? 'auto' : 'full'; apply(); };
+  apply();
+})();
 </script>
 </body>
 </html>
