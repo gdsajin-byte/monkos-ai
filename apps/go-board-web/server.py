@@ -30,7 +30,7 @@ LIVE_PORT = 8765
 GAMES_DIR = KATA_DIR / "games" / ("_test" if TEST_MODE else "")
 REVIEW_DIR = GAMES_DIR / "reviews"
 # 리뷰 파이프라인(막내11 소관) — 호출만, 수정 금지
-PILOT_DIR = HERE.parent / "go-commentary-pilot"
+PILOT_DIR = Path(os.environ.get("GO_BOARD_PILOT_DIR") or HERE.parent / "go-commentary-pilot")  # 환경변수는 미병합 브랜치 시험용
 REVIEW_PY = PILOT_DIR / "review.py"
 WR_RANGE = "0.03,0.97"  # 작가님 결정 전 임시 기본값
 
@@ -419,8 +419,8 @@ class Reviews:
         src.write_bytes(game.sgf_path.read_bytes())  # 진행 중 판이 바뀌어도 리뷰 입력은 고정
         args = [sys.executable, str(REVIEW_PY), str(src), str(stem.with_suffix(".html")),
                 "--sgf", str(stem.with_suffix(".sgf")), "--color", game.user]
-        if wr_filter and self.filter_ok():
-            args += ["--wr-range", WR_RANGE]
+        if self.filter_ok():  # review.py 기본이 구간 적용이라 끌 때도 명시한다
+            args += ["--wr-range", WR_RANGE if wr_filter else "off"]
         job = {"id": jid, "args": args, "html": stem.with_suffix(".html"), "sgf": stem.with_suffix(".sgf"),
                "log": stem.with_suffix(".log"), "started": time.time(), "state": "running",
                "filter": bool(wr_filter and self.filter_ok()), "moves": len(game.moves)}
@@ -451,7 +451,7 @@ class Reviews:
         if not job:
             return None
         if job["state"] == "done":
-            return job["html"].read_bytes()
+            return self._with_banner(job)
         tail = ""
         if job["log"].exists():
             lines = job["log"].read_text(encoding="utf-8", errors="replace").strip().splitlines()
@@ -468,6 +468,31 @@ class Reviews:
                 f"<p>{job['moves']}수 대국 · {flt} · {el}초 경과 (보통 몇 분 걸려요 — 이 탭은 3초마다 새로 고칩니다)</p>"
                 f"{err}<pre>{esc(tail)}</pre><p style='font-size:15px;color:#6f655a'>결과 저장 위치: "
                 f"{esc(str(job['html']))}<br>해설 기보: {esc(str(job['sgf']))}</p></body></html>").encode("utf-8")
+
+
+    def _with_banner(self, job):
+        """실수가 적게 뽑힌 판은 결과 위에 빈 상태 안내를 붙인다(review.py 출력은 건드리지 않음)."""
+        page = job["html"].read_text(encoding="utf-8")
+        try:
+            items = json.loads((job["html"].with_suffix("").parent / (job["html"].stem + "_work") / "items.json")
+                               .read_text(encoding="utf-8"))
+            n = sum(1 for it in items if "실수" in it.get("kind", ""))
+        except (OSError, ValueError):
+            return page.encode("utf-8")
+        if n >= 3:
+            return page.encode("utf-8")
+        pct = "~".join(f"{round(float(v) * 100)}" for v in WR_RANGE.split(",")) + "%"
+        flt = f"승부가 갈리기 전 구간(승률 {pct})에서 " if job["filter"] else ""
+        msg = f"이번 판은 {flt}큰 실수가 {'없었어요.' if n == 0 else f'{n}개뿐이었어요.'}"
+        if job["filter"]:
+            msg += " 이미 승부가 기운 뒤의 수까지 보려면 바둑판에서 '승률 구간' 체크를 끄고 다시 리뷰해 주세요."
+        elif n == 0:
+            msg += " 잘 두셨어요!"
+        banner = (f"<div style='background:#fff4d6;color:#4a3b10;border:2px solid #e2c36b;border-radius:10px;"
+                  f"padding:14px 18px;margin:16px auto;max-width:1000px;font:18px -apple-system,"
+                  f"\"Apple SD Gothic Neo\",sans-serif'>{esc(msg)}</div>")
+        page = re.sub(r"(<body[^>]*>)", lambda m: m.group(1) + banner, page, count=1)
+        return page.encode("utf-8")
 
 
 def esc(s):
