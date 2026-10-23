@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- 바둑 PoC 터널 go-imac(go.monkos.ai → 8765, Access 잠금) — 10-23 iMac/쌍아, 작가님 "진행". 토큰은 API로 받아 env로만 전달 -->
+<plist version="1.0"><dict>
+  <key>Label</key><string>ai.monkos.go-tunnel</string>
+  <key>ProgramArguments</key><array><string>/Library/Frameworks/Python.framework/Versions/3.13/bin/python3</string><string>remote_setup.py</string><string>token-run</string></array>
+  <key>WorkingDirectory</key><string>/Users/jeong-kyushin/developer/monk_project/apps/go-board-web</string>
+  <key>EnvironmentVariables</key><dict><key>PATH</key><string>/Users/jeong-kyushin/google-cloud-sdk/bin:/Users/jeong-kyushin/.local/bin:/usr/local/bin:/usr/bin:/bin</string></dict>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>ThrottleInterval</key><integer>30</integer>
+  <key>StandardOutPath</key><string>/Users/jeong-kyushin/.monkos/katago/go-tunnel.log</string>
+  <key>StandardErrorPath</key><string>/Users/jeong-kyushin/.monkos/katago/go-tunnel.log</string>
+</dict></plist>

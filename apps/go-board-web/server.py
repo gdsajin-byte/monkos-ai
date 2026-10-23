@@ -863,6 +863,14 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(404, "리뷰 없음", "text/plain; charset=utf-8")
             else:
                 self._send(200, body, "text/html; charset=utf-8")
+        elif self.path == "/live" or self.path.startswith("/live/"):
+            # 실시간 분석판(live_view, 127.0.0.1:8770) 중계 — 외부(터널·Access)에서 주소 하나로 쓰게(10-23)
+            import urllib.request, urllib.error
+            try:
+                with urllib.request.urlopen("http://127.0.0.1:8770" + (self.path[5:] or "/"), timeout=15) as r:
+                    self._send(r.status, r.read(), r.headers.get("Content-Type", "application/octet-stream"))
+            except (urllib.error.URLError, OSError) as e:
+                self._send(502, f"분석판(8770) 응답 없음 — {e}", "text/plain; charset=utf-8")
         elif self.path == "/health":
             self._send(200, json.dumps({"ok": True, "strong": GAME.strong.ok,
                                         "human": bool(GAME.human and GAME.human.ok)}))

@@ -955,7 +955,7 @@ fetch('/api/state').then(r => r.json()).then(s => {
 // ---- 실시간 분석판(live_view 임베드): 서버가 살아 있을 때만 붙이고, 접힘 상태를 기억한다
 (function liveBox() {
   // 이 컴퓨터에서 열면 로컬 분석판, 밖(모바일·터널)에서 열면 같은 잠금 뒤의 외부 주소(10-23)
-  const LIVE = ['127.0.0.1', 'localhost'].includes(location.hostname) ? 'http://127.0.0.1:8770/' : 'https://go-live.monkos.ai/';
+  const LIVE = ['127.0.0.1', 'localhost'].includes(location.hostname) ? 'http://127.0.0.1:8770/' : '/live/';  // 밖에선 바둑판 서버가 /live/로 중계(Access 로그인 한 번)
   const box = document.getElementById('liveBox'), fr = document.getElementById('liveFrame'), off = document.getElementById('liveOff');
   const tg = document.getElementById('liveToggle');
   let folded = false;

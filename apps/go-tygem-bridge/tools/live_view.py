@@ -201,7 +201,7 @@ function graph(n,res){const W=600,H=160,P=24,g=[];const X=k=>P+(W-2*P)*k/Math.ma
  const cl=ks.filter(k=>res[k].cx!=null).map(k=>`${X(k)},${Y(res[k].cx/100)}`).join(" ");g.push(`<polyline points="${cl}" fill="none" stroke="#e0a43a" stroke-width="1.2" opacity=".9"/>`);
  g.push(`<polyline points="${sl}" fill="none" stroke="${css('--mut')}" stroke-dasharray="4 3" stroke-width="1.2"/><polyline points="${wl}" fill="none" stroke="${css('--acc')}" stroke-width="2"/>`);
  document.getElementById("graph").innerHTML=g.join("")}
-async function tick(){try{const s=await (await fetch("/api/state")).json();const n=s.moves.length;
+async function tick(){try{const s=await (await fetch("api/state")).json();const n=s.moves.length;
  document.getElementById("title").textContent=`타이젬 대국 라이브 — 우리 ${s.me==="b"?"흑":"백"} · ${s.log}`;
  document.getElementById("mv").textContent=`${n}수`;document.getElementById("err").textContent=s.error||"";
  board(s.moves,s.results);graph(n,s.results);
