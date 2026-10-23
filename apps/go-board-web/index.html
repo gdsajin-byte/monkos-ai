@@ -65,7 +65,7 @@
   .live.folded iframe { display: none; }
   body.bfull .board { flex: 0 0 auto; width: min(calc(100vh - 80px), calc(100vw - 32px)); max-width: none; }
   body.bsized .board { flex: 0 0 auto; width: min(var(--bw), calc(100vw - 32px)); max-width: none; }
-  svg#svg { width: 100%; height: auto; display: block; cursor: pointer; border-radius: 4px;
+  svg#svg { width: 100%; height: auto; display: block; cursor: pointer; border-radius: 4px; background: var(--wood, #e2bd7a);
             box-shadow: 0 4px 14px rgba(0,0,0,.18); }
   .side { flex: 1 1 380px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
   .box { background: var(--panel); border: 1px solid var(--line-ui); border-radius: 8px; }
@@ -318,21 +318,27 @@ try {
   skinStones = localStorage.getItem('goBoardSkinStones');
 } catch (e) { /* 저장소 불가 — 기본값 */ }
 
+const preloaded = new Set();
+function preloadSkin(pk) {  // 판·돌 이미지를 먼저 받아 두면 다음 그리기에서 깜빡임이 없다
+  for (const u of [pk && pk.board, pk && pk.stones]) if (u && !preloaded.has(u)) { preloaded.add(u); const im = new Image(); im.src = u; }
+}
 function skin() {
   const pk = S && S.skins && S.skins[skinName];
   if (!pk) return null;
   const board = pk.boards.includes(skinBoard) ? skinBoard : pk.spec.board;
   const stones = pk.stones.includes(skinStones) ? skinStones : pk.spec.stones;
-  return { spec: pk.spec, board: board && `/skin/${skinName}/${board}`, stones: stones && `/skin/${skinName}/${stones}` };
+  const r = { spec: pk.spec, board: board && `/skin/${skinName}/${board}`, stones: stones && `/skin/${skinName}/${stones}` };
+  preloadSkin(r);
+  return r;
 }
 
 function drawBase() {
   svg.innerHTML = '';
   const sk = skin(), line = sk ? sk.spec.grid : 'var(--line)', lw = sk ? sk.spec.gridWidth : .7;
+  // 나무색 바탕을 늘 먼저 깐다 — 판 이미지가 늦게 와도 흰 판이 보이지 않게(10-23 "앱 열면 흰 판이었다가 채색")
+  el('rect', { x: 0, y: 0, width: 400, height: 400, fill: 'var(--wood)' });
   if (sk && sk.board) {
     el('image', { href: sk.board, x: 0, y: 0, width: 400, height: 400, preserveAspectRatio: 'xMidYMid slice' });
-  } else {
-    el('rect', { x: 0, y: 0, width: 400, height: 400, fill: 'var(--wood)' });
   }
   if (sk) {  // 돌 그림자
     const sh = sk.spec.shadow || {}, defs = el('defs', {}), f = el('filter', { id: 'stoneShadow', x: '-20%', y: '-20%', width: '150%', height: '150%' }, defs);
