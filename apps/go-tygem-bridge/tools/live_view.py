@@ -6,6 +6,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 K = os.path.expanduser("~/.monkos/katago")
 TY = os.path.expanduser("~/.monkos/tygem")
+COLS = "ABCDEFGHJKLMNOPQRST"
 MOVE_RE = re.compile(r"#(\d+) (우리|상대) ([BW]) (\S+)")
 
 
@@ -38,10 +39,11 @@ class Analyzer:
                                 "-model", f"{K}/kata1-b18c384nbt-s9996604416-d4316597426.bin.gz"],
                                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, bufsize=1)
         s.visits = visits
+        s.initial = []  # 접바둑 치석 [["B","D4"],...]
 
     def run(s, moves):
         q = {"id": str(len(moves)), "moves": [[c, m] for c, m in moves], "rules": "korean", "komi": s.komi,
-             "boardXSize": 19, "boardYSize": 19, "maxVisits": s.visits,
+             "boardXSize": 19, "boardYSize": 19, "maxVisits": s.visits, "initialStones": s.initial,
              "includeOwnership": True, "includeOwnershipStdev": True}
         s.p.stdin.write(json.dumps(q) + "\n")
         line = s.p.stdout.readline()
@@ -58,15 +60,33 @@ class Analyzer:
 
 
 class State:
-    def __init__(s, log, visits, komi=6.5, pre=()):
+    def __init__(s, log, visits, komi=6.5, pre=(), goboard=None):
         s.pre = list(pre)  # 브리지가 이어 두기로 시작해 로그에 없는 앞 수들
+        s.goboard = goboard  # 우리 웹 바둑판 /api/state — 있으면 그 판의 SGF를 수순 원본으로 쓴다
         s.log, s.lock = log, threading.Lock()
         s.moves, s.results, s.me, s.tail, s.err = [], {}, "b", [], None
         s.an, s.sys = Analyzer(visits, komi), {}
         threading.Thread(target=s.loop, daemon=True).start()
         threading.Thread(target=s.sysmon, daemon=True).start()
 
+    def read_goboard(s):
+        import urllib.request
+        st = json.load(urllib.request.urlopen(s.goboard, timeout=5))
+        sgf = open(st["sgf"], encoding="utf-8").read() if st.get("sgf") and os.path.exists(st["sgf"]) else ""
+        if st.get("sgf") != s.log:  # 새 판 — 결과 초기화
+            with s.lock:
+                s.log, s.results = st.get("sgf") or "(대국 없음)", {}
+        s.me = (st.get("user") or "B").lower()
+        s.an.komi = st.get("komi", 6.5)
+        g = lambda v: "pass" if not v else COLS[ord(v[0]) - 97] + str(19 - (ord(v[1]) - 97))
+        ab = re.search(r"AB((?:\[[a-s]{2}\])+)", sgf)
+        s.an.initial = [["B", g(v)] for v in re.findall(r"\[([a-s]{2})\]", ab.group(1))] if ab else []
+        moves = [(c, g(v)) for c, v in re.findall(r";([BW])\[([a-s]{0,2})\]", sgf)]
+        return moves, []
+
     def read_log(s):
+        if s.goboard:
+            return s.read_goboard()
         moves, tail = list(s.pre), []
         for l in open(s.log, encoding="utf-8", errors="replace"):
             l = l.rstrip("\n")
@@ -108,7 +128,7 @@ class State:
                 th = subprocess.run(["pmset", "-g", "therm"], capture_output=True, text=True, timeout=5).stdout
                 m = re.search(r"CPU_Speed_Limit\s*=\s*(\d+)", th)
                 info["speed"] = int(m.group(1)) if m else 100
-                ts = [(time.strptime(l[:8], "%H:%M:%S"), MOVE_RE.search(l)) for l in open(s.log, encoding="utf-8", errors="replace") if MOVE_RE.search(l)]
+                ts = [] if s.goboard else [(time.strptime(l[:8], "%H:%M:%S"), MOVE_RE.search(l)) for l in open(s.log, encoding="utf-8", errors="replace") if MOVE_RE.search(l)]
                 think = [time.mktime(ts[i][0]) - time.mktime(ts[i - 1][0]) for i in range(1, len(ts)) if ts[i][1].group(2) == "우리"]
                 info["think"] = think[-1] if think else None
                 info["thinkAvg"] = round(sum(think[-10:]) / len(think[-10:]), 1) if think else None
@@ -139,9 +159,9 @@ h2{font-size:13px;color:var(--mut);margin:0 0 8px;font-weight:600}
 table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}td{padding:4px 2px;border-top:1px solid var(--line)}
 .tag{display:inline-block;width:20px;height:20px;border-radius:50%;color:#fff;text-align:center;font-weight:700;font-size:12px;line-height:20px}
 .err{color:var(--bad);font-weight:600}.mut{color:var(--mut)}pre{margin:0;font-size:11px;white-space:pre-wrap;color:var(--mut)}
-svg{display:block;width:100%;height:auto}.cxrow{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px}.cxbar{flex:1;height:8px;border-radius:4px;background:var(--line);overflow:hidden}#cxf{height:100%;width:0;background:linear-gradient(90deg,#3aa76d,#e0a43a,#d64545);transition:width .6s}.chips{display:flex;flex-wrap:wrap;gap:6px;font-size:12px;font-variant-numeric:tabular-nums}.chip{padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--mut)}.chip b{color:var(--fg);font-weight:600}.chip.warn{border-color:var(--bad);color:var(--bad)}#board{max-height:64vh;margin:auto}.bar{display:flex;height:26px;border-radius:6px;overflow:hidden;border:1px solid #888;margin-top:12px;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}.bar div{display:flex;align-items:center;padding:0 8px;transition:width .6s;white-space:nowrap}#barb{background:#111;color:#fff}#barw{background:#fafafa;color:#111;justify-content:flex-end;flex:1}
+svg{display:block;width:100%;height:auto}.cxrow{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px}.cxbar{flex:1;height:8px;border-radius:4px;background:var(--line);overflow:hidden}#cxf{height:100%;width:0;background:linear-gradient(90deg,#3aa76d,#e0a43a,#d64545);transition:width .6s}.chips{display:flex;flex-wrap:wrap;gap:6px;font-size:12px;font-variant-numeric:tabular-nums}.chip{padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--mut)}.chip b{color:var(--fg);font-weight:600}.chip.warn{border-color:var(--bad);color:var(--bad)}#board{max-height:64vh;margin:auto}body.embed{background:transparent}body.embed .wrap{grid-template-columns:1fr;padding:0;gap:8px}body.embed .card{padding:10px}body.embed .big{font-size:22px}body.embed #boardCard{display:none}.bar{display:flex;height:26px;border-radius:6px;overflow:hidden;border:1px solid #888;margin-top:12px;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}.bar div{display:flex;align-items:center;padding:0 8px;transition:width .6s;white-space:nowrap}#barb{background:#111;color:#fff}#barw{background:#fafafa;color:#111;justify-content:flex-end;flex:1}
 </style></head><body><div class="wrap">
-<div><div class="card"><div class="row" style="justify-content:space-between"><h2 id="title">대국 라이브</h2><span class="mut" id="mv"></span></div>
+<div><div class="card" id="boardCard"><div class="row" style="justify-content:space-between"><h2 id="title">대국 라이브</h2><span class="mut" id="mv"></span></div>
 <svg id="board" viewBox="0 0 400 400"></svg></div>
 <div class="card" style="margin-top:12px"><h2>형세 흐름 — 흑 승률(파랑)·집 차이(점선)·복잡도(주황)</h2><svg id="graph" viewBox="0 0 600 160"></svg></div></div>
 <div><div class="card"><h2>현재 형세</h2><div class="row"><div><div class="mut">흑 승률</div><div class="big" id="wr">–</div></div><div><div class="mut">집 차이</div><div class="big" id="sc">–</div></div></div><div class="bar"><div id="barb" style="width:50%">흑</div><div id="barw">백</div></div><div class="cxrow"><span class="mut">복잡도</span><div class="cxbar"><div id="cxf"></div></div><b id="cxv">–</b><span id="cxl" class="mut"></span></div><div id="err" class="err"></div></div>
@@ -187,6 +207,7 @@ async function tick(){try{const s=await (await fetch("/api/state")).json();const
  if(y.gpu!=null)c("GPU",y.gpu+"%");if(y.load!=null)c("부하",y.load,y.load>12);c("CPU 속도",(y.speed??100)+"%",(y.speed??100)<100);
  if(y.think!=null)c("우리 생각",y.think+"초 · 최근10 "+y.thinkAvg+"초");if(y.err)c("측정 오류",y.err,1);
  document.getElementById("sys").innerHTML=ch.join("")}catch(e){document.getElementById("err").textContent="❌ 서버 응답 없음"}}
+if(new URLSearchParams(location.search).has("embed")){document.body.classList.add("embed");const gc=document.getElementById("graph").closest(".card"),tp=document.getElementById("top").closest(".card");gc.style.marginTop="12px";tp.after(gc)}
 tick();setInterval(tick,2000);
 </script></body></html>"""
 
@@ -197,9 +218,10 @@ def main():
     ap.add_argument("--port", type=int, default=8770)
     ap.add_argument("--visits", type=int, default=160)
     ap.add_argument("--komi", type=float, default=6.5)
+    ap.add_argument("--goboard", nargs="?", const="http://127.0.0.1:8765/api/state", help="우리 웹 바둑판 대국을 분석(기본 8765)")
     ap.add_argument("--pre", default="", help="로그 앞에 놓을 수, 예: B D3,W Q16")
     a = ap.parse_args()
-    st = State(a.log or latest_log(), a.visits, a.komi, [tuple(x.split()) for x in a.pre.split(",") if x.strip()])
+    st = State(a.log or ("" if a.goboard else latest_log()), a.visits, a.komi, [tuple(x.split()) for x in a.pre.split(",") if x.strip()], a.goboard)
 
     class H(BaseHTTPRequestHandler):
         def log_message(self, *x):

@@ -27,6 +27,11 @@
   .status .sz button { font-size: 15px; padding: 6px 10px; min-width: 34px; }
   .status .sz button.on { background: #ffd66b; }
   body.bfull .wrap, body.bsized .wrap { max-width: none; }
+  .live { padding: 8px 10px; }
+  .live-head { display: flex; align-items: center; gap: 8px; }
+  .live-head .small { flex: 1; }
+  .live iframe { width: 100%; height: 640px; border: 0; margin-top: 6px; border-radius: 6px; background: #17181a; }
+  .live.folded iframe { display: none; }
   body.bfull .board { flex: 0 0 auto; width: min(calc(100vh - 80px), calc(100vw - 32px)); max-width: none; }
   body.bsized .board { flex: 0 0 auto; width: min(var(--bw), calc(100vw - 32px)); max-width: none; }
   svg#svg { width: 100%; height: auto; display: block; cursor: pointer; border-radius: 4px;
@@ -170,6 +175,12 @@
           <select id="skinBoard" hidden></select> <select id="skinStones" hidden></select></label>
         <label>소리 <select id="pack"></select> <label><input type="checkbox" id="sound" checked> 켜기</label></label>
       </section>
+    </div>
+    <!-- 실시간 분석판(10-23 작가님 "아까 만든 분석판을 사이드바에") — 레포 밖 live_view.py --goboard(8770)를 끼워 넣는다 -->
+    <div class="box live" id="liveBox">
+      <div class="live-head"><b>실시간 분석</b><span class="small">형세·복잡도·추천수·흐름</span><button id="liveToggle">접기</button></div>
+      <iframe id="liveFrame" title="실시간 분석"></iframe>
+      <div id="liveOff" class="small" hidden>분석 서버가 꺼져 있습니다 — <code>python3 ~/.monkos/tygem/tools/live_view.py --goboard</code></div>
     </div>
   </div>
 </div>
@@ -899,6 +910,22 @@ fetch('/api/state').then(r => r.json()).then(s => {
   document.getElementById('bSzUp').onclick = () => step(60);
   full.onclick = () => { mode = mode === 'full' ? 'auto' : 'full'; apply(); };
   apply();
+})();
+
+// ---- 실시간 분석판(live_view 임베드): 서버가 살아 있을 때만 붙이고, 접힘 상태를 기억한다
+(function liveBox() {
+  const LIVE = 'http://127.0.0.1:8770/';
+  const box = document.getElementById('liveBox'), fr = document.getElementById('liveFrame'), off = document.getElementById('liveOff');
+  const tg = document.getElementById('liveToggle');
+  let folded = false;
+  try { folded = localStorage.getItem('goBoardLiveFolded') === '1'; } catch (e) { /* 기본 펼침 */ }
+  const setFold = f => { folded = f; box.classList.toggle('folded', f); tg.textContent = f ? '펼치기' : '접기';
+    try { localStorage.setItem('goBoardLiveFolded', f ? '1' : '0'); } catch (e) { /* 이번 창에서만 */ } };
+  tg.onclick = () => setFold(!folded);
+  setFold(folded);
+  fetch(LIVE + 'api/state', { mode: 'no-cors' })
+    .then(() => { fr.src = LIVE + '?embed=1'; })
+    .catch(() => { fr.hidden = true; off.hidden = false; });
 })();
 </script>
 </body>
