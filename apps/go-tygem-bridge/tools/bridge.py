@@ -25,7 +25,11 @@ def calibrate(im):
     판(나무색) 사각형을 찾고 격자는 그 안쪽 비율로 계산(10-23 실측: 여백 3.39%, 격자 폭 93.21%) — 돌이 선을 가려도 흔들리지 않음."""
     R, G, B = im[..., 0], im[..., 1], im[..., 2]
     wood = (R > 170) & (G > 120) & (B < 175) & (R - B > 35)
-    cx = np.where(wood.mean(axis=0) > 0.15)[0]; ry = np.where(wood.mean(axis=1) > 0.15)[0]
+    def run(idx):  # 가장 긴 연속 구간만 — 우측 광고 배너(주황 '관전하기' 막대)가 나무색으로 잡혀도 판과 떨어져 있으면 제외(10-23 원인 실측)
+        if len(idx) == 0: return idx
+        cuts = np.where(np.diff(idx) > 120)[0] + 1  # 판 안 돌 줄이 만드는 틈(≤약 60px)은 잇고, 판↔배너 틈(약 330px)은 끊는다
+        return max(np.split(idx, cuts), key=len)
+    cx = run(np.where(wood.mean(axis=0) > 0.15)[0]); ry = run(np.where(wood.mean(axis=1) > 0.15)[0])
     if len(cx) < 100 or len(ry) < 100:
         raise RuntimeError("판(나무색) 영역 미검출")
     w = cx.max() - cx.min(); h = ry.max() - ry.min()
