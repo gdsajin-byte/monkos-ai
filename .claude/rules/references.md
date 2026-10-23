@@ -20,6 +20,11 @@
 | `scripts/` | 범용 유틸 (막내 소관) |
 | ~~`monkos-ops/works/`~~ | **채널 폐지 (2026-08-13)** — 이력은 원격 `monkos-works` 레포 (ch4 4조) |
 
+## 디바이스 맵 — 약칭 ↔ 노드·IP·ssh
+
+- 정본: `monkos-ops/ops/devices/README.md` 디바이스 일람표 (+ `devices/{imac,m1,m2,w4060}/DEVICE_PROFILE.md`). Tailscale 호스트명 표: `monkos-ops/ops/SECRET_INVENTORY.md` §Tailscale 디바이스. 약칭 정의는 법률 ch1 4조.
+- 실측 명령: `/Applications/Tailscale.app/Contents/MacOS/Tailscale status`. **노드 이름으로 디바이스를 추정하지 않는다** — 표의 IP로 대조 (10-23 `macmini-macmini`=집 M1, `kku-macmini-m2-macmini`=M2 오판 교정). 기록된 호스트명은 드리프트 가능 → 표 갱신 시 실측일 명기.
+
 ## 서비스 매핑 — 디렉터리 ↔ 서비스명 ↔ 도메인
 
 > **⚠️ 디렉터리명 ≠ 서비스명.** 이름이 다른 건이 있어 "Cloud Run 목록에 없으니 미배포"라고 단정하면 틀린다(2026-08-13 실사고: `image-pro` → `monk-image-engine` 오판).

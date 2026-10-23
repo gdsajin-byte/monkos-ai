@@ -327,8 +327,8 @@ status: 현행
 | **iMac** | jeong-kyu-imac | 100.97.103.10 | macOS | 작가님 | 사무실 메인 워크스테이션 |
 | **M1** | macmini-macmini | 100.76.80.99 | macOS | 작가님 | 집. Xcode 원격 빌드 + VNC |
 | **M2** | kku-macmini-m2-macmini | 100.81.38.20 | macOS | 꾸(와이프) | 팀원용 |
-| **M4** | han-macbookpro | 100.121.220.14 | macOS | 한송이 | iOS 빌드 + arm64 |
-| **4060** | desktop-70gomar | 100.118.31.62 | Windows | 작가님 | GPU 서버 (WSL) |
+| ~~**M4**~~ | han-macbookpro | 100.121.220.14 | macOS | 한송이 | ❌ 실효 (05-27 퇴사, 10-23 테일넷 미등재 확인) |
+| **4060** | monk-4060 (구 desktop-70gomar, 10-23 실측 교정) | 100.118.31.62 | Windows | 작가님 | GPU 서버 (WSL) — 09-02 라인업 배제, offline 정상 |
 | **iPhone** | iphone181 | 100.115.57.53 | iOS | 작가님 | 모바일 |
 
 ### 권한 매트릭스 — SA·임퍼소네이션·키 상태 (2026-07-24 감사 신설, 갱신 의무: IAM 변경 시 동반)

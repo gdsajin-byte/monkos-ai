@@ -27,6 +27,7 @@ description: 에이전트 역할·흐름·디바이스 맵 (ch1 발췌)
 
 ## 디바이스 약칭
 M1(집) / iMac(사무실) / M2(꾸) / 4060(GPU서버) / iPhone(모바일) / 웹(원격 컨테이너)
+> **정본 표(IP·호스트명·ssh 별칭)**: `monkos-ops/ops/devices/README.md` 일람표 + `SECRET_INVENTORY.md` §Tailscale. 노드 판정은 이름 추정 금지, 표의 IP로 대조 (10-23, ch1 4조)
 
 ## 민아 경로 범위 (ch1 2조 5항, 09-02 개정)
 

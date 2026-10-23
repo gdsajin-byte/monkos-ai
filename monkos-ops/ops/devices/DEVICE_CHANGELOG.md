@@ -1,7 +1,7 @@
 ---
 type: changelog
 subject: 디바이스 설정 변경 로그
-last_updated: 2026-06-07
+last_updated: 2026-10-23
 ---
 
 # Device Changelog
@@ -22,3 +22,6 @@ last_updated: 2026-06-07
 | 2026-06-07 | M2 | 디바이스 일람표 상태 "보류" → "완료" 전환 | iMac/쌍아 |
 | 2026-06-23 | M1 | 듀얼 레포 구조 발견 — 쌍아본(`/Users/macmini/`) vs 정본(`/Users/developer/`) 경로 혼동 | M1/쌍아 |
 | 2026-06-25 | M1 | 듀얼 레포 해소 반영 — 쌍아 작업본 삭제 완료, 정본 단일화 확정, DEVICE_PROFILE 갱신 | iMac/쌍아 |
+| 2026-10-23 | 전체 | 일람표에 Tailscale 호스트명 열 신설(실측), 4060 라인업 배제·M4 실효 반영, README를 디바이스 맵 정본으로 선언 + ch1 4조·rules 포인터 신설 (작가님 직접 지시 15:22) | iMac/민아 |
+| 2026-10-23 | M1 | 프로필 tailscale_name `Macminiui-Macmini` → `macmini-macmini` 실측 교정 | iMac/민아 |
+| 2026-10-23 | 4060 | SECRET_INVENTORY 호스트명 `desktop-70gomar` → `monk-4060` 실측 교정 | iMac/민아 |

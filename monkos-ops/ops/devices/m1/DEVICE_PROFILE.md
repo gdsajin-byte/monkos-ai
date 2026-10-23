@@ -3,7 +3,7 @@ type: device_profile
 id: M1
 tailscale_ip: 100.76.80.99
 tailscale_ipv6: fd7a:115c:a1e0::6d01:5097
-tailscale_name: Macminiui-Macmini
+tailscale_name: macmini-macmini  # 10-23 실측 교정 (구 기재 Macminiui-Macmini = 로컬 hostname 혼동)
 ssh_host: m1
 os: macOS 15.x (Darwin 25.2.0, ARM64 T8103)
 owner: 작가님
