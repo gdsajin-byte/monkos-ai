@@ -817,6 +817,9 @@ def result_ko(r):
 GAME = None
 
 
+STATE_CACHE = {}  # 마지막으로 만든 /api/state 응답(엔진 생각 중 반환용)
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *a):
         pass
@@ -841,8 +844,16 @@ class Handler(BaseHTTPRequestHandler):
         if self.path.split("?")[0] in ("/", "/index.html"):
             self._send(200, (HERE / "index.html").read_bytes(), "text/html; charset=utf-8")
         elif self.path == "/api/state":
-            with GAME.lock:
-                self._send(200, json.dumps(GAME.state(), ensure_ascii=False))
+            # 엔진이 생각하는 동안(최대 17초) 락을 기다리지 않고 직전 상태를 바로 준다(10-23 — 새로고침·분석판이 그동안 멈추던 문제)
+            if GAME.lock.acquire(timeout=0.3):
+                try:
+                    body = json.dumps(GAME.state(), ensure_ascii=False)
+                    STATE_CACHE["json"] = body
+                finally:
+                    GAME.lock.release()
+            else:
+                body = STATE_CACHE.get("json") or json.dumps({"error": "상대가 생각 중입니다", "busy": True}, ensure_ascii=False)
+            self._send(200, body)
         elif re.fullmatch(r"/sounds/(custom/)?[A-Za-z0-9_-]+\.wav", self.path):
             f = HERE / self.path.lstrip("/")
             if f.exists():
@@ -947,7 +958,8 @@ class Handler(BaseHTTPRequestHandler):
             st.update(extra)
         finally:
             GAME.lock.release()
-        self._send(200, json.dumps(st, ensure_ascii=False))
+        STATE_CACHE["json"] = json.dumps(st, ensure_ascii=False)
+        self._send(200, STATE_CACHE["json"])
 
 
 def main():
