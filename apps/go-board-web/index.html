@@ -35,6 +35,22 @@
   .split { flex: 0 0 10px; align-self: stretch; cursor: col-resize; border-radius: 5px; margin: 0 -9px; position: relative; z-index: 1; }
   .split:hover, .split.drag { background: rgba(60, 90, 160, .18); }
   @media (max-width: 999px) { .split { display: none; } }
+  /* 휴대폰(10-23 "집에서 모바일로 테스트"): 가로 넘침 0 — 판·사이드 전폭, 카드·버튼 줄바꿈 */
+  @media (max-width: 700px) {
+    html, body { overflow-x: hidden; }
+    .wrap { padding: 8px; gap: 10px; }
+    .board, body.bfull .board, body.bsized .board { flex: 1 1 100%; width: 100%; max-width: 100%; }
+    .side { flex: 1 1 100%; min-width: 0; max-width: 100%; }
+    .side * { min-width: 0; max-width: 100%; }
+    .top { flex-wrap: wrap; }
+    .clockbox { flex: 0 0 72px; }
+    .cards { flex: 1 1 0; }
+    .actions { flex-wrap: wrap; }
+    .actions button { flex: 1 1 30%; }
+    .status { flex-wrap: wrap; gap: 6px; }
+    .status .sz { display: none; }
+    .live iframe { height: 620px; }
+  }
   .live { padding: 8px 10px; }
   .live-head { display: flex; align-items: center; gap: 8px; }
   .live-head .small { flex: 1; }
@@ -938,7 +954,8 @@ fetch('/api/state').then(r => r.json()).then(s => {
 
 // ---- 실시간 분석판(live_view 임베드): 서버가 살아 있을 때만 붙이고, 접힘 상태를 기억한다
 (function liveBox() {
-  const LIVE = 'http://127.0.0.1:8770/';
+  // 이 컴퓨터에서 열면 로컬 분석판, 밖(모바일·터널)에서 열면 같은 잠금 뒤의 외부 주소(10-23)
+  const LIVE = ['127.0.0.1', 'localhost'].includes(location.hostname) ? 'http://127.0.0.1:8770/' : 'https://go-live.monkos.ai/';
   const box = document.getElementById('liveBox'), fr = document.getElementById('liveFrame'), off = document.getElementById('liveOff');
   const tg = document.getElementById('liveToggle');
   let folded = false;

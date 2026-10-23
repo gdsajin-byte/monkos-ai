@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- 웹 바둑판 127.0.0.1:8765 (10-23 iMac/쌍아, 작가님 "진행" — 바둑 PoC 모바일 접속 상주). 설치: cp → ~/Library/LaunchAgents, launchctl bootstrap gui/$(id -u) -->
+<plist version="1.0"><dict>
+  <key>Label</key><string>ai.monkos.go-board</string>
+  <key>ProgramArguments</key><array><string>/Library/Frameworks/Python.framework/Versions/3.13/bin/python3</string><string>server.py</string></array>
+  <key>WorkingDirectory</key><string>/Users/jeong-kyushin/developer/monk_project/apps/go-board-web</string>
+  <key>EnvironmentVariables</key><dict><key>PATH</key><string>/Users/jeong-kyushin/.local/bin:/usr/local/bin:/usr/bin:/bin</string><key>PYTHONUNBUFFERED</key><string>1</string></dict>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>ThrottleInterval</key><integer>30</integer>
+  <key>StandardOutPath</key><string>/Users/jeong-kyushin/.monkos/katago/go-board-web.log</string>
+  <key>StandardErrorPath</key><string>/Users/jeong-kyushin/.monkos/katago/go-board-web.log</string>
+</dict></plist>
