@@ -19,6 +19,13 @@
 - 받은 것: Freesound 공개 미리듣기 MP3(`cdn.freesound.org/previews/…-hq.mp3`) — 로그인 없이 받을 수 있다. 원본 파일 다운로드는 로그인이 필요해서 쓰지 않았다(CC0이라 트랜스코딩본 사용에 제약 없음).
 - 처리: macOS `afconvert`로 디코딩 → 타격 시작점 보정(피크에서 거꾸로 무음 지점 탐색, 8ms 앞부터) → 0.35초(따냄 0.95초) 자르기 → 끝 60ms 페이드아웃 → 피크 -1dBFS 정규화 → 22.05kHz 16bit 모노 WAV. 파일당 19KB(따냄 44KB).
 
+## 재탐색 (2026-10-23 13:2x, 작가님 "착수음도 그닥, 따냄 소리도" — 쌍아 전달)
+
+- Freesound CC0: `go stones bowl` 0건, `igo` 무관 1건, 이후 요청 제한(HTTP 429)으로 중단 — 더 두드리지 않음.
+- OpenGameArt `go stone`: 24건 전부 그림·타일(바둑돌 효과음 0).
+- Pixabay `go stone`: 바둑돌 소리 없음(자갈·돌 끌기 등). 라이선스도 CC0가 아닌 Pixabay 자체 라이선스라 기준(CC0·PD 우선, CC-BY는 표기)에서 벗어남.
+- 결론: 공개 CC0에서 더 나은 바둑돌·통 소리는 못 찾음 → **작가님 실물 바둑판 녹음**을 `sounds/custom/`에 넣으면 자동으로 쓰는 구조를 마련(`custom/README.md`).
+
 ## 찾았지만 못 쓴 곳 (기록)
 
 - Wikimedia Commons: 오디오 검색("go stone sound", "baduk stone", "igo stone" 등)에서 바둑돌 소리 없음.
