@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MONK 바둑판</title>
+<style>
+  :root {
+    --bg: #f4efe6; --ink: #2b2620; --muted: #6f655a; --wood: #dcb36c; --line: #3a2c18;
+    --btn: #fff; --btn-ink: #2b2620; --accent: #b4462b; --bar-b: #222; --bar-w: #f7f7f2;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; font-size: 20px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 16px; display: flex; gap: 24px; flex-wrap: wrap; }
+  .board { flex: 1 1 640px; max-width: min(92vh, 760px); }
+  svg { width: 100%; height: auto; display: block; cursor: pointer; border-radius: 6px;
+        box-shadow: 0 6px 20px rgba(0,0,0,.18); }
+  .side { flex: 1 1 320px; display: flex; flex-direction: column; gap: 16px; }
+  h1 { font-size: 26px; margin: 0; }
+  .turn { font-size: 24px; font-weight: 700; min-height: 1.4em; }
+  .msg { color: var(--accent); min-height: 1.4em; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; }
+  button, select { font: inherit; font-size: 20px; padding: 14px 18px; border-radius: 10px;
+                   border: 2px solid #c9bba5; background: var(--btn); color: var(--btn-ink); cursor: pointer; }
+  button:hover:not(:disabled) { border-color: var(--ink); }
+  button:disabled, select:disabled { opacity: .45; cursor: not-allowed; }
+  .btns button { flex: 1 1 45%; }
+  .stat { display: flex; justify-content: space-between; }
+  .bar { height: 30px; border-radius: 8px; overflow: hidden; display: flex; border: 2px solid #c9bba5; }
+  .bar .b { background: var(--bar-b); }
+  .bar .w { background: var(--bar-w); flex: 1; }
+  .barlbl { display: flex; justify-content: space-between; font-size: 18px; color: var(--muted); }
+  .small { font-size: 16px; color: var(--muted); }
+  .pass { background: none; border: none; padding: 0; color: var(--muted); text-decoration: underline; font-size: 17px; }
+  .busy { opacity: .6; pointer-events: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg></div>
+  <div class="side">
+    <h1>MONK 바둑판</h1>
+    <div class="turn" id="turn">불러오는 중…</div>
+    <div class="msg" id="msg"></div>
+
+    <div class="row btns">
+      <button id="bNew">새 판</button>
+      <button id="bUndo">한 수 무르기</button>
+      <button id="bSwap">흑백 바꾸기</button>
+      <button id="bReview" disabled>리뷰</button>
+    </div>
+    <div class="small" id="reviewWhy"></div>
+
+    <label>상대 수준<br>
+      <select id="level" style="width:100%"></select>
+    </label>
+    <div class="small" id="levelWhy"></div>
+
+    <div>
+      <div class="barlbl"><span>흑</span><span id="scoreTxt">형세 —</span><span>백</span></div>
+      <div class="bar"><div class="b" id="barB" style="width:50%"></div><div class="w"></div></div>
+    </div>
+    <div class="stat"><span>흑이 따낸 돌 <b id="capB">0</b></span><span>백이 따낸 돌 <b id="capW">0</b></span></div>
+    <div class="stat small"><span id="moveNo">0수</span><button class="pass" id="bPass">패스</button></div>
+    <div class="small" id="sgf"></div>
+  </div>
+</div>
+<script>
+const N = 19, M = 20, STEP = (400 - 2 * M) / (N - 1);
+const svg = document.getElementById('svg');
+const NS = 'http://www.w3.org/2000/svg';
+const COLS = 'ABCDEFGHJKLMNOPQRST';
+let S = null, busy = false;
+
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  (parent || svg).appendChild(e); return e;
+}
+const P = i => M + i * STEP;
+
+function drawBase() {
+  svg.innerHTML = '';
+  el('rect', { x: 0, y: 0, width: 400, height: 400, fill: 'var(--wood)' });
+  for (let i = 0; i < N; i++) {
+    el('line', { x1: P(0), y1: P(i), x2: P(N - 1), y2: P(i), stroke: 'var(--line)', 'stroke-width': .7 });
+    el('line', { x1: P(i), y1: P(0), x2: P(i), y2: P(N - 1), stroke: 'var(--line)', 'stroke-width': .7 });
+  }
+  for (const a of [3, 9, 15]) for (const b of [3, 9, 15]) el('circle', { cx: P(a), cy: P(b), r: 2.2, fill: 'var(--line)' });
+  for (let i = 0; i < N; i++) {
+    el('text', { x: P(i), y: 9, 'font-size': 7, 'text-anchor': 'middle', fill: 'var(--line)' }).textContent = COLS[i];
+    el('text', { x: 6, y: P(i) + 2.5, 'font-size': 7, 'text-anchor': 'middle', fill: 'var(--line)' }).textContent = N - i;
+  }
+}
+
+function render() {
+  drawBase();
+  const g = S.board;
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    const c = g[y][x]; if (!c) continue;
+    el('circle', { cx: P(x), cy: P(y), r: STEP * .47, fill: c === 'B' ? '#151515' : '#fafaf5',
+                   stroke: c === 'B' ? '#000' : '#888', 'stroke-width': .6 });
+  }
+  if (S.last) {
+    const [x, y] = S.last, c = g[y][x];
+    el('circle', { cx: P(x), cy: P(y), r: STEP * .2, fill: 'none', stroke: c === 'B' ? '#fff' : '#c0392b', 'stroke-width': 1.8 });
+  }
+  const me = S.user === 'B' ? '흑' : '백';
+  let turn;
+  if (S.result) turn = `대국 종료 — ${S.resultKo}`;
+  else if (busy) turn = 'KataGo 생각 중…';
+  else if (S.toMove === S.user) turn = `작가님(${me}) 차례`;
+  else turn = 'KataGo 차례';
+  document.getElementById('turn').textContent = turn;
+  let msg = S.error || S.message || '';
+  if (!S.error && S.lastPass && !S.result) msg = `${S.lastColor === 'B' ? '흑' : '백'}이 패스했습니다. ` + msg;
+  if (!S.strongOk) msg = (S.strongError || '엔진 기동 실패') + ' ' + msg;
+  document.getElementById('msg').textContent = msg;
+  document.getElementById('capB').textContent = S.captures.B;
+  document.getElementById('capW').textContent = S.captures.W;
+  document.getElementById('moveNo').textContent = `${S.moveNo}수 · 상대 ${S.levelLabel}`;
+  if (S.score !== null && S.score !== undefined) {
+    const s = S.score, pct = Math.max(3, Math.min(97, 50 + s * 2.5));
+    document.getElementById('barB').style.width = pct + '%';
+    const lead = Math.abs(s) < 0.5 ? '거의 반반' : `${s > 0 ? '흑' : '백'} ${Math.abs(s).toFixed(1)}집 우세`;
+    document.getElementById('scoreTxt').textContent = `형세: ${lead}`;
+  } else {
+    document.getElementById('barB').style.width = '50%';
+    document.getElementById('scoreTxt').textContent = '형세 —';
+  }
+  const lv = document.getElementById('level');
+  if (!lv.options.length) {
+    lv.add(new Option('KataGo 최강', 'strong'));
+    for (const r of S.ranks) lv.add(new Option(`사람처럼 두는 KataGo — ${r.label}`, r.v));
+  }
+  for (const o of lv.options) if (o.value !== 'strong') o.disabled = !S.humanOk;
+  lv.value = S.level;
+  document.getElementById('levelWhy').textContent = S.humanOk ? '' : `급수 상대 비활성: ${S.humanReason}`;
+  const rb = document.getElementById('bReview');
+  rb.disabled = !S.review.ok;
+  document.getElementById('reviewWhy').textContent = S.review.ok ? '' : S.review.reason;
+  document.getElementById('sgf').textContent = S.sgf ? `기보 자동 저장: ${S.sgf}` : '';
+  document.body.classList.toggle('busy', busy);
+}
+
+async function call(path, body) {
+  if (busy) return;
+  busy = true; render();
+  try {
+    const r = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
+    S = await r.json();
+  } catch (e) { S.error = '서버 연결 실패 — run.sh가 켜져 있는지 확인해 주세요'; }
+  busy = false; render();
+}
+
+svg.addEventListener('click', ev => {
+  if (!S || busy || S.result || S.toMove !== S.user) return;
+  const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+  const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+  const x = Math.round((p.x - M) / STEP), y = Math.round((p.y - M) / STEP);
+  if (x < 0 || y < 0 || x >= N || y >= N || S.board[y][x]) return;
+  // 즉시 내 돌을 그려 반응을 보인다(서버 응답으로 덮어씀)
+  S.board[y][x] = S.user; S.last = [x, y]; S.message = ''; S.error = null;
+  call('/api/play', { x, y });
+});
+document.getElementById('bNew').onclick = () => call('/api/new');
+document.getElementById('bUndo').onclick = () => call('/api/undo');
+document.getElementById('bSwap').onclick = () => call('/api/swap');
+document.getElementById('bPass').onclick = () => call('/api/play', { pass: true });
+document.getElementById('level').onchange = e => call('/api/level', { level: e.target.value });
+
+fetch('/api/state').then(r => r.json()).then(s => { S = s; render(); })
+  .catch(() => { document.getElementById('turn').textContent = '서버 연결 실패'; });
+</script>
+</body>
+</html>
