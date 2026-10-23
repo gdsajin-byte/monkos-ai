@@ -52,6 +52,7 @@
       <button id="bSwap">흑백 바꾸기</button>
       <button id="bReview" disabled>리뷰</button>
     </div>
+    <label class="small"><input type="checkbox" id="wrFilter" checked> 리뷰: 승부가 갈리기 전(승률 <span id="wrRange">3~97%</span>) 실수만 <span id="filterWhy"></span></label>
     <div class="small" id="reviewWhy"></div>
 
     <label>상대 수준<br>
@@ -144,6 +145,13 @@ function render() {
   const rb = document.getElementById('bReview');
   rb.disabled = !S.review.ok;
   document.getElementById('reviewWhy').textContent = S.review.ok ? '' : S.review.reason;
+  const wf = document.getElementById('wrFilter');
+  wf.disabled = !S.review.filterOk;
+  if (!S.review.filterOk) wf.checked = false;
+  document.getElementById('filterWhy').textContent = S.review.filterOk ? '(임시 기본값)' : `— ${S.review.filterReason || ''}`;
+  if (S.review.wrRange) document.getElementById('wrRange').textContent =
+    S.review.wrRange.split(',').map(v => Math.round(v * 100)).join('~') + '%';
+  if (S.testMode) document.title = 'MONK 바둑판 (테스트)';
   document.getElementById('sgf').textContent = S.sgf ? `기보 자동 저장: ${S.sgf}` : '';
 }
 
@@ -182,6 +190,13 @@ svg.addEventListener('click', ev => {
 document.getElementById('bNew').onclick = () => call('/api/new');
 document.getElementById('bUndo').onclick = () => call('/api/undo');
 document.getElementById('bSwap').onclick = () => call('/api/swap');
+document.getElementById('bReview').onclick = async () => {
+  if (busy) { notice('상대가 생각 중입니다'); return; }
+  const tab = window.open('', '_blank');  // 클릭 순간에 열어야 팝업 차단을 피한다
+  await call('/api/review', { wrFilter: document.getElementById('wrFilter').checked });
+  if (S.reviewJob && tab) tab.location = `/review/${S.reviewJob}`;
+  else if (tab) tab.close();
+};
 document.getElementById('bPass').onclick = () => call('/api/play', { pass: true });
 document.getElementById('level').onchange = e => call('/api/level', { level: e.target.value });
 
