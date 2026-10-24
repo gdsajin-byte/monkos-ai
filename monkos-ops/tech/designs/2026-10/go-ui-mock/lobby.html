@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>대기실 시안</title>
+<!-- 정적 시안(서비스 코드 아님) — DESIGN_20261025_RND_바둑UI_전체그림 ③의 대기실 항목. 외부 CDN 없음.
+     보여 주는 것: 이어 둘 판 1~3개만 위에 · 시간 다 된 판은 자동 정리 · 새 대국 1순위 · 지난 대국은 승/패 색 구분 표 · 내 정보 칸 -->
+<style>
+  :root { --bg:#eef0f3; --ink:#1d2127; --muted:#6b7380; --card:#fff; --accent:#2a6fdb; --win:#c0392b; --lose:#8a9099; --gold:#f2c94c; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; }
+  header { display:flex; align-items:center; gap:12px; padding:10px 16px; background:#2b313b; color:#fff; }
+  header .grow { flex:1; }
+  .wrap { display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:16px; max-width:1200px; margin:0 auto; padding:16px; }
+  @media (max-width: 860px) { .wrap { grid-template-columns:1fr; } .me { order:-1; } }
+  .box { background:var(--card); border-radius:10px; padding:14px; box-shadow:0 1px 2px rgba(0,0,0,.06); }
+  h3 { margin:0 0 10px; font-size:15px; color:var(--muted); }
+  .new { display:flex; gap:10px; align-items:center; }
+  .new .go { flex:1; background:var(--gold); border:0; border-radius:10px; padding:16px; font:inherit; font-size:18px; font-weight:800; }
+  .new .last { color:var(--muted); font-size:13px; }
+  .live { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:10px; }
+  .card { border:2px solid var(--accent); border-radius:10px; padding:10px; display:flex; gap:10px; align-items:center; }
+  .card .mini { width:64px; height:64px; background:#e3b571; border-radius:4px; flex:0 0 auto;
+    background-image:linear-gradient(#2a2117 1px, transparent 1px), linear-gradient(90deg, #2a2117 1px, transparent 1px); background-size:8px 8px; background-position:4px 4px; }
+  .card .t1 { font-weight:800; } .card .t2 { font-size:12px; color:var(--muted); }
+  .card .warn { color:var(--win); font-size:12px; font-weight:700; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { text-align:left; padding:7px 6px; border-bottom:1px solid #edf0f3; } th { color:var(--muted); font-weight:600; font-size:12px; }
+  tr.win td.res { color:var(--win); font-weight:700; } tr.lose td { color:var(--lose); }
+  .me .lv { font-size:28px; font-weight:800; } .me .rec { color:var(--muted); }
+  .bar { height:8px; border-radius:4px; background:#e7eaef; overflow:hidden; margin:6px 0 2px; } .bar i { display:block; height:100%; width:62%; background:var(--accent); }
+  .note { font-size:12px; color:var(--muted); }
+  .foot { display:flex; gap:8px; } .foot button { border:1px solid #d5d9e0; background:#fff; border-radius:8px; padding:8px 12px; font:inherit; }
+</style>
+</head>
+<body>
+<header><b>MONK 바둑</b> 대기실 <span class="grow"></span><span class="note" style="color:#cfd6e0">엔진 정상</span></header>
+<div class="wrap">
+  <main style="display:flex;flex-direction:column;gap:14px">
+    <section class="box">
+      <div class="new"><button class="go">새 대국</button><div class="last">지난 설정 그대로<br>KataGo 1단 · 호선 · 흑 · 무제한</div></div>
+    </section>
+    <section class="box">
+      <h3>이어 둘 대국 (2)</h3>
+      <div class="live">
+        <div class="card"><span class="mini"></span><div><div class="t1">내 차례 · 142수</div><div class="t2">KataGo 최강 · 호선 · 10/24 22:06</div></div></div>
+        <div class="card"><span class="mini"></span><div><div class="t1">KataGo 차례 · 37수</div><div class="t2">KataGo 1단 · 2점</div><div class="warn">접속 끊김 · 3:12 남음</div></div></div>
+      </div>
+      <p class="note">0수로 버려진 판·시간이 다 된 판은 목록에 남기지 않는다(종료 처리 후 '지난 대국'으로).</p>
+    </section>
+    <section class="box">
+      <h3>지난 대국</h3>
+      <table>
+        <tr><th>날짜</th><th>상대</th><th>치수</th><th>결과</th><th>수</th><th></th></tr>
+        <tr class="win"><td>10/24 22:53</td><td>KataGo P9단</td><td>2점</td><td class="res">흑 2집 승</td><td>297</td><td>감상</td></tr>
+        <tr class="lose"><td>10/24 22:31</td><td>KataGo P9단</td><td>호선</td><td class="res">백 46집반 승</td><td>202</td><td>감상</td></tr>
+        <tr class="win"><td>10/24 15:40</td><td>KataGo 1단</td><td>호선</td><td class="res">흑 불계승</td><td>186</td><td>감상</td></tr>
+      </table>
+      <p class="note">이긴 판 빨강 · 진 판 회색(타이젬 '내 기보' 표 방식). 행을 누르면 마지막 수에서 감상이 열린다.</p>
+      <div class="foot"><button>기보 불러오기</button></div>
+    </section>
+  </main>
+  <aside class="box me">
+    <h3>내 정보</h3>
+    <div class="lv">6단</div>
+    <div class="rec">최근 20국 12승 8패</div>
+    <div class="bar"><i></i></div>
+    <div class="note">승률 60% · 승급까지 2승 (승강 규칙은 단계 ④)</div>
+  </aside>
+</div>
+</body>
+</html>
