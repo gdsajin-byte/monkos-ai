@@ -3,7 +3,7 @@
 // - 페이지(/ 대기실 · /room/{id} 대국실 — 같은 화면 파일, 10-24 v3): 보관본을 바로 띄우고 뒤에서 새 판본을 받아 둔다
 //   (다음 실행에 반영) — 터널 왕복(~1초) 없이 즉시 열림. 보관 키는 '/' 하나(셸 1벌)
 // - 판 상태·엔진(/api/*)·리뷰·기보: 늘 네트워크
-const VERSION = 'monk-go-static-v3';
+const VERSION = 'monk-go-static-v4';  // 10-24 앱 자동 갱신 — 화면이 판본 변경을 감지하면 '/' 보관본을 직접 교체한다
 const SHELL = /^\/(index\.html|room\/[A-Za-z0-9_-]{4,64})?$/;
 const STATIC = /^\/(skin|pack|pwa|sounds)\//;
 self.addEventListener('install', () => self.skipWaiting());

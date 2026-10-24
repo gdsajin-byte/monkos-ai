@@ -1011,12 +1011,29 @@ class Room:
         }
 
 
+_BUILD = {"key": None, "id": None}
+
+
+def build_id():
+    """화면 판본 = index.html + sw.js 내용 해시(10자). 파일이 바뀌면(수정 시각·크기) 다시 잰다 — 서버 재기동 없이도 바뀐다.
+    10-24 작가님 휴대폰: 반영한 화면이 PWA 보관본 때문에 안 닿음 → 화면이 이 값과 자기 판본을 비교해 스스로 바꾼다."""
+    files = [HERE / "index.html", HERE / "pwa" / "sw.js"]
+    key = tuple((f.stat().st_mtime_ns, f.stat().st_size) for f in files)
+    if key != _BUILD["key"]:
+        h = hashlib.sha1()
+        for f in files:
+            h.update(f.read_bytes())
+        _BUILD.update(key=key, id=h.hexdigest()[:10])
+    return _BUILD["id"]
+
+
 def common_state():
     """방과 무관한 화면 재료(엔진 상태·수준 목록·소리·스킨) — 대기실도 같은 값을 쓴다."""
     return {"strongOk": ENGINES.strong.ok, "strongError": ENGINES.strong.error,
             "humanOk": ENGINES.human_ok, "humanReason": ENGINES.human_why(),
             "ranks": [{"v": r, "label": RANK_KO[r]} for r in RANKS], "handicaps": HANDICAPS,
-            "sounds": custom_sounds(), "packs": sound_packs(), "skins": skin_packs(), "testMode": TEST_MODE}
+            "sounds": custom_sounds(), "packs": sound_packs(), "skins": skin_packs(), "testMode": TEST_MODE,
+            "build": build_id()}
 
 
 # ---------------------------------------------------------------- 방 저장소·목록
@@ -1898,9 +1915,13 @@ class Handler(BaseHTTPRequestHandler):
         if m:
             self._send(200, (HERE / "pwa" / m.group(1)).read_bytes(), "image/png" if m.group(2) == "png" else "application/manifest+json")
             return
-        if path in ("/", "/index.html") or re.fullmatch(rf"/room/{ROOM_ID_RE}", path):
-            # 대기실·대국실은 같은 화면 파일 — 주소로 갈린다(PWA 보관본 1개)
-            self._send(200, (HERE / "index.html").read_bytes(), "text/html; charset=utf-8")
+        if path in ("/", "/index.html", "/shell") or re.fullmatch(rf"/room/{ROOM_ID_RE}", path):
+            # /shell = 서비스 워커가 가로채지 않는 같은 화면 — 앱 자동 갱신이 보관본을 새 판으로 바꿀 때 받는다
+            # 대기실·대국실은 같은 화면 파일 — 주소로 갈린다(PWA 보관본 1개). 화면에 자기 판본을 새겨 보낸다
+            page = (HERE / "index.html").read_bytes().replace(b"__GO_BUILD__", build_id().encode())
+            self._send(200, page, "text/html; charset=utf-8")
+        elif path == "/api/version":  # 화면 판본 확인(대기실·대국실·감상 공통, 가벼움)
+            self._json({"build": build_id()})
         elif path == "/api/rooms":
             self._json({"rooms": [r.summary() for r in ROOMS.listing()], "defaults": ROOMS.defaults(), **common_state()})
         elif m := re.fullmatch(rf"/api/rooms/({ROOM_ID_RE})/analysis", path):
