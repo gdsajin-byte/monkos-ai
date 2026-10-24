@@ -629,6 +629,8 @@ class Room:
         r.dc_limit = d.get("dcLimit", 24 * 3600)  # 기존 방: 만들 때 한도 유지(필드 없던 10-24 이전 방 = 당시 기본 24시간)
         r.result_reason = d.get("resultReason")
         r.source, r.orig_name, r.players = d.get("source"), d.get("origName"), d.get("players")
+        if r.players:  # 이미 불러온 기보의 숫자 급단 코드도 표시는 급단으로(K2 — 파일은 다음 저장 때 반영)
+            r.players = {**r.players, "BR": tygem_rank(r.players.get("BR")), "WR": tygem_rank(r.players.get("WR"))}
         r.rules, r.record_date, r.komi_value = d.get("rules") or "korean", d.get("recordDate"), d.get("komiValue")
         # 서버가 꺼져 있던 시간은 장애 시계에도 깎지 않는다 — 쓴 만큼만 들고 지금부터 다시 센다
         r.offline, r.dc_used = d.get("offline", False), d.get("dcUsed", 0.0)
@@ -1612,6 +1614,23 @@ def sgf_point(v):
     return to_gtp(ord(v[0]) - 97, ord(v[1]) - 97)
 
 
+def tygem_rank(v):
+    """타이젬 SGF 숫자 급단 코드(BR/WR) → 급단 표기(10-25 K2). 숫자가 아니거나 표 밖이면 원문 그대로.
+    코드표 = 타이젬 GIB 실기보 21개의 (이름 속 급단, BLV/WLV) 짝 실측: 15K=3·13K=5·12K=6·10K=8·1급=17·2D=19
+    → 급 = 18-n(1~17), 아마 단 = n-17(18~26), 프로 = n-26(27~35, 35=P9단 실기보 1건). 아마 3~9단·프로 1~8단은 공식으로 이은 값"""
+    s = (v or "").strip()
+    if not s.isdigit():
+        return v or ""
+    n = int(s)
+    if 1 <= n <= 17:
+        return f"{18 - n}급"
+    if 18 <= n <= 26:
+        return f"{n - 17}단"
+    if 27 <= n <= 35:
+        return f"P{n - 26}단"
+    return v
+
+
 def result_from_text(txt):
     """GIB 결과 문구(영·한) → SGF RE 형식."""
     if not txt:
@@ -1661,7 +1680,7 @@ def parse_sgf_upload(raw):
     ru = (one("RU") or "korean").strip().lower()
     return {"moves": moves, "setup": setup, "handicap": int(one("HA") or len(setup) or 0),
             "komi": float(one("KM") or (0.5 if setup else KOMI)), "result": one("RE"),
-            "pb": one("PB") or "흑", "pw": one("PW") or "백", "br": one("BR") or "", "wr": one("WR") or "",
+            "pb": one("PB") or "흑", "pw": one("PW") or "백", "br": tygem_rank(one("BR")), "wr": tygem_rank(one("WR")),
             "dt": one("DT") or "", "rules": RULES_MAP.get(ru, "korean"), "encoding": enc,
             "variations": variations, "format": "SGF"}
 
