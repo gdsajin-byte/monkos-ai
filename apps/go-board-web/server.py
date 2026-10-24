@@ -470,6 +470,49 @@ def charge_clock(c, t, dt, is_user):
         c["period"] += t["byo"]
 
 
+# ---------------------------------------------------------------- 방 잠금(보유자 추적) — 10-24 첫 수 busy 진단
+
+TEST_SLOW_PING = float(os.environ.get("GO_BOARD_TEST_SLOW_PING") or 0) if TEST_MODE else 0.0
+LOCK_WAIT = 5.0  # 엔진이 생각 중이 아닌 보유자(조회·ping·감시 저장 등)면 착수가 이만큼 기다렸다 처리
+SLOW_HOLD = 3.0  # 엔진 생각이 아닌데 이보다 오래 잡으면 이벤트로 남긴다
+THINK_ACTIONS = ("play", "engine", "undo", "swap", "level", "score", "hint", "judge")  # 엔진이 이 방 국면을 계산하는 동작
+
+
+class RoomLock:
+    """방 잠금 + 지금 누가(동작 이름) 언제부터 잡고 있는지. busy 거부 때 그대로 기록한다."""
+
+    def __init__(self, rid):
+        self.rid = rid
+        self._lock = threading.Lock()
+        self.holder = None  # (동작 이름, 잡은 시각)
+
+    def acquire(self, blocking=True, timeout=-1, name="?"):
+        ok = self._lock.acquire(blocking, timeout) if blocking else self._lock.acquire(False)
+        if ok:
+            self.holder = (name, time.time())
+        return ok
+
+    def release(self):
+        name, since = self.holder or ("?", time.time())
+        held = time.time() - since
+        self.holder = None
+        self._lock.release()
+        if held > SLOW_HOLD and name not in THINK_ACTIONS and EVENTS:
+            EVENTS.add(self.rid, action="slow-lock", holder=name, heldMs=round(held * 1000))
+
+    def held_info(self):
+        h = self.holder
+        return {"holder": h[0], "heldMs": round((time.time() - h[1]) * 1000)} if h else {"holder": None}
+
+    @contextlib.contextmanager
+    def hold(self, name):
+        self.acquire(name=name)
+        try:
+            yield
+        finally:
+            self.release()
+
+
 # ---------------------------------------------------------------- 방(대국 상태)
 
 STATUS_KO = {"waiting": "대기", "playing": "대국", "ended": "종료"}
@@ -481,7 +524,8 @@ class Room:
     def __init__(self, rid):
         self.id = rid
         self.kind = "ai"
-        self.lock = threading.Lock()
+        self.lock = RoomLock(rid)
+        self.thinking = False  # 엔진이 이 방 국면으로 수·검사·분석을 계산하는 중(THINK_ACTIONS) — 이때만 착수를 거부
         self.cache = None  # 마지막 상태 JSON(엔진 생각 중 조회용)
         self.user = "B"
         self.level = "strong"  # 'strong' | 랭크 문자열('5k' 등)
@@ -1182,7 +1226,7 @@ class Rooms:
             # 한 수도 안 둔 채 10분 넘게 남겨 둔 방은 새 방을 만들 때 걷는다(지울 것이 없는 빈 판 — 막 만든 다른 방은 두고)
             old = time.time() - EMPTY_ROOM_TTL
             for r in list(self.rooms.values()):
-                if not r.moves and not r.result and not r.imported and r.updated < old and r.lock.acquire(blocking=False):
+                if not r.moves and not r.result and not r.imported and r.updated < old and r.lock.acquire(blocking=False, name="sweep"):
                     try:
                         del self.rooms[r.id]
                         self.store.delete(r.id)
@@ -1315,7 +1359,7 @@ class Reviews:
               f"{job['secs']}s {job.get('error', '')}", file=sys.stderr, flush=True)
         room = ROOMS.get(job.get("room"))
         if room:  # 리뷰 결과를 방 파일에 남긴다(대국 중이면 그 수가 끝난 뒤)
-            with room.lock:
+            with room.lock.hold("review-save"):
                 ROOMS.save(room)
 
     def page(self, jid):
@@ -1813,6 +1857,8 @@ def act(room, action, body):
     err, jid, extra = None, None, {}
     try:
         if action == "ping":  # 대국실 화면이 5초마다 — heartbeat 는 호출 쪽에서 이미 했다
+            if TEST_SLOW_PING:  # 테스트 인스턴스 전용: 잠금을 잡은 채 머무는 비엔진 보유자 흉내
+                time.sleep(TEST_SLOW_PING)
             return None, None, {}
         if action == "play":
             room.play("pass" if body.get("pass") else to_gtp(int(body["x"]), int(body["y"])))
@@ -1897,7 +1943,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def _state(self, room):
         """방 상태 — 엔진이 그 방에서 생각하는 동안(최대 17초)은 잠금을 기다리지 않고 직전 상태를 준다(10-23)."""
-        if room.lock.acquire(timeout=0.3):
+        if room.lock.acquire(timeout=0.3, name="state"):
             try:
                 if room.presence():  # 조회는 접속 신호가 아니다(분석판·대기실도 읽는다) — 판정만
                     ROOMS.save(room)
@@ -2052,19 +2098,29 @@ class Handler(BaseHTTPRequestHandler):
             EVENTS.add(room.id, action=action, result="rejected", error="보기 전용 기보", **ev_move(body))
             return self._json({"error": "지난 대국(가져온 기보)은 볼 수만 있습니다 — 새 대국을 시작해 주세요."})
         t0 = time.time()
-        # 엔진이 이 방에서 생각 중이면 줄 세우지 않고 버린다 — 대기 클릭이 나중에 착수로 바뀌는 경합 차단
-        if not room.lock.acquire(blocking=False):
+        # 엔진이 이 방에서 생각 중이면 줄 세우지 않고 버린다 — 대기 클릭이 나중에 착수로 바뀌는 경합 차단(10-23).
+        # 그 밖의 보유자(상태 조회·ping·감시 저장 등)는 거부 사유가 아니다 — LOCK_WAIT 까지 기다렸다 처리(10-24 첫 수 busy)
+        if not room.lock.acquire(blocking=False, name=action):
             if action == "ping":
                 room.seen = time.time()  # 잠금 없이 — 엔진이 이 방에서 생각 중이어도 접속은 살아 있다
                 return self._send(200, room.cache or json.dumps({"busy": True, "room": room.id}, ensure_ascii=False))
-            EVENTS.add(room.id, action=action, result="busy", moveNo=len(room.moves), **ev_move(body))
-            return self._json({"busy": True, "error": "상대가 생각 중입니다", "room": room.id}, 409)
+            info = room.lock.held_info()
+            if room.thinking or not room.lock.acquire(timeout=LOCK_WAIT, name=action):
+                EVENTS.add(room.id, action=action, result="busy", moveNo=len(room.moves), thinking=room.thinking,
+                           waitedMs=round((time.time() - t0) * 1000), **info, **ev_move(body))
+                return self._json({"busy": True, "error": "상대가 생각 중입니다", "room": room.id}, 409)
+            if info.get("holder"):  # 기다렸다 처리한 경우도 남긴다(누가 막고 있었는지)
+                EVENTS.add(room.id, action=action, result="waited", waitedMs=round((time.time() - t0) * 1000), **info)
         try:
             ROOMS.focus = room.id
             if room.heartbeat() and action == "ping":  # 대국자 동작·ping = 접속해 있음. 재접속은 ping 만으로도 저장
                 ROOMS.save(room)
             n0 = len(room.moves)
-            err, jid, extra = act(room, action, body)
+            room.thinking = action in THINK_ACTIONS
+            try:
+                err, jid, extra = act(room, action, body)
+            finally:
+                room.thinking = False
             if action not in ("ping", "hint", "judge"):  # 판·결과를 바꿀 수 있는 요청만
                 EVENTS.add(room.id, action=action, result="error" if err else "ok", error=err, moveNo=n0,
                            moveNoAfter=len(room.moves), ms=round((time.time() - t0) * 1000), **ev_move(body),
@@ -2107,7 +2163,7 @@ def run_migrations():
                 if not r or r.result or r.imported:  # 없거나 이미 끝난 방은 건드리지 않음
                     applied.append({"room": rid, "kind": kind, "skipped": "없음" if not r else "이미 끝남"})
                     continue
-                with r.lock:
+                with r.lock.hold("migration"):
                     r.scoring, r.offline, r.dc_mark = None, False, None
                     if kind == "forfeit":
                         r.result, r.result_reason = f"{r.eng_color}+F", "rule-cleanup"
@@ -2134,7 +2190,7 @@ def presence_loop():
     while True:
         time.sleep(2)
         for r in ROOMS.listing():
-            if not r._ongoing() or not r.lock.acquire(blocking=False):
+            if not r._ongoing() or not r.lock.acquire(blocking=False, name="presence"):
                 continue
             try:
                 if r.presence():
