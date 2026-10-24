@@ -373,7 +373,8 @@
   <div class="dlg-foot"><button id="dCancel">취소</button><button id="dOk" class="hl">신청</button></div>
 </dialog>
 <script>
-const N = 19, M = 20, STEP = (400 - 2 * M) / (N - 1);
+// 여백 = 0.56칸 — 좌표 글자를 없앤 만큼 판을 키운다(10-24 작가님 "판 그래픽의 좌표는 필요없어"). 가장자리 돌(반지름 0.5칸)+그림자가 잘리지 않는 최소
+const N = 19, M_CELLS = 0.56, STEP = 400 / (N - 1 + 2 * M_CELLS), M = STEP * M_CELLS;
 const svg = document.getElementById('svg');
 const NS = 'http://www.w3.org/2000/svg';
 const COLS = 'ABCDEFGHJKLMNOPQRST';
@@ -430,10 +431,6 @@ function drawBase() {
     el('line', { x1: P(i), y1: P(0), x2: P(i), y2: P(N - 1), stroke: line, 'stroke-width': lw });
   }
   for (const a of [3, 9, 15]) for (const b of [3, 9, 15]) el('circle', { cx: P(a), cy: P(b), r: 2.2, fill: line });
-  for (let i = 0; i < N; i++) {
-    el('text', { x: P(i), y: 9, 'font-size': 7, 'text-anchor': 'middle', fill: line }).textContent = COLS[i];
-    el('text', { x: 6, y: P(i) + 2.5, 'font-size': 7, 'text-anchor': 'middle', fill: line }).textContent = N - i;
-  }
 }
 
 // 돌 그림: 스프라이트에서 흑·백 한 칸씩 잘라 그림자까지 구워 둔 그림 2장을 모든 돌이 같이 쓴다
