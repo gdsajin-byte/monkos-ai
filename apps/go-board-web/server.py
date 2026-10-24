@@ -51,8 +51,11 @@ EMPTY_ROOM_TTL = 600  # 빈 방(0수) 정리 기준 초
 # 접속 장애(10-24 작가님 "일반적으로는 멈추고 별도 시간으로 접속장애패"): 대국실이 5초마다 ping,
 # 마지막 ping 뒤 15초면 '접속 끊김' → 대국 시계 정지 + 접속 장애 시계(내 차례 동안만). 한도 넘기면 접속 장애패
 OFFLINE_AFTER = 15
-DC_LIMIT_DEFAULT = {"ai": 24 * 3600, "human": 5 * 60}  # 사람 대국 값은 단계 ③용
-DC_LIMIT_RANGE = (10, 48 * 3600)
+# 10-24 22:04 작가님 "이어두기는 필요없고 제한시간 멈춘 후 5분간 재접속 없으면 접속장애패" — 한도 5분 하나(AI·사람 공통).
+# 기존 방은 만들 때 규칙(dcLimit)을 그대로 읽는다. 테스트 인스턴스만 GO_BOARD_DC_LIMIT 로 줄여 시험할 수 있다
+DC_LIMIT = 300
+if TEST_MODE and os.environ.get("GO_BOARD_DC_LIMIT"):
+    DC_LIMIT = int(os.environ["GO_BOARD_DC_LIMIT"])
 USER_LAG_GRACE = 2.0  # 서버 시계: 사람 수는 왕복 지연(터널 ~1초)만큼 덜 깎는다 — 화면 시계보다 먼저 시간패가 나지 않게
 # 리뷰 파이프라인(막내11 소관) — 호출만, 수정 금지
 PILOT_DIR = Path(os.environ.get("GO_BOARD_PILOT_DIR") or HERE.parent / "go-commentary-pilot")  # 환경변수는 미병합 브랜치 시험용
@@ -501,7 +504,7 @@ class Room:
         self.reviews = []  # 리뷰 job id (REVIEWS.jobs)
         self.imported = False  # 단계 ① 이전 SGF에서 가져온 지난 대국
         # 접속 장애 — seen: 마지막 ping(잠금 없이 갱신), offline: 끊김 판정, dc_used/dc_mark: 이번 끊김에 쓴 장애 시간
-        self.dc_limit = DC_LIMIT_DEFAULT["ai"]
+        self.dc_limit = DC_LIMIT
         self.seen = time.time()
         self.offline = False
         self.dc_used = 0.0
@@ -519,7 +522,7 @@ class Room:
     # ---- 만들기·저장
 
     @classmethod
-    def create(cls, level, handicap, time_ctl, color, dc_limit=None):
+    def create(cls, level, handicap, time_ctl, color):
         rid = f"{datetime.now():%Y%m%d-%H%M%S}-{secrets.token_hex(2)}"
         r = cls(rid)
         if level != "strong" and level not in RANKS:
@@ -542,11 +545,6 @@ class Room:
         if r.sgf_path.exists():  # 같은 초에 두 방 — 기보 이름 겹침 방지
             r.sgf_path = r.sgf_path.with_name(f"{r.sgf_path.stem}_{rid[-4:]}.sgf")
         r.clock = {"B": make_clock(r.time), "W": make_clock(r.time)} if r.time else None
-        if dc_limit is not None:
-            dc_limit = int(dc_limit)
-            if not DC_LIMIT_RANGE[0] <= dc_limit <= DC_LIMIT_RANGE[1]:
-                raise RuntimeError("접속 장애 한도 범위: 10초 ~ 48시간")
-            r.dc_limit = dc_limit
         return r
 
     def to_dict(self):
@@ -584,7 +582,7 @@ class Room:
         r.clock = d.get("clock")
         r.turn_since = time.time()  # 서버가 꺼져 있던 시간은 깎지 않는다
         r.imported = d.get("imported", False)
-        r.dc_limit = d.get("dcLimit", DC_LIMIT_DEFAULT["ai"])
+        r.dc_limit = d.get("dcLimit", 24 * 3600)  # 기존 방: 만들 때 한도 유지(필드 없던 10-24 이전 방 = 당시 기본 24시간)
         r.result_reason = d.get("resultReason")
         r.source, r.orig_name, r.players = d.get("source"), d.get("origName"), d.get("players")
         r.rules, r.record_date, r.komi_value = d.get("rules") or "korean", d.get("recordDate"), d.get("komiValue")
@@ -1190,7 +1188,7 @@ class Rooms:
         last = max((r for r in list(self.rooms.values()) if not r.imported), key=lambda r: r.started, default=None)
         return {"level": last.level if last else "strong", "handicap": last.handicap if last else 0,
                 "time": last.time if last else dict(DEFAULT_TIME), "user": last.user if last else "B",
-                "dcLimit": last.dc_limit if last else DC_LIMIT_DEFAULT["ai"]}
+                "dcLimit": DC_LIMIT}
 
 
 # ---------------------------------------------------------------- 리뷰 (review.py 호출)
@@ -1846,8 +1844,7 @@ def new_room(body, base=None):
     if t == "keep":
         t = base.time if base else d["time"]
         t = t or {"unlimited": True}
-    dc = body.get("dcLimit", base.dc_limit if base else d.get("dcLimit"))
-    room = Room.create(level, handicap, t, body.get("color") or (base.user if base else d["user"]), dc)
+    room = Room.create(level, handicap, t, body.get("color") or (base.user if base else d["user"]))  # 장애 한도는 고정 5분
     room.cache = json.dumps(room.state(), ensure_ascii=False)  # 첫 조회가 엔진 생각과 겹쳐도 빈 판을 준다
     ROOMS.add(room)
     EVENTS.add(room.id, action="create", user=room.user, level=room.level, handicap=room.handicap,
