@@ -1055,6 +1055,8 @@ class LocalRoomStore:
         if not self.root.exists():
             return out
         for f in sorted(self.root.glob("*.json")):
+            if f.name.startswith("_"):  # 방이 아닌 관리 파일(_migrations.json) — 10-24
+                continue
             try:
                 out.append(json.loads(f.read_text(encoding="utf-8")))
             except (OSError, ValueError) as e:
