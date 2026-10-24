@@ -1751,6 +1751,8 @@ class Analyses:
         self.wake = threading.Event()
         self.current = None
         self.stats = {}  # 방 id → {"started": t, "secs": 걸린 초, "points": 계산한 수}
+        self.priority = None  # 감상으로 지금 열려 있는 방(10-25 K5) — 줄 맨 앞, 계산 중인 다른 방은 한 수 끝내고 비킨다
+        self.asked = {}  # 방 id → 처음 요청 시각(첫 점까지 기다린 초 로그용)
 
     def load(self, rid):
         if rid not in self.cache:
@@ -1768,13 +1770,21 @@ class Analyses:
         tmp.write_text(json.dumps(self.cache[rid]), encoding="utf-8")
         os.replace(tmp, self.dir / f"{rid}.json")
 
-    def status(self, room, want=True):
+    def status(self, room, want=True, prio=True):
         total = len(room.moves) + 1
         pts = self.load(room.id).get("points", {})
         done = all(str(k) in pts for k in range(total))
         if want and not done:
-            with self.lock:
-                if room.id not in self.queue and self.current != room.id:
+            with self.lock:  # 화면이 보고 있는 방 = 맨 앞(K5). 이미 계산 중이면 그대로. 재기동 이어 계산(prio=False)은 줄 끝
+                if prio:
+                    if room.id in self.queue:
+                        self.queue.remove(room.id)
+                    if self.current != room.id:
+                        self.queue.insert(0, room.id)
+                    self.priority = room.id
+                    if not pts:  # 첫 점까지 기다린 시간만 잰다(화면이 2초마다 다시 물어도 1회)
+                        self.asked.setdefault(room.id, time.time())
+                elif room.id not in self.queue and self.current != room.id:
                     self.queue.append(room.id)
             self.wake.set()
         st = self.stats.get(room.id, {})
@@ -1782,7 +1792,7 @@ class Analyses:
                 "points": [[int(k), v[0], v[1]] for k, v in sorted(pts.items(), key=lambda kv: int(kv[0]))
                            if int(k) < total],
                 "running": self.current == room.id, "queued": room.id in self.queue,
-                "secs": st.get("secs"), "visits": GRAPH_VISITS}
+                "secs": st.get("secs"), "visits": GRAPH_VISITS, "firstWait": st.get("firstWait")}
 
     def resume_all(self):
         """재기동: 캐시가 있으나 덜 끝난 방을 줄에 다시 세운다."""
@@ -1792,7 +1802,7 @@ class Analyses:
         for f in self.dir.glob("*.json"):
             r = ROOMS.get(f.stem)
             if r and not self.status(r, want=False)["done"]:
-                self.status(r)
+                self.status(r, prio=False)
                 n += 1
         return n
 
@@ -1822,6 +1832,12 @@ class Analyses:
         for k in range(total):
             if str(k) in pts:
                 continue
+            if self.priority and self.priority != room.id:  # 다른 방이 감상으로 열림 — 진행분 저장하고 그 방 뒤로
+                with self.lock:
+                    if room.id not in self.queue:
+                        self.queue.insert(1 if self.queue and self.queue[0] == self.priority else 0, room.id)
+                print(f"⏸ go-board 그래프 {room.id}: {k}수에서 비킴 → {self.priority}", file=sys.stderr, flush=True)
+                break
             color = moves[k][0] if k < len(moves) else ("W" if moves and moves[-1][0] == "B" else "B")
             try:
                 wr, score = ENGINES.quick({"moves": moves[:k], "setup": room.setup, "komi": room.komi},
@@ -1830,11 +1846,17 @@ class Analyses:
                 print(f"❌ go-board: 그래프 계산 실패 {room.id} {k}수 — {e}", file=sys.stderr, flush=True)
                 break
             pts[str(k)] = [round(wr, 4) if wr is not None else None, round(score, 2) if score is not None else None]
+            if room.id in self.asked:  # 요청부터 첫 점까지(K5 대기 시간 로그)
+                waited = round(time.time() - self.asked.pop(room.id), 1)
+                self.stats.setdefault(room.id, {"secs": 0.0})["firstWait"] = waited
+                print(f"✅ go-board 그래프 {room.id}: 첫 점까지 {waited}s", file=sys.stderr, flush=True)
             since_save += 1
             if since_save >= 5:
                 self._save(room.id)
                 since_save = 0
         self._save(room.id)
+        if self.priority == room.id and all(str(k) in pts for k in range(total)):
+            self.priority = None
         st = self.stats.setdefault(room.id, {"secs": 0.0})
         st["secs"] = round(st.get("secs", 0.0) + time.time() - t0, 1)
         print(f"✅ go-board 그래프 {room.id}: {len(pts) - n0}국면 {round(time.time() - t0, 1)}s", file=sys.stderr, flush=True)
