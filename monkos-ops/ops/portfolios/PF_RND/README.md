@@ -74,6 +74,7 @@ status: active
 | 10/24 | iMac/쌍아-막내15 | **DESIGN** 타이젬 실사용 체험 기반 바둑 UI 전체 그림 — 화면 지도 · 기능별 타이젬 vs 우리 짝 실측 · 개선점(지시서 1건 크기) 우선순위 · 작가님 결정 항목 | [DESIGN_20261025_RND_바둑UI_전체그림](../../../tech/designs/2026-10/DESIGN_20261025_RND_바둑UI_전체그림.md) | ⏳ |
 | 10/24 | iMac/쌍아-막내15 | **COMPLETION** COMPLETION_20261025_iMac쌍아-막내15_RND_바둑_타이젬체험 | [COMPLETION_20261025_iMac쌍아-막내15_RND_바둑_타이젬체험](../../reports/2026-10/COMPLETION_20261025_iMac쌍아-막내15_RND_바둑_타이젬체험.md) | ✅ |
 | 10/25 | iMac/쌍아 | **ORDER** 타이젬 기보 탐색 기능 정밀 공부 — 기보 찾기·감상·형세분석·추천수·AI 승률·대국 검토·변화도 전부 → 우리 기보 감상 차이·개선점 | [ORDER_20261025_iMac쌍아_막내15_RND_바둑_타이젬기보탐색_공부](../../orders/2026-10/ORDER_20261025_iMac쌍아_막내15_RND_바둑_타이젬기보탐색_공부.md) | ⏳ |
+| 10/25 | iMac/쌍아-막내15 | **COMPLETION** COMPLETION_20261025_iMac쌍아-막내15_RND_바둑_타이젬기보탐색 | [COMPLETION_20261025_iMac쌍아-막내15_RND_바둑_타이젬기보탐색](../../reports/2026-10/COMPLETION_20261025_iMac쌍아-막내15_RND_바둑_타이젬기보탐색.md) | ✅ |
 
 ---
 
