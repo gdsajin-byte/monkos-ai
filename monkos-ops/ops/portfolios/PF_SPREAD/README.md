@@ -61,6 +61,7 @@ status: active
 | 07/13 | iMac/민아 | **specs SEO/GEO 다국어 헤드텀 최적화** — 428슬러그×3언어 seoTitle·Description 재생성(도구 신설 seo-headterm-regen.mjs). en 로컬단위(US "2×2 inch"), ko "규격·규정 2026", ja "サイズ" 선두. 구조화 데이터 v2(publisher MONKOS+legalName, PropertyValue, dateModified 동적). GEO 요약문 삽입. us-visa·us-passport FAQ 3언어 증보. prod rev 00462 | [REPORT](../../reports/2026-07/REPORT_20260713_iMac민아_SPECS_SEO헤드텀_다국어진단설계.md) | ✅ |
 | 07/14 | M1/쌍아 | **SEO 정보수집 인프라 실측** — 현행 유통 인프라 전수 점검. IndexNow 5엔진 통지(6/15 구현) prod 작동 확인. Google Indexing API 블로그 발행 시 자동 호출 확인. 네이버 검색광고 API 키 3종 SM 등록 확인(6/20), 단 자동수집 파이프라인 미구축. 잔여 공백: Bing WMT 수집, 네이버 DataLab, PageSpeed CWV. Ubersuggest MCP SKIP 판정 | — | ✅ |
 | 07/15 | M1/막내1 | **글로벌 크레딧 팩 라이브 ID 교체** — 글로벌 USD 스토어(#415328) variant ID 5종 테스트→라이브 전환. config.js + credits.js + payments-direct.test.js 교체 (테스트 ID 잔존 0건). 테스트 22/22 통과 | config.js, credits.js, payments-direct.test.js | ✅ (배포 대기) |
+| 10/24 | iMac/쌍아 | **CDP 사이트 카드로 채널 재세팅 병목 공략(작가님 10-24 22:28)** — 채널 사이트별 버튼·흐름을 백그라운드 고정 뷰포트로 1회 분석·기록 → 매 배포 재탐색 제거. 정본은 PF_CDP 사이트 카드, 외부 발송은 기존 승인 게이트 유지 | `PF_CDP 10/24` | ⏳ 연계 |
 
 ---
 
