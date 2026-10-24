@@ -302,6 +302,66 @@ _nbsrc = subprocess.run([sys.executable, "-c", "import sys; sys.path.insert(0, s
 expect("알림 문구 = attach + 원격 Remote Control 경로", _nbsrc.strip().split("\n"),
        ["⏸ 막내-스모크 승인 대기 — Bash", "claude attach bg1", "원격: claude.ai/code 세션 목록 → 막내-스모크"])
 
+# ---------- E11 시각 헤더 쓰기 직전 대조 (10-24 막내16, ORDER_20261024) ----------
+# 시각 고정 MONK_HOOK_NOW — 분 경계 흔들림 없이 +3분·−15분을 판정한다.
+NOW = {"MONK_HOOK_NOW": "2026-10-24 22:30:20"}
+H_OK, H_FUT, H_PAST = "**[2026-10-24 22:30 KST]**", "**[2026-10-24 22:33 KST]**", "**[2026-10-24 22:15 KST]**"
+H_YDAY = "**[2026-10-23 09:00 KST]**"
+RPT = str(ROOT / "monkos-ops/ops/reports/2026-10/COMPLETION_smoke_e11_nonexistent.md")
+SLOG = "monkos-ops/ops/sessions/2026-10/2026-10-24_smoke_e11_nonexistent.md"
+
+
+def wr(content, path=RPT):
+    return {"hook_event_name": "PreToolUse", "tool_name": "Write", "session_id": SID,
+            "tool_input": {"file_path": path, "content": content}, "cwd": str(ROOT)}
+
+
+def ed(path, old, new):
+    return {"hook_event_name": "PreToolUse", "tool_name": "Edit", "session_id": SID,
+            "tool_input": {"file_path": path, "old_string": old, "new_string": new}, "cwd": str(ROOT)}
+
+
+def msg(text):
+    return {"hook_event_name": "PreToolUse", "tool_name": "SendMessage", "session_id": SID,
+            "tool_input": {"to": "monk-project-24", "message": text}, "cwd": str(ROOT)}
+
+
+M = "guard_message.py"
+# 양성(통과)
+expect("E11 양성 실측 헤더 Write",            run(W, wr(H_OK + " iMac/막내 → 쌍아\n본문"), NOW)[1], None)
+expect("E11 양성 $(date) 치환 어펜드",        run(G, bash("D=$(date '+%%Y-%%m-%%d %%H:%%M KST')\ncat >> %s <<EOF\n**[$D]** iMac/막내\nEOF" % SLOG), NOW)[1], None)
+with tempfile.TemporaryDirectory(dir=ROOT / "monkos-ops/ops/orders") as td:
+    od = Path(td) / "ORDER_smoke.md"
+    od.write_text("# x\n\n%s iMac/쌍아 → 막내\n본문\n" % H_PAST, encoding="utf-8")
+    expect("E11 양성 기존 헤더 유지 Edit",     run(W, ed(str(od), "본문", "%s iMac/쌍아 → 막내\n본문 수정" % H_PAST), NOW)[1], None)
+    expect("E11 음성 기존 파일에 새 미래 헤더 Edit", run(W, ed(str(od), "본문", "본문\n\n%s 추가" % H_FUT), NOW)[1], "deny")
+expect("E11 양성 코드 블록 안 헤더",          run(W, wr("예시:\n```\n%s 미래 예시\n```\n" % H_FUT), NOW)[1], None)
+expect("E11 양성 '> 출처:' 줄 과거 시각",     run(W, wr("> 출처: 작가님 %s 지시\n" % H_PAST), NOW)[1], None)
+expect("E11 양성 어제 날짜 헤더",             run(W, wr("%s 과거 사건 기록\n" % H_YDAY), NOW)[1], None)
+expect("E11 양성 인라인 코드 안 헤더",        run(W, wr("형식 `%s` 참고\n" % H_FUT), NOW)[1], None)
+expect("E11 양성 대상 외 경로 Write",         run(W, wr(H_FUT, str(ROOT / "scripts/x.md")), NOW)[1], None)
+expect("E11 양성 실측 헤더 SendMessage",      run(M, msg(H_OK + " iMac/막내16 → iMac/쌍아 — 수신 확인"), NOW)[1], None)
+expect("E11 양성 +2분 경계 허용",             run(M, msg("**[2026-10-24 22:32 KST]** x"), NOW)[1], None)
+# 음성(차단)
+rc, dec, _, _ = run(W, wr(H_FUT + " iMac/막내 → 쌍아\n"), NOW)
+expect("E11 음성 +3분 미래 Write",            dec, "deny")
+expect("E11 음성 +3분 미래 Edit(신규 파일)",  run(W, ed(RPT, "", H_FUT + " x"), NOW)[1], "deny")
+expect("E11 음성 +3분 Bash 리터럴 어펜드",    run(G, bash("cat >> %s <<'EOF'\n%s iMac/막내\nEOF" % (SLOG, H_FUT)), NOW)[1], "deny")
+expect("E11 음성 +3분 Bash $L 경유 어펜드",   run(G, bash("L=%s; cat >> \"$L\" <<'EOF'\n%s x\nEOF" % (SLOG, H_FUT)), NOW)[1], "deny")
+expect("E11 음성 +3분 SendMessage",           run(M, msg(H_FUT + " iMac/막내 → 쌍아"), NOW)[1], "deny")
+expect("E11 음성 −15분 과거 Write",           run(W, wr(H_PAST + " 이월 오기\n"), NOW)[1], "deny")
+expect("E11 음성 굵게 없는 머리 헤더 +3분",   run(M, msg("[2026-10-24 22:33 KST] iMac/막내 → 쌍아"), NOW)[1], "deny")
+_j = json.loads(subprocess.run([sys.executable, str(HERE / M)], input=json.dumps(msg(H_FUT)), capture_output=True,
+                               text=True, env=dict(os.environ, CLAUDE_PROJECT_DIR=str(ROOT), **NOW)).stdout)
+expect("E11 차단 사유에 실측값 안내",
+       "실측 2026-10-24 22:30 KST — 이 값으로 다시 쓰세요" in _j["hookSpecificOutput"]["permissionDecisionReason"], True)
+expect("음성 대상 외 경로 Bash 리터럴(grep>/tmp)", run(G, bash("grep '%s' %s > /tmp/o" % (H_FUT, SLOG)), NOW)[1], None)
+expect("E11 킬스위치 MONK_HOOKS_OFF",         run(M, msg(H_FUT), dict(NOW, MONK_HOOKS_OFF="1"))[1], None)
+_rc, _dec, _, _err = run(M, msg(H_FUT), {"MONK_HOOK_NOW": "깨진값"})
+expect("E11 훅 오류 → 비차단 + [HOOK-ERR] 시각 대조 실패", (_dec, "[HOOK-ERR]" in _err and "시각 대조 실패" in _err), (None, True))
+_rc, _dec, _, _err = run(W, wr(H_FUT), {"MONK_HOOK_NOW": "깨진값"})
+expect("E11 Write 훅 오류 → 비차단 + [HOOK-ERR]", (_dec, "시각 대조 실패" in _err), (None, True))
+
 # ---------- 실패 가시화 ----------
 p = subprocess.run([sys.executable, str(HERE / G)], input="{not json", capture_output=True, text=True,
                    env=dict(os.environ, CLAUDE_PROJECT_DIR=str(ROOT)))

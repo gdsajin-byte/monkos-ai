@@ -5,14 +5,23 @@
 판정 원칙: 명령을 세그먼트(선두 / && ; || | & 뒤 / $( )·백틱 / 개행 — 따옴표 안 연산자는 데이터, 10-02 P1)로 쪼개고
 각 세그먼트 **선두**에서 패턴을 본다 (CI C13과 동일 — 문자열 '언급'이 아니라 실행 형태).
 히어독 본문·주석은 제거 후 판정 (세션 로그 어펜드의 문서 텍스트 오탐 방지).
+E11(10-24 막내16): monkos-ops/ops/{sessions,orders,…}/*.md로 쓰는(>>·>·tee) 명령에 **리터럴로 박힌** 시각 헤더를
+실측 KST와 대조 — 원문(히어독 본문 포함)에서 본다. `$(date …)` 치환은 숫자가 없어 대상이 아니다(정답 패턴).
 """
 from __future__ import annotations
 
+import os
 import re
 import sys
+from pathlib import Path
 
 sys.path.insert(0, __file__.rsplit("/", 1)[0])
-from _common import consume_approval, decide, hook_err, kill_switch, read_input  # noqa: E402
+from _common import consume_approval, decide, hook_err, kill_switch, project_dir, read_input  # noqa: E402
+try:
+    import time_header  # noqa: E402
+except Exception as _e:  # noqa: BLE001 — 시각 대조 모듈 고장이 E1~E10까지 무력화하지 않도록
+    time_header = None
+    hook_err("시각 대조 모듈 로드 실패: %s" % _e)
 
 EVENT = "PreToolUse"
 
@@ -233,6 +242,41 @@ def check_commit_heredoc(cmd: str) -> str | None:
     return None
 
 
+WRITE_TO = re.compile(r"(?:(?<![0-9&>])>>?|\btee\b(?:\s+-\w+)*)\s*['\"]?(\$\{?\w+\}?|[^\s'\"<>|;&]+)")
+ASSIGN = re.compile(r"(?:^|[\s;&(])(?:export\s+)?(\w+)=['\"]?([^\s'\";&|]+)")
+
+
+def write_targets(cmd: str) -> list[str]:
+    """명령이 쓰는(>>·>·tee) 대상 중 시각 대조 경로. `$L`은 같은 명령 안의 L=… 대입으로 푼다."""
+    env = {m.group(1): m.group(2) for m in ASSIGN.finditer(cmd)}
+    out = []
+    for m in WRITE_TO.finditer(cmd):
+        t = m.group(1)
+        if t.startswith("$"):
+            t = env.get(t.strip("${}"), "")
+        if t and time_header.is_target_path(t):
+            out.append(t)
+    return out
+
+
+def check_time_header(cmd: str, cwd: str) -> str | None:
+    """E11 — 대상 경로로 쓰는 명령의 리터럴 헤더 대조. 기존 파일에 이미 있는 줄은 제외."""
+    paths = write_targets(cmd)
+    if not paths:
+        return None
+    old = []
+    for p in paths:
+        for base in (Path(cwd or "."), project_dir()):
+            f = base / p
+            try:
+                if f.is_file():
+                    old.append(f.read_text(encoding="utf-8", errors="replace")[:2_000_000])
+                    break
+            except OSError:
+                pass
+    return time_header.check(cmd, "\n".join(old))
+
+
 def main() -> int:
     if kill_switch():
         return 0
@@ -286,7 +330,18 @@ def main() -> int:
         decide(EVENT, "deny", "[집행 훅] " + msg)
         return 0
 
-    # 4) 원격 스크립트 파이프 실행 → ask
+    # 4) E11 시각 헤더 리터럴 — 훅 오류는 실행을 막지 않는다
+    if time_header:
+        try:
+            why = check_time_header(cmd, data.get("cwd") or os.getcwd())
+        except Exception as e:  # noqa: BLE001
+            hook_err("시각 대조 실패: %s" % e)
+            why = None
+        if why:
+            decide(EVENT, "deny", why)
+            return 0
+
+    # 5) 원격 스크립트 파이프 실행 → ask
     if PIPE_TO_SHELL.search(cmd):
         decide(EVENT, "ask", "[집행 훅] 원격 스크립트를 셸에 파이프 실행 — 출처 확인 후 승인 필요")
         return 0
