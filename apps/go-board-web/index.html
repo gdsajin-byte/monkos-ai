@@ -545,7 +545,13 @@ function render() {
   }
   if (S.last) {
     const [x, y] = S.last, c = g[y][x];
-    el('circle', { cx: P(x), cy: P(y), r: STEP * .2, fill: 'none', stroke: c === 'B' ? '#fff' : '#c0392b', 'stroke-width': 1.8 });
+    const numsOn = window.RV && RV.on && document.getElementById('rvNums').value !== 'off';
+    if (numsOn) {  // 수 번호를 켠 감상: 가운데 원이 번호(특히 세 자리)를 가린다 → 돌 오른쪽 위 모서리 작은 삼각(10-25 K1)
+      const a = STEP * .12, b = STEP * .46, cx = P(x), cy = P(y);
+      el('polygon', { points: `${cx + a},${cy - b} ${cx + b},${cy - b} ${cx + b},${cy - a}`, fill: '#c0392b', 'pointer-events': 'none', class: 'last-mark' });
+    } else {
+      el('circle', { cx: P(x), cy: P(y), r: STEP * .2, fill: 'none', stroke: c === 'B' ? '#fff' : '#c0392b', 'stroke-width': 1.8 });
+    }
   }
   const hintLive = hint && hint.moveNo === S.moveNo && !S.result && !S.scoring;
   if (hintLive) hint.cands.forEach((c, i) => {  // 추천수 — 파란 번호
