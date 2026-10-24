@@ -954,8 +954,9 @@ class Room:
                 + (f"HA[{self.handicap}]AB{ab}" if self.handicap else "")
                 + (f"TM[{self.time['main'] * 60}]OT[{self.time['periods']}x{self.time['byo']} byo-yomi]" if self.time else "")
                 + (extra if self.source == "upload" else f"DT[{self.started:%Y-%m-%d}]") + f"PB[{pb}]PW[{pw}]"
-                f"AP[MONK go-board-web]" + (f"RE[{self.result}]" if self.result else "")
-                + (f"C[접속 장애패 — 작가님 접속이 끊긴 채 {fmt_dur(self.dc_limit)} 초과]" if self.result_reason == "disconnect" else ""))
+                f"AP[MONK go-board-web]" + (f"RE[{self.result}]" if self.result and self.result != VOID else "")
+                + (f"C[접속 장애패 — 작가님 접속이 끊긴 채 {fmt_dur(self.dc_limit)} 초과]" if self.result_reason == "disconnect" else "")
+                + (f"C[{self.message}]" if self.result_reason in ("rule-cleanup", "void") else ""))
         return head + "".join(nodes) + ")\n"
 
     def summary(self):
@@ -1421,11 +1422,16 @@ def fmt_dur(sec):
     return " ".join(parts) or "0초"
 
 
+VOID = "Void"  # 무효 종료(승패 없음) — 10-24 옛 규칙 빈 방 정리
+
+
 def result_ko(r):
     if not r or r == "?":
         return "결과 미상"
     if r == "0":
         return "빅"
+    if r == VOID:
+        return "무효"
     m = re.match(r"([BW])\+(\S+)", r)
     if not m:
         return r
@@ -2051,6 +2057,55 @@ class Handler(BaseHTTPRequestHandler):
         self._send(200, room.cache)
 
 
+# 1회 마이그레이션 — 기동 때 적용, rooms/_migrations.json 에 기록(재기동해도 다시 하지 않음). 방 파일은 지우지 않는다
+MIGRATIONS = [{
+    "id": "20261024-old-rule-rooms",
+    # 출처: 작가님 10-24 22:34 "B" — 옛 24시간 규칙 방을 끝난 판으로(ORDER_20261024 옛규칙방정리)
+    "forfeit": ["20261024-105112-9bab"],
+    "void": ["20261024-101721-0a1d", "20261024-101731-0967", "20261024-105102-a53c", "20261024-154735-b4f1"],
+}]
+
+
+def run_migrations():
+    f = ROOMS_DIR / "_migrations.json"
+    try:
+        done = json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
+    except (OSError, ValueError) as e:
+        print(f"❌ go-board: 마이그레이션 기록 읽기 실패 — {e} (이번 기동은 건너뜀)", file=sys.stderr, flush=True)
+        return []
+    out = []
+    for mg in MIGRATIONS:
+        if mg["id"] in done:
+            continue
+        applied = []
+        for kind in ("forfeit", "void"):
+            for rid in mg[kind]:
+                r = ROOMS.get(rid)
+                if not r or r.result or r.imported:  # 없거나 이미 끝난 방은 건드리지 않음
+                    applied.append({"room": rid, "kind": kind, "skipped": "없음" if not r else "이미 끝남"})
+                    continue
+                with r.lock:
+                    r.scoring, r.offline, r.dc_mark = None, False, None
+                    if kind == "forfeit":
+                        r.result, r.result_reason = f"{r.eng_color}+F", "rule-cleanup"
+                        r.message = "접속 장애패 — 규칙 단일화 정리 10-24(옛 24시간 규칙 방)"
+                    else:
+                        r.result, r.result_reason = VOID, "void"
+                        r.message = "무효 종료 — 빈 방 정리(원인 미상 — 착수 미수신)"
+                    r.save_sgf()
+                    r.cache = json.dumps(r.state(), ensure_ascii=False)
+                    ROOMS.save(r)
+                EVENTS.add(rid, action="migration", migration=mg["id"], result=r.result, reason=r.result_reason, moveNo=len(r.moves))
+                applied.append({"room": rid, "kind": kind, "result": r.result, "moves": len(r.moves)})
+        done[mg["id"]] = {"at": datetime.now().isoformat(timespec="seconds"), "rooms": applied}
+        tmp = ROOMS_DIR / "._migrations.json.tmp"
+        ROOMS_DIR.mkdir(parents=True, exist_ok=True)
+        tmp.write_text(json.dumps(done, ensure_ascii=False, indent=1), encoding="utf-8")
+        os.replace(tmp, f)
+        out.append(f"{mg['id']}: " + ", ".join(f"{a['room'][-4:]}={a.get('result') or a.get('skipped')}" for a in applied))
+    return out
+
+
 def presence_loop():
     """2초마다 진행 중 방의 접속 판정·장애 시계·장애패 — 화면이 아무도 없어도 판정이 난다. 엔진 생각 중인 방은 건너뛴다."""
     while True:
@@ -2083,6 +2138,7 @@ def main():
     global EVENTS
     EVENTS = EventLog(ROOMS_DIR)
     imported = ROOMS.load()
+    migrated = run_migrations()
     threading.Thread(target=presence_loop, daemon=True).start()
     global ANALYSES
     ANALYSES = Analyses()
@@ -2094,6 +2150,8 @@ def main():
           f"급수 {'OK' if ENGINES.human_ok else '비활성: ' + str(ENGINES.human_why())}) · "
           f"방 {len(ROOMS.rooms)}개 복원(진행 중 {live}, 이전 기보 가져옴 {imported}) · 그래프 이어 계산 {resumed} · 저장소 {ROOMS_DIR}",
           flush=True)
+    for line in migrated:  # 기동 줄 뒤에(run.sh 는 첫 줄만 보인다)
+        print(f"✅ go-board 마이그레이션 {line}", flush=True)
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
