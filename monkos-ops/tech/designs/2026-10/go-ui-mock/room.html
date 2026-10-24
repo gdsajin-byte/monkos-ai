@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>대국실 시안</title>
+<!-- 정적 시안(서비스 코드 아님) — DESIGN_20261025_RND_바둑UI_전체그림 ③의 대국실 항목을 한 장에 모은 그림. 외부 CDN 없음.
+     보여 주는 것: 좌표 없는 큰 판(여백 0.62칸) · 판 위 형세 표시(집 네모) · 계가 결과를 판 밖 패널에 · 무르기 남은 횟수 · 나가기 경고 · 분석은 접힌 채 시작 -->
+<style>
+  :root { --bg:#eef0f3; --ink:#1d2127; --muted:#6b7380; --line:#2a2117; --wood:#e3b571; --card:#fff; --accent:#2a6fdb; --warn:#c0392b; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; }
+  header { display:flex; align-items:center; gap:12px; padding:10px 16px; background:#2b313b; color:#fff; }
+  header b { font-size:16px; } header .grow { flex:1; } header button { background:#fff; border:0; border-radius:8px; padding:6px 12px; font:inherit; }
+  .wrap { display:flex; gap:16px; padding:12px 16px; align-items:flex-start; }
+  .board { flex:0 0 auto; width:min(calc(100vh - 80px), calc(100vw - 460px)); min-width:320px; aspect-ratio:1; }
+  .board svg { width:100%; height:100%; display:block; border-radius:4px; box-shadow:0 1px 3px rgba(0,0,0,.25); }
+  .side { flex:1 1 380px; max-width:440px; display:flex; flex-direction:column; gap:10px; }
+  .box { background:var(--card); border-radius:10px; padding:12px; box-shadow:0 1px 2px rgba(0,0,0,.06); }
+  .players { display:grid; grid-template-columns:1fr; gap:8px; }
+  .pl { display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px; border:2px solid transparent; }
+  .pl.turn { border-color:var(--accent); }
+  .st { width:30px; height:30px; border-radius:50%; } .st.b { background:radial-gradient(circle at 35% 30%,#666,#000); } .st.w { background:radial-gradient(circle at 35% 30%,#fff,#cfcfcf); border:1px solid #aaa; }
+  .pl .t { margin-left:auto; font-variant-numeric:tabular-nums; font-weight:700; }
+  .acts { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; }
+  .acts button, .tools button { border:1px solid #d5d9e0; background:#fff; border-radius:8px; padding:9px 4px; font:inherit; }
+  .acts .hl { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .tools { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+  .tools .on { border-color:var(--accent); color:var(--accent); font-weight:700; }
+  .score h4 { margin:0 0 6px; } .score .big { font-size:20px; font-weight:800; }
+  .score .row { display:flex; gap:8px; margin-top:10px; } .score .row button { flex:1; padding:10px; border-radius:8px; border:0; font:inherit; font-weight:700; }
+  .yes { background:var(--accent); color:#fff; } .no { background:#e7eaef; }
+  .count { float:right; width:34px; height:34px; border-radius:50%; border:3px solid var(--accent); display:grid; place-items:center; font-weight:800; color:var(--accent); }
+  .msg { color:var(--muted); font-size:13px; } .msg b { color:var(--accent); }
+  .warn { color:var(--warn); }
+  details summary { cursor:pointer; color:var(--muted); }
+  .note { font-size:12px; color:var(--muted); }
+</style>
+</head>
+<body>
+<header><b>대국중</b> · 호선 · 흑 6집반 공제 · 187수 <span class="grow"></span><span>작가님(흑) 차례</span><button>대기실</button></header>
+<div class="wrap">
+  <div class="board"><svg id="b" viewBox="0 0 400 400" aria-label="바둑판 시안"></svg></div>
+  <div class="side">
+    <div class="box players">
+      <div class="pl turn"><span class="st b"></span><div><b>작가님</b><div class="note">따낸 돌 4</div></div><span class="t">무제한</span></div>
+      <div class="pl"><span class="st w"></span><div><b>KataGo 1단</b><div class="note">따낸 돌 2</div></div><span class="t">무제한</span></div>
+    </div>
+    <div class="box acts">
+      <button>무르기</button><button>한수쉼</button><button class="hl">계가신청</button><button>형세</button><button>기권</button>
+    </div>
+    <div class="box score" aria-label="계가 결과 시안">
+      <span class="count">17</span>
+      <h4>집계산 결과</h4>
+      <div>흑 집 57 + 사석 34 · 백 집 65 + 사석 24 + 덤 6.5</div>
+      <div class="big">흑 2집 승</div>
+      <div class="note">판 위 네모 = 집, ✕ = 사석. 사석이 틀렸으면 돌을 눌러 바꾸세요.</div>
+      <div class="row"><button class="yes">동의 · 종국</button><button class="no">계속 두기</button></div>
+    </div>
+    <div class="box msg">남은 무르기 <b>무제한</b> · 마지막: 흑이 <b>2수</b> 물렀습니다(내 수 + KataGo 수)</div>
+    <div class="box tools"><button class="on">형세 보기</button><button>추천수</button><button>대국검토</button><button>좌표</button></div>
+    <details class="box"><summary>실시간 분석 (접힘 — 대국 중엔 열어야 보임)</summary><p class="note">승률·추천수·흐름. 시스템 오류 문구는 사용자 화면에 띄우지 않고 로그로.</p></details>
+    <div class="box note warn">대기실로 나가면 5분 뒤 접속 장애패가 됩니다 — 나가기 전 한 번 묻기.</div>
+  </div>
+</div>
+<script>
+// 판 그리기: 여백 0.62칸(타이젬 실측) · 좌표 없음 · 판 위 형세(집 네모)·사석 ✕ 표시 예시
+const N = 19, M = 400 / (18 + 2 * 0.62) * 0.62, S = (400 - 2 * M) / 18, svg = document.getElementById('b');
+const P = i => M + i * S, el = (t, a) => { const e = document.createElementNS('http://www.w3.org/2000/svg', t); for (const k in a) e.setAttribute(k, a[k]); svg.appendChild(e); return e; };
+el('rect', { x: 0, y: 0, width: 400, height: 400, fill: getComputedStyle(document.documentElement).getPropertyValue('--wood') });
+for (let i = 0; i < N; i++) { el('line', { x1: P(0), y1: P(i), x2: P(18), y2: P(i), stroke: '#2a2117', 'stroke-width': .6 }); el('line', { x1: P(i), y1: P(0), x2: P(i), y2: P(18), stroke: '#2a2117', 'stroke-width': .6 }); }
+for (const a of [3, 9, 15]) for (const b of [3, 9, 15]) el('circle', { cx: P(a), cy: P(b), r: 1.8, fill: '#2a2117' });
+let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+  const side = x + (y % 3) * .3 < 9 ? 'b' : 'w', r = rnd();
+  if (r < .42) el('circle', { cx: P(x), cy: P(y), r: S * .47, fill: side === 'b' ? '#151515' : '#f7f7f2', stroke: side === 'b' ? '#000' : '#999', 'stroke-width': .5 });
+  else if (r < .8) el('rect', { x: P(x) - S * .17, y: P(y) - S * .17, width: S * .34, height: S * .34, fill: side === 'b' ? '#151515' : '#fafaf5', stroke: '#555', 'stroke-width': .4 });
+  else if (r < .83) { const d = S * .2; el('circle', { cx: P(x), cy: P(y), r: S * .47, fill: side === 'b' ? '#f7f7f2' : '#151515', opacity: .35 });
+    el('line', { x1: P(x) - d, y1: P(y) - d, x2: P(x) + d, y2: P(y) + d, stroke: '#c0392b', 'stroke-width': 1.4 }); el('line', { x1: P(x) - d, y1: P(y) + d, x2: P(x) + d, y2: P(y) - d, stroke: '#c0392b', 'stroke-width': 1.4 }); }
+}
+</script>
+</body>
+</html>
