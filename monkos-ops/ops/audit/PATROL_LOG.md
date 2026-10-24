@@ -612,3 +612,15 @@
 > TELEGRAM_EVENT_BOT_TOKEN             2026-10-22  등재
 > monkos-studio-dev      monk-image-engine@monkos.iam.gserviceaccount.com
 ```
+
+## [2026-10-24 09:30 KST] 순찰 감지
+```diff
+< ## secret map (2026-10-23 09:30)
+> ## secret map (2026-10-24 09:30)
+> TYGEM_ID                             2026-10-23  ⚠️ 인벤 미등재
+> TYGEM_PASSWORD                       2026-10-23  ⚠️ 인벤 미등재
+<   전량 등재 ✓
+>   ⚠️ 인벤토리 미등재: TYGEM_ID
+>   ⚠️ 인벤토리 미등재: TYGEM_PASSWORD
+```
+- ⚠️ 경보 표식 4건 (스냅샷 /Users/jeong-kyushin/.monkos/patrol/snap_20261024.txt 참조)
