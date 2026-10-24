@@ -73,6 +73,7 @@ status: active
 | 10/24 | iMac/쌍아-막내14 | **COMPLETION** 새 대국 첫 수 '상대가 생각 중' 거부 — 미재현(6조건×20 busy 0)이나 경로 차단: 엔진 계산 중(thinking)일 때만 409, 비엔진 보유자는 5초 대기 후 처리(강제 보유 20/20 처리), busy·waited·slow-lock에 보유자 기록. main 55009ebe. 반영 = 쌍아 실행 대기 | [COMPLETION_20261024_iMac쌍아-막내14_RND_바둑_첫수busy](../../reports/2026-10/COMPLETION_20261024_iMac쌍아-막내14_RND_바둑_첫수busy.md) | ⏳ 반영 대기 |
 | 10/24 | iMac/쌍아-막내15 | **DESIGN** 타이젬 실사용 체험 기반 바둑 UI 전체 그림 — 화면 지도 · 기능별 타이젬 vs 우리 짝 실측 · 개선점(지시서 1건 크기) 우선순위 · 작가님 결정 항목 | [DESIGN_20261025_RND_바둑UI_전체그림](../../../tech/designs/2026-10/DESIGN_20261025_RND_바둑UI_전체그림.md) | ⏳ |
 | 10/24 | iMac/쌍아-막내15 | **COMPLETION** COMPLETION_20261025_iMac쌍아-막내15_RND_바둑_타이젬체험 | [COMPLETION_20261025_iMac쌍아-막내15_RND_바둑_타이젬체험](../../reports/2026-10/COMPLETION_20261025_iMac쌍아-막내15_RND_바둑_타이젬체험.md) | ✅ |
+| 10/25 | iMac/쌍아 | **ORDER** 타이젬 기보 탐색 기능 정밀 공부 — 기보 찾기·감상·형세분석·추천수·AI 승률·대국 검토·변화도 전부 → 우리 기보 감상 차이·개선점 | [ORDER_20261025_iMac쌍아_막내15_RND_바둑_타이젬기보탐색_공부](../../orders/2026-10/ORDER_20261025_iMac쌍아_막내15_RND_바둑_타이젬기보탐색_공부.md) | ⏳ |
 
 ---
 
