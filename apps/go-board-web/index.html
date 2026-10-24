@@ -211,6 +211,12 @@
                 border-radius: 10px; background: rgba(20, 24, 30, .86); color: #fff; font-size: 16px; font-weight: 700; text-align: center;
                 pointer-events: none; opacity: 0; transition: opacity .2s; z-index: 5; }
   #boardToast.on { opacity: 1; }
+  /* AI 판정 결과 띠(10-25 B5): 다른 안내에 덮이지 않게 판 위에, 닫기(✕) 전까지 */
+  #judgeBand { position: absolute; left: 50%; top: 6px; transform: translateX(-50%); max-width: 92%; display: flex; gap: 8px; align-items: center;
+               padding: 6px 8px 6px 14px; border-radius: 10px; background: rgba(42, 111, 219, .94); color: #fff; font-size: 15px; font-weight: 700; z-index: 6;
+               pointer-events: none; }  /* 띠 아래 판 누름은 통과 — 닫기 버튼만 받는다 */
+  #judgeBand[hidden] { display: none; }
+  #judgeBand button { pointer-events: auto; border: 0; background: rgba(255,255,255,.2); color: #fff; padding: 2px 8px; font-size: 14px; border-radius: 6px; }
   /* 기보 감상(10-24): 감상 중엔 대국 조작을 걷고 수순 막대·그래프 칸만 */
   #reviewBox { display: none; flex-direction: column; gap: 6px; padding: 8px 10px; }
   body.review-mode #reviewBox { display: flex; }
@@ -262,7 +268,7 @@
   <div class="lobby-foot"><button id="bImport">기보 불러오기</button><button id="bNewL">새 대국</button><input type="file" id="importFile" accept=".sgf,.gib" multiple hidden></div>
 </div>
 <div class="wrap">
-  <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg><div id="boardToast" role="status"></div></div>
+  <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg><div id="boardToast" role="status"></div><div id="judgeBand" role="status" hidden><span></span><button aria-label="판정 닫기">✕</button></div></div>
   <div id="playBar"><button id="bPick0" disabled>취소</button><button id="bPlace" disabled>착수</button><span class="pick" id="pickTxt">판을 눌러 자리를 고르세요</span></div>
   <div class="split" id="split" title="끌어서 판 크기 조정"></div>
   <div class="side">
@@ -1006,8 +1012,15 @@ document.getElementById('bScoreOk').onclick = () => call('/api/score/confirm');
 document.getElementById('bScoreCancel').onclick = () => call('/api/score/cancel');
 document.getElementById('bJudge').onclick = async () => {
   await call('/api/judge');
-  if (S.judge) { judge = S.judge; notice(`AI 판정(${judge.moveNo}수 시점): ${judge.resultKo}`); render(); }
+  if (S.judge) {  // 메시지 줄은 다음 render()가 덮는다 — 판 위 띠로(10-25 B5)
+    judge = S.judge;
+    const band = document.getElementById('judgeBand');
+    band.querySelector('span').textContent = `AI 판정(${judge.moveNo}수 시점): ${judge.resultKo}`;
+    band.hidden = false;
+    render();
+  }
 };
+document.getElementById('judgeBand').querySelector('button').onclick = () => { document.getElementById('judgeBand').hidden = true; };
 document.getElementById('bHint').onclick = async () => {
   await call('/api/hint');
   if (S.hint) { hint = S.hint; render(); }
