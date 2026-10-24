@@ -197,6 +197,7 @@ secret env               # SM → .env 일괄 동기화
 | 10/22 | iMac/쌍아 | **ORDER** Gemini 3.5 타임아웃·건너뛰기 가드(원장 187 prod 선행) | [ORDER_20261022_iMac쌍아_막내_INFRA_Gemini35_타임아웃가드](../../orders/2026-10/ORDER_20261022_iMac쌍아_막내_INFRA_Gemini35_타임아웃가드.md) | ⏳ |
 | 10/22 | iMac/쌍아 | **COMPLETION** 매팅 1순위 Vision 전환(막내10) — 흰 테두리 보정·launchd 상주·dev E/F, prod 00568-w2l 반영(쌍아 23:24) | [COMPLETION_20261022_iMac쌍아-막내10_INFRA_매팅_4060자리_Vision전환](../../reports/2026-10/COMPLETION_20261022_iMac쌍아-막내10_INFRA_매팅_4060자리_Vision전환.md) | ✅ |
 | 10/24 | iMac/민아 | 디바이스 맵 정본 포인터 신설(ch1 4조·rules·references→devices/README) + 테일넷 호스트명 실측 열·4060 배제·M4 실효·M1/4060 호스트명 드리프트 교정. 근거: 10-23 macmini-macmini(M1)→M2 오판. [예외] 규정 계층, 작가님 직접 지시 | [DEVICE_CHANGELOG](../../devices/DEVICE_CHANGELOG.md) | ✅ |
+| 10/24 | iMac/쌍아 | **ORDER** 집행 훅 — 새로 쓰는 `**[YYYY-MM-DD HH:MM KST]**` 헤더를 쓰기 직전에 실측 시각과 대조(±2분 초과 차단 + 실측값 안내) | [ORDER_20261024_iMac쌍아_막내16_MONK_OS_시각헤더_쓰기직전대조훅](../../orders/2026-10/ORDER_20261024_iMac쌍아_막내16_MONK_OS_시각헤더_쓰기직전대조훅.md) | ⏳ |
 
 ---
 | 08/13 | iMac/민아 | **2주 운영 감사 — 4060 매팅 불통 확정 + 폴백 체계 실전 검증** — matte.monkos.ai 전 경로 530(CF 터널 불통) + Tailscale 노드 소멸 + SSH 타임아웃 = 기계 자체 오프라인. 마지막 4060 정상 서빙 08-12 16:54 KST → 08-13 01:14 KST부터 전량 프리플라이트 불통. 14일 매팅 74건 중 RunPod 폴백 약 27건(36%), 최근 3일 사실상 전량 RunPod(종량 과금 중). 야간·새벽 간헐 이탈 포함 15일 중 8일 이탈 관측. **유저 실패 0건** — 07-25 조치(세마포어·줄서기·25s) 실전 합격: 최악 08-10 20:49 KST 4060 hang+RunPod 순간 동시실패에도 200/87.7s 납품, 504 재발 0. 물리 점검(전원/네트워크) 필요 | 세션 보고 (sessions/2026-08/2026-08-13_iMac_민아.md) | 🔴 4060 물리 확인 대기 |
