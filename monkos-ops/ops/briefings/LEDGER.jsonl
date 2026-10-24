@@ -113,3 +113,7 @@
 {"ts": "2026-10-24 06:31 KST", "id": 187, "event": "note", "text": "06:31 origin/main b7ba63e0 기준 monkos_AI gemini-2.5-flash 22행(_legacy 제외, 전일 20)", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-10-24 06:31 KST", "id": 189, "event": "note", "text": "06:30 claude agents: 쌍아-막내9 background blocked 유지, 기동 후 32.7h", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-10-24 06:31 KST", "id": 183, "event": "note", "text": "06:30 Pages monk-kr 시크릿 6 유지(CHAT_API_KEY·GEMINI_API_KEY·RESEND_API_KEY·TOSS_CLIENT_KEY·TOSS_SECRET_KEY·TX_API_KEY) — 변동 없음", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-25 06:31 KST", "id": 181, "event": "note", "text": "10-25 06:30 portal 00569-9mk 평문 의심 6 동일, GOOGLE_CLIENT_SECRET SM 없음(대조군 TX_API_KEY 있음)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-25 06:31 KST", "id": 187, "event": "note", "text": "10-25 06:31 origin/main a39ccf23 monkos_AI gemini-2.5-flash 22행(_legacy 제외, 전일 동일)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-25 06:31 KST", "id": 189, "event": "note", "text": "10-25 06:31 쌍아-막내9 blocked 지속 56.7h (claude agents --json)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-25 06:31 KST", "id": 183, "event": "note", "text": "10-25 06:30 Pages 시크릿 6 변동 없음", "by": "iMac/민아-헤드리스"}
