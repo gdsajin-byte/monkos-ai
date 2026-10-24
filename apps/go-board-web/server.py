@@ -941,12 +941,14 @@ class Room:
             raise RuntimeError("무를 수가 없습니다.")
         self._charge(reset=False)
         self.scoring = None
+        n0 = len(self.moves)
         while self.moves:
             c, _ = self.moves.pop()
             if c == self.user:
                 break
         self.scores = [s for s in self.scores if s[0] <= len(self.moves)]
-        self.message = "한 수 물렀습니다."
+        k = n0 - len(self.moves)  # 실제로 되돌린 수(10-25 B6 — "한 수"라 했지만 보통 내 수+KataGo 수 2수)
+        self.message = "2수(내 수·KataGo 수)를 물렀습니다." if k == 2 else "내 수 1수를 물렀습니다." if k == 1 else f"{k}수를 물렀습니다."
         if self.to_move != self.user:  # 엔진 수만 남은 경우
             self.engine_move()
         self.save_sgf()
