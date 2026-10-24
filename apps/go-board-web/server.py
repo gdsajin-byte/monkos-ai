@@ -11,6 +11,9 @@
 방 상태는 수마다 ~/.monkos/go-board/rooms/{id}.json 에 원자적으로 저장되고 서버 기동 시 전부 복원된다.
 엔진은 EngineHub(무상태 경계) 뒤에 있다 — 방이 국면을 넘기면 수·분석만 돌려준다.
 """
+import base64
+import contextlib
+import hashlib
 import json
 import os
 import random
@@ -75,7 +78,11 @@ FIXED_SETUP = {3: ["Q16", "D4", "Q4"]}
 COLS = "ABCDEFGHJKLMNOPQRST"  # GTP 좌표 — I 없음
 # 공통: 한국 규칙·흑 기준 수치 보고. 최강은 1500 visits + 17초 상한(초읽기 20초 안 — 10-23 타이젬 P9단 대등선 실측, 작가님 지시).
 COMMON_OVR = f"rules=korean,reportAnalysisWinratesAs=BLACK,logDir={KATA_DIR / 'gtp_logs'}"
-STRONG_OVR = COMMON_OVR + ",maxVisits=1500,maxTime=17"
+STRONG_VISITS, STRONG_TIME = 1500, 17
+STRONG_OVR = COMMON_OVR + f",maxVisits={STRONG_VISITS},maxTime={STRONG_TIME}"
+# 승률 그래프(기보 감상) — 국면당 짧은 분석. 10-24 실측: 200방문 0.2~1.1초/국면
+GRAPH_VISITS, GRAPH_MAX_TIME = 200, 0.8  # 한 걸음 상한 0.8초 = 대국 요청이 기다리는 최대치(양보 +1초 이내)
+GRAPH_YIELD_GAP = 0.5  # 대국 요청 뒤 그래프가 비켜 있는 초 — 착수 1번의 검사·응수 사이에 끼지 않게
 HUMAN_OVR = COMMON_OVR + ",humanSLProfile=rank_5k,delayMoveScale=0,delayMoveMax=0"
 
 RANKS = [f"{k}k" for k in range(20, 0, -1)] + [f"{d}d" for d in range(1, 10)]
@@ -95,6 +102,8 @@ class Engine:
         self.job = threading.Lock()  # 국면 맞추기 + 계산 1건 단위(EngineHub 줄 세우기)
         self.key = None  # 엔진이 지금 들고 있는 국면 — 같으면 다시 맞추지 않는다
         self.profile = None  # 급수 엔진에 마지막으로 건 humanSL 프로필
+        self.waiting = 0  # 줄에 선 대국 요청 수(EngineHub._job)
+        self.last_game = 0.0  # 마지막 대국 요청이 엔진을 놓은 시각
         self.error = None
 
     def start(self):
@@ -252,6 +261,49 @@ class EngineHub:
 
     def __init__(self, strong, human, human_reason):
         self.strong, self.human, self.human_reason = strong, human, human_reason
+        self.wait_lock = threading.Lock()
+        self.waits = []  # 대국 요청이 엔진 줄에서 기다린 초(최근 50) — 그래프 계산 양보 실측용
+
+    @contextlib.contextmanager
+    def _job(self, e, record=True):
+        """대국 요청(수·검사·판정) — 줄에 섰다고 표시해 두면 그래프 계산(quick)이 다음 수를 미룬다."""
+        with self.wait_lock:
+            e.waiting += 1
+        t0 = time.time()
+        e.job.acquire()
+        with self.wait_lock:
+            e.waiting -= 1
+            if record:  # 대국 요청이 기다린 초 — /health engineWaits
+                self.waits = (self.waits + [round(time.time() - t0, 3)])[-50:]
+        try:
+            yield
+        finally:
+            e.last_game = time.time()
+            e.job.release()
+
+    def quick(self, pos, color, rules="korean", visits=None, urgent=False):
+        """짧은 분석 1국면 — (흑 승률, 흑 기준 집 차이). 그래프 계산(urgent=False)은 줄에 선 요청이 있으면 먼저 보낸다.
+        urgent=True(시험수 평가 — 사람이 기다림)는 대국 요청처럼 줄에 서서 그래프 계산보다 먼저 받는다."""
+        e = self._pick("strong")
+        if not urgent:  # 줄에 선 요청이 있거나 대국 요청 직후 0.5초(검사→응수 사이)면 비켜 있는다
+            while e.waiting or time.time() - e.last_game < GRAPH_YIELD_GAP:
+                time.sleep(0.05)
+        with (self._job(e, record=False) if urgent else e.job):
+            try:
+                if rules != "korean":
+                    e.cmd(f"kata-set-rules {rules}")
+                    e.key = None
+                e.cmd(f"kata-set-param maxVisits {visits or GRAPH_VISITS}")
+                e.cmd(f"kata-set-param maxTime {GRAPH_MAX_TIME}")
+                self._sync(e, pos)
+                c = e.search(color, 1)
+            finally:  # 대국 설정으로 되돌린다(최강 1500·17초, 한국 규칙)
+                e.cmd(f"kata-set-param maxVisits {STRONG_VISITS}")
+                e.cmd(f"kata-set-param maxTime {STRONG_TIME}")
+                if rules != "korean":
+                    e.cmd("kata-set-rules korean")
+                    e.key = None
+        return (c[0]["winrate"], c[0]["score"]) if c else (None, None)
 
     def _pick(self, level):
         e = self.strong if level == "strong" else self.human
@@ -279,19 +331,19 @@ class EngineHub:
 
     def setup(self, handicap):
         e = self._pick("strong")
-        with e.job:
+        with self._job(e):
             e.key = None
             return e.handicap_setup(handicap)
 
     def check_level(self, level):
         e = self._pick(level)
-        with e.job:
+        with self._job(e):
             self._profile(e, level)
 
     def legal(self, pos, level, color, mv):
         """둘 수 있는 자리인지(자충·패) — 엔진에 놓아 본다. 놓이면 엔진 국면도 그만큼 앞선다."""
         e = self._pick(level)
-        with e.job:
+        with self._job(e):
             key = self._sync(e, pos)
             try:
                 e.cmd(f"play {color} {mv}")
@@ -302,7 +354,7 @@ class EngineHub:
     def move(self, pos, level, color):
         """engine.move — (수, 흑 기준 점수, 흑 승률)."""
         e = self._pick(level)
-        with e.job:
+        with self._job(e):
             key = self._sync(e, pos)
             self._profile(e, level)
             try:
@@ -316,20 +368,20 @@ class EngineHub:
     def analyze(self, pos, color, top=3):
         """engine.analyze — 후보 상위 N(늘 최강 엔진)."""
         e = self._pick("strong")
-        with e.job:
+        with self._job(e):
             self._sync(e, pos)
             return e.search(color, top)
 
     def final_score(self, pos, level):
         e = self._pick(level)
-        with e.job:
+        with self._job(e):
             self._sync(e, pos)
             return e.cmd("final_score")
 
     def scoring(self, pos, level):
         """계가 재료 — 사석·KataGo 판정·소유권."""
         e = self._pick(level)
-        with e.job:
+        with self._job(e):
             self._sync(e, pos)
             dead = {to_xy(mv) for mv in e.cmd("final_status_list dead").split()}
             return {"dead": dead, "kata": e.cmd("final_score"), "own": e.ownership()}
@@ -456,6 +508,13 @@ class Room:
         self.dc_mark = None  # 장애 시계가 도는 중이면 그 시작 시각
         self.dc_saved = 0.0
         self.result_reason = None  # 'disconnect' = 접속 장애패
+        # 불러온 기보(10-24 기보 감상) — source 'upload' 이면 대국자·덤·규칙을 기보 값 그대로
+        self.source = None
+        self.orig_name = None
+        self.players = None  # {"B": 이름, "W": 이름, "BR": 급단, "WR": 급단}
+        self.rules = "korean"
+        self.record_date = None
+        self.komi_value = None
 
     # ---- 만들기·저장
 
@@ -502,7 +561,9 @@ class Room:
                 "updated": self.updated, "sgf": str(self.sgf_path), "clock": self.clock,
                 "reviews": [REVIEWS.dump(j) for j in self.reviews if j in REVIEWS.jobs], "imported": self.imported,
                 "dcLimit": self.dc_limit, "offline": self.offline, "dcUsed": round(self.dc_spent(), 2),
-                "dcCounting": self.dc_mark is not None, "resultReason": self.result_reason}
+                "dcCounting": self.dc_mark is not None, "resultReason": self.result_reason,
+                "source": self.source, "origName": self.orig_name, "players": self.players, "rules": self.rules,
+                "recordDate": self.record_date, "komiValue": self.komi_value}
 
     @classmethod
     def from_dict(cls, d):
@@ -525,6 +586,8 @@ class Room:
         r.imported = d.get("imported", False)
         r.dc_limit = d.get("dcLimit", DC_LIMIT_DEFAULT["ai"])
         r.result_reason = d.get("resultReason")
+        r.source, r.orig_name, r.players = d.get("source"), d.get("origName"), d.get("players")
+        r.rules, r.record_date, r.komi_value = d.get("rules") or "korean", d.get("recordDate"), d.get("komiValue")
         # 서버가 꺼져 있던 시간은 장애 시계에도 깎지 않는다 — 쓴 만큼만 들고 지금부터 다시 센다
         r.offline, r.dc_used = d.get("offline", False), d.get("dcUsed", 0.0)
         r.dc_mark = time.time() if d.get("dcCounting") else None
@@ -537,6 +600,8 @@ class Room:
 
     @property
     def komi(self):
+        if self.komi_value is not None:  # 불러온 기보는 기보의 덤
+            return self.komi_value
         return HANDICAP_KOMI if self.handicap else KOMI
 
     @property
@@ -560,6 +625,10 @@ class Room:
         return {"moves": self.moves, "setup": self.setup, "komi": self.komi}
 
     def level_label(self):
+        if self.source == "upload":
+            p = self.players or {}
+            rk = lambda c: f"({p.get(c + 'R')})" if p.get(c + "R") else ""
+            return f"흑 {p.get('B', '흑')}{rk('B')} vs 백 {p.get('W', '백')}{rk('W')}"
         return "KataGo 최강" if self.level == "strong" else f"KataGo {RANK_KO[self.level]}"  # 10-24 표기 단순화(옛 '사람형 N단')
 
     # ---- 시계: 차례가 바뀔 때마다 둔 쪽을 깎고, 초읽기면 그 회를 처음부터
@@ -869,6 +938,12 @@ class Room:
             return self.sgf_path.read_text(encoding="utf-8")
         me, eng = "작가님", f"KataGo({self.level_label()})"
         pb, pw = (me, eng) if self.user == "B" else (eng, me)
+        extra = ""
+        if self.source == "upload":  # 불러온 기보 → 보기용 SGF(대국자·급단·날짜·규칙 그대로)
+            p = self.players or {}
+            pb, pw = p.get("B", "흑"), p.get("W", "백")
+            extra = "".join(f"{k}[{v}]" for k, v in (("BR", p.get("BR")), ("WR", p.get("WR"))) if v)
+            extra += f"RU[{self.rules}]" + (f"DT[{self.record_date}]" if self.record_date else "")
         nodes = []
         for c, mv in self.moves:
             if mv.lower() == "pass":
@@ -880,7 +955,7 @@ class Room:
         head = (f"(;GM[1]FF[4]CA[UTF-8]SZ[{SIZE}]KM[{self.komi}]RU[Korean]"
                 + (f"HA[{self.handicap}]AB{ab}" if self.handicap else "")
                 + (f"TM[{self.time['main'] * 60}]OT[{self.time['periods']}x{self.time['byo']} byo-yomi]" if self.time else "")
-                + f"DT[{self.started:%Y-%m-%d}]PB[{pb}]PW[{pw}]"
+                + (extra if self.source == "upload" else f"DT[{self.started:%Y-%m-%d}]") + f"PB[{pb}]PW[{pw}]"
                 f"AP[MONK go-board-web]" + (f"RE[{self.result}]" if self.result else "")
                 + (f"C[접속 장애패 — 작가님 접속이 끊긴 채 {fmt_dur(self.dc_limit)} 초과]" if self.result_reason == "disconnect" else ""))
         return head + "".join(nodes) + ")\n"
@@ -889,7 +964,7 @@ class Room:
         """대기실 목록 한 줄."""
         last = REVIEWS.jobs.get(self.reviews[-1]) if self.reviews else None
         win = None
-        if self.result and self.result[0] in "BW":
+        if self.result and self.result[0] in "BW" and self.source != "upload":
             win = self.result[0] == self.user
         return {"id": self.id, "kind": self.kind, "status": self.status, "statusKo": STATUS_KO[self.status],
                 "moveNo": len(self.moves), "toMove": self.to_move, "user": self.user, "level": self.level,
@@ -899,7 +974,8 @@ class Room:
                 "imported": self.imported, "sgfUrl": f"/api/rooms/{self.id}/sgf" if self.moves else None,
                 "review": REVIEWS.status(self),
                 "lastReview": {"id": last["id"], "state": last["state"]} if last else None,
-                "dc": self.dc_state(), "resultReason": self.result_reason}
+                "dc": self.dc_state(), "resultReason": self.result_reason, "source": self.source,
+                "players": self.players, "origName": self.orig_name}
 
     def state(self):
         g, caps = replay(self.moves, self.setup)
@@ -916,6 +992,12 @@ class Room:
             "handicap": self.handicap, "komi": self.komi, "handicaps": HANDICAPS,
             "levelLabel": self.level_label(), "score": self.score, "winrate": self.winrate,
             "scores": self.scores, "result": self.result,
+            # 기보 감상(10-24): 화면이 수순을 직접 재생한다 — 국면 계산은 화면 쪽 1벌
+            "moveList": [list(m) for m in self.moves], "setup": self.setup, "source": self.source,
+            "players": self.players or ({"B": "작가님", "W": f"KataGo({self.level_label()})"} if self.user == "B"
+                                        else {"B": f"KataGo({self.level_label()})", "W": "작가님"}),
+            "record": {"date": self.record_date or f"{self.started:%Y-%m-%d}", "rules": self.rules,
+                       "origName": self.orig_name},
             "resultKo": result_ko(self.result) if self.result else None,
             "message": self.message, "sgf": str(self.sgf_path) if self.moves else None,
             "sgfUrl": f"/api/rooms/{self.id}/sgf" if self.moves else None,
@@ -1337,10 +1419,341 @@ def result_ko(r):
     return f"{who} {m.group(2)}집 승"
 
 
+# ---------------------------------------------------------------- 기보 불러오기(SGF · GIB) — 10-24 기보 감상
+
+UPLOAD_MAX = 1024 * 1024  # 1MB
+UPLOADS_DIR = ROOMS_DIR.parent / "uploads"  # 원본·변환 SGF 보관(테스트는 _test/uploads)
+# GIB(타이젬) INI 치석 — GTP 표준 고정 배치. 3점 = D4·Q16·D16(빈 귀 우하 — 타이젬 실기보 백 첫 수 Q4로 확인, 10-24)
+GTP_HANDICAP = {2: ["D4", "Q16"], 3: ["D4", "Q16", "D16"], 4: ["D4", "Q16", "D16", "Q4"],
+                5: ["D4", "Q16", "D16", "Q4", "K10"], 6: ["D4", "Q16", "D16", "Q4", "D10", "Q10"],
+                7: ["D4", "Q16", "D16", "Q4", "D10", "Q10", "K10"],
+                8: ["D4", "Q16", "D16", "Q4", "D10", "Q10", "K4", "K16"],
+                9: ["D4", "Q16", "D16", "Q4", "D10", "Q10", "K4", "K16", "K10"]}
+RULES_MAP = {"korean": "korean", "japanese": "japanese", "chinese": "chinese", "aga": "aga",
+             "nz": "new-zealand", "new zealand": "new-zealand", "tromp-taylor": "tromp-taylor"}
+
+
+class ImportError_(RuntimeError):
+    """불러오기 실패 — 사유를 화면에 그대로 보인다."""
+
+
+def decode_text(raw, prefer=None):
+    """prefer(CA 등) → UTF-8 → CP949 순. (텍스트, 실제 쓴 인코딩)."""
+    tried = []
+    for enc in [prefer, "utf-8", "cp949"]:
+        if not enc or enc in tried:
+            continue
+        tried.append(enc)
+        try:
+            return raw.decode(enc), enc
+        except (UnicodeDecodeError, LookupError):
+            continue
+    raise ImportError_("글자 인코딩을 읽지 못했습니다(UTF-8·CP949 아님)")
+
+
+def sgf_tree(t):
+    """SGF 문자열 → (노드 목록, 자식 트리 목록) 중첩 구조. 노드 = {속성: [값…]}."""
+    i, n = 0, len(t)
+
+    def ws():
+        nonlocal i
+        while i < n and t[i] in " \t\r\n":
+            i += 1
+
+    def value():
+        nonlocal i
+        i += 1  # '['
+        out = []
+        while i < n and t[i] != "]":
+            if t[i] == "\\" and i + 1 < n:
+                i += 1
+            out.append(t[i])
+            i += 1
+        if i >= n:
+            raise ImportError_("SGF 값이 닫히지 않았습니다(']' 없음)")
+        i += 1
+        return "".join(out)
+
+    def tree():
+        nonlocal i
+        ws()
+        if i >= n or t[i] != "(":
+            raise ImportError_("SGF 형식이 아닙니다('(' 없음)")
+        i += 1
+        nodes, kids = [], []
+        while True:
+            ws()
+            if i >= n:
+                raise ImportError_("SGF가 중간에 끝났습니다(')' 없음)")
+            if t[i] == ";":
+                i += 1
+                node = {}
+                while True:
+                    ws()
+                    m = re.match(r"[A-Za-z]+", t[i:i + 20])
+                    if not m:
+                        break
+                    key = "".join(ch for ch in m.group(0) if ch.isupper())
+                    i += len(m.group(0))
+                    ws()
+                    vals = []
+                    while i < n and t[i] == "[":
+                        vals.append(value())
+                        ws()
+                    node.setdefault(key, []).extend(vals)
+                nodes.append(node)
+            elif t[i] == "(":
+                kids.append(tree())
+            elif t[i] == ")":
+                i += 1
+                return nodes, kids
+            else:
+                raise ImportError_(f"SGF를 읽을 수 없는 글자 '{t[i]}'")
+
+    return tree()
+
+
+def sgf_point(v):
+    if not v or v == "tt":
+        return "pass"
+    if len(v) != 2 or not all("a" <= ch <= "s" for ch in v):
+        raise ImportError_(f"좌표를 읽을 수 없습니다: [{v}]")
+    return to_gtp(ord(v[0]) - 97, ord(v[1]) - 97)
+
+
+def result_from_text(txt):
+    """GIB 결과 문구(영·한) → SGF RE 형식."""
+    if not txt:
+        return None
+    s = txt.lower()
+    ib, iw = [s.find(k) for k in ("black", "흑")], [s.find(k) for k in ("white", "백")]
+    ib, iw = min([x for x in ib if x >= 0], default=-1), min([x for x in iw if x >= 0], default=-1)
+    if ib < 0 and iw < 0:
+        return None
+    who = "B" if iw < 0 or (0 <= ib < iw) else "W"
+    if "resign" in s or "불계" in s:
+        return f"{who}+R"
+    if "time" in s or "시간" in s:
+        return f"{who}+T"
+    m = re.search(r"(\d+(?:\.\d+)?)", s)
+    if m:
+        v = float(m.group(1)) + (0.5 if "반" in s else 0)
+        return f"{who}+{v:g}"
+    return f"{who}+"
+
+
+def parse_sgf_upload(raw):
+    head = raw[:4096].decode("latin-1")
+    m = re.search(r"CA\[([^\]]+)\]", head)
+    text, enc = decode_text(raw, m.group(1).strip().lower() if m else None)
+    nodes, kids = sgf_tree(text[text.find("("):] if "(" in text else text)
+    root = nodes[0] if nodes else {}
+    variations = len(kids) > 1
+    line = list(nodes)
+    while kids:  # 메인 라인 = 각 갈래의 첫 자식
+        variations = variations or len(kids) > 1
+        nodes, kids = kids[0]
+        line += nodes
+    one = lambda k: (root.get(k) or [None])[0]
+    if (one("SZ") or "19").split(":")[0].strip() != "19":
+        raise ImportError_(f"19줄 바둑판만 지원합니다(SZ[{one('SZ')}])")
+    if any("AW" in nd for nd in line):
+        raise ImportError_("흰 돌 배치(AW)가 있는 기보는 아직 지원하지 않습니다")
+    setup = [sgf_point(v) for nd in line for v in nd.get("AB", [])]
+    moves = []
+    for nd in line:
+        for c in ("B", "W"):
+            for v in nd.get(c, []):
+                moves.append((c, sgf_point(v)))
+    if not moves and not setup:
+        raise ImportError_("수순이 없습니다")
+    ru = (one("RU") or "korean").strip().lower()
+    return {"moves": moves, "setup": setup, "handicap": int(one("HA") or len(setup) or 0),
+            "komi": float(one("KM") or (0.5 if setup else KOMI)), "result": one("RE"),
+            "pb": one("PB") or "흑", "pw": one("PW") or "백", "br": one("BR") or "", "wr": one("WR") or "",
+            "dt": one("DT") or "", "rules": RULES_MAP.get(ru, "korean"), "encoding": enc,
+            "variations": variations, "format": "SGF"}
+
+
+def parse_gib_upload(raw):
+    text, enc = decode_text(raw)
+    if "\\HS" not in text or "\\GS" not in text:
+        raise ImportError_("GIB(타이젬) 형식이 아닙니다(\\HS·\\GS 없음)")
+    hdr = dict(re.findall(r"\\\[([A-Z]+)=(.*?)\\\]", text))
+    split = lambda v: re.match(r"(.*?)\s*\(([^)]*)\)\s*$", v or "")
+    name = lambda k: (split(hdr.get(k)).group(1) if split(hdr.get(k)) else (hdr.get(k) or "")).strip()
+    rank = lambda k: split(hdr.get(k)).group(2) if split(hdr.get(k)) else ""
+    handicap, moves = 0, []
+    for ln in text[text.find("\\GS"):].splitlines():
+        p = ln.split()
+        if not p:
+            continue
+        if p[0] == "INI" and len(p) >= 4:
+            handicap = int(p[3])
+        elif p[0] == "STO" and len(p) >= 6:  # STO 0 수번호 색(1흑·2백) x y — 0부터, y는 위에서부터
+            x, y = int(p[4]), int(p[5])
+            if not (0 <= x < SIZE and 0 <= y < SIZE):
+                raise ImportError_(f"좌표가 판 밖입니다: {ln.strip()}")
+            moves.append(("B" if p[3] == "1" else "W", to_gtp(x, y)))
+        elif p[0] == "SKI":  # 한수쉼
+            moves.append(("W" if (moves and moves[-1][0] == "B") or (not moves and handicap > 1) else "B", "pass"))
+    if not moves:
+        raise ImportError_("GIB에 수순(STO)이 없습니다")
+    gongje = hdr.get("GAMEGONGJE") or ""
+    dum = (hdr.get("GAMEDUM") or "").strip()
+    num = lambda v: v.lstrip("-").isdigit() and int(v) != 0
+    # 덤: GONGJE(1/10집, 호선 65=6.5) 우선, 없고 GAMEDUM 이 있으면 그 집수(접바둑 'White Dum(5)' — 해석 미확정, 10-24)
+    komi = int(gongje) / 10 if num(gongje.strip()) else (float(dum) if num(dum) else (0.5 if handicap > 1 else KOMI))
+    dt = re.sub(r"\s+", "", hdr.get("GAMEDATE", ""))
+    md = re.match(r"(\d{4})-(\d{1,2})-(\d{1,2})", dt)
+    return {"moves": moves, "setup": GTP_HANDICAP.get(handicap, []), "handicap": handicap if handicap > 1 else 0,
+            "komi": komi, "result": result_from_text(hdr.get("GAMERESULT")),
+            "pb": name("GAMEBLACKNAME") or "흑", "pw": name("GAMEWHITENAME") or "백",
+            "br": rank("GAMEBLACKNAME"), "wr": rank("GAMEWHITENAME"),
+            "dt": f"{md.group(1)}-{int(md.group(2)):02d}-{int(md.group(3)):02d}" if md else "",
+            "rules": "korean", "encoding": enc, "variations": False, "format": "GIB",
+            "event": hdr.get("GAMENAME", "")}
+
+
+def import_record(name, raw):
+    """불러온 파일 → 보기 전용 방(같은 내용이면 기존 방). (방, 새로 만들었는지)."""
+    if len(raw) > UPLOAD_MAX:
+        raise ImportError_(f"파일이 1MB를 넘습니다({len(raw) // 1024}KB)")
+    if not raw.strip():
+        raise ImportError_("빈 파일입니다")
+    digest = hashlib.sha1(raw).hexdigest()
+    rid = f"up-{digest[:12]}"
+    old = ROOMS.get(rid)
+    if old:
+        return old, False
+    is_gib = name.lower().endswith(".gib") or raw.lstrip()[:3] == b"\\HS"
+    d = parse_gib_upload(raw) if is_gib else parse_sgf_upload(raw)
+    r = Room(rid)
+    r.imported, r.source, r.orig_name = True, "upload", name
+    r.moves, r.setup, r.handicap = d["moves"], d["setup"], d["handicap"]
+    r.komi_value, r.result, r.rules, r.record_date = d["komi"], d["result"], d["rules"], d["dt"]
+    r.players = {"B": d["pb"], "W": d["pw"], "BR": d["br"], "WR": d["wr"]}
+    r.time, r.clock = None, None
+    r.started = datetime.now()
+    r.message = (f"불러온 기보({d['format']}, {d['encoding']}) — {name}"
+                 + (" · 변화도는 버리고 메인 수순만 읽었습니다" if d["variations"] else ""))
+    UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+    (UPLOADS_DIR / f"{digest[:12]}{'.gib' if is_gib else '.sgf'}").write_bytes(raw)  # 원본 보관
+    r.sgf_path = UPLOADS_DIR / f"{digest[:12]}.view.sgf"
+    r.sgf_path.write_text(r.sgf_text(), encoding="utf-8")
+    ROOMS.rooms[rid] = r
+    ROOMS.save(r)
+    return r, True
+
+
+# ---------------------------------------------------------------- 승률 그래프(국면마다 짧은 분석, 방 옆 파일에 캐시)
+
+class Analyses:
+    """방마다 0수~끝 국면을 EngineHub.quick 으로 하나씩 — 대국 요청이 오면 수 단위로 비킨다.
+    캐시 rooms/analysis/{id}.json, 화면을 닫아도 끝까지, 재기동 뒤엔 남은 수부터."""
+
+    def __init__(self):
+        self.dir = ROOMS_DIR / "analysis"
+        self.lock = threading.Lock()
+        self.cache = {}
+        self.queue = []
+        self.wake = threading.Event()
+        self.current = None
+        self.stats = {}  # 방 id → {"started": t, "secs": 걸린 초, "points": 계산한 수}
+
+    def load(self, rid):
+        if rid not in self.cache:
+            f = self.dir / f"{rid}.json"
+            try:
+                self.cache[rid] = json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
+            except (OSError, ValueError) as e:
+                print(f"❌ go-board: 그래프 캐시 읽기 실패 {rid} — {e}", file=sys.stderr, flush=True)
+                self.cache[rid] = {}
+        return self.cache[rid]
+
+    def _save(self, rid):
+        self.dir.mkdir(parents=True, exist_ok=True)
+        tmp = self.dir / f".{rid}.json.tmp"
+        tmp.write_text(json.dumps(self.cache[rid]), encoding="utf-8")
+        os.replace(tmp, self.dir / f"{rid}.json")
+
+    def status(self, room, want=True):
+        total = len(room.moves) + 1
+        pts = self.load(room.id).get("points", {})
+        done = all(str(k) in pts for k in range(total))
+        if want and not done:
+            with self.lock:
+                if room.id not in self.queue and self.current != room.id:
+                    self.queue.append(room.id)
+            self.wake.set()
+        st = self.stats.get(room.id, {})
+        return {"total": total, "count": sum(1 for k in range(total) if str(k) in pts), "done": done,
+                "points": [[int(k), v[0], v[1]] for k, v in sorted(pts.items(), key=lambda kv: int(kv[0]))
+                           if int(k) < total],
+                "running": self.current == room.id, "queued": room.id in self.queue,
+                "secs": st.get("secs"), "visits": GRAPH_VISITS}
+
+    def resume_all(self):
+        """재기동: 캐시가 있으나 덜 끝난 방을 줄에 다시 세운다."""
+        if not self.dir.exists():
+            return 0
+        n = 0
+        for f in self.dir.glob("*.json"):
+            r = ROOMS.get(f.stem)
+            if r and not self.status(r, want=False)["done"]:
+                self.status(r)
+                n += 1
+        return n
+
+    def loop(self):
+        while True:
+            self.wake.wait(5)
+            self.wake.clear()
+            while True:
+                with self.lock:
+                    rid = self.queue.pop(0) if self.queue else None
+                    self.current = rid
+                if not rid:
+                    break
+                room = ROOMS.get(rid)
+                if room:
+                    self._run(room)
+                with self.lock:
+                    self.current = None
+
+    def _run(self, room):
+        data = self.load(room.id)
+        pts = data.setdefault("points", {})
+        data["visits"] = GRAPH_VISITS
+        t0, n0 = time.time(), len(pts)
+        moves, total = list(room.moves), len(room.moves) + 1
+        since_save = 0
+        for k in range(total):
+            if str(k) in pts:
+                continue
+            color = moves[k][0] if k < len(moves) else ("W" if moves and moves[-1][0] == "B" else "B")
+            try:
+                wr, score = ENGINES.quick({"moves": moves[:k], "setup": room.setup, "komi": room.komi},
+                                          color, getattr(room, "rules", "korean"))
+            except RuntimeError as e:
+                print(f"❌ go-board: 그래프 계산 실패 {room.id} {k}수 — {e}", file=sys.stderr, flush=True)
+                break
+            pts[str(k)] = [round(wr, 4) if wr is not None else None, round(score, 2) if score is not None else None]
+            since_save += 1
+            if since_save >= 5:
+                self._save(room.id)
+                since_save = 0
+        self._save(room.id)
+        st = self.stats.setdefault(room.id, {"secs": 0.0})
+        st["secs"] = round(st.get("secs", 0.0) + time.time() - t0, 1)
+        print(f"✅ go-board 그래프 {room.id}: {len(pts) - n0}국면 {round(time.time() - t0, 1)}s", file=sys.stderr, flush=True)
+
+
 # ---------------------------------------------------------------- HTTP
 
 ENGINES = None  # EngineHub
 ROOMS = None  # Rooms
+ANALYSES = None  # Analyses(승률 그래프)
 ACTIONS = ("play", "engine", "score", "score/toggle", "score/confirm", "score/cancel", "hint", "judge",
            "timeout", "resign", "undo", "swap", "level", "review", "ping")
 # 호환 경로(단계 ① 이전 화면·PWA 보관본·live_view --goboard): /api/state·/api/{동작}은 초점 방을 가리킨다.
@@ -1450,6 +1863,11 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, (HERE / "index.html").read_bytes(), "text/html; charset=utf-8")
         elif path == "/api/rooms":
             self._json({"rooms": [r.summary() for r in ROOMS.listing()], "defaults": ROOMS.defaults(), **common_state()})
+        elif m := re.fullmatch(rf"/api/rooms/({ROOM_ID_RE})/analysis", path):
+            room = ROOMS.get(m.group(1))
+            if not room:
+                return self._json({"error": "없는 방입니다", "noRoom": True}, 404)
+            self._json(ANALYSES.status(room))  # 덜 끝났으면 계산 줄에 세운다 — 방 파일은 건드리지 않음
         elif m := re.fullmatch(rf"/api/rooms/({ROOM_ID_RE})/(state|sgf)", path):
             room = ROOMS.get(m.group(1))
             if not room:
@@ -1507,7 +1925,8 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(502, f"분석판(8770) 응답 없음 — {e}", "text/plain; charset=utf-8")
         elif path == "/health":
             self._send(200, json.dumps({"ok": True, "strong": ENGINES.strong.ok, "human": ENGINES.human_ok,
-                                        "rooms": len(ROOMS.rooms)}))
+                                        "rooms": len(ROOMS.rooms),
+                                        "engineWaits": ENGINES.waits[-10:], "graph": ANALYSES.current}))
         else:
             self._send(404, '{"error":"없음"}')
 
@@ -1518,6 +1937,32 @@ class Handler(BaseHTTPRequestHandler):
         except json.JSONDecodeError:
             body = {}
         path = self.path.partition("?")[0]
+        if path == "/api/import":  # 기보 불러오기(SGF·GIB) — 본문 {name, b64}
+            name = str(body.get("name") or "기보")[:120]
+            try:
+                raw = base64.b64decode(body.get("b64") or "", validate=True)
+                room, fresh = import_record(name, raw)
+            except ImportError_ as e:
+                return self._json({"error": f"❌ 불러오기 실패: {name} — {e}"})
+            except (ValueError, TypeError) as e:
+                return self._json({"error": f"❌ 불러오기 실패: {name} — 파일을 읽지 못했습니다({e})"})
+            return self._json({"id": room.id, "dup": not fresh, "label": room.level_label(), "moves": len(room.moves),
+                               "note": room.message, "url": f"/room/{room.id}?review=1"})
+        if m := re.fullmatch(rf"/api/rooms/({ROOM_ID_RE})/eval", path):
+            # 시험수 국면 승률(감상) — 방 상태·파일 무변경, 잠금 없음. 엔진은 대국 요청에 양보
+            room = ROOMS.get(m.group(1))
+            if not room:
+                return self._json({"error": "없는 방입니다", "noRoom": True}, 404)
+            try:
+                mv = [(str(c), str(v)) for c, v in body.get("moves", [])][:SIZE * SIZE * 2]
+                for c, v in mv:
+                    if c not in "BW" or (v.lower() != "pass" and not re.fullmatch(r"[A-HJ-T](1[0-9]|[1-9])", v)):
+                        raise ValueError(f"수 형식 {c} {v}")
+                color = "W" if mv and mv[-1][0] == "B" else ("B" if mv else ("W" if room.setup else "B"))
+                wr, score = ENGINES.quick({"moves": mv, "setup": room.setup, "komi": room.komi}, color, room.rules, urgent=True)
+            except (RuntimeError, ValueError) as e:
+                return self._json({"error": str(e)})
+            return self._json({"winrate": wr, "score": score, "moveNo": len(mv)})
         if path == "/api/rooms":
             try:
                 room = new_room(body)
@@ -1598,11 +2043,15 @@ def main():
     ROOMS = Rooms(LocalRoomStore(ROOMS_DIR))
     imported = ROOMS.load()
     threading.Thread(target=presence_loop, daemon=True).start()
+    global ANALYSES
+    ANALYSES = Analyses()
+    threading.Thread(target=ANALYSES.loop, daemon=True).start()
+    resumed = ANALYSES.resume_all()
     live = sum(1 for r in ROOMS.rooms.values() if r.status != "ended")
     srv = ThreadingHTTPServer((HOST, PORT), Handler)
     print(f"✅ go-board: http://{HOST}:{PORT}/  (최강 {'OK' if strong.ok else '실패'}, "
           f"급수 {'OK' if ENGINES.human_ok else '비활성: ' + str(ENGINES.human_why())}) · "
-          f"방 {len(ROOMS.rooms)}개 복원(진행 중 {live}, 이전 기보 가져옴 {imported}) · 저장소 {ROOMS_DIR}",
+          f"방 {len(ROOMS.rooms)}개 복원(진행 중 {live}, 이전 기보 가져옴 {imported}) · 그래프 이어 계산 {resumed} · 저장소 {ROOMS_DIR}",
           flush=True)
     try:
         srv.serve_forever()

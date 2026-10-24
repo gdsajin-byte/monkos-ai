@@ -205,6 +205,30 @@
   .lobby-foot button { flex: 0 1 360px; font-size: 21px; font-weight: 800; padding: 14px 0; border-radius: 12px; border: 0;
                        background: #ffd66b; color: #1d1d1f; box-shadow: 0 2px 6px rgba(0,0,0,.18); }
   .lobby-empty { color: var(--muted); font-size: 15px; padding: 6px 2px; }
+  /* 기보 감상(10-24): 감상 중엔 대국 조작을 걷고 수순 막대·그래프 칸만 */
+  #reviewBox { display: none; flex-direction: column; gap: 6px; padding: 8px 10px; }
+  body.review-mode #reviewBox { display: flex; }
+  body.review-mode #playBar, body.review-mode .actions, body.review-mode #bSheet, body.review-mode .tabs,
+  body.review-mode .box.panel, body.review-mode #liveBox, body.review-mode #msg, body.review-mode .clockbox,
+  body.review-mode #topBtns #bNew { display: none !important; }
+  .rv-info { font-size: 14px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rv-nav { display: flex; gap: 4px; }
+  .rv-nav button { flex: 1; padding: 8px 0; font-size: 16px; font-weight: 700; }
+  .rv-row { display: flex; gap: 6px; align-items: center; }
+  .rv-row[hidden] { display: none; }
+  .rv-row input[type=range] { flex: 1; min-width: 0; }
+  .rv-row input[type=number] { width: 58px; font: inherit; font-size: 15px; padding: 4px; border: 1px solid var(--line-ui); border-radius: 6px; }
+  .rv-row button, .rv-row select { font-size: 14px; padding: 6px 8px; }
+  #rvCount, #rvTrialTxt { font-size: 14px; color: var(--muted); white-space: nowrap; }
+  #rvTrialTxt { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+  #rvGraph { width: 100%; height: 56px; background: #fafbfc; border-radius: 6px; cursor: pointer; display: block; }
+  #rvGraphTxt { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  body.review-mode .who .time { display: none; }  /* 감상 중 시계는 의미 없음 — 이름·따낸 돌만 */
+  @media (max-height: 700px) { #rvGraph { height: 42px; } #reviewBox { gap: 4px; padding: 6px 8px; } .rv-nav button { padding: 6px 0; } }
+  .lobby-foot { gap: 8px; }
+  .lobby-foot button#bImport { flex: 0 1 140px; font-size: 16px; background: #fff; border: 1px solid var(--line-ui); box-shadow: none; }
+  body.lobby-mode.drag .lobby-body { outline: 3px dashed var(--blue); outline-offset: -6px; }
+  #lobbyMsg { white-space: pre-line; }
   /* 길게 눌러도 아이폰 글쓰기 도구·텍스트 선택·확대 메뉴가 뜨지 않게(10-24 작가님 "착수 버튼 길게 누르면 글쓰기 도구") */
   body.mobile-play, body.mobile-play * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
   body.mobile-play input, body.mobile-play textarea, body.mobile-play select { -webkit-user-select: auto; user-select: auto; }
@@ -227,7 +251,7 @@
     <h3>내 진행 중 대국</h3><div id="lobbyLive"><div class="lobby-empty">불러오는 중…</div></div>
     <h3>지난 대국</h3><div id="lobbyPast"></div>
   </div>
-  <div class="lobby-foot"><button id="bNewL">새 대국</button></div>
+  <div class="lobby-foot"><button id="bImport">기보 불러오기</button><button id="bNewL">새 대국</button><input type="file" id="importFile" accept=".sgf,.gib" multiple hidden></div>
 </div>
 <div class="wrap">
   <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg></div>
@@ -248,6 +272,15 @@
       </div>
     </div>
     <div class="msg" id="msg"></div>
+    <div class="box" id="reviewBox">
+      <div class="rv-info" id="rvInfo"></div>
+      <div class="rv-nav"><button data-nav="first" aria-label="처음">⏮</button><button data-nav="-10">−10</button><button data-nav="-1" aria-label="한 수 뒤">◀</button><button data-nav="1" aria-label="한 수 앞">▶</button><button data-nav="10">+10</button><button data-nav="last" aria-label="끝">⏭</button></div>
+      <div class="rv-row"><input type="range" id="rvSlider" min="0" max="0" value="0" aria-label="수순"><input type="number" id="rvNum" min="0" inputmode="numeric" aria-label="수 번호"><span id="rvCount">/ 0</span></div>
+      <div class="rv-row" id="rvRow2"><button id="rvPlay">▶ 재생</button><select id="rvSpeed" aria-label="재생 속도"><option value="0.5">0.5초</option><option value="1" selected>1초</option><option value="2">2초</option><option value="3">3초</option></select><select id="rvNums" aria-label="수 번호"><option value="off">번호 끔</option><option value="last10">최근 10수</option><option value="all">전체 번호</option></select><button id="rvExit">감상 끝</button></div>
+      <div class="rv-row" id="rvTrial" hidden><span id="rvTrialTxt"></span><button id="rvTrialUndo">한 수 무르기</button><button id="rvTrialBack">본 수순으로</button></div>
+      <svg id="rvGraph" viewBox="0 0 300 64" preserveAspectRatio="none" aria-label="승률 그래프"></svg>
+      <div id="rvGraphTxt"></div>
+    </div>
 
     <div class="tabs" id="tabs">
       <button data-tab="ai" class="on">AI분석</button>
@@ -262,6 +295,7 @@
       <button id="bScore">계가신청</button>
       <button id="bJudge">AI 판정</button>
       <button id="bResign">기권</button>
+      <button id="bReviewMode" class="hl" hidden>기보 감상</button>
     </div>
 
     <div class="box panel">
@@ -848,7 +882,7 @@ if (touchPlay()) document.body.classList.add('mobile-play');
 // ---- 착수 미리보기(타이젬식 반투명 돌, 10-23 작가님): 내 차례·빈 점에서만 마우스 아래에 보인다
 let ghostAt = null;
 function canGhost(x, y) {
-  return S && !S.stale && !S.result && !S.scoring && !busy && S.toMove === S.user &&
+  return S && !(window.RV && window.RV.on) && !S.stale && !S.result && !S.scoring && !busy && S.toMove === S.user &&
          x >= 0 && y >= 0 && x < N && y < N && !S.board[y][x];
 }
 function drawGhost() {
@@ -1123,6 +1157,7 @@ if (ROOM) {
     if (s.testMode && qs.get('tab')) tab = qs.get('tab');  // 캡처용
     if (s.testMode && qs.get('dlg')) setTimeout(() => document.getElementById('bNew').click(), 0);
     bootWith(s);
+    if (qs.get('review') || s.imported) { rvEnter(); return; }  // 지난 대국·불러온 기보 = 감상(방 무변경)
     let fresh = false;  // 방금 신청한 방이면 시작 음성(첫 누름 뒤 — 브라우저 소리 잠금)
     try { fresh = sessionStorage.getItem('goBoardStartVoice') === ROOM; sessionStorage.removeItem('goBoardStartVoice'); } catch (e) { /* 생략 */ }
     if (fresh) document.addEventListener('pointerdown', () => voice(SND && SND.start), { once: true });
@@ -1137,7 +1172,7 @@ if (ROOM) {
 // ---- 접속 신호(10-24 접속 장애 시계): 화면이 보이는 동안 5초마다 ping — 앱을 내리거나 대기실로 가면 끊김으로 본다
 if (ROOM) {
   const ping = async () => {
-    if (document.visibilityState !== 'visible' || !S || S.stale || S.imported || S.result) return;
+    if (document.visibilityState !== 'visible' || !S || S.stale || S.imported || S.result || (window.RV && window.RV.on)) return;
     try {
       const j = await (await fetch(api('/api/ping'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })).json();
       if (!j.board || busy) return;
@@ -1235,15 +1270,18 @@ setInterval(() => {
   function row(r) {
     const live = r.status !== 'ended';
     const res = r.result ? `<span class="${r.win === true ? 'win' : r.win === false ? 'lose' : ''}">${esc(r.resultKo)}${r.win === true ? ' · 승' : r.win === false ? ' · 패' : ''}</span>`
-      : (live ? (r.toMove === r.user ? '내 차례' : 'KataGo 차례') : '끝내지 않은 판');
+      : (live ? (r.toMove === r.user ? '내 차례' : 'KataGo 차례') : (r.source === 'upload' ? '결과 없음' : '끝내지 않은 판'));
     const dcTxt = live && r.dc && r.dc.offline ? ` <span class="lose">· 접속 끊김${r.dc.counting ? ` · ${dur(r.dc.left)} 남음` : ''}</span>` : '';
     const rv = r.lastReview && r.lastReview.state === 'done' ? `<a class="btn" href="/review/${r.lastReview.id}" target="_blank">리뷰 열기</a>`
       : r.lastReview && r.lastReview.state === 'running' ? `<a class="btn" href="/review/${r.lastReview.id}" target="_blank">리뷰 중…</a>`
       : r.review && r.review.ok ? `<button data-review="${r.id}" data-handi="${r.handicap}">리뷰 만들기</button>` : '';
     const btns = live ? `<button class="hl" data-open="${r.id}">이어 두기</button>`
-      : `${r.sgfUrl ? `<a class="btn" href="${r.sgfUrl}" download>기보</a>` : ''}${rv}`;
-    return `<div class="box lobby-row${live ? ' live' : ''}" ${live ? `data-open="${r.id}"` : ''}><span class="dot ${r.user}"></span>` +
-      `<div class="grow"><div class="t1">${res}${dcTxt}</div><div class="t2">${when(r.started)} · ${r.moveNo}수 · ${esc(r.levelLabel)} · ${rule(r)}${r.imported ? ' · 이전 기보' : ''}</div></div>` +
+      : `${r.sgfUrl ? `<a class="btn" href="${r.sgfUrl}" download>내려받기</a>` : ''}${rv}`;
+    const up = r.source === 'upload';  // 불러온 기보 — 대국자는 기보 값
+    const t2 = up ? `불러온 기보 · ${esc(r.levelLabel)} · ${r.moveNo}수` :
+      `${when(r.started)} · ${r.moveNo}수 · ${esc(r.levelLabel)} · ${rule(r)}${r.imported ? ' · 이전 기보' : ''}`;
+    return `<div class="box lobby-row${live ? ' live' : ' past'}" data-open="${r.id}"${live ? '' : ' data-review-mode="1"'}><span class="dot ${up ? 'B' : r.user}"></span>` +
+      `<div class="grow"><div class="t1">${res}${dcTxt}</div><div class="t2">${t2}</div></div>` +
       `<div class="btns">${btns}</div></div>`;
   }
   async function load() {
@@ -1273,12 +1311,278 @@ setInterval(() => {
       load(); return;
     }
     const op = e.target.closest('[data-open]');
-    if (op && !e.target.closest('a')) location.href = `/room/${op.dataset.open}`;
+    if (op && !e.target.closest('a')) location.href = `/room/${op.dataset.open}${op.dataset.reviewMode ? '?review=1' : ''}`;  // 지난 대국 = 감상
   });
   document.getElementById('bNewL').onclick = () => document.getElementById('bNew').onclick();
+  // 기보 불러오기(SGF·GIB): 파일 고르기 또는 대기실에 끌어다 놓기 — 여러 개 한 번에, 실패는 사유와 함께
+  const importFiles = async files => {
+    const out = [];
+    for (const f of files) {
+      if (f.size > 1024 * 1024) { out.push(`❌ 불러오기 실패: ${f.name} — 파일이 1MB를 넘습니다`); continue; }
+      try {
+        const b = new Uint8Array(await f.arrayBuffer());
+        let bin = ''; for (let i = 0; i < b.length; i += 8192) bin += String.fromCharCode(...b.subarray(i, i + 8192));
+        const j = await (await fetch('/api/import', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                                     body: JSON.stringify({ name: f.name, b64: btoa(bin) }) })).json();
+        out.push(j.error ? j.error : `${j.dup ? '이미 있는 기보' : '✅ 불러옴'}: ${f.name} — ${j.label} · ${j.moves}수${j.note && j.note.includes('변화도') ? ' (변화도 제외)' : ''}`);
+      } catch (e) { out.push(`❌ 불러오기 실패: ${f.name} — 서버 연결 실패`); }
+    }
+    notice(out.join('\n'));
+    load();
+  };
+  const fileIn = document.getElementById('importFile');
+  document.getElementById('bImport').onclick = () => fileIn.click();
+  fileIn.onchange = () => { if (fileIn.files.length) importFiles([...fileIn.files]); fileIn.value = ''; };
+  const lb = document.getElementById('lobby');
+  lb.addEventListener('dragover', e => { e.preventDefault(); document.body.classList.add('drag'); });
+  lb.addEventListener('dragleave', e => { if (!lb.contains(e.relatedTarget)) document.body.classList.remove('drag'); });
+  lb.addEventListener('drop', e => { e.preventDefault(); document.body.classList.remove('drag'); if (e.dataTransfer.files.length) importFiles([...e.dataTransfer.files]); });
   load();
   document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });  // 앱으로 돌아오면 목록 새로
 })();
+
+// ---- 기보 감상(10-24 타이젬 방식): 끝난 판·이전 기보·불러온 기보를 이 바둑판에서 — 수순 이동·자동 재생·시험수·승률 그래프
+// 국면 계산은 이 파일의 applyMove 1벌(수순 재생·시험수 공용). 감상은 방 상태를 바꾸지 않는다(대국 조작·ping 없음)
+const RV = { on: false, base: null, pos: [], k: 0, trial: [], timer: null, graph: null, graphTimer: null, evalSeq: 0, evalTxt: '' };
+window.RV = RV;
+
+function groupLibs(g, x, y) {
+  const c = g[y][x], seen = new Set([x + ',' + y]), st = [[x, y]], grp = [];
+  let libs = 0;
+  while (st.length) {
+    const [cx, cy] = st.pop(); grp.push([cx, cy]);
+    for (const [nx, ny] of [[cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]]) {
+      if (nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
+      const v = g[ny][nx], k = nx + ',' + ny;
+      if (v === null) libs++;
+      else if (v === c && !seen.has(k)) { seen.add(k); st.push([nx, ny]); }
+    }
+  }
+  return { grp, libs };
+}
+// 한 수 놓기 — 따냄 처리. 놓을 수 없으면(이미 돌·자충수) null
+function applyMove(g, c, x, y) {
+  if (g[y][x]) return null;
+  const g2 = g.map(r => r.slice()); g2[y][x] = c;
+  const o = c === 'B' ? 'W' : 'B', caps = [];
+  for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) {
+    if (nx < 0 || ny < 0 || nx >= N || ny >= N || g2[ny][nx] !== o) continue;
+    const { grp, libs } = groupLibs(g2, nx, ny);
+    if (!libs) for (const [ax, ay] of grp) if (g2[ay][ax]) { g2[ay][ax] = null; caps.push([ax, ay]); }
+  }
+  if (!caps.length && !groupLibs(g2, x, y).libs) return null;
+  return { g: g2, caps };
+}
+const gtpXY = mv => [COLS.indexOf(mv[0]), N - Number(mv.slice(1))];
+const xyGtp = (x, y) => `${COLS[x]}${N - y}`;
+
+// 수순 전체를 미리 재생 — pos[k] = k수까지 둔 국면(판·따낸 돌·수 번호·마지막 수)
+function buildPositions(st) {
+  const g0 = Array.from({ length: N }, () => Array(N).fill(null));
+  for (const p of st.setup || []) { const [x, y] = gtpXY(p); g0[y][x] = 'B'; }
+  const pos = [{ g: g0, caps: { B: 0, W: 0 }, num: Array.from({ length: N }, () => Array(N).fill(0)), last: null, color: null }];
+  (st.moveList || []).forEach(([c, mv], i) => {
+    const p = pos[i];
+    if (mv.toLowerCase() === 'pass') { pos.push({ ...p, last: null, color: c, pass: true }); return; }
+    const [x, y] = gtpXY(mv);
+    const r = applyMove(p.g, c, x, y) || { g: p.g.map(row => row.slice()), caps: [] };  // 기보가 규칙 밖이어도 그대로 놓는다
+    if (!r.caps.length && !r.g[y][x]) r.g[y][x] = c;
+    const num = p.num.map(row => row.slice()); num[y][x] = i + 1;
+    for (const [ax, ay] of r.caps) num[ay][ax] = 0;
+    pos.push({ g: r.g, caps: { ...p.caps, [c]: p.caps[c] + r.caps.length }, num, last: [x, y], color: c, capN: r.caps.length });
+  });
+  return pos;
+}
+const nextColor = () => {
+  const t = RV.trial[RV.trial.length - 1];
+  if (t) return t.color === 'B' ? 'W' : 'B';
+  const p = RV.pos[RV.k];
+  return p.color ? (p.color === 'B' ? 'W' : 'B') : ((RV.base.setup || []).length ? 'W' : 'B');
+};
+const curPos = () => (RV.trial.length ? RV.trial[RV.trial.length - 1] : RV.pos[RV.k]);
+
+function rvDerive() {
+  const p = curPos(), N0 = RV.pos.length - 1;
+  S = { ...RV.base, board: p.g, captures: p.caps, last: p.last, moveNo: RV.k, lastPass: false, scoring: null, error: null,
+        message: '', finalCount: RV.k === N0 && !RV.trial.length ? RV.base.finalCount : null };
+}
+function rvRender() {
+  rvDerive(); render();
+  const N0 = RV.pos.length - 1;
+  document.getElementById('rvSlider').max = N0; document.getElementById('rvSlider').value = RV.k;
+  document.getElementById('rvNum').value = RV.k;
+  document.getElementById('rvCount').textContent = `/ ${N0}`;
+  document.getElementById('rvPlay').textContent = RV.timer ? '⏸ 정지' : '▶ 재생';
+  document.getElementById('rvTrial').hidden = !RV.trial.length;
+  document.getElementById('rvRow2').hidden = !!RV.trial.length;
+  document.getElementById('rvTrialTxt').textContent = `시험수 ${RV.trial.length}수${RV.evalTxt ? ' · ' + RV.evalTxt : ''}`;
+  rvGraph();
+}
+// 판 위 덧그림: 수 번호(끔/최근 10/전체) · 시험수 별색 번호
+function rvOverlay() {
+  if (!RV.on) return;
+  const mode = document.getElementById('rvNums').value, p = RV.pos[RV.k];
+  if (mode !== 'off') {
+    const from = mode === 'last10' ? RV.k - 9 : 1;
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const n = p.num[y][x];
+      if (!n || n < from || !S.board[y][x] || S.board[y][x] !== p.g[y][x]) continue;
+      el('text', { x: P(x), y: P(y) + 2.6, 'font-size': n > 99 ? 6 : 7.5, 'text-anchor': 'middle', 'font-weight': 700,
+                   fill: S.board[y][x] === 'B' ? '#fff' : '#111', 'pointer-events': 'none' }).textContent = n;
+    }
+  }
+  RV.trial.forEach((t, i) => {
+    if (S.board[t.y][t.x] !== t.color) return;  // 따내진 시험수
+    el('circle', { cx: P(t.x), cy: P(t.y), r: STEP * .3, fill: '#2a6fdb', opacity: .9, 'pointer-events': 'none' });
+    el('text', { x: P(t.x), y: P(t.y) + 3, 'font-size': 8, 'text-anchor': 'middle', fill: '#fff', 'font-weight': 700,
+                 'pointer-events': 'none' }).textContent = i + 1;
+  });
+}
+function rvStop() { if (RV.timer) { clearInterval(RV.timer); RV.timer = null; } }
+function rvGo(k, how) {  // how: 'step' = 한 수(소리), 'jump' = 여러 수(무음), 'auto' = 자동 재생(소리, 정지 안 함)
+  const N0 = RV.pos.length - 1;
+  k = Math.max(0, Math.min(N0, Math.round(k)));
+  if (how !== 'auto') rvStop();
+  const wasTrial = RV.trial.length;
+  RV.trial = []; RV.evalTxt = '';
+  if (k === RV.k && !wasTrial) { rvRender(); return; }
+  const fwd = k === RV.k + 1;
+  RV.k = k; rvRender();
+  if ((how === 'step' || how === 'auto') && fwd && RV.pos[k].last) moveSound(RV.pos[k].capN || 0);
+}
+function rvTrialAt(x, y) {
+  if (x < 0 || y < 0 || x >= N || y >= N) return;
+  rvStop();
+  const c = nextColor(), cur = curPos(), r = applyMove(cur.g, c, x, y);
+  if (!r) { notice('둘 수 없는 자리입니다(이미 돌·자충수)'); return; }
+  const prev2 = RV.trial.length >= 2 ? RV.trial[RV.trial.length - 2].g : (RV.trial.length === 1 ? RV.pos[RV.k].g : (RV.k >= 1 ? RV.pos[RV.k - 1].g : null));
+  if (prev2 && r.caps.length === 1 && JSON.stringify(prev2) === JSON.stringify(r.g)) { notice('패 — 바로 되따낼 수 없습니다(한 수 쉬고)'); return; }
+  RV.trial.push({ g: r.g, caps: { ...cur.caps, [c]: cur.caps[c] + r.caps.length }, last: [x, y], x, y, color: c });
+  moveSound(r.caps.length);
+  RV.evalTxt = '승률 계산 중…'; rvRender(); rvEval();
+}
+async function rvEval() {  // 시험수 국면 승률(서버 엔진 1회 — 대국 요청에 양보, 방 무변경)
+  const seq = ++RV.evalSeq;
+  const moves = [...(RV.base.moveList || []).slice(0, RV.k), ...RV.trial.map(t => [t.color, xyGtp(t.x, t.y)])];
+  try {
+    const j = await (await fetch(api('/api/eval'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ moves }) })).json();
+    if (seq !== RV.evalSeq || !RV.trial.length) return;
+    RV.evalTxt = j.error ? '' : `흑 승률 ${(j.winrate * 100).toFixed(1)}% · ${j.score >= 0 ? '흑' : '백'} ${Math.abs(j.score).toFixed(1)}집`;
+  } catch (e) { RV.evalTxt = ''; }
+  if (seq === RV.evalSeq) rvRender();
+}
+// 승률 그래프: 흑 승률(실선)·집 차이(점선), 현재 수 세로선, 한 수에 ±15%p 이상은 빨간 점. 누르면 그 수로
+function rvGraph() {
+  const sv = document.getElementById('rvGraph'), G = RV.graph, N0 = RV.pos.length - 1, W = 300, H = 64;
+  sv.innerHTML = '';
+  const X = k => 4 + (W - 8) * k / Math.max(1, N0), Y = v => 4 + (H - 8) * (1 - v);
+  const add = (tag, a) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); sv.appendChild(e); return e; };
+  add('line', { x1: 0, x2: W, y1: Y(.5), y2: Y(.5), stroke: '#c9ced6', 'stroke-dasharray': '3 3' });
+  const pts = G ? G.points.filter(p => p[1] !== null) : [];
+  if (pts.length > 1) {
+    add('polyline', { points: pts.map(p => `${X(p[0])},${Y(Math.max(0, Math.min(1, .5 + p[2] / 60)))}`).join(' '), fill: 'none', stroke: '#8a93a3', 'stroke-width': 1, 'stroke-dasharray': '4 3' });
+    add('polyline', { points: pts.map(p => `${X(p[0])},${Y(p[1])}`).join(' '), fill: 'none', stroke: '#24272c', 'stroke-width': 1.6 });
+    for (let i = 1; i < pts.length; i++) if (pts[i][0] === pts[i - 1][0] + 1 && Math.abs(pts[i][1] - pts[i - 1][1]) >= .15)
+      add('circle', { cx: X(pts[i][0]), cy: Y(pts[i][1]), r: 2.6, fill: '#c0392b' });
+  }
+  add('line', { x1: X(RV.k), x2: X(RV.k), y1: 0, y2: H, stroke: '#2a6fdb', 'stroke-width': 1.4 });
+  const cur = G && G.points.find(p => p[0] === RV.k);
+  document.getElementById('rvGraphTxt').textContent = !G ? '승률 그래프 불러오는 중…' :
+    `${cur && cur[1] !== null ? `${RV.k}수 흑 승률 ${(cur[1] * 100).toFixed(1)}% · ${cur[2] >= 0 ? '흑' : '백'} ${Math.abs(cur[2]).toFixed(1)}집` : `${RV.k}수 —`}` +
+    (G.done ? '' : ` · 분석 ${G.count}/${G.total}`);
+}
+async function rvPollGraph() {
+  if (!RV.on) return;
+  try { RV.graph = await (await fetch(api('/api/analysis'))).json(); } catch (e) { /* 다음에 다시 */ }
+  if (RV.on) rvGraph();
+  if (RV.on && RV.graph && !RV.graph.done) RV.graphTimer = setTimeout(rvPollGraph, document.hidden ? 6000 : 2000);
+}
+function rvEnter() {
+  if (!S || S.stale || !S.moveList) return;
+  RV.base = S; RV.pos = buildPositions(S); RV.on = true; RV.trial = []; RV.graph = null;
+  RV.k = RV.pos.length - 1;
+  document.body.classList.add('review-mode');
+  document.body.classList.remove('sheet-open');
+  setPick(null); ghostAt = null;
+  const pl = S.players || {}, ha = S.handicap ? `${S.handicap}점` : '호선';
+  document.getElementById('rvInfo').textContent =
+    `흑 ${pl.B || ''}${pl.BR ? `(${pl.BR})` : ''} · 백 ${pl.W || ''}${pl.WR ? `(${pl.WR})` : ''} · 덤 ${S.komi} · ${ha}` +
+    `${S.record && S.record.date ? ' · ' + S.record.date : ''} · ${S.resultKo || '결과 없음'}` +
+    `${(S.message || '').includes('변화도') ? ' · 변화도 제외(메인 수순만)' : ''}`;
+  document.getElementById('rvExit').textContent = S.imported ? '대기실' : '감상 끝';
+  rvRender(); rvPollGraph();
+}
+function rvLeave() {
+  rvStop(); clearTimeout(RV.graphTimer);
+  if (RV.base && RV.base.imported) { location.href = '/'; return; }
+  RV.on = false; S = RV.base; RV.trial = [];
+  document.body.classList.remove('review-mode');
+  render();
+}
+function rvInit() {
+  const sp = document.getElementById('rvSpeed');
+  try { const v = localStorage.getItem('goBoardRvSpeed'); if (v) sp.value = v; } catch (e) { /* 기본 1초 */ }
+  try { const v = localStorage.getItem('goBoardRvNums'); if (v) document.getElementById('rvNums').value = v; } catch (e) { /* 기본 끔 */ }
+  document.querySelector('#reviewBox .rv-nav').onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const d = b.dataset.nav, N0 = RV.pos.length - 1;
+    if (d === 'first') rvGo(0, 'jump'); else if (d === 'last') rvGo(N0, 'jump');
+    else rvGo(RV.k + Number(d), Math.abs(Number(d)) === 1 ? 'step' : 'jump');
+  };
+  document.getElementById('rvSlider').oninput = e => rvGo(Number(e.target.value), 'jump');
+  document.getElementById('rvNum').onchange = e => rvGo(Number(e.target.value), 'jump');
+  const play = () => {
+    if (RV.timer) { rvStop(); rvRender(); return; }
+    if (RV.k >= RV.pos.length - 1) RV.k = 0;
+    RV.trial = [];
+    RV.timer = setInterval(() => {
+      if (RV.k >= RV.pos.length - 1) { rvStop(); rvRender(); return; }  // 끝에 닿으면 정지
+      rvGo(RV.k + 1, 'auto');
+    }, Number(sp.value) * 1000);
+    rvRender();
+  };
+  RV.play = play;
+  document.getElementById('rvPlay').onclick = play;
+  sp.onchange = () => { try { localStorage.setItem('goBoardRvSpeed', sp.value); } catch (e) { /* 이번 창만 */ } if (RV.timer) { rvStop(); play(); } };
+  document.getElementById('rvNums').onchange = e => { try { localStorage.setItem('goBoardRvNums', e.target.value); } catch (x) { /* 이번 창만 */ } rvRender(); };
+  document.getElementById('rvTrialUndo').onclick = () => { RV.trial.pop(); RV.evalTxt = ''; if (RV.trial.length) rvEval(); rvRender(); };
+  document.getElementById('rvTrialBack').onclick = () => rvGo(RV.k, 'jump');  // 본 수순으로(진입 직전 수)
+  document.getElementById('rvExit').onclick = rvLeave;
+  document.getElementById('bReviewMode').onclick = rvEnter;
+  document.getElementById('rvGraph').addEventListener('pointerdown', e => {
+    const r = e.currentTarget.getBoundingClientRect(), N0 = RV.pos.length - 1;
+    rvGo(((e.clientX - r.left) / r.width * 300 - 4) / 292 * N0, 'jump');
+  });
+  // 판 누름 = 시험수(감상 중에는 착수·선택 대신) — 대국용 처리보다 먼저 가로챈다
+  svg.addEventListener('pointerdown', ev => {
+    if (!RV.on) return;
+    ev.stopImmediatePropagation();
+    const [x, y] = boardXY(ev); rvTrialAt(x, y);
+  }, true);
+  document.addEventListener('keydown', e => {
+    if (!RV.on || (e.target.closest && e.target.closest('input,select,textarea'))) return;
+    const N0 = RV.pos.length - 1, step = e.shiftKey ? 10 : 1;
+    if (e.key === 'ArrowRight') rvGo(RV.k + step, step === 1 ? 'step' : 'jump');
+    else if (e.key === 'ArrowLeft') rvGo(RV.k - step, step === 1 ? 'step' : 'jump');
+    else if (e.key === 'Home') rvGo(0, 'jump');
+    else if (e.key === 'End') rvGo(N0, 'jump');
+    else if (e.key === ' ') play();
+    else return;
+    e.preventDefault();
+  });
+  const renderPrev = render;
+  render = function () {
+    renderPrev();
+    if (RV.on) {  // 감상 중: 대국자 이름은 기보 값, 상태줄은 수 위치
+      const pl = RV.base.players || {}, N0 = RV.pos.length - 1;
+      for (const c of ['B', 'W']) { document.getElementById('name' + c).textContent = pl[c] || ''; document.getElementById('rank' + c).textContent = pl[c + 'R'] || ''; }
+      document.getElementById('status').innerHTML = `<b>기보 감상</b> · ${RV.k} / ${N0}수${RV.trial.length ? ` · 시험수 ${RV.trial.length}` : ''}`;
+      rvOverlay();
+    }
+    document.getElementById('bReviewMode').hidden = !(S && S.moveList && S.moveList.length && (S.result || S.imported)) || RV.on;
+  };
+}
+if (ROOM) rvInit();
 
 // ---- PWA: 홈 화면에 추가하면 바로 판으로(10-23). 서비스 워커는 캐시 없이 설치 조건만 채운다
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => { /* 로컬 http 등 — 무시 */ });
