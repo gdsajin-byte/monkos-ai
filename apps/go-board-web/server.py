@@ -1022,6 +1022,28 @@ def common_state():
 
 # ---------------------------------------------------------------- 방 저장소·목록
 
+class EventLog:
+    """방별 착수·무르기·거부 이벤트(append-only JSONL, rooms/events/{id}.jsonl) — 10-24 착수 거부 버그 추적.
+    정본은 방 파일의 수순이고, 이 기록은 무슨 요청이 언제 와서 어떻게 끝났는지(수락·거부 사유·오류·걸린 ms)만 남긴다."""
+
+    def __init__(self, root):
+        self.dir = Path(root) / "events"
+        self.lock = threading.Lock()
+
+    def add(self, rid, **ev):
+        ev = {"t": datetime.now().isoformat(timespec="milliseconds"), **ev}
+        try:
+            with self.lock:
+                self.dir.mkdir(parents=True, exist_ok=True)
+                with open(self.dir / f"{rid}.jsonl", "a", encoding="utf-8") as fh:
+                    fh.write(json.dumps(ev, ensure_ascii=False) + "\n")
+        except OSError as e:  # 기록 실패가 대국을 막지 않게 — 로그로만
+            print(f"❌ go-board: 이벤트 기록 실패 {rid} — {e}", file=sys.stderr, flush=True)
+
+
+EVENTS = None  # EventLog
+
+
 class LocalRoomStore:
     """RoomStore 인터페이스(load_all / save / delete) — 단계 ① 로컬 파일. 단계 ⑤에서 Firestore 구현으로 바꾼다.
     저장은 임시 파일 → rename(원자적): 쓰는 도중 꺼져도 직전 판본이 남는다."""
@@ -1804,6 +1826,17 @@ def act(room, action, body):
     return err, jid, extra
 
 
+def ev_move(body):
+    """이벤트용 좌표 — 착수 요청 본문의 x·y(GTP 좌표 포함) 또는 한수쉼."""
+    if body.get("pass"):
+        return {"move": "pass"}
+    try:
+        x, y = int(body["x"]), int(body["y"])
+        return {"x": x, "y": y, "move": to_gtp(x, y)}
+    except (KeyError, ValueError, TypeError, IndexError):
+        return {}
+
+
 def new_room(body, base=None):
     """대국 신청 → 방 생성. 첫 수가 엔진이면 대국실이 'engine'으로 부른다(화면은 빈 판부터)."""
     d = ROOMS.defaults()
@@ -1817,6 +1850,8 @@ def new_room(body, base=None):
     room = Room.create(level, handicap, t, body.get("color") or (base.user if base else d["user"]), dc)
     room.cache = json.dumps(room.state(), ensure_ascii=False)  # 첫 조회가 엔진 생각과 겹쳐도 빈 판을 준다
     ROOMS.add(room)
+    EVENTS.add(room.id, action="create", user=room.user, level=room.level, handicap=room.handicap,
+               color=body.get("color"), time=room.time, dcLimit=room.dc_limit)
     return room
 
 
@@ -1988,6 +2023,7 @@ class Handler(BaseHTTPRequestHandler):
         else:
             return self._send(404, '{"error":"없음"}')
         if room.imported and action not in ("review",):
+            EVENTS.add(room.id, action=action, result="rejected", error="보기 전용 기보", **ev_move(body))
             return self._json({"error": "지난 대국(가져온 기보)은 볼 수만 있습니다 — 새 대국을 시작해 주세요."})
         t0 = time.time()
         # 엔진이 이 방에서 생각 중이면 줄 세우지 않고 버린다 — 대기 클릭이 나중에 착수로 바뀌는 경합 차단
@@ -1995,12 +2031,18 @@ class Handler(BaseHTTPRequestHandler):
             if action == "ping":
                 room.seen = time.time()  # 잠금 없이 — 엔진이 이 방에서 생각 중이어도 접속은 살아 있다
                 return self._send(200, room.cache or json.dumps({"busy": True, "room": room.id}, ensure_ascii=False))
+            EVENTS.add(room.id, action=action, result="busy", moveNo=len(room.moves), **ev_move(body))
             return self._json({"busy": True, "error": "상대가 생각 중입니다", "room": room.id}, 409)
         try:
             ROOMS.focus = room.id
             if room.heartbeat() and action == "ping":  # 대국자 동작·ping = 접속해 있음. 재접속은 ping 만으로도 저장
                 ROOMS.save(room)
+            n0 = len(room.moves)
             err, jid, extra = act(room, action, body)
+            if action not in ("ping", "hint", "judge"):  # 판·결과를 바꿀 수 있는 요청만
+                EVENTS.add(room.id, action=action, result="error" if err else "ok", error=err, moveNo=n0,
+                           moveNoAfter=len(room.moves), ms=round((time.time() - t0) * 1000), **ev_move(body),
+                           engineReply=room.moves[n0 + 1][1] if action == "play" and not err and len(room.moves) > n0 + 1 else None)
             st = room.state()
             st["error"] = err
             st["elapsed"] = round(time.time() - t0, 2)
@@ -2041,6 +2083,8 @@ def main():
         t.join()
     ENGINES = EngineHub(strong, human, human_reason)
     ROOMS = Rooms(LocalRoomStore(ROOMS_DIR))
+    global EVENTS
+    EVENTS = EventLog(ROOMS_DIR)
     imported = ROOMS.load()
     threading.Thread(target=presence_loop, daemon=True).start()
     global ANALYSES

@@ -205,6 +205,11 @@
   .lobby-foot button { flex: 0 1 360px; font-size: 21px; font-weight: 800; padding: 14px 0; border-radius: 12px; border: 0;
                        background: #ffd66b; color: #1d1d1f; box-shadow: 0 2px 6px rgba(0,0,0,.18); }
   .lobby-empty { color: var(--muted); font-size: 15px; padding: 6px 2px; }
+  #boardBox { position: relative; }
+  #boardToast { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); max-width: 86%; padding: 10px 16px;
+                border-radius: 10px; background: rgba(20, 24, 30, .86); color: #fff; font-size: 16px; font-weight: 700; text-align: center;
+                pointer-events: none; opacity: 0; transition: opacity .2s; z-index: 5; }
+  #boardToast.on { opacity: 1; }
   /* 기보 감상(10-24): 감상 중엔 대국 조작을 걷고 수순 막대·그래프 칸만 */
   #reviewBox { display: none; flex-direction: column; gap: 6px; padding: 8px 10px; }
   body.review-mode #reviewBox { display: flex; }
@@ -254,7 +259,7 @@
   <div class="lobby-foot"><button id="bImport">기보 불러오기</button><button id="bNewL">새 대국</button><input type="file" id="importFile" accept=".sgf,.gib" multiple hidden></div>
 </div>
 <div class="wrap">
-  <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg></div>
+  <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg><div id="boardToast" role="status"></div></div>
   <div id="playBar"><button id="bPick0" disabled>취소</button><button id="bPlace" disabled>착수</button><span class="pick" id="pickTxt">판을 눌러 자리를 고르세요</span></div>
   <div class="split" id="split" title="끌어서 판 크기 조정"></div>
   <div class="side">
@@ -804,16 +809,33 @@ async function call(path, body) {
     if (j.noRoom) { busy = false; notice(j.error); return; }
     if (j.busy) {  // 다른 탭 등에서 엔진이 생각 중 — 판은 서버 정본으로 다시 받는다
       busy = false;
+      const gen = stateGen;
       const s2 = await (await fetch(api('/api/state'))).json();
-      if (s2.board) { S = s2; syncClocks(); }
-      render(); notice(j.error); return;
+      if (s2.board && gen === stateGen) { S = s2; syncClocks(); }  // 그사이 새 요청이 나갔으면 이 응답은 낡았다
+      render(); notice(j.error);
+      if (path === '/api/play') boardToast(`착수가 받아들여지지 않았습니다 — ${j.error}`);
+      return;
     }
     const prev = S;
     S = j;
+    if (path === '/api/play' && j.error) boardToast(`착수 안 됨 — ${j.error}`);  // 돌이 소리 없이 사라지지 않게
     playSounds(prev, S, path === '/api/play' && !(body && body.pass));
     syncClocks();
-  } catch (e) { S.error = '서버 연결 실패 — run.sh가 켜져 있는지 확인해 주세요'; }
+  } catch (e) {
+    S.error = '서버 연결 실패 — run.sh가 켜져 있는지 확인해 주세요';
+    if (path === '/api/play') boardToast('착수 안 됨 — 서버 연결 실패');
+  }
   busy = false; render();
+}
+
+// 판 위 알림(10-24 착수 거부 버그): 착수가 거부되면 사유를 판 위에 2.5초 — 메시지 줄이 숨겨진 휴대폰에서도 보이게
+let toastTimer = null;
+function boardToast(text) {
+  const t = document.getElementById('boardToast');
+  if (!t) return;
+  t.textContent = text; t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 2500);
 }
 
 // 응답 전후 비교로 엔진 수의 소리를 낸다(내 수의 딱·따냄은 누르는 순간에 이미 냈다)
@@ -1173,9 +1195,11 @@ if (ROOM) {
 if (ROOM) {
   const ping = async () => {
     if (document.visibilityState !== 'visible' || !S || S.stale || S.imported || S.result || (window.RV && window.RV.on)) return;
+    const gen = stateGen, sentBusy = busy;  // 착수 중에 보낸 ping은 서버가 착수 이전 판(캐시)으로 답한다 — 늦게 와도 쓰지 않는다
     try {
       const j = await (await fetch(api('/api/ping'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })).json();
-      if (!j.board || busy) return;
+      // 10-24 버그: 착수보다 늦게 도착한 ping 응답이 착수 이전 판으로 화면을 덮었다(수가 사라짐) — 그사이 요청이 나갔으면 통째로 버림
+      if (!j.board || busy || sentBusy || gen !== stateGen) return;
       if (j.moveNo !== S.moveNo || j.result !== S.result || (S.dc && S.dc.offline)) { S = j; syncClocks(); render(); }  // 장애패·재접속·다른 기기 착수
       else { S.clock = j.clock; S.dc = j.dc; syncClocks(); }
     } catch (e) { /* 연결 끊김 — 서버가 15초 뒤 끊김 처리 */ }
