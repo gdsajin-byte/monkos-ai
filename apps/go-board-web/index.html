@@ -575,7 +575,7 @@ function render() {
   let turn;
   if (S.result) turn = '';
   else if (S.scoring) turn = '사석을 확인하세요';
-  else if (busy) turn = 'KataGo 생각 중';
+  else if (busy) turn = busyPath === '/api/score' ? '집 계산 중' : 'KataGo 생각 중';
   else if (S.toMove === S.user) turn = `작가님(${me}) 차례`;
   else turn = 'KataGo 차례';
   const turnEl = document.getElementById('turn');
@@ -604,10 +604,10 @@ function render() {
   document.getElementById('secScore').hidden = !sc;
   if (sc) {
     document.getElementById('scoreSum').textContent = `흑 ${sc.black}집 · 백 ${sc.white}집 → ${sc.resultKo}`;
+    // 결과는 우리 계산 하나 — KataGo 판정과 다를 때만 사석 확인 안내(10-25 B3, 두 값 나란히 표기 폐지)
     document.getElementById('scoreDetail').textContent =
       `흑 = 집 ${sc.terrB} + 따낸 돌·사석 ${sc.prisB} / 백 = 집 ${sc.terrW} + 따낸 돌·사석 ${sc.prisW} + 덤 ${sc.komi}` +
-      ` (한국 규칙 집 계산) · KataGo 판정: ${sc.kataKo}` +
-      (sc.result !== sc.kata ? ' — 결과가 다르면 사석 표시를 확인해 주세요(돌을 누르면 바뀝니다)' : '');
+      (sc.result !== sc.kata ? ` · KataGo 판정(${sc.kataKo})과 다릅니다 — 사석 표시를 확인해 주세요(돌을 누르면 바뀝니다)` : '');
   }
 
   // 형세분석 — 막대 + 흐름 그래프
@@ -803,11 +803,12 @@ function notice(text) {
   document.getElementById(ROOM ? 'msg' : 'lobbyMsg').textContent = text;
 }
 
+let busyPath = null;  // 지금 보낸 요청(계가 대기 표시 — 10-25 B3)
 let stateGen = 0;  // 서버에 판을 바꾸는 요청을 보낼 때마다 +1 — 그 전에 보낸 조회 응답이 늦게 와도 새 판을 덮지 않게(10-24)
 async function call(path, body) {
   if (busy) { notice('상대가 생각 중입니다'); return; }
   stateGen++;
-  busy = true; render();
+  busy = true; busyPath = path; render();
   try {
     const r = await fetch(api(path), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
     const j = await r.json();
@@ -830,18 +831,19 @@ async function call(path, body) {
     S.error = '서버 연결 실패 — run.sh가 켜져 있는지 확인해 주세요';
     if (path === '/api/play') boardToast('착수 안 됨 — 서버 연결 실패');
   }
-  busy = false; render();
+  busy = false; busyPath = null; render();
 }
 
 // 판 위 알림(10-24 착수 거부 버그): 착수가 거부되면 사유를 판 위에 2.5초 — 메시지 줄이 숨겨진 휴대폰에서도 보이게
 let toastTimer = null;
-function boardToast(text) {
+function boardToast(text, ms = 2500) {  // ms 0 = 끌 때까지(boardToastOff)
   const t = document.getElementById('boardToast');
   if (!t) return;
   t.textContent = text; t.classList.add('on');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('on'), 2500);
+  if (ms) toastTimer = setTimeout(() => t.classList.remove('on'), ms);
 }
+function boardToastOff() { clearTimeout(toastTimer); const t = document.getElementById('boardToast'); if (t) t.classList.remove('on'); }
 
 // 응답 전후 비교로 엔진 수의 소리를 낸다(내 수의 딱·따냄은 누르는 순간에 이미 냈다)
 function playSounds(prev, cur, myStone) {
@@ -994,7 +996,12 @@ document.getElementById('bLobby').onclick = () => { location.href = '/'; };
 document.getElementById('bUndo').onclick = () => call('/api/undo');
 document.getElementById('bSwap').onclick = () => call('/api/swap');
 document.getElementById('bPass').onclick = () => call('/api/play', { pass: true });
-document.getElementById('bScore').onclick = () => { voice(SND && SND.counting); call('/api/score'); };
+document.getElementById('bScore').onclick = async () => {
+  voice(SND && SND.counting);
+  boardToast('집 계산 중…', 0);  // 계가는 엔진 사석·소유권 계산(수 초) — 기다리는 동안 무엇을 하는지 보이게(10-25 B3)
+  await call('/api/score');
+  boardToastOff();
+};
 document.getElementById('bScoreOk').onclick = () => call('/api/score/confirm');
 document.getElementById('bScoreCancel').onclick = () => call('/api/score/cancel');
 document.getElementById('bJudge').onclick = async () => {

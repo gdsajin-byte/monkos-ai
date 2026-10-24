@@ -870,7 +870,7 @@ class Room:
         self.final_count = c
         self.scoring = None
         self.message = (f"계가 확정 — 흑 {c['black']:g} · 백 {c['white']:g}(덤 {c['komi']:g} 포함) → {c['resultKo']}"
-                        f" (KataGo 판정 {c['kataKo']})")
+                        + (f" · KataGo 판정({c['kataKo']})과 달랐음" if c["result"] != c["kata"] else ""))  # 10-25 B3 결과 한 줄
         self.save_sgf()
 
     def cancel_score(self):
