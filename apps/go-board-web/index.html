@@ -289,7 +289,7 @@
     </div>
 
     <div class="tabs" id="tabs">
-      <button data-tab="ai" class="on">AI분석</button>
+      <button data-tab="ai">AI분석</button>
       <button data-tab="shape">형세분석</button>
       <button data-tab="hint">추천수</button>
       <button data-tab="review">대국검토</button>
@@ -470,7 +470,7 @@ function drawStone(x, y, c, opacity) {
                  stroke: c === 'B' ? '#000' : '#888', 'stroke-width': .6, opacity });
 }
 
-let tab = 'ai', hint = null, judge = null, reviewJob = null;
+let tab = null, hint = null, judge = null, reviewJob = null;  // 첫 탭은 판을 받은 뒤 정한다(10-25 B7)
 const komiText = k => { const i = Math.floor(k); return k % 1 ? (i ? `${i}집반` : '반집') : `${i}집`; };
 const colorKo = c => (c === 'B' ? '흑' : '백');
 
@@ -589,6 +589,8 @@ function render() {
   }
 
   // 탭
+  // 첫 화면 탭(10-25 B7): 대국 중엔 형세분석 — AI분석(해설 만들기)은 종국 뒤 기능이라 끝난 판에서만 먼저 연다
+  if (!tab) tab = S.result ? 'ai' : 'shape';
   for (const b of document.querySelectorAll('#tabs button')) b.classList.toggle('on', b.dataset.tab === tab);
   for (const t of ['ai', 'shape', 'hint', 'review', 'more']) document.getElementById('tab-' + t).hidden = t !== tab;
   document.getElementById('secScore').hidden = !sc;
