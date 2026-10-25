@@ -160,6 +160,7 @@ domain: "governance/infrastructure"
 | 2026-10-22 | iMac/쌍아 | **ORDER** 백그라운드 세션 승인 대기 → 텔레그램 알림(Notification 훅+tg_notify) — 10-22 막내3 17분 무신호 정지 대응 | [ORDER_20261022_iMac쌍아_막내_MONK_OS_백그라운드승인대기_텔레그램알림](../../orders/2026-10/ORDER_20261022_iMac쌍아_막내_MONK_OS_백그라운드승인대기_텔레그램알림.md) | ⏳ |
 | 2026-10-22 | iMac/쌍아-막내5 | bg 세션 승인 대기 텔레그램 알림 — Notification 훅 notify_blocked.py 신설(스모크 118/118, 실발송 455) | [COMPLETION_20261022_막내5_190000](../../reports/2026-10/COMPLETION_20261022_막내5_190000.md) | ✅ |
 | 2026-10-25 | iMac/쌍아 | **ORDER** active PF 전수 상태 점검표 — PF마다 마지막 실제 활동·현재 상태·제안 상태(active/paused/completed)·근거 (읽기 전용, 상태 변경 없음) | [ORDER_20261025_iMac쌍아_막내18_MONK_OS_PF상태점검표](../../orders/2026-10/ORDER_20261025_iMac쌍아_막내18_MONK_OS_PF상태점검표.md) | ⏳ |
+| 2026-10-25 | iMac/쌍아-막내18 | **REPORT** REPORT_20261025_iMac쌍아-막내18_MONK_OS_PF상태점검표 | [REPORT_20261025_iMac쌍아-막내18_MONK_OS_PF상태점검표](../../reports/2026-10/REPORT_20261025_iMac쌍아-막내18_MONK_OS_PF상태점검표.md) | 📁 |
 
 ---
 
