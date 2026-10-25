@@ -86,6 +86,7 @@ STRONG_OVR = COMMON_OVR + f",maxVisits={STRONG_VISITS},maxTime={STRONG_TIME}"
 # 승률 그래프(기보 감상) — 국면당 짧은 분석. 10-24 실측: 200방문 0.2~1.1초/국면
 GRAPH_VISITS, GRAPH_MAX_TIME = 200, 0.8  # 한 걸음 상한 0.8초 = 대국 요청이 기다리는 최대치(양보 +1초 이내)
 GRAPH_YIELD_GAP = 0.5  # 대국 요청 뒤 그래프가 비켜 있는 초 — 착수 1번의 검사·응수 사이에 끼지 않게
+GRAPH_IDLE = 15  # 마지막 그래프 요청 뒤 이 초가 지나면 = 보는 화면 없음 → 그 수를 마치고 멈춘다(10-25 보는 곳에서만)
 HUMAN_OVR = COMMON_OVR + ",humanSLProfile=rank_5k,delayMoveScale=0,delayMoveMax=0"
 
 RANKS = [f"{k}k" for k in range(20, 0, -1)] + [f"{d}d" for d in range(1, 10)]
@@ -1760,7 +1761,8 @@ def import_record(name, raw):
 
 class Analyses:
     """방마다 0수~끝 국면을 EngineHub.quick 으로 하나씩 — 대국 요청이 오면 수 단위로 비킨다.
-    캐시 rooms/analysis/{id}.json, 화면을 닫아도 끝까지, 재기동 뒤엔 남은 수부터."""
+    캐시 rooms/analysis/{id}.json. 화면이 요청하는 동안만 계산(마지막 요청 뒤 GRAPH_IDLE초면 멈춤),
+    다시 열면 캐시 다음 수부터. 재기동 때 자동으로 이어 계산하지 않는다(10-25)."""
 
     def __init__(self):
         self.dir = ROOMS_DIR / "analysis"
@@ -1772,6 +1774,10 @@ class Analyses:
         self.stats = {}  # 방 id → {"started": t, "secs": 걸린 초, "points": 계산한 수}
         self.priority = None  # 감상으로 지금 열려 있는 방(10-25 K5) — 줄 맨 앞, 계산 중인 다른 방은 한 수 끝내고 비킨다
         self.asked = {}  # 방 id → 처음 요청 시각(첫 점까지 기다린 초 로그용)
+        self.seen = {}  # 방 id → 마지막 그래프 요청 시각(보는 화면이 있는지)
+
+    def watched(self, rid):
+        return time.time() - self.seen.get(rid, 0) <= GRAPH_IDLE
 
     def load(self, rid):
         if rid not in self.cache:
@@ -1789,22 +1795,20 @@ class Analyses:
         tmp.write_text(json.dumps(self.cache[rid]), encoding="utf-8")
         os.replace(tmp, self.dir / f"{rid}.json")
 
-    def status(self, room, want=True, prio=True):
+    def status(self, room, want=True):
         total = len(room.moves) + 1
         pts = self.load(room.id).get("points", {})
         done = all(str(k) in pts for k in range(total))
         if want and not done:
-            with self.lock:  # 화면이 보고 있는 방 = 맨 앞(K5). 이미 계산 중이면 그대로. 재기동 이어 계산(prio=False)은 줄 끝
-                if prio:
-                    if room.id in self.queue:
-                        self.queue.remove(room.id)
-                    if self.current != room.id:
-                        self.queue.insert(0, room.id)
-                    self.priority = room.id
-                    if not pts:  # 첫 점까지 기다린 시간만 잰다(화면이 2초마다 다시 물어도 1회)
-                        self.asked.setdefault(room.id, time.time())
-                elif room.id not in self.queue and self.current != room.id:
-                    self.queue.append(room.id)
+            with self.lock:  # 화면이 보고 있는 방 = 맨 앞(K5). 이미 계산 중이면 그대로
+                self.seen[room.id] = time.time()
+                if room.id in self.queue:
+                    self.queue.remove(room.id)
+                if self.current != room.id:
+                    self.queue.insert(0, room.id)
+                self.priority = room.id
+                if not pts:  # 첫 점까지 기다린 시간만 잰다(화면이 2초마다 다시 물어도 1회)
+                    self.asked.setdefault(room.id, time.time())
             self.wake.set()
         st = self.stats.get(room.id, {})
         return {"total": total, "count": sum(1 for k in range(total) if str(k) in pts), "done": done,
@@ -1813,24 +1817,15 @@ class Analyses:
                 "running": self.current == room.id, "queued": room.id in self.queue,
                 "secs": st.get("secs"), "visits": GRAPH_VISITS, "firstWait": st.get("firstWait")}
 
-    def resume_all(self):
-        """재기동: 캐시가 있으나 덜 끝난 방을 줄에 다시 세운다."""
-        if not self.dir.exists():
-            return 0
-        n = 0
-        for f in self.dir.glob("*.json"):
-            r = ROOMS.get(f.stem)
-            if r and not self.status(r, want=False)["done"]:
-                self.status(r, prio=False)
-                n += 1
-        return n
-
     def loop(self):
         while True:
             self.wake.wait(5)
             self.wake.clear()
             while True:
                 with self.lock:
+                    self.queue = [q for q in self.queue if self.watched(q)]  # 보는 화면이 끊긴 방은 줄에서 뺀다
+                    if self.priority and not self.watched(self.priority):
+                        self.priority = None
                     rid = self.queue.pop(0) if self.queue else None
                     self.current = rid
                 if not rid:
@@ -1851,11 +1846,15 @@ class Analyses:
         for k in range(total):
             if str(k) in pts:
                 continue
-            if self.priority and self.priority != room.id:  # 다른 방이 감상으로 열림 — 진행분 저장하고 그 방 뒤로
+            if self.priority and self.priority != room.id and self.watched(self.priority):  # 다른 방이 감상으로 열림 — 진행분 저장하고 그 방 뒤로
                 with self.lock:
                     if room.id not in self.queue:
                         self.queue.insert(1 if self.queue and self.queue[0] == self.priority else 0, room.id)
                 print(f"⏸ go-board 그래프 {room.id}: {k}수에서 비킴 → {self.priority}", file=sys.stderr, flush=True)
+                break
+            if not self.watched(room.id):  # 보는 화면 없음 — 진행분 저장하고 멈춤, 다시 열면 이 수부터
+                print(f"⏸ go-board 그래프 {room.id}: {k}/{total}수에서 멈춤 — 보는 화면 없음({GRAPH_IDLE}s)",
+                      file=sys.stderr, flush=True)
                 break
             color = moves[k][0] if k < len(moves) else ("W" if moves and moves[-1][0] == "B" else "B")
             try:
@@ -2265,12 +2264,11 @@ def main():
     global ANALYSES
     ANALYSES = Analyses()
     threading.Thread(target=ANALYSES.loop, daemon=True).start()
-    resumed = ANALYSES.resume_all()
     live = sum(1 for r in ROOMS.rooms.values() if r.status != "ended")
     srv = ThreadingHTTPServer((HOST, PORT), Handler)
     print(f"✅ go-board: http://{HOST}:{PORT}/  (최강 {'OK' if strong.ok else '실패'}, "
           f"급수 {'OK' if ENGINES.human_ok else '비활성: ' + str(ENGINES.human_why())}) · "
-          f"방 {len(ROOMS.rooms)}개 복원(진행 중 {live}, 이전 기보 가져옴 {imported}) · 그래프 이어 계산 {resumed} · 저장소 {ROOMS_DIR}",
+          f"방 {len(ROOMS.rooms)}개 복원(진행 중 {live}, 이전 기보 가져옴 {imported}) · 저장소 {ROOMS_DIR}",
           flush=True)
     for line in migrated:  # 기동 줄 뒤에(run.sh 는 첫 줄만 보인다)
         print(f"✅ go-board 마이그레이션 {line}", flush=True)

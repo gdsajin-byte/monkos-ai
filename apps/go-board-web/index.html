@@ -332,8 +332,7 @@
       <section id="tab-shape" hidden>
         <div class="barlbl"><span>흑</span><span id="scoreTxt">형세 —</span><span>백</span></div>
         <div class="bar"><div class="b" id="barB" style="width:50%"></div><div class="w"></div></div>
-        <svg id="spark" viewBox="0 0 300 80" style="width:100%;height:90px;background:#fafbfc;border-radius:6px"></svg>
-        <div class="small">수마다 KataGo가 본 흑 기준 점수 흐름(위 = 흑 유리). AI 판정은 아래 버튼 줄의 'AI 판정'.</div>
+        <div class="small">AI 판정은 아래 버튼 줄의 'AI 판정'. 승률 그래프는 대국이 끝난 뒤 '기보 감상'에서 봅니다.</div>
         <div class="small" id="judgeTxt"></div>
       </section>
       <section id="tab-hint" hidden>
@@ -624,14 +623,6 @@ function render() {
     document.getElementById('barB').style.width = '50%';
     document.getElementById('scoreTxt').textContent = '형세 —';
   }
-  const sp = document.getElementById('spark');
-  sp.innerHTML = '';
-  const pts = S.scores || [];
-  const lim = Math.max(10, ...pts.map(p => Math.abs(p[1])));
-  const sx = i => 6 + (i / Math.max(1, pts.length - 1)) * 288, sy = v => 40 - (v / lim) * 34;
-  const line = (x1, y1, x2, y2, c, w) => { const l = document.createElementNS(NS, 'line'); for (const [k, v] of Object.entries({ x1, y1, x2, y2, stroke: c, 'stroke-width': w })) l.setAttribute(k, v); sp.appendChild(l); };
-  line(0, 40, 300, 40, '#c9ced6', 1);
-  for (let i = 1; i < pts.length; i++) line(sx(i - 1), sy(pts[i - 1][1]), sx(i), sy(pts[i][1]), '#24272c', 2);
   document.getElementById('judgeTxt').textContent = judge ? `AI 판정(${judge.moveNo}수 시점): ${judge.resultKo}` : '';
 
   // 추천수 목록 — 승률·점수는 지금 둘 쪽 기준
@@ -1540,12 +1531,14 @@ function rvGraph() {
     `${cur && cur[1] !== null ? `${RV.k}수 흑 승률 ${(cur[1] * 100).toFixed(1)}% · ${cur[2] >= 0 ? '흑' : '백'} ${Math.abs(cur[2]).toFixed(1)}집` : `${RV.k}수 —`}` +
     (G.done ? '' : ` · 분석 ${G.count}/${G.total}`);
 }
-async function rvPollGraph() {
-  if (!RV.on) return;
+async function rvPollGraph() {  // 보는 동안만 묻는다 — 서버는 마지막 요청 뒤 15초면 계산을 멈춘다(10-25)
+  clearTimeout(RV.graphTimer); RV.graphTimer = null;
+  if (!RV.on || document.hidden) return;  // 숨겨지면 묻지 않음 → 다시 보이면 이어서
   try { RV.graph = await (await fetch(api('/api/analysis'))).json(); } catch (e) { /* 다음에 다시 */ }
   if (RV.on) rvGraph();
-  if (RV.on && RV.graph && !RV.graph.done) RV.graphTimer = setTimeout(rvPollGraph, document.hidden ? 6000 : 2000);
+  if (RV.on && RV.graph && !RV.graph.done) RV.graphTimer = setTimeout(rvPollGraph, 2000);
 }
+document.addEventListener('visibilitychange', () => { if (!document.hidden && RV.on && !(RV.graph && RV.graph.done)) rvPollGraph(); });
 function rvEnter() {
   if (!S || S.stale || !S.moveList) return;
   RV.base = S; RV.pos = buildPositions(S); RV.on = true; RV.trial = []; RV.graph = null;
