@@ -55,8 +55,8 @@
       <div id="shotList" class="flex flex-wrap gap-3"></div>
     </div>
 
-    <!-- 주문 항목 (업로드 후 나타남) -->
-    <div id="items" hidden>
+    <!-- 주문 항목 — 사진 올리기 전에도 사이즈·금액을 먼저 볼 수 있게 늘 보인다 -->
+    <div id="items">
       <p class="font-bold mb-1">어떤 사이즈로 몇 장 인화할까요</p>
       <p class="text-sm text-gray-500 mb-4">사이즈가 여러 개면 <b>항목 추가</b>를 눌러 줄을 늘려주세요.</p>
 
@@ -222,7 +222,8 @@ lucide.createIcons();
 
       var left = document.createElement('div');
       left.className = 'flex-1 space-y-2';
-      left.appendChild(sel); left.appendChild(inp);
+      if (shotsData.length) left.appendChild(sel);   // 사진이 있을 때만 어떤 사진인지 고른다
+      left.appendChild(inp);
       if (i === 0) left.appendChild(hint);
 
       var kill = document.createElement('button');
@@ -361,7 +362,6 @@ lucide.createIcons();
     var has = shotsData.length > 0;
     shotCount.textContent = shotsData.length + '장';
     shots.hidden = !has;
-    if (items) items.hidden = !has;
     drawRows();
   }
 
