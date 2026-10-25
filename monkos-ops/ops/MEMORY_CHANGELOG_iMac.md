@@ -712,3 +712,10 @@
 | 2026-10-25 00:27 | 추가 | feedback_decline_via_constitution_not_lecture.md — 거절은 조항 인용·대안·청구, 훈계 금지(+00:36 근거 정밀 제언) | iMac/쌍아 |
 | 2026-10-25 13:34 | 갱신 | project_go_commentary_llm_vision.md — PF_GO 정본 포인터 | iMac/쌍아 |
 | 2026-10-25 13:46 | 추가 | feedback_pf_status_leave_active.md — PF status 정리 제안 금지 | iMac/쌍아 |
+| 2026-10-25 16:09 | 추가 | project_humanities_sensibility_layer.md — 범생이 LLM에 서사 감성·캐릭터 이해·인문학 감성 씌우기가 핵심(바둑 해설·무협 서사 게임 공통) | iMac/쌍아 |
+| 2026-10-25 16:09 | 정리 | MEMORY.md 169→139줄 압축(훅 경고) — 폴더 위상 표를 references.md 포인터 1줄로, 운영 철학·연락처 섹션 병합, 빈 줄 제거. 링크 전수 보존 대조 | iMac/쌍아 |
+| 2026-10-25 16:27 | 갱신 | feedback_pf_status_leave_active.md — 근거 보강: PF=초기 세계관 하나의 가지(모델스 이미지→영상, 2D→3D), 새 구상은 기존 PF 다음 단계로 읽기 | iMac/쌍아 |
+| 2026-10-25 16:29 | 추가 | project_monk_models_character_assets.md — 모델스=세계관 초기 이미지판, 이너웨어=최난도 돌파 전략, 다인·유니 자산 위치 | iMac/쌍아 |
+| 2026-10-25 18:57 | 갱신 | project_monk_models_character_assets.md — 폴더=한 캐릭터(작가님 분류), 스타일링 차이를 다른 인물로 판정 금지 | iMac/쌍아 |
+| 2026-10-25 19:02 | 갱신 | project_monk_models_character_assets.md — 작가님 컨셉: 품위 있는 섹시함, 이너 베이스 위 레이어드 패션 모델 목표 | iMac/쌍아 |
+| 2026-10-25 19:04 | 갱신 | project_monk_models_character_assets.md — Imagen 4 초기 제작·재생성 불가 자산, Kling 이너 광고 생성 가능 실측 | iMac/쌍아 |
