@@ -719,3 +719,12 @@
 | 2026-10-25 18:57 | 갱신 | project_monk_models_character_assets.md — 폴더=한 캐릭터(작가님 분류), 스타일링 차이를 다른 인물로 판정 금지 | iMac/쌍아 |
 | 2026-10-25 19:02 | 갱신 | project_monk_models_character_assets.md — 작가님 컨셉: 품위 있는 섹시함, 이너 베이스 위 레이어드 패션 모델 목표 | iMac/쌍아 |
 | 2026-10-25 19:04 | 갱신 | project_monk_models_character_assets.md — Imagen 4 초기 제작·재생성 불가 자산, Kling 이너 광고 생성 가능 실측 | iMac/쌍아 |
+| 2026-10-25 21:15 | 갱신 | project_platform_vs_single_identity.md — 여러 개 동시=숙제 증가, 하나라도 시장에(specs) 원칙 | iMac/쌍아 |
+| 2026-10-25 21:19 | 갱신 | feedback_pf_status_leave_active.md — PF 철학: 살아 있는 프로젝트·미완의 자산 | iMac/쌍아 |
+| 2026-10-25 21:25 | 갱신 | feedback_pf_status_leave_active.md — 쉬는 PF=도구 성숙 대기(VTON·SPREAD·VIDEO·PRESENTATION) | iMac/쌍아 |
+| 2026-10-25 21:28 | 갱신 | feedback_pf_status_leave_active.md — 시차 우위: PF=아직 없는 것까지 품은 비전이자 현재 | iMac/쌍아 |
+| 2026-10-25 21:30 | 추가 | project_soso_design_lead.md — 소소 디자인 TF 리드 기록 위치·빈칸 실측 | iMac/쌍아 |
+| 2026-10-25 21:35 | 갱신 | project_soso_design_lead.md — 프론트·디자인=노동집약·시장 접점 진단 | iMac/쌍아 |
+| 2026-10-25 21:38 | 갱신 | project_soso_design_lead.md — 라이브 UI 체험·비교 단계=디자인 영역 해법 | iMac/쌍아 |
+| 2026-10-25 21:50 | 갱신 | project_process_as_curriculum_continuity.md — 수동 경험=장애 대응력(에이전트 경로 공식화 맥락) | iMac/쌍아 |
+| 2026-10-25 21:59 | 갱신 | project_monkos_sovereignty.md — 손오공·근두운 선언 | iMac/쌍아 |
