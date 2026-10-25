@@ -624,3 +624,10 @@
 >   ⚠️ 인벤토리 미등재: TYGEM_PASSWORD
 ```
 - ⚠️ 경보 표식 4건 (스냅샷 /Users/jeong-kyushin/.monkos/patrol/snap_20261024.txt 참조)
+
+## [2026-10-25 09:30 KST] 순찰 감지
+```diff
+< ## secret map (2026-10-24 09:30)
+> ## secret map (2026-10-25 09:30)
+```
+- ⚠️ 경보 표식 4건 (스냅샷 /Users/jeong-kyushin/.monkos/patrol/snap_20261025.txt 참조)
