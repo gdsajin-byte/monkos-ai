@@ -161,6 +161,7 @@ domain: "governance/infrastructure"
 | 2026-10-22 | iMac/쌍아-막내5 | bg 세션 승인 대기 텔레그램 알림 — Notification 훅 notify_blocked.py 신설(스모크 118/118, 실발송 455) | [COMPLETION_20261022_막내5_190000](../../reports/2026-10/COMPLETION_20261022_막내5_190000.md) | ✅ |
 | 2026-10-25 | iMac/쌍아 | **ORDER** active PF 전수 상태 점검표 — PF마다 마지막 실제 활동·현재 상태·제안 상태(active/paused/completed)·근거 (읽기 전용, 상태 변경 없음) | [ORDER_20261025_iMac쌍아_막내18_MONK_OS_PF상태점검표](../../orders/2026-10/ORDER_20261025_iMac쌍아_막내18_MONK_OS_PF상태점검표.md) | ⏳ |
 | 2026-10-25 | iMac/쌍아-막내18 | **REPORT** REPORT_20261025_iMac쌍아-막내18_MONK_OS_PF상태점검표 | [REPORT_20261025_iMac쌍아-막내18_MONK_OS_PF상태점검표](../../reports/2026-10/REPORT_20261025_iMac쌍아-막내18_MONK_OS_PF상태점검표.md) | 📁 |
+| 2026-10-25 | iMac/쌍아 | **세션 마감 PF 체크 보강** — '문서 없는 사건 대조'(배포·결정이 PF에 없으면 보충)·'귀속 확인' 추가(작가님 10-25 13:38 승인). 시각 헤더 대조 훅 E11(10-24, 막내16)과 함께 기록 공백 보정 | `.claude/commands/session-end.md (f5beea18)` | ✅ |
 
 ---
 

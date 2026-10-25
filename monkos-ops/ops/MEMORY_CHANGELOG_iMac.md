@@ -706,3 +706,9 @@
 | 2026-10-23 16:45 | 추가 | project_go_commentary_llm_vision.md — 바둑 해설 LLM 자산화 구상·인간적 AI 지향 | iMac/쌍아 |
 | 2026-10-23 22:51 | 추가 | project_legal_monitoring_practice.md — 법규 선제 수집·RAG화·개정 감시 절차 | iMac/쌍아 |
 | 2026-10-23 22:53 | 갱신 | feedback_license_warnings_at_launch.md — 기획 단계 규제 경보 선행 금지로 일반화(당일 2차 교정) | iMac/쌍아 |
+| 2026-10-24 21:25 | 추가 | feedback_small_orders_basics_first.md — 지시서 작은 단위·기본기능 먼저 | iMac/쌍아 |
+| 2026-10-24 22:30 | 추가 | project_cdp_site_card_direction.md — UI 레퍼런스 직접 체험·CDP 사이트 카드(PF_CDP/sites) | iMac/쌍아 |
+| 2026-10-25 00:23 | 추가 | project_ai_human_interaction_principle_pending.md — AI 사람 대면 원칙 정리 예정(작가님 축: 범죄·시장 질서·사회 혼란·과도 손실) | iMac/쌍아 |
+| 2026-10-25 00:27 | 추가 | feedback_decline_via_constitution_not_lecture.md — 거절은 조항 인용·대안·청구, 훈계 금지(+00:36 근거 정밀 제언) | iMac/쌍아 |
+| 2026-10-25 13:34 | 갱신 | project_go_commentary_llm_vision.md — PF_GO 정본 포인터 | iMac/쌍아 |
+| 2026-10-25 13:46 | 추가 | feedback_pf_status_leave_active.md — PF status 정리 제안 금지 | iMac/쌍아 |
