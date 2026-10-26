@@ -15,6 +15,7 @@ subject: 뮤즈 캐릭터 생성 원장 — 캐릭터 공용 (시도·비용·�
 > 목적: 캐릭터 품질·정체성을 지키면서 콘텐츠를 쌓는다(작가님 10-26 18:24). 생성 1콜 = 1행. 실패·차단·오생성도 반드시 적는다 — 그래야 **재시도 배수**가 나온다.
 > 캐릭터 기준: [SIYA_BIBLE.md](SIYA_BIBLE.md) (시야). 다른 캐릭터 바이블이 생기면 같은 폴더에 둔다.
 > 결과 파일은 레포에 넣지 않는다 — 경로만 적는다. `scratchpad/` = `/private/tmp/claude-501/-Users-jeong-kyushin-developer-monk-project/a0c295e0-bc70-42c8-a981-d92798483f3f/scratchpad/` (**임시 폴더 — 재부팅·정리 시 소실 위험**).
+> **보관 사본(10-26 18:37 쌍아, 작가님 "복사해")**: 위 `scratchpad/` 전체를 `~/Desktop/iMac_archive/monk_assets/generated/2026-10/session_a0c295e0_1025-1026/`에 복사(144파일, MD5 전수 일치). 원장의 `scratchpad/…` 경로는 이 폴더의 같은 하위 경로로 읽는다 — 임시 폴더 원본은 재부팅 시 사라질 수 있다.
 
 ## 기입 규칙
 
