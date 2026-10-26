@@ -728,3 +728,5 @@
 | 2026-10-25 21:38 | 갱신 | project_soso_design_lead.md — 라이브 UI 체험·비교 단계=디자인 영역 해법 | iMac/쌍아 |
 | 2026-10-25 21:50 | 갱신 | project_process_as_curriculum_continuity.md — 수동 경험=장애 대응력(에이전트 경로 공식화 맥락) | iMac/쌍아 |
 | 2026-10-25 21:59 | 갱신 | project_monkos_sovereignty.md — 손오공·근두운 선언 | iMac/쌍아 |
+| 2026-10-25 22:52 | 갱신 | feedback_license_warnings_at_launch.md — 트렌드 대화에 우려 꼬리표 재발 교정 | iMac/쌍아 |
+| 2026-10-25 22:55 | 갱신 | project_humanities_sensibility_layer.md — 장삼이사·살아 있는 NPC 게임 축 연결 | iMac/쌍아 |
