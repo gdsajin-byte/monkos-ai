@@ -120,3 +120,5 @@
 {"ts": "2026-10-26 06:32 KST", "id": 189, "event": "resolve", "evidence": "06:30 claude agents --json 3건(대조군: 민아·쌍아·헤드리스 인식) 중 막내9 부재 — blocked 해소. worktree makne9-gemini3x 05287ce3 커밋 없음·미커밋 0", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-10-26 06:32 KST", "id": 187, "event": "note", "text": "06:31 origin/main 5feacf9a 기준 monkos_AI gemini-2.5-flash 22행(_legacy 제외, 전일 동일). 가드 세션 막내9는 종료됐고 산출 커밋 없음 — 재지시 필요. 라이브 6표면 200", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-10-26 06:32 KST", "id": 181, "event": "note", "text": "06:31 portal 00569-9mk 동일 리비전, 평문 의심 6 그대로. GOOGLE_CLIENT_SECRET SM 없음(대조군 TX_API_KEY 있음)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-27 06:32 KST", "id": 187, "event": "note", "text": "06:32 정정: 산출 있음 — worktree-makne9-gemini3x 미머지 3커밋(c15534fb 2.5→3.5 이전 8파일 -22행·ff00ca47·05287ce3 COMPLETION 'dev 완료·prod 승인 대기'). origin/main 잔존 22행 그대로. 10-26 브리핑 '산출 0'은 미커밋만 본 오판. 다음 1수=쌍아 추인→머지→prod 배포 승인(작가님)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-27 06:32 KST", "id": 181, "event": "note", "text": "06:31 재측정 portal 00569-9mk 평문 의심 6 동일, SM GOOGLE_CLIENT_SECRET 없음(대조군 TX_API_KEY 있음)", "by": "iMac/민아-헤드리스"}
