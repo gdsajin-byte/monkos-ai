@@ -85,3 +85,26 @@ iMac 매팅 서버와 터널은 건드리지 않았습니다. 불통 재현은 d
    - `public/js/specs-funnel.js`는 엣지 `ASSETS`가 서빙합니다(`edge/worker.mjs` 2단계 정적 자산).
    - 엣지를 빼면 서버만 `engineReady`를 내보내고 화면은 구본 그대로 남습니다(무음 구본).
 3. 라이브 검증(live-verify 2회 히트): specs 4언어 URL에서 `engineBackupNotice` 인라인을 확인하고, `specs-funnel.js?v=` 리비전이 바뀌었는지 확인합니다. 이후 1~2일간 `RUNPOD_USAGE.jsonl`의 delta가 0 근처인지(워밍 소멸) 대조합니다.
+
+## 후속 (18:50 ORDER)
+
+**[2026-10-27 18:55 KST]** iMac/쌍아-막내21 → iMac/쌍아
+
+> 지시서: `ORDER_20261027_iMac쌍아_막내21_INFRA_백업알림사유분리_id_vi.md` (출처: 작가님 18:49 "A 배포 승인", 쌍아 전달). origin/main `2a1af7bc`을 fast-forward로 머지한 뒤 착수했습니다.
+
+| 커밋 | 내용 |
+|---|---|
+| `10f818b1` [fix] | `matte.js`: `backupAlertText(slug, sec, reason)`을 새로 만들고(export, 테스트용 순수 함수) `alertMatteBackup`에 reason을 넘깁니다. 라벨은 프리플라이트 불통→iMac 불통 / 포화 초과→iMac 포화 / 호출 실패→iMac 호출 실패 / 그 외·null→iMac 불통입니다. 쿨다운 키·체인 동작·`[Matte] BACKUP` 로그 형식은 바꾸지 않았습니다. `__tests__/matte.test.js`에 테스트 2건 추가 |
+| `3704c757` [feat] | `specs-i18n.js`: id·vi 블록에 3키를 지시서 문구 그대로 넣었습니다. 위치는 ko~es와 같은 `v2.js`이고, 블록 구조가 같으며 폴백이 없는 것을 확인했습니다 |
+
+dev rev는 **`monkos-portal-dev-00204-qwr`**(deploy.sh dev)입니다. dev env는 바꾸지 않았고(MATTE_API_URLS 원본 값, 18:55 실측), iMac 서버·터널은 건드리지 않았습니다.
+
+| 검증 | 판정 | 방법 |
+|---|---|---|
+| jest 전량 + 사유 라벨 매핑 | ✅ | `npm test` 13 suites / **138 tests** 전부 통과. 사유 3종은 정확한 문자열로, null·미지값은 iMac 불통으로 확인했습니다. 텔레그램 실발송은 하지 않았습니다 |
+| id·vi 3키 렌더 | ✅ | ① 헤드리스 크롬(별도 포트 9333)으로 실제 업로드하고 precheck 응답만 페이지 내 래퍼로 `engineReady:false`로 바꿨습니다. `#v2-engine-notice`에 실제 렌더된 텍스트가 id·vi 지시서 문구와 일치합니다. ② `genBackupWorking`·`genRefundAssure`는 서빙 마크업 인라인(`CFG.t`)에 들어간 것을 URL당 2회 히트로 확인했습니다 |
+| 내부 명칭 노출 0 | ✅ | id·vi 화면 텍스트에서 `iMac/RunPod/runpod/matte-imac/Gemini` 0건, 페이지 HTML에서 `imac|runpod` 0건 |
+
+`genRefundAssure` 노출 조건은 기존과 같습니다(유료 `doGenerate` 25s~ 한정, 프론트 코드 무변경).
+
+prod 반영 절차도 앞 절과 같습니다. 포털 `deploy.sh prod`에 더해 **엣지 `edge/deploy.sh` 재배포가 필수**입니다(i18n이 SSG 정적본에 인라인되기 때문). 집행은 쌍아가 작가님 승인 토큰으로 합니다.
