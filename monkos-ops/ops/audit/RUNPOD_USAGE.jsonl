@@ -7,3 +7,8 @@
 {"ts":"2026-10-22 20:33:27 KST","completed":2506,"failed":0,"inQueue":0,"w_idle":3,"w_ready":3,"w_running":0,"w_init":0,"w_throttled":0,"delta":410}
 {"ts":"2026-10-22 21:31:45 KST","completed":2506,"failed":0,"inQueue":0,"w_idle":0,"w_ready":0,"w_running":0,"w_init":0,"w_throttled":3,"delta":0}
 {"ts":"2026-10-26 09:00:03 KST","completed":2568,"failed":0,"inQueue":0,"w_idle":3,"w_ready":3,"w_running":0,"w_init":0,"w_throttled":0,"delta":62}
+{"ts":"2026-10-27 16:57:33 KST","completed":2599,"failed":0,"inQueue":0,"w_idle":1,"w_ready":1,"w_running":1,"w_init":0,"w_throttled":1,"delta":31}
+{"ts":"2026-10-27 16:57:54 KST","completed":2599,"failed":0,"inQueue":0,"w_idle":1,"w_ready":1,"w_running":1,"w_init":0,"w_throttled":1,"delta":0}
+{"ts":"2026-10-27 16:58:32 KST","completed":2599,"failed":0,"inQueue":0,"w_idle":2,"w_ready":2,"w_running":1,"w_init":0,"w_throttled":0,"delta":0}
+{"ts":"2026-10-27 16:59:06 KST","completed":2601,"failed":0,"inQueue":0,"w_idle":2,"w_ready":2,"w_running":1,"w_init":0,"w_throttled":0,"delta":2}
+{"ts":"2026-10-27 17:14:41 KST","completed":2601,"failed":0,"inQueue":0,"w_idle":3,"w_ready":3,"w_running":0,"w_init":0,"w_throttled":0,"delta":0}
