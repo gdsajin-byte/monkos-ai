@@ -122,3 +122,5 @@
 {"ts": "2026-10-26 06:32 KST", "id": 181, "event": "note", "text": "06:31 portal 00569-9mk 동일 리비전, 평문 의심 6 그대로. GOOGLE_CLIENT_SECRET SM 없음(대조군 TX_API_KEY 있음)", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-10-27 06:32 KST", "id": 187, "event": "note", "text": "06:32 정정: 산출 있음 — worktree-makne9-gemini3x 미머지 3커밋(c15534fb 2.5→3.5 이전 8파일 -22행·ff00ca47·05287ce3 COMPLETION 'dev 완료·prod 승인 대기'). origin/main 잔존 22행 그대로. 10-26 브리핑 '산출 0'은 미커밋만 본 오판. 다음 1수=쌍아 추인→머지→prod 배포 승인(작가님)", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-10-27 06:32 KST", "id": 181, "event": "note", "text": "06:31 재측정 portal 00569-9mk 평문 의심 6 동일, SM GOOGLE_CLIENT_SECRET 없음(대조군 TX_API_KEY 있음)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-28 06:31 KST", "id": 187, "event": "note", "text": "10-28 06:31 재측정: origin/main(0f8909e5) gemini-2.5-flash 22행 잔존, 막내9 브랜치 c15534fb·ff00ca47·05287ce3 미머지 유지. 8일 경과", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-28 06:31 KST", "id": 181, "event": "note", "text": "10-28 06:30 재측정: portal 새 리비전 00570-22q(10-27 배포)에도 평문 의심 6 동일. SM GOOGLE_CLIENT_SECRET 부재(대조군 TX_API_KEY 존재)", "by": "iMac/민아-헤드리스"}
