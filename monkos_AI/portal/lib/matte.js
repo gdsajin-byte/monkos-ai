@@ -241,11 +241,18 @@ function alertMatteDown(reason) {
   sendTelegramMessage(TEAM_CHAT_ID, `🚨 *matte 전 엔드포인트 장애 — Gemini L3 폴백 가동*\n사유: ${reason}\n→ 4060/RunPod 상태 확인 필요`, TELEGRAM_TEAM_API).catch(() => {});
 }
 
-function alertMatteBackup(slug, sec) {
+// 백업 사유 → 팀 알림 라벨 (2026-10-27 후속 ORDER — 포화로 넘어간 건을 '불통'으로 오기하지 않게)
+const BACKUP_ALERT_LABELS = { '프리플라이트 불통': 'iMac 불통', '포화 초과': 'iMac 포화', '호출 실패': 'iMac 호출 실패' };
+export function backupAlertText(slug, sec, reason) {
+  const label = BACKUP_ALERT_LABELS[reason] || 'iMac 불통';
+  return `${ENV_TAG}⚠️ 매팅 백업 전환 — ${label}, RunPod 처리 (${slug}, ${sec}s)`;
+}
+
+function alertMatteBackup(slug, sec, reason) {
   const now = Date.now();
   if (!TEAM_CHAT_ID || now - lastBackupAlertAt < ALERT_COOLDOWN_MS) return;
   lastBackupAlertAt = now;
-  sendTelegramMessage(TEAM_CHAT_ID, `${ENV_TAG}⚠️ 매팅 백업 전환 — iMac 불통, RunPod 처리 (${slug}, ${sec}s)`, TELEGRAM_TEAM_API).catch(() => {});
+  sendTelegramMessage(TEAM_CHAT_ID, backupAlertText(slug, sec, reason), TELEGRAM_TEAM_API).catch(() => {});
 }
 
 /** 백업(RunPod) 처리 성공 시 — 사후 집계 로그 + 팀 알림. 자체 서버를 건너뛴 사유가 있을 때만. */
@@ -253,7 +260,7 @@ function noteBackup(url, slug, reason, startedAt) {
   if (!isRunpod(url) || !reason) return;
   const sec = ((Date.now() - startedAt) / 1000).toFixed(1);
   log(`[Matte] BACKUP via=runpod reason=${reason} cold=${sec}s slug=${slug}`, 'WARNING');
-  alertMatteBackup(slug, sec);
+  alertMatteBackup(slug, sec, reason);
 }
 
 /** 매팅 결과 → 300dpi 스탬프 PNG. 성공 경로 공용부. */

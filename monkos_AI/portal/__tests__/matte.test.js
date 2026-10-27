@@ -13,7 +13,7 @@ jest.unstable_mockModule('../lib/shared/config.js', () => ({
   TEAM_CHAT_ID: '',
 }));
 
-const { getSpecBgColor, matteEnabled, matteSpecPipeline } = await import('../lib/matte.js');
+const { getSpecBgColor, matteEnabled, matteSpecPipeline, backupAlertText } = await import('../lib/matte.js');
 const { createRequire } = await import('module');
 const SPECS_DATA = createRequire(import.meta.url)('../lib/cms/specs-data.json');
 
@@ -79,5 +79,17 @@ describe('규격 안착 가드 (배치 복원 후 warn-only 캘리브레이션 �
     expect(cropMetaWithinSpec({ crownMarginMM: '5.4', eyePositionPercent: '39.7' })).toBe(true);  // warn-only
     expect(cropMetaWithinSpec({ crownMarginMM: '16.7', eyePositionPercent: '72.4' })).toBe(true);  // warn-only
     expect(cropMetaWithinSpec({})).toBe(true);
+  });
+});
+
+describe('백업 전환 알림 문구 — 사유별 라벨 (2026-10-27 후속 ORDER)', () => {
+  test('사유 3종 → 라벨 매핑', () => {
+    expect(backupAlertText('kr-passport', '14.8', '프리플라이트 불통')).toBe('⚠️ 매팅 백업 전환 — iMac 불통, RunPod 처리 (kr-passport, 14.8s)');
+    expect(backupAlertText('kr-passport', '3.0', '포화 초과')).toBe('⚠️ 매팅 백업 전환 — iMac 포화, RunPod 처리 (kr-passport, 3.0s)');
+    expect(backupAlertText('kr-passport', '2.1', '호출 실패')).toBe('⚠️ 매팅 백업 전환 — iMac 호출 실패, RunPod 처리 (kr-passport, 2.1s)');
+  });
+  test('그 외·null → iMac 불통', () => {
+    expect(backupAlertText('us-visa', '1.0', null)).toContain('— iMac 불통,');
+    expect(backupAlertText('us-visa', '1.0', '미지')).toContain('— iMac 불통,');
   });
 });
