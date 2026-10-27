@@ -45,6 +45,8 @@ const MATTE_QUEUE_WAIT_MS = Number(process.env.MATTE_QUEUE_WAIT_MS || 20000);
 const MATTE_QUEUE_KNOCK_MS = 2000; // 서버가 Retry-After를 안 줄 때의 노크 간격
 const ALERT_COOLDOWN_MS = 10 * 60 * 1000; // 장애 경보 폭주 방지
 let lastAlertAt = 0;
+let lastBackupAlertAt = 0; // 백업 전환 알림 — '전 엔드포인트 실패' 경보와 쿨다운 키 분리
+const ENV_TAG = /-dev$/.test(process.env.K_SERVICE || '') ? '[dev] ' : '';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -134,28 +136,55 @@ function authHeaders(url) {
 const WARMUP_IMAGE_B64 = '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==';
 
 /**
- * matte 엔진 예열 (fire-and-forget) — 자체 서버형은 /health, RunPod은 초소형 실잡으로
- * 워커를 미리 기동 (유휴 후 첫 활성화 30s+가 30s 예산을 초과하는 실측 대응, idleTimeout 90s와 짝).
- * 결제 전 precheck 시점 + 생성 시작 시점에서 호출.
+ * 엔진 상태 판정 (2026-10-27 DESIGN 매팅워밍조건부 §2-1) — 1순위 자체 서버 /health로 생사를 본다.
+ * 'primary' = 자체 서버 정상(백업 불요) / 'backup' = 자체 서버 불통 → 백업(RunPod)이 처리.
+ * 60초 캐시 — 같은 요청 흐름의 precheck·generate가 같은 판정을 공유한다. 동시 조회는 1회로 합친다.
+ * 자체 서버형이 체인에 없으면(RunPod 단독 구성) 'primary' — 그 구성에선 RunPod이 정상 경로다.
+ */
+const ENGINE_STATE_TTL_MS = 60 * 1000;
+let engineState = null;     // 'primary' | 'backup'
+let engineStateAt = 0;
+let engineStateProbe = null;
+export function getMatteEngineState() {
+  if (engineState && Date.now() - engineStateAt < ENGINE_STATE_TTL_MS) return Promise.resolve(engineState);
+  if (engineStateProbe) return engineStateProbe;
+  const primary = MATTE_API_URLS.find((u) => !isRunpod(u));
+  if (!primary) return Promise.resolve('primary');
+  engineStateProbe = isAlive(primary).then((alive) => {
+    engineState = alive ? 'primary' : 'backup';
+    engineStateAt = Date.now();
+    return engineState;
+  }).finally(() => { engineStateProbe = null; });
+  return engineStateProbe;
+}
+
+/**
+ * matte 엔진 예열 (fire-and-forget 가능, 판정 state 반환) — 결제 전 precheck·생성 시작 시점에서 호출.
+ * 2026-10-27 조건부화: 1순위 자체 서버가 살아 있으면 RunPod 워밍을 하지 않는다(백업 전용).
+ *   근거: 10-22~27 출력 62건 전부 자체 서버, RunPod 완료 +62는 전부 이 함수의 워밍 잡(과금만 발생).
+ * 자체 서버 불통일 때만 RunPod에 초소형 실잡을 보내 워커를 미리 기동 (콜드 16s+를 결제·검수 시간에 흡수).
+ * 자체 서버형의 예열은 getMatteEngineState()의 /health 조회가 겸한다.
  */
 let lastWarmupAt = 0;
-export function warmupMatteEngine() {
+export async function warmupMatteEngine() {
+  const state = await getMatteEngineState().catch(() => 'primary');
+  const hasPrimary = MATTE_API_URLS.some((u) => !isRunpod(u));
+  if (hasPrimary && state === 'primary') return state;
   // 60s 쿨다운 — precheck·생성이 연달아 불러도 워밍 잡이 워커를 중복 점유하지 않게
   const now = Date.now();
-  if (now - lastWarmupAt < 60 * 1000) return;
+  if (now - lastWarmupAt < 60 * 1000) return state;
   lastWarmupAt = now;
   for (const url of MATTE_API_URLS) {
-    if (isRunpod(url)) {
-      fetch(`${url.replace(/\/$/, '')}/run`, {
-        method: 'POST',
-        headers: authHeaders(url),
-        body: JSON.stringify({ input: { image: WARMUP_IMAGE_B64, bgColor: '#FFFFFF' } }),
-        signal: AbortSignal.timeout(10000),
-      }).catch(() => {});
-      continue;
-    }
-    fetch(`${url}/health`, { signal: AbortSignal.timeout(20000) }).catch(() => {});
+    if (!isRunpod(url)) continue;
+    log(`[Matte] 백업 워밍 발사 (자체 서버 ${hasPrimary ? '불통' : '미구성'}) → RunPod /run`, 'INFO');
+    fetch(`${url.replace(/\/$/, '')}/run`, {
+      method: 'POST',
+      headers: authHeaders(url),
+      body: JSON.stringify({ input: { image: WARMUP_IMAGE_B64, bgColor: '#FFFFFF' } }),
+      signal: AbortSignal.timeout(10000),
+    }).catch(() => {});
   }
+  return state;
 }
 
 /** 생사 프리플라이트 — 4060 등 자체 서버형만. RunPod 큐형은 항상 통과. */
@@ -212,6 +241,21 @@ function alertMatteDown(reason) {
   sendTelegramMessage(TEAM_CHAT_ID, `🚨 *matte 전 엔드포인트 장애 — Gemini L3 폴백 가동*\n사유: ${reason}\n→ 4060/RunPod 상태 확인 필요`, TELEGRAM_TEAM_API).catch(() => {});
 }
 
+function alertMatteBackup(slug, sec) {
+  const now = Date.now();
+  if (!TEAM_CHAT_ID || now - lastBackupAlertAt < ALERT_COOLDOWN_MS) return;
+  lastBackupAlertAt = now;
+  sendTelegramMessage(TEAM_CHAT_ID, `${ENV_TAG}⚠️ 매팅 백업 전환 — iMac 불통, RunPod 처리 (${slug}, ${sec}s)`, TELEGRAM_TEAM_API).catch(() => {});
+}
+
+/** 백업(RunPod) 처리 성공 시 — 사후 집계 로그 + 팀 알림. 자체 서버를 건너뛴 사유가 있을 때만. */
+function noteBackup(url, slug, reason, startedAt) {
+  if (!isRunpod(url) || !reason) return;
+  const sec = ((Date.now() - startedAt) / 1000).toFixed(1);
+  log(`[Matte] BACKUP via=runpod reason=${reason} cold=${sec}s slug=${slug}`, 'WARNING');
+  alertMatteBackup(slug, sec);
+}
+
 /** 매팅 결과 → 300dpi 스탬프 PNG. 성공 경로 공용부. */
 async function stampMatteResult(data, url) {
   const stamped = await sharp(Buffer.from(data.image, 'base64'))
@@ -232,9 +276,11 @@ async function stampMatteResult(data, url) {
  */
 export async function runMatteChain(cropB64, bgColor, slug) {
   let lastErr = 'no endpoint';
+  let backupReason = null; // 자체 서버를 건너뛴 사유 — 백업 전환 로그·알림용 (체인 동작에는 무관)
   for (const url of MATTE_API_URLS) {
     if (!(await isAlive(url))) {
       log(`[Matte] ${slug}: ${url} 프리플라이트 불통 → 다음 엔드포인트`, 'WARNING');
+      if (!isRunpod(url)) backupReason = backupReason || '프리플라이트 불통';
       continue;
     }
 
@@ -248,6 +294,7 @@ export async function runMatteChain(cropB64, bgColor, slug) {
         if (knocks > 0) {
           log(`[Matte] ${slug}: ${url} 줄서기 성공 — 노크 ${knocks}회, 누적 대기 ${Date.now() - queueStart}ms`, 'INFO');
         }
+        noteBackup(url, slug, backupReason, queueStart);
         return await stampMatteResult(data, url);
       } catch (err) {
         lastErr = err.message;
@@ -258,6 +305,7 @@ export async function runMatteChain(cropB64, bgColor, slug) {
           const delay = err.retryAfterMs ?? MATTE_QUEUE_KNOCK_MS;
           if (waited + delay > MATTE_QUEUE_WAIT_MS) {
             log(`[Matte] ${slug}: ${url} 포화 대기 상한 초과 (노크 ${knocks}회, 누적 ${waited}ms > ${MATTE_QUEUE_WAIT_MS}ms) → 다음 엔드포인트`, 'WARNING');
+            if (!isRunpod(url)) backupReason = backupReason || '포화 초과';
             break;
           }
           knocks += 1;
@@ -271,10 +319,12 @@ export async function runMatteChain(cropB64, bgColor, slug) {
         try {
           const retryData = await callMatteApi(url, cropB64, bgColor);
           log(`[Matte] ${slug}: ${url} 재시도 1회 성공`, 'INFO');
+          noteBackup(url, slug, backupReason, queueStart);
           return await stampMatteResult(retryData, url);
         } catch (retryErr) {
           lastErr = retryErr.message;
           log(`[Matte] ${slug}: ${url} 재시도 실패 (${retryErr.message}) → 다음 엔드포인트`, 'WARNING');
+          if (!isRunpod(url)) backupReason = backupReason || '호출 실패';
         }
         toNextEndpoint = true;
       }

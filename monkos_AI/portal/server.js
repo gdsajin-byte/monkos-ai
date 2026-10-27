@@ -42,7 +42,7 @@ import { handleWebChat, handleCoaching } from './lib/coaching.js';
 import { handleHeadshotGenerate } from './lib/headshot-route.js';
 import { generateIdPhoto, buildT1Prompt } from './lib/idphoto-generate.js';
 import { cropToSpec, warmupCropEngine, getSpecCropParams } from './lib/spec-crop.js';
-import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, stripDataUri, getSpecBgColor, cropMetaWithinSpec, runMatteChain } from './lib/matte.js';
+import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, getMatteEngineState, stripDataUri, getSpecBgColor, cropMetaWithinSpec, runMatteChain } from './lib/matte.js';
 import { judgeMetrics, metricsFromFit } from './lib/spec-judge.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
@@ -558,6 +558,8 @@ const httpServer = createServer(async (req, res) => {
       // === 코드 게이트 (2026-07-08 검수 코드화 — Gemini 비전 퇴출, 작가님 확정) ===
       // SCRFD 검출 + 픽셀 통계. 하드컷: 얼굴무/다인/과소/과대각도/암흑. 그림자 등은 관측 로그 (임계 실측 후 승격).
       const t0 = Date.now();
+      // 엔진 생사(1순위 자체 서버 /health, 60s 캐시)를 검수와 병렬로 조회 — 응답 engineReady 용 (2026-10-27)
+      const enginePromise = matteEnabled() ? getMatteEngineState().catch(() => 'primary') : Promise.resolve('primary');
       const norm = await normalizeImage(body.image);
       // 디코드가 선행 실패했으면 fail-open 금지 — "fit이 재검출·방어한다"는 전제는 픽셀을 못 여는
       // 이미지에 성립하지 않는다. 검출 실패를 측정성 통과로 흘려보내면 유저는 깨진 사진을 들고
@@ -648,11 +650,13 @@ const httpServer = createServer(async (req, res) => {
           } catch { /* 통계 실패 시 게이트 미적용 */ }
         }
       }
-      if (measurable) warmupMatteEngine(); // 게이트 통과자만 예열 — 구경·불합격 트래픽 웜 비용 차단
-      const out = { measurable, rejectionReason: reason, faceBox, faceRatio, checks: [] };
+      if (measurable) warmupMatteEngine(); // 게이트 통과자만 예열 — 구경·불합격 트래픽 웜 비용 차단 (자체 서버 불통 시에만 RunPod)
+      // engineReady=false → 백업 처리 예정. 고객 화면 사전 안내용 — 엔진명은 싣지 않는다 (ch8)
+      const engineReady = (await enginePromise) !== 'backup';
+      const out = { measurable, rejectionReason: reason, faceBox, faceRatio, checks: [], engineReady };
       // 미리보기 썸네일 배선(§10-2)은 §11-1로 제거 — sharp가 HEIC를 디코드하지 못해 성립하지 않았다.
       // 서버 디코더(B안)를 도입하면 이 자리에 축소본을 실어 클라이언트 미리보기를 복구한다.
-      slog(`[IDPhoto][precheck] 코드게이트 측정성=${measurable}${reason ? `(${reason})` : ''} faces=${nFaces} fbH=${faceRatio !== null ? Math.round(faceRatio * norm.height) : '-'}px crown=${crownMargin} bright=${bright} shadow=${shadowDiff} roll=${rollDeg} yaw=${yawRatio} ${Date.now() - t0}ms`);
+      slog(`[IDPhoto][precheck] 코드게이트 측정성=${measurable}${reason ? `(${reason})` : ''} faces=${nFaces} fbH=${faceRatio !== null ? Math.round(faceRatio * norm.height) : '-'}px crown=${crownMargin} bright=${bright} shadow=${shadowDiff} roll=${rollDeg} yaw=${yawRatio} engineReady=${engineReady} ${Date.now() - t0}ms`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify(out));
     } catch (err) {
