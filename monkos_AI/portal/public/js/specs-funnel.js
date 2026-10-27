@@ -122,6 +122,24 @@ var SpecsFunnel = (function(){
     if(genTextEl) genTextEl.textContent = text;
     if(genSubEl) genSubEl.textContent = sub || '';
   }
+  /* 백업 처리 안내 (2026-10-27 DESIGN 매팅워밍조건부 §2-2·2-3) — precheck engineReady===false일 때만.
+     정상(engineReady true·미수신)이면 현행 문구 그대로. 문구 키가 없는 언어는 안내를 생략한다. */
+  function engineBackup(){ return !!(precheckData && precheckData.engineReady === false); }
+  function showEngineNotice(on){
+    var el = document.getElementById('v2-engine-notice');
+    if(!on || !T.engineBackupNotice){ if(el) el.style.display = 'none'; return; }
+    if(!el){
+      var anchor = document.getElementById('v2-fit-actions');
+      if(!anchor || !anchor.parentNode) return;
+      el = document.createElement('p');
+      el.id = 'v2-engine-notice';
+      el.setAttribute('role', 'status');
+      el.style.cssText = 'margin:10px 0 0;font-size:13px;line-height:1.5;color:#3b6ea8;text-align:center;';
+      anchor.parentNode.insertBefore(el, anchor.nextSibling);
+    }
+    el.textContent = T.engineBackupNotice;
+    el.style.display = '';
+  }
   function showError(msg){ errorMsg.textContent = msg; errorMsg.classList.add('show'); noteError(msg, errorMsg); }
   function hideError(){ errorMsg.classList.remove('show'); hidePayError(); hideReportLink(); }
   /* 결제 영역 에러 (2026-09-19 결함 A) — 전역 #v2-error 는 결제 단계 *위*의 정적 요소라
@@ -495,6 +513,7 @@ var SpecsFunnel = (function(){
   function handleFile(file){
     hideError();
     fitResult = null; precheckData = null;
+    showEngineNotice(false);
     var mime = (file && file.type) || '';
     var ext = fileExt(file && file.name);
     if(!mime.match(/image\/(jpeg|png|webp)/i) && ALLOWED_EXT.indexOf(ext) < 0){
@@ -542,6 +561,7 @@ var SpecsFunnel = (function(){
             checkActions.style.display = 'flex';
           } else {
             prepareFreeReady();
+            showEngineNotice(engineBackup());
           }
           // 이미지 저장을 검수 시점에 선행 — 결제 클릭 체인에서 캔버스 압축을 제거해
           // 토스 결제창의 user activation 만료(팝업 차단)를 방지 (2026-07-05 E2E 실패 수정)
@@ -690,7 +710,12 @@ var SpecsFunnel = (function(){
     st.textContent = T.statusFitDone;
     fs.className = 'ip-summary-ok';
     fs.textContent = T.statusRemoving;
-    (pilotGenPromise || freeGenerateRequest(d)).then(function(res){
+    var pilotReq = pilotGenPromise || freeGenerateRequest(d);
+    // 10초는 시어터 종료가 아니라 생성 요청 시작 기준 (요청은 pilotOnFit에서 시어터와 병행 출발)
+    var pilotBackupTimer = (engineBackup() && T.genBackupWorking)
+      ? setTimeout(function(){ fs.textContent = T.genBackupWorking; }, Math.max(0, 10000 - (Date.now() - freeGenStartedAt))) : null;
+    pilotReq.then(function(res){
+      clearTimeout(pilotBackupTimer);
       freeBusy = false;
       if(!res.ok){
         var code = res.d && res.d.code;
@@ -725,13 +750,16 @@ var SpecsFunnel = (function(){
       showPhase(phaseFree);
       try{ window.scrollTo({ top: document.getElementById('v2-steps').offsetTop - 12, behavior: 'smooth' }); }catch(e){}
     }).catch(function(){
+      clearTimeout(pilotBackupTimer);
       freeBusy = false;
       showError(T.errNet);
       st.textContent = '';
       fa.style.display = 'flex';
     });
   }
+  var freeGenStartedAt = 0;
   function freeGenerateRequest(d){
+    freeGenStartedAt = Date.now();
     gaTrack('free_generate_click', {}, true);
     return fetch('/api/idphoto/generate', {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -772,8 +800,9 @@ var SpecsFunnel = (function(){
     hideError();
     setGenMessage(T.freeGenTitle, T.freeGenSub.replace('{type}', CFG.format || ''));
     showPhase(phaseGen);
-    var freeWait1 = setTimeout(function(){ setGenMessage(T.freeGenTitle, T.genStillWorking1 || ''); }, 15000);
-    var freeWait2 = setTimeout(function(){ setGenMessage(T.freeGenTitle, T.genStillWorking2 || ''); }, 35000);
+    var freeBk = engineBackup() && !!T.genBackupWorking;
+    var freeWait1 = setTimeout(function(){ setGenMessage(T.freeGenTitle, (freeBk ? T.genBackupWorking : T.genStillWorking1) || ''); }, freeBk ? 10000 : 15000);
+    var freeWait2 = setTimeout(function(){ setGenMessage(T.freeGenTitle, T.genStillWorking2 || ''); }, freeBk ? 25000 : 35000);
     function clearFreeWait(){ clearTimeout(freeWait1); clearTimeout(freeWait2); }
     freeGenerateRequest(fitResult)
     .then(function(res){
@@ -1369,6 +1398,10 @@ var SpecsFunnel = (function(){
   }
 
   /* ─── 생성 (결제 토큰 경유) ─── */
+  function clearGenTimers(){
+    if(window.__genStageTimer) clearInterval(window.__genStageTimer);
+    ['__genLongWaitTimer', '__genBackupTimer', '__genRefundTimer'].forEach(function(k){ if(window[k]) clearTimeout(window[k]); window[k] = null; });
+  }
   var genBusy = false; // 중복 제출 잠금 — 더블클릭 이중 차감 실사고 (2026-07-07 13:48, 200ms 간격 2건)
   function doGenerate(){
     if(genBusy) return;
@@ -1379,19 +1412,32 @@ var SpecsFunnel = (function(){
     showPhase(phaseGen);
     setGenMessage(GEN_TEXT_DEFAULT, GEN_SUB_DEFAULT);
     // 연출: 실제 파이프라인 단계를 순환 표기 (재단→매팅→검수) — 대기가 신뢰가 되게
-    if(window.__genStageTimer) clearInterval(window.__genStageTimer);
-    if(window.__genLongWaitTimer) clearTimeout(window.__genLongWaitTimer);
+    clearGenTimers();
+    var genSub = GEN_SUB_DEFAULT;
+    var genBk = engineBackup() && !!T.genBackupWorking;
     (function(){
       var stages = fitResult ? [T.genStage1, T.genStage2, T.genStage3] : [GEN_TEXT_DEFAULT];
       var i = 0;
       window.__genStageTimer = setInterval(function(){
         i = (i + 1) % stages.length;
-        setGenMessage(stages[i], GEN_SUB_DEFAULT);
+        setGenMessage(stages[i], genSub);
       }, 3500);
     })();
+    if(genBk){
+      window.__genBackupTimer = setTimeout(function(){
+        if(window.__genStageTimer) clearInterval(window.__genStageTimer);
+        setGenMessage(T.genBackupWorking, genSub);
+      }, 10000);
+    }
+    // 유료 경로 실패 = 서버 refundGate가 생성권(토큰 쿼터·크레딧)을 되돌린다 — 실측 확인된 경로만 (헌법 4조 4항)
+    window.__genRefundTimer = setTimeout(function(){
+      if(T.genRefundAssure) genSub = T.genRefundAssure;
+      if(genBk){ setGenMessage(T.genStillWorking2 || GEN_TEXT_DEFAULT, genSub); }
+      else if(genSubEl){ genSubEl.textContent = genSub; }
+    }, 25000);
     window.__genLongWaitTimer = setTimeout(function(){
       if(window.__genStageTimer) clearInterval(window.__genStageTimer);
-      setGenMessage(T.genStillWorking2 || GEN_TEXT_DEFAULT, GEN_SUB_DEFAULT);
+      setGenMessage(T.genStillWorking2 || GEN_TEXT_DEFAULT, genSub);
     }, 35000);
     // 성별 미선택 시 빈 값 전송 — 서버 프롬프트가 "원본 보존" 선언으로 처리 (2026-07-17 성전환 실사고 P0)
     var body = { image: uploadedBase64, format: CFG.format, gender: subjectSelection.gender || '', age: subjectSelection.age || 'adult', slug: CFG.slug, lang: document.documentElement.lang || 'ko' };
@@ -1406,8 +1452,7 @@ var SpecsFunnel = (function(){
     .then(function(res){
       genBusy = false;
       var data = res.d;
-      if(window.__genStageTimer) clearInterval(window.__genStageTimer);
-      if(window.__genLongWaitTimer) clearTimeout(window.__genLongWaitTimer);
+      clearGenTimers();
       if(data.image){
         if(typeof data.remainingGenerates === 'number'){ pay.remaining = data.remainingGenerates; persistOrder(); }
         document.getElementById('v2-result-before-img').src = uploadedBase64;
@@ -1447,7 +1492,7 @@ var SpecsFunnel = (function(){
         if(uploadedBase64) showPayError(msg); else showError(msg);
       }
     })
-    .catch(function(){ if(window.__genStageTimer) clearInterval(window.__genStageTimer); if(window.__genLongWaitTimer) clearTimeout(window.__genLongWaitTimer); genBusy = false; showPhase(uploadedBase64 ? phasePay : phaseUpload); if(uploadedBase64) showPayError(T.errNet); else showError(T.errNet); });
+    .catch(function(){ clearGenTimers(); genBusy = false; showPhase(uploadedBase64 ? phasePay : phaseUpload); if(uploadedBase64) showPayError(T.errNet); else showError(T.errNet); });
   }
 
   var payCreditBtn = document.getElementById('v2-pay-credit');
