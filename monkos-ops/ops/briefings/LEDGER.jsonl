@@ -124,3 +124,4 @@
 {"ts": "2026-10-27 06:32 KST", "id": 181, "event": "note", "text": "06:31 재측정 portal 00569-9mk 평문 의심 6 동일, SM GOOGLE_CLIENT_SECRET 없음(대조군 TX_API_KEY 있음)", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-10-28 06:31 KST", "id": 187, "event": "note", "text": "10-28 06:31 재측정: origin/main(0f8909e5) gemini-2.5-flash 22행 잔존, 막내9 브랜치 c15534fb·ff00ca47·05287ce3 미머지 유지. 8일 경과", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-10-28 06:31 KST", "id": 181, "event": "note", "text": "10-28 06:30 재측정: portal 새 리비전 00570-22q(10-27 배포)에도 평문 의심 6 동일. SM GOOGLE_CLIENT_SECRET 부재(대조군 TX_API_KEY 존재)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-28 19:29 KST", "id": 192, "event": "open", "axis": "infra", "severity": "🔴", "due": "2026-11-08", "title": "monkos.ai Google 관리형 인증서 갱신 확인 — 10-28 엣지 ACME 통과 배포 후 notAfter(현 11-15)가 연장됐는지 216.239.32.21 SNI 실측, 미연장 시 M-B(롤백 절차 개정) 검토", "owner": "쌍아", "by": "iMac/쌍아"}
