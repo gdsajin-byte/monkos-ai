@@ -9,7 +9,7 @@ paths:
   - "**/*.tsx"
 ---
 
-> source: governance/laws/ch2_coding.md@2026-07-16
+> source: governance/laws/ch2_coding.md@2026-10-28
 
 # 코딩 규칙 (ch2 발췌)
 
