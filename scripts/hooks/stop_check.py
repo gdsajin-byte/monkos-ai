@@ -5,6 +5,8 @@
 - 오늘 mtime의 portfolio: 문서 중 PF 히스토리에 없는 것 → 경고 목록
 - 오늘 세션 로그가 하나도 없거나, 레포에 최근 2시간 변경이 있는데 오늘 세션 로그 mtime이 2시간 이상 전이면 경고
 상태 저장 없이 파일 mtime만 본다 (무상태·전 디바이스 동일).
+- 10-28 보강: transcript 마지막 어시스턴트 텍스트의 첫 헤더가 그 응답의 생성 시각보다 미래면 경고 1줄
+  (응답 텍스트는 PreToolUse가 보지 못한다 — 사후 대조, 비차단). transcript 읽기 실패는 [HOOK-ERR].
 """
 import datetime as dt
 import sys
@@ -20,6 +22,42 @@ EVENT = "Stop"
 TWO_H = 2 * 3600
 
 
+def last_assistant_text(path: str):
+    """transcript JSONL에서 텍스트가 있는 마지막 assistant 항목 → (텍스트, 생성 시각 datetime|None)."""
+    import json
+    text, at = None, None
+    with open(path, encoding="utf-8") as f:
+        for raw in f:
+            try:
+                e = json.loads(raw)
+            except ValueError:
+                continue
+            if e.get("type") != "assistant":
+                continue
+            parts = [c.get("text", "") for c in (e.get("message") or {}).get("content") or []
+                     if isinstance(c, dict) and c.get("type") == "text"]
+            if any(p.strip() for p in parts):
+                text = "\n".join(parts)
+                ts = e.get("timestamp")
+                at = dt.datetime.fromisoformat(ts.replace("Z", "+00:00")) if ts else None
+    return text, at
+
+
+def response_header_check(data: dict):
+    path = data.get("transcript_path")
+    if not path:
+        return None
+    try:
+        import time_header
+        text, at = last_assistant_text(path)
+        if not text:
+            return None
+        return time_header.response_header_warning(text, at or time_header.now_kst())
+    except Exception as e:  # noqa: BLE001
+        hook_err("응답 헤더 대조 실패: %s" % e)
+        return None
+
+
 def main() -> int:
     if kill_switch():
         return 0
@@ -28,6 +66,10 @@ def main() -> int:
         return 0
     root = project_dir()
     warns = []
+    # 0) 응답 헤더 사후 대조 (10-28 보강)
+    rh = response_header_check(data)
+    if rh:
+        warns.append(rh)
     import pf
     # 1) PF 교차 링크 (오늘분)
     for p, pfid, fm in pf.docs_with_portfolio(1):

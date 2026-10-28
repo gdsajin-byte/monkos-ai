@@ -341,7 +341,7 @@ expect("E11 양성 어제 날짜 헤더",             run(W, wr("%s 과거 사�
 expect("E11 양성 인라인 코드 안 헤더",        run(W, wr("형식 `%s` 참고\n" % H_FUT), NOW)[1], None)
 expect("E11 양성 대상 외 경로 Write",         run(W, wr(H_FUT, str(ROOT / "scripts/x.md")), NOW)[1], None)
 expect("E11 양성 실측 헤더 SendMessage",      run(M, msg(H_OK + " iMac/막내16 → iMac/쌍아 — 수신 확인"), NOW)[1], None)
-expect("E11 양성 +2분 경계 허용",             run(M, msg("**[2026-10-24 22:32 KST]** x"), NOW)[1], None)
+expect("E11 음성 +2분 미래(10-28 허용 0분)",  run(M, msg("**[2026-10-24 22:32 KST]** x"), NOW)[1], "deny")
 # 음성(차단)
 rc, dec, _, _ = run(W, wr(H_FUT + " iMac/막내 → 쌍아\n"), NOW)
 expect("E11 음성 +3분 미래 Write",            dec, "deny")
@@ -361,6 +361,43 @@ _rc, _dec, _, _err = run(M, msg(H_FUT), {"MONK_HOOK_NOW": "깨진값"})
 expect("E11 훅 오류 → 비차단 + [HOOK-ERR] 시각 대조 실패", (_dec, "[HOOK-ERR]" in _err and "시각 대조 실패" in _err), (None, True))
 _rc, _dec, _, _err = run(W, wr(H_FUT), {"MONK_HOOK_NOW": "깨진값"})
 expect("E11 Write 훅 오류 → 비차단 + [HOOK-ERR]", (_dec, "시각 대조 실패" in _err), (None, True))
+
+# ---------- E11 보강 (10-28, ORDER_20261028 막내1) — 미래 0분 · 줄 중간 헤더 · 응답 헤더 사후 경고 ----------
+# 차단·경고가 떠야 하는 쪽
+expect("E11+ 차단 +1분 미래 SendMessage",      run(M, msg("**[2026-10-24 22:31 KST]** iMac/막내 → 쌍아"), NOW)[1], "deny")
+expect("E11+ 차단 +1분 미래 Write",            run(W, wr("**[2026-10-24 22:31 KST]** iMac/막내 → 쌍아\n"), NOW)[1], "deny")
+expect("E11+ 차단 줄 중간 헤더 +3분",          run(M, msg("[집행 지시] 맡깁니다 — [2026-10-24 22:33 KST] iMac/쌍아 → iMac/막내1"), NOW)[1], "deny")
+# 통과해야 하는 쪽
+expect("E11+ 통과 같은 분 SendMessage",        run(M, msg("**[2026-10-24 22:30 KST]** iMac/막내 → 쌍아"), NOW)[1], None)
+expect("E11+ 통과 과거 5분 SendMessage",       run(M, msg("**[2026-10-24 22:25 KST]** iMac/막내 → 쌍아"), NOW)[1], None)
+expect("E11+ 통과 출처 줄 안 줄 중간 헤더",    run(M, msg("출처: 쌍아 메시지 [2026-10-24 22:40 KST] iMac/쌍아 → 막내"), NOW)[1], None)
+expect("E11+ 통과 인용(>) 줄 줄 중간 헤더",    run(M, msg("> 원문 — [2026-10-24 22:40 KST] iMac/쌍아 → 막내"), NOW)[1], None)
+expect("E11+ 통과 에이전트 없는 줄 중간 시각", run(M, msg("회의는 [2026-10-24 22:45 KST] 예정"), NOW)[1], None)
+expect("E11+ 통과 Write 줄 중간 헤더(mid는 메시지 전용)",
+       run(W, wr("본문 — [2026-10-24 22:40 KST] iMac/쌍아 → 막내\n"), NOW)[1], None)
+
+
+def stop_with(text, ts="2026-10-24T13:30:20.000Z"):
+    with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False, encoding="utf-8") as f:
+        f.write(json.dumps({"type": "user", "message": {"content": "q"}}) + "\n")
+        f.write(json.dumps({"type": "assistant", "timestamp": ts,
+                            "message": {"content": [{"type": "text", "text": text}]}}, ensure_ascii=False) + "\n")
+        f.write(json.dumps({"type": "assistant", "timestamp": ts,
+                            "message": {"content": [{"type": "tool_use", "name": "Bash", "input": {}}]}}) + "\n")
+    r = run("stop_check.py", {"hook_event_name": "Stop", "session_id": SID, "transcript_path": f.name})
+    os.unlink(f.name)
+    return r
+
+
+_rc, _dec, _ctx, _err = stop_with("**[2026-10-24 22:35 KST]** iMac/막내1 → 작가님\n✅ 완료")
+expect("E11+ Stop 경고 응답 헤더 +5분",
+       bool(_ctx) and "응답 헤더 22:35은 실측 22:30보다 미래" in _ctx, True)
+_rc, _dec, _ctx, _err = stop_with("**[2026-10-24 22:30 KST]** iMac/막내1 → 작가님\n✅ 완료")
+expect("E11+ Stop 무경고 같은 분 응답 헤더",   "응답 헤더" in (_ctx or ""), False)
+_rc, _dec, _ctx, _err = run("stop_check.py", {"hook_event_name": "Stop", "session_id": SID,
+                                              "transcript_path": "/nonexistent/smoke.jsonl"})
+expect("E11+ Stop transcript 실패 → [HOOK-ERR] 비차단",
+       (_rc, "응답 헤더 대조 실패" in _err), (0, True))
 
 # ---------- 실패 가시화 ----------
 p = subprocess.run([sys.executable, str(HERE / G)], input="{not json", capture_output=True, text=True,
