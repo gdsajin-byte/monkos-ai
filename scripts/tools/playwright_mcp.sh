@@ -34,4 +34,5 @@ if [ -z "$WS_URL" ]; then
   exit 1
 fi
 
-exec npx @playwright/mcp@latest --cdp-endpoint "$WS_URL" "$@"
+# 버전 고정(10-28, 정상 동작 실측 0.0.83). 올릴 때: `npm view @playwright/mcp version` 확인 → 9229 스모크 통과 후 아래 숫자만 교체
+exec npx @playwright/mcp@0.0.83 --cdp-endpoint "$WS_URL" "$@"
