@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>루트 진입점 스케치</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+<style>
+/* 내부 스케치 — 포털 루트 메인 시안 아님. 목적: 루트 메뉴에서 /id-photo 서브 허브로 들어오는 진입점의 '가중'만 보여 준다.
+   토큰: specs 톤(tokens.css 5~24) 재사용. 형제 서비스 이름은 작가님 12:32 발화의 예시(바둑·모델스)와 현행 라이브 헤드샷 — 순서·문구 미확정. */
+:root{
+  --specs-accent:#6c4fff; --specs-accent-hover:#5a3de6;
+  --specs-bg:#fff; --specs-bg-soft:#f7f7fb;
+  --specs-text:#1a1a1a; --specs-text-2:#555; --specs-text-3:#888;
+  --specs-border:#e8e8ef;
+  --specs-radius-sm:8px; --specs-radius:12px; --specs-radius-lg:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{word-break:keep-all;font-family:'Pretendard',-apple-system,sans-serif;background:var(--specs-bg-soft);color:var(--specs-text);}
+.note{max-width:960px;margin:16px auto 0;padding:0 16px;font-size:12px;color:var(--specs-text-3)}
+header{max-width:960px;margin:0 auto;padding:16px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:800;letter-spacing:.04em}
+.login{font-size:14px;color:var(--specs-text-2);text-decoration:none}
+main{max-width:960px;margin:0 auto;padding:8px 16px 48px;display:grid;gap:12px;grid-template-columns:1fr}
+.main-card{background:var(--specs-bg);border:2px solid var(--specs-accent);border-radius:var(--specs-radius-lg);padding:24px;display:flex;flex-direction:column;gap:10px;text-decoration:none;color:inherit}
+.tag{align-self:flex-start;font-size:12px;font-weight:700;color:var(--specs-accent);background:rgba(108,79,255,.08);padding:4px 10px;border-radius:999px}
+.main-card h2{font-size:24px;font-weight:800}
+.main-card p{font-size:15px;color:var(--specs-text-2);line-height:1.5}
+.ways{display:flex;flex-wrap:wrap;gap:6px}
+.ways span{font-size:13px;border:1px solid var(--specs-border);border-radius:var(--specs-radius-sm);padding:4px 8px;color:var(--specs-text-2)}
+.go{align-self:flex-start;margin-top:4px;background:var(--specs-accent);color:#fff;font-weight:700;padding:12px 18px;border-radius:var(--specs-radius)}
+.main-card:hover .go{background:var(--specs-accent-hover)}
+.slot{border:1px dashed var(--specs-border);border-radius:var(--specs-radius);background:var(--specs-bg);padding:16px;color:var(--specs-text-3);font-size:14px}
+.sib{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(min-width:900px){
+  main{grid-template-columns:2fr 1fr}
+  .sib{grid-template-columns:1fr;grid-row:span 1}
+}
+</style>
+</head>
+<body>
+<p class="note">내부 스케치 · 포털 루트(monkos.ai/)에서 증명사진관 서브 허브(/id-photo)로 들어오는 진입점만. 루트 메인 디자인은 이번 범위 밖.</p>
+<header><span class="logo">MONKOS</span><a class="login" href="#">로그인</a></header>
+<main>
+  <a class="main-card" href="/id-photo">
+    <span class="tag">증명사진관</span>
+    <h2>서류에 맞는 증명사진, 여기서 끝내세요</h2>
+    <p>여권·주민등록증·이력서·비자 — 서류를 고르면 할 수 있는 방법이 한 화면에 나옵니다.</p>
+    <div class="ways"><span>무료 규격 사진</span><span>AI 보정</span><span>인화해서 받기</span><span>사진관 촬영</span></div>
+    <span class="go">증명사진관으로 →</span>
+  </a>
+  <div class="sib">
+    <div class="slot">형제 서비스 자리 1<br>(예: 바둑)</div>
+    <div class="slot">형제 서비스 자리 2<br>(예: 모델스)</div>
+    <div class="slot">형제 서비스 자리 3<br>(예: 헤드샷)</div>
+  </div>
+</main>
+</body>
+</html>
