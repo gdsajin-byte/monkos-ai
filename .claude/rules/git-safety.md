@@ -2,7 +2,7 @@
 description: git 명령 실행 시 적용
 ---
 
-> source: governance/laws/ch6_git.md@2026-07-16
+> source: governance/laws/ch6_git.md@2026-10-28
 
 # Git·커밋 규칙 (ch6 발췌)
 
