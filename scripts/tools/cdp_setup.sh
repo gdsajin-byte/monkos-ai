@@ -9,7 +9,8 @@ set -e
 
 CDP_CONFIG_DIR="$HOME/.config/chrome-cdp"
 CDP_PIDS_DIR="$CDP_CONFIG_DIR/pids"
-CHROME_APP="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+CDP_LOGS_DIR="$CDP_CONFIG_DIR/logs"
+CHROME_APP="${CDP_CHROME_APP:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
 
 # 색상
 RED='\033[0;31m'
@@ -85,16 +86,24 @@ case "$1" in
       exit 0
     fi
 
+    if [ ! -x "$CHROME_APP" ]; then
+      print_err "Chrome 실행 파일 없음: $CHROME_APP"
+      exit 1
+    fi
+
     mkdir -p "$PROFILE_DIR"
     mkdir -p "$CDP_PIDS_DIR"
+    mkdir -p "$CDP_LOGS_DIR"
+    LOG_FILE="$CDP_LOGS_DIR/$PORT.log"
 
-    echo "디버깅 크롬 시작: 포트 $PORT, 프로필 $PROFILE_DIR"
-    "$CHROME_APP" \
+    echo "디버깅 크롬 시작: 포트 $PORT, 프로필 $PROFILE_DIR, 로그 $LOG_FILE"
+    # 크롬 출력은 로그로 분리 — 호출자 파이프(| tail 등)를 상속하면 EOF가 오지 않아 무한 대기
+    nohup "$CHROME_APP" \
       --remote-debugging-port="$PORT" \
       --user-data-dir="$PROFILE_DIR" \
       --no-first-run \
       --no-default-browser-check \
-      about:blank &
+      about:blank >"$LOG_FILE" 2>&1 </dev/null &
 
     NEW_PID=$!
     echo "$NEW_PID" > "$PID_FILE"
