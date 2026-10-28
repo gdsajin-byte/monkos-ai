@@ -2,7 +2,7 @@
 description: 에이전트 역할·흐름·디바이스 맵 (ch1 발췌)
 ---
 
-> source: governance/laws/ch1_agent_system.md@2026-10-23
+> source: governance/laws/ch1_agent_system.md@2026-10-28
 
 # 에이전트 체계 (ch1 발췌)
 
