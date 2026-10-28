@@ -175,6 +175,7 @@ domain: "governance/infrastructure"
 | 2026-10-28 | iMac/쌍아 | 헌법 10-28 개정 집행 완료(쌍아 직접 실행) — CLAUDE.md K1~K5·ch8 4조 표기표·5조 고객 대면 표현·재앵커 27곳·에센스, 훅 146/146 | [PETITION_20261028_쌍아_피할것7_정방향우선](../../../../governance/constitution/petitions/PETITION_20261028_쌍아_피할것7_정방향우선.md) | ✅ |
 | 2026-10-28 | iMac/민아 | 헌법 개정 집행본(54d81d94) 민아 사후 감수 — K1~K5·ch8 표기표·재앵커 27곳 일치, 🔴 AGENTS.md 미갱신 1·🟡 잔존 6 | [REVIEW_20261028_iMac민아_MONK_OS_헌법개정_집행본_사후감수](../../reports/2026-10/REVIEW_20261028_iMac민아_MONK_OS_헌법개정_집행본_사후감수.md) | ✅ |
 | 2026-10-28 | iMac/쌍아 | E11 시각 헤더 보강 지시 → 막내1 | [ORDER_20261028_iMac쌍아_막내1_MONK_OS_E11시각헤더_보강](../../orders/2026-10/ORDER_20261028_iMac쌍아_막내1_MONK_OS_E11시각헤더_보강.md) | ✅ |
+| 2026-10-28 | iMac/쌍아-막내1 | **E11 시각 헤더 보강 변경안(미적용)** — 미래 허용 0분·SendMessage 줄 중간 헤더·Stop 응답 헤더 사후 경고. 샌드박스 스모크 158/158, 수정 전 대조 152/158(탐지 6 FAIL), git apply --check 통과. 적용은 쌍아(작가님 승인 후) | [REPORT_20261028_iMac막내1_E11보강_변경안](../../reports/2026-10/REPORT_20261028_iMac막내1_E11보강_변경안.md) | ✅ |
 
 ---
 
