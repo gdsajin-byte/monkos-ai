@@ -1,0 +1,324 @@
+{
+ "portal_home_390": {
+  "title": "MONKOS AI | AI 증명사진 · 여권사진 · 이력서사진",
+  "url": "https://monkos.ai/",
+  "docH": 7111,
+  "scrollW": 390,
+  "body": {
+   "font": "\"DM Sans\", \"Noto Sans KR\", sans-serif",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(35, 39, 46)",
+   "size": "16px"
+  },
+  "heading": {
+   "tag": "H1",
+   "text": "전문 스튜디오가 개발한\nAI 증명사진 서비스",
+   "font": "\"DM Sans\", \"Noto Sans KR\", sans-serif",
+   "size": "30px",
+   "weight": "900",
+   "color": "rgb(35, 39, 46)"
+  },
+  "firstButton": null,
+  "fontsLoaded": [
+   "DM Sans",
+   "Noto Sans KR"
+  ],
+  "http4xx": [
+   "401 https://monkos.ai/api/auth/verify-cookie"
+  ],
+  "fixedEls": [],
+  "headings": [
+   "H1 전문 스튜디오가 개발한 AI 증명사진 서비스",
+   "H3 로그인",
+   "H3 Credit Shop"
+  ]
+ },
+ "portal_home_1440": {
+  "title": "MONKOS AI | AI 증명사진 · 여권사진 · 이력서사진",
+  "url": "https://monkos.ai/",
+  "docH": 3772,
+  "scrollW": 1425,
+  "body": {
+   "font": "\"DM Sans\", \"Noto Sans KR\", sans-serif",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(35, 39, 46)",
+   "size": "16px"
+  },
+  "heading": {
+   "tag": "H1",
+   "text": "전문 스튜디오가 개발한\nAI 증명사진 서비스",
+   "font": "\"DM Sans\", \"Noto Sans KR\", sans-serif",
+   "size": "56px",
+   "weight": "900",
+   "color": "rgb(35, 39, 46)"
+  },
+  "firstButton": {
+   "text": "증명사진 만들기 →",
+   "bg": "rgb(44, 48, 55)",
+   "color": "rgb(255, 255, 255)",
+   "radius": "10px",
+   "h": 41,
+   "top": 556
+  },
+  "fontsLoaded": [
+   "DM Sans",
+   "Noto Sans KR"
+  ],
+  "http4xx": [
+   "401 https://monkos.ai/api/auth/verify-cookie"
+  ],
+  "fixedEls": [],
+  "headings": [
+   "H1 전문 스튜디오가 개발한 AI 증명사진 서비스",
+   "H3 로그인",
+   "H3 Credit Shop"
+  ]
+ },
+ "specs_passport_kr_390": {
+  "title": "여권사진 규격·규정 2026 (외교부 기준) — 3.5×4.5cm 무료 즉시 맞춤 | MONKOS",
+  "url": "https://monkos.ai/specs/passport/kr",
+  "docH": 9293,
+  "scrollW": 390,
+  "body": {
+   "font": "Pretendard, -apple-system, \"system-ui\", sans-serif",
+   "bg": "rgb(255, 255, 255)",
+   "color": "rgb(26, 26, 26)",
+   "size": "16px"
+  },
+  "heading": {
+   "tag": "H1",
+   "text": "대한민국 여권 2026",
+   "font": "Pretendard, -apple-system, \"system-ui\", sans-serif",
+   "size": "26px",
+   "weight": "800",
+   "color": "rgb(26, 26, 26)"
+  },
+  "firstButton": null,
+  "fontsLoaded": [
+   "Pretendard"
+  ],
+  "http4xx": [],
+  "fixedEls": [],
+  "headings": [
+   "H1 대한민국 여권 2026",
+   "H3 완성! 여권 규격에 맞춰 만들었어요",
+   "H2 같은 사진으로 제출 가능한 서류",
+   "H2 \"귀가 보여야 한다\"는 2018년에 폐지됐습니다",
+   "H2 실제 반려를 부르는 대표 사유 — 컬러렌즈, 앞머리, 과도한 보정",
+   "H2 정부24 온라인 재발급 — 사진 파일 요건은 따로 있습니다",
+   "H2 여권 규격으로 한 번 찍으면 주민등록증·운전면허증까지",
+   "H2 영유아 여권사진 — 기준은 성인과 동일, 예외는 하나",
+   "H2 자주 묻는 질문",
+   "H2 다른 MONKOS 서비스"
+  ]
+ },
+ "specs_passport_kr_1440": {
+  "title": "여권사진 규격·규정 2026 (외교부 기준) — 3.5×4.5cm 무료 즉시 맞춤 | MONKOS",
+  "url": "https://monkos.ai/specs/passport/kr",
+  "docH": 5257,
+  "scrollW": 1425,
+  "body": {
+   "font": "Pretendard, -apple-system, \"system-ui\", sans-serif",
+   "bg": "rgb(255, 255, 255)",
+   "color": "rgb(26, 26, 26)",
+   "size": "16px"
+  },
+  "heading": {
+   "tag": "H1",
+   "text": "대한민국 여권 2026",
+   "font": "Pretendard, -apple-system, \"system-ui\", sans-serif",
+   "size": "36px",
+   "weight": "800",
+   "color": "rgb(26, 26, 26)"
+  },
+  "firstButton": null,
+  "fontsLoaded": [
+   "Pretendard"
+  ],
+  "http4xx": [],
+  "fixedEls": [],
+  "headings": [
+   "H1 대한민국 여권 2026",
+   "H3 완성! 여권 규격에 맞춰 만들었어요",
+   "H2 같은 사진으로 제출 가능한 서류",
+   "H2 \"귀가 보여야 한다\"는 2018년에 폐지됐습니다",
+   "H2 실제 반려를 부르는 대표 사유 — 컬러렌즈, 앞머리, 과도한 보정",
+   "H2 정부24 온라인 재발급 — 사진 파일 요건은 따로 있습니다",
+   "H2 여권 규격으로 한 번 찍으면 주민등록증·운전면허증까지",
+   "H2 영유아 여권사진 — 기준은 성인과 동일, 예외는 하나",
+   "H2 자주 묻는 질문",
+   "H2 다른 MONKOS 서비스"
+  ]
+ },
+ "idphoto_kr_390": {
+  "title": "MONKOS AI 증명사진 | AI 코칭으로 완벽한 증명사진",
+  "url": "https://idphoto-kr.monkos.ai/",
+  "docH": 2050,
+  "scrollW": 390,
+  "body": {
+   "font": "-apple-system, \"system-ui\", \"Segoe UI\", Roboto, sans-serif",
+   "bg": "rgb(10, 10, 26)",
+   "color": "rgb(226, 232, 240)",
+   "size": "16px"
+  },
+  "heading": {
+   "tag": "H1",
+   "text": "셀카 한 장으로\n증명사진 완성",
+   "font": "-apple-system, \"system-ui\", \"Segoe UI\", Roboto, sans-serif",
+   "size": "32px",
+   "weight": "800",
+   "color": "rgb(248, 250, 252)"
+  },
+  "firstButton": null,
+  "fontsLoaded": [],
+  "http4xx": [
+   "401 https://monkos.ai/api/auth/verify-cookie"
+  ],
+  "fixedEls": [
+   "HEADER. sticky top=0 h=62"
+  ],
+  "headings": [
+   "H1 셀카 한 장으로 증명사진 완성",
+   "H2 이렇게 간단합니다",
+   "H2 스튜디오 수준의 증명사진",
+   "H2 왜 MONKOS인가요?",
+   "H3 증명사진 1장 완성",
+   "H3 로그인",
+   "H2 스마트폰에서 이용해 주세요"
+  ]
+ },
+ "idphoto_kr_1440": {
+  "title": "MONKOS AI 증명사진 | AI 코칭으로 완벽한 증명사진",
+  "url": "https://idphoto-kr.monkos.ai/",
+  "docH": 1979,
+  "scrollW": 1425,
+  "body": {
+   "font": "-apple-system, \"system-ui\", \"Segoe UI\", Roboto, sans-serif",
+   "bg": "rgb(10, 10, 26)",
+   "color": "rgb(226, 232, 240)",
+   "size": "16px"
+  },
+  "heading": {
+   "tag": "H1",
+   "text": "셀카 한 장으로\n증명사진 완성",
+   "font": "-apple-system, \"system-ui\", \"Segoe UI\", Roboto, sans-serif",
+   "size": "44.8px",
+   "weight": "800",
+   "color": "rgb(248, 250, 252)"
+  },
+  "firstButton": null,
+  "fontsLoaded": [],
+  "http4xx": [
+   "401 https://monkos.ai/api/auth/verify-cookie"
+  ],
+  "fixedEls": [
+   "HEADER. sticky top=0 h=62"
+  ],
+  "headings": [
+   "H1 셀카 한 장으로 증명사진 완성",
+   "H2 이렇게 간단합니다",
+   "H2 스튜디오 수준의 증명사진",
+   "H2 왜 MONKOS인가요?",
+   "H3 증명사진 1장 완성",
+   "H3 로그인",
+   "H2 스마트폰에서 이용해 주세요"
+  ]
+ },
+ "monkkr_id_photo_390": {
+  "title": "증명사진·여권사진 | 몽크사진관 - 스탠다드·프리미엄·디럭스",
+  "url": "https://monk.kr/monk_studio/id_photo/id_photo",
+  "docH": 9129,
+  "scrollW": 390,
+  "body": {
+   "font": "Pretendard, -apple-system, \"system-ui\", sans-serif",
+   "bg": "rgb(236, 239, 241)",
+   "color": "rgb(38, 50, 56)",
+   "size": "16px"
+  },
+  "heading": {
+   "tag": "H1",
+   "text": "결이다른 증명사진",
+   "font": "Pretendard, sans-serif",
+   "size": "36px",
+   "weight": "600",
+   "color": "rgb(38, 50, 56)"
+  },
+  "firstButton": null,
+  "fontsLoaded": [
+   "Pretendard"
+  ],
+  "http4xx": [],
+  "fixedEls": [
+   "HEADER.sticky top-0 w-full z-50 bg-white/95 bac sticky top=0 h=81"
+  ],
+  "headings": [
+   "H1 결이다른 증명사진",
+   "H2 증명사진 촬영 안내",
+   "H3 Standard",
+   "H3 Deluxe",
+   "H3 Premium",
+   "H3 1:1 맞춤 디렉팅",
+   "H3 퍼스널 컬러 배경",
+   "H3 프리미엄 인화",
+   "H2 같은 얼굴, 조명과 보정이 다릅니다",
+   "H3 얼굴에 고르게 퍼지는 빛",
+   "H3 실물은 그대로, 인상은 가장 좋게",
+   "H2 증명사진 규격 한눈에 보기",
+   "H2 Samples",
+   "H2 촬영 전 필수 체크리스트",
+   "H3 여권사진 필수 규정 (외교부 기준)"
+  ]
+ },
+ "monkkr_id_photo_1440": {
+  "title": "증명사진·여권사진 | 몽크사진관 - 스탠다드·프리미엄·디럭스",
+  "url": "https://monk.kr/monk_studio/id_photo/id_photo",
+  "docH": 5244,
+  "scrollW": 1425,
+  "body": {
+   "font": "Pretendard, -apple-system, \"system-ui\", sans-serif",
+   "bg": "rgb(236, 239, 241)",
+   "color": "rgb(38, 50, 56)",
+   "size": "16px"
+  },
+  "heading": {
+   "tag": "H1",
+   "text": "결이다른 증명사진",
+   "font": "Pretendard, sans-serif",
+   "size": "60px",
+   "weight": "600",
+   "color": "rgb(38, 50, 56)"
+  },
+  "firstButton": {
+   "text": "간편예약",
+   "bg": "rgb(0, 0, 0)",
+   "color": "rgb(255, 255, 255)",
+   "radius": "12px",
+   "h": 44,
+   "top": 18
+  },
+  "fontsLoaded": [
+   "Pretendard"
+  ],
+  "http4xx": [],
+  "fixedEls": [
+   "HEADER.sticky top-0 w-full z-50 bg-white/95 bac sticky top=0 h=81"
+  ],
+  "headings": [
+   "H1 결이다른 증명사진",
+   "H2 증명사진 촬영 안내",
+   "H3 Standard",
+   "H3 Deluxe",
+   "H3 Premium",
+   "H3 1:1 맞춤 디렉팅",
+   "H3 퍼스널 컬러 배경",
+   "H3 프리미엄 인화",
+   "H2 같은 얼굴, 조명과 보정이 다릅니다",
+   "H3 얼굴에 고르게 퍼지는 빛",
+   "H3 실물은 그대로, 인상은 가장 좋게",
+   "H2 증명사진 규격 한눈에 보기",
+   "H2 Samples",
+   "H2 촬영 전 필수 체크리스트",
+   "H3 여권사진 필수 규정 (외교부 기준)"
+  ]
+ }
+}

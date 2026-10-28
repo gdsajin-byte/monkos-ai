@@ -74,6 +74,7 @@ status: active
 | 10/02 | iMac/소소 | **DESIGN** 현행 디자인 토큰·표면 지도 실측 — 포털 :root·specs tokens·표면 CSS·SSR 셸·monk.kr 팔레트, 같은 역할 다른 값 | [DESIGN_20261002_iMac소소_현행토큰_실측](../../../tech/designs/2026-10/DESIGN_20261002_iMac소소_현행토큰_실측.md) | ⏳ |
 | 10/02 | iMac/소소 | 소소 세션 세팅·능력 3 기반(결정 원장 69행·트렌드 조사·토큰 실측)·에이전트 팀 실증 1회 — 팀 생성 OK, 팀원 훅 미작동·session_id 리드 동일 | [COMPLETION_20261002_iMac소소_세션세팅_능력3_팀실증](../../reports/2026-10/COMPLETION_20261002_iMac소소_세션세팅_능력3_팀실증.md) | ✅ |
 | 10/28 | ?/? | **ORDER** 소소 시험 가동 — 증명사진관 허브 페이지 디자인·UI 설계 (막내3 기획안을 브리프로) | [ORDER_20261028_iMac쌍아_소소_DESIGNLAB_증명사진관허브_시험가동](../../orders/2026-10/ORDER_20261028_iMac쌍아_소소_DESIGNLAB_증명사진관허브_시험가동.md) | ⏳ |
+| 10/28 | iMac/소소 | **DESIGN** 증명사진관 허브 — 현행 디자인 자산 실측 (토큰·팔레트·idphoto-kr 컴포넌트·진입 화면 4곳 390/1440 캡처) | [00_현행자산](../../../tech/designs/2026-10/idphoto_hub/00_현행자산.md) | ⏳ |
 
 ---
 
