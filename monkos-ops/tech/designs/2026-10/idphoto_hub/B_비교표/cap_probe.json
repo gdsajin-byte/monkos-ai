@@ -1,0 +1,114 @@
+{
+ "390": {
+  "scrollW": 390,
+  "innerW": 390,
+  "docH": 2319,
+  "http4xx": [],
+  "overflow": [],
+  "fonts": [
+   "Pretendard Variable"
+  ],
+  "fixed": [
+   "DIV.bar fixed top=771 h=73"
+  ],
+  "banned": []
+ },
+ "390_gov_passport_ai": {
+  "scrollW": 390,
+  "innerW": 390,
+  "docH": 2691,
+  "http4xx": [],
+  "overflow": [],
+  "fonts": [
+   "Pretendard Variable"
+  ],
+  "fixed": [
+   "DIV.bar fixed top=771 h=73"
+  ],
+  "banned": []
+ },
+ "390_job_retouch_print": {
+  "scrollW": 390,
+  "innerW": 390,
+  "docH": 2784,
+  "http4xx": [],
+  "overflow": [],
+  "fonts": [
+   "Pretendard Variable"
+  ],
+  "fixed": [
+   "DIV.bar fixed top=699 h=145"
+  ],
+  "banned": []
+ },
+ "390_profile": {
+  "scrollW": 390,
+  "innerW": 390,
+  "docH": 2141,
+  "http4xx": [],
+  "overflow": [],
+  "fonts": [
+   "Pretendard Variable"
+  ],
+  "fixed": [
+   "DIV.bar fixed top=771 h=73"
+  ],
+  "banned": []
+ },
+ "1440": {
+  "scrollW": 1425,
+  "innerW": 1440,
+  "docH": 2278,
+  "http4xx": [],
+  "overflow": [],
+  "fonts": [
+   "Pretendard Variable"
+  ],
+  "fixed": [
+   "DIV.bar fixed top=827 h=73"
+  ],
+  "banned": []
+ },
+ "1440_gov_passport_ai": {
+  "scrollW": 1425,
+  "innerW": 1440,
+  "docH": 2638,
+  "http4xx": [],
+  "overflow": [],
+  "fonts": [
+   "Pretendard Variable"
+  ],
+  "fixed": [
+   "DIV.bar fixed top=827 h=73"
+  ],
+  "banned": []
+ },
+ "1440_job_retouch_print": {
+  "scrollW": 1425,
+  "innerW": 1440,
+  "docH": 2481,
+  "http4xx": [],
+  "overflow": [],
+  "fonts": [
+   "Pretendard Variable"
+  ],
+  "fixed": [
+   "DIV.bar fixed top=755 h=145"
+  ],
+  "banned": []
+ },
+ "1440_profile": {
+  "scrollW": 1425,
+  "innerW": 1440,
+  "docH": 2085,
+  "http4xx": [],
+  "overflow": [],
+  "fonts": [
+   "Pretendard Variable"
+  ],
+  "fixed": [
+   "DIV.bar fixed top=827 h=73"
+  ],
+  "banned": []
+ }
+}

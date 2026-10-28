@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MONKOS 증명사진관 — 용도별 증명사진 완성 방법 (시안 B · 선택형 비교표 · 경로 /id-photo 제안)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+<style>
+/* ── 토큰: 정본 = monkos_AI/portal/public/components/specs-funnel/tokens.css 5~24행 (값 그대로) ── */
+:root {
+  --specs-accent: #6c4fff;
+  --specs-accent-hover: #5a3de6;
+  --specs-text-primary: #1a1a1a;
+  --specs-text-secondary: #555;
+  --specs-text-muted: #888;
+  --specs-text-faint: #aaa;
+  --specs-bg-white: #fff;
+  --specs-bg-surface: #f7f7fb;
+  --specs-border: #e8e8ef;
+  --specs-success: #16a34a;
+  --specs-error: #dc2626;
+  --specs-warning: #d97706;
+  --specs-radius-sm: 8px;
+  --specs-radius-md: 12px;
+  --specs-radius-lg: 16px;
+  --specs-shadow-card: 0 2px 12px rgba(0,0,0,.06);
+  --specs-shadow-heavy: 0 10px 30px rgba(15,15,40,.28);
+  --specs-font-sm: 12px;
+  --specs-font-base: 14px;
+  --specs-font-lg: 16px;
+
+  /* ── 신규 값(토큰에 없음 — 반환 "신규 값" 목록에 적음) ── */
+  --specs-font-h1: 26px;        /* specs 여권 H1 390 계산값(00_현행자산 §1) */
+  --specs-font-h1-wide: 36px;   /* specs 여권 H1 1440 계산값(00_현행자산 §1) */
+  --specs-font-h2: 20px;
+  --specs-font-price: 18px;
+  --specs-space-1: 4px;
+  --specs-space-2: 8px;
+  --specs-space-3: 12px;
+  --specs-space-4: 16px;
+  --specs-space-5: 24px;
+  --specs-space-6: 32px;
+  --specs-space-7: 48px;
+  --specs-tap: 44px;            /* 최소 터치 높이 */
+  --specs-wrap: 1040px;         /* 데스크톱 본문 최대폭 */
+  --specs-bar-h: 72px;          /* 하단 결정 바 최소 높이(인화 옵션 줄이 붙으면 JS가 본문 여백을 다시 잼) */
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  word-break: keep-all; /* 리드 수정 12:41 */
+  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  font-size: var(--specs-font-base);
+  line-height: 1.55;
+  color: var(--specs-text-primary);
+  background: var(--specs-bg-white);
+  overflow-x: hidden;
+  /* 하단 고정 바가 마지막 콘텐츠를 가리지 않게(기본값 — JS가 실제 바 높이로 갱신) */
+  padding-bottom: calc(var(--specs-bar-h) + var(--specs-space-6) + env(safe-area-inset-bottom));
+}
+a { color: var(--specs-accent); }
+a:hover { color: var(--specs-accent-hover); }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--specs-accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+.wrap { max-width: var(--specs-wrap); margin: 0 auto; padding: 0 var(--specs-space-4); }
+
+/* 헤더 — 허브 고유(D1 변경 12:32). 형제 서비스 링크 없음 */
+.hdr { border-bottom: 1px solid var(--specs-border); }
+.hdr .wrap { height: 52px; display: flex; align-items: center; gap: var(--specs-space-3); }
+.hdr .logo { display: flex; align-items: baseline; gap: var(--specs-space-1); color: var(--specs-text-primary); text-decoration: none; white-space: nowrap; }
+.hdr .logo b { font-size: var(--specs-font-lg); font-weight: 800; letter-spacing: .02em; }
+.hdr .logo span { font-size: var(--specs-font-base); font-weight: 700; }
+.hdr nav { margin-left: auto; display: flex; align-items: center; }
+.hdr nav a {
+  display: inline-flex; align-items: center; min-height: var(--specs-tap); padding: 0 var(--specs-space-2);
+  font-size: var(--specs-font-sm); font-weight: 600; color: var(--specs-text-secondary); text-decoration: none; white-space: nowrap;
+}
+.hdr nav a:hover { color: var(--specs-accent); }
+
+.ext { display: block; font-size: var(--specs-font-sm); color: var(--specs-text-muted); font-weight: 400; }
+
+section { padding: var(--specs-space-6) 0 0; }
+h2 { font-size: var(--specs-font-h2); font-weight: 800; line-height: 1.35; }
+.lede { color: var(--specs-text-secondary); margin-top: var(--specs-space-1); }
+
+/* S1 히어로 + 용도 탭 */
+.s1 { padding-top: var(--specs-space-5); }
+.s1 .eyebrow { font-size: var(--specs-font-sm); font-weight: 700; color: var(--specs-accent); margin-bottom: var(--specs-space-1); }
+.s1 h1 { font-size: var(--specs-font-h1); font-weight: 800; line-height: 1.3; }
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--specs-space-1); margin-top: var(--specs-space-4); padding: var(--specs-space-1); background: var(--specs-bg-surface); border-radius: var(--specs-radius-md); }
+.tab {
+  min-height: var(--specs-tap); border-radius: var(--specs-radius-sm);
+  font-weight: 700; font-size: var(--specs-font-base); color: var(--specs-text-secondary); white-space: nowrap;
+}
+.tab[aria-selected="true"] { background: var(--specs-bg-white); color: var(--specs-accent); box-shadow: var(--specs-shadow-card); }
+
+/* 탭 안 보조 칩(서류) */
+.subchips { display: flex; flex-wrap: wrap; gap: var(--specs-space-2); margin-top: var(--specs-space-3); }
+.chip {
+  min-height: 36px; padding: 0 var(--specs-space-3);
+  border: 1px solid var(--specs-border); border-radius: var(--specs-radius-lg);
+  background: var(--specs-bg-white); font-weight: 600; font-size: var(--specs-font-base); white-space: nowrap;
+}
+.chip:hover { border-color: var(--specs-accent); }
+.chip[aria-pressed="true"] { background: var(--specs-accent); border-color: var(--specs-accent); color: var(--specs-bg-white); }
+
+/* 무료 규격 맞춤 — 표 위 얇은 한 줄(열 아님) */
+.freeline {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--specs-space-2);
+  margin-top: var(--specs-space-3); padding: var(--specs-space-2) var(--specs-space-3);
+  border: 1px dashed var(--specs-border); border-radius: var(--specs-radius-sm); font-size: var(--specs-font-base);
+}
+.freeline a { font-weight: 700; text-decoration: none; }
+.freeline .ext { flex-basis: 100%; }
+
+/* S2 비교 — 모바일 3행 타일 */
+.s2-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--specs-space-1) var(--specs-space-3); }
+.docnow { font-size: var(--specs-font-sm); color: var(--specs-text-muted); }
+.docnow b { color: var(--specs-text-primary); }
+.tiles { display: grid; gap: var(--specs-space-2); margin-top: var(--specs-space-3); }
+.tile {
+  position: relative; text-align: left; width: 100%;
+  padding: var(--specs-space-3) var(--specs-space-3) var(--specs-space-3) 40px;
+  border: 1px solid var(--specs-border); border-radius: var(--specs-radius-md);
+  background: var(--specs-bg-white); box-shadow: var(--specs-shadow-card);
+  display: grid; grid-template-columns: 1fr auto; gap: 0 var(--specs-space-3); align-items: baseline;
+}
+.tile .nm { font-weight: 700; font-size: var(--specs-font-base); }
+.tile .pr { font-weight: 800; font-size: var(--specs-font-price); text-align: right; white-space: nowrap; }
+.tile .tm { font-size: var(--specs-font-sm); color: var(--specs-text-muted); }
+.tile .ps { font-size: var(--specs-font-sm); color: var(--specs-text-muted); text-align: right; }
+.tile .st { grid-column: 1 / -1; font-size: var(--specs-font-sm); font-weight: 600; padding-top: 2px; }
+.tile[aria-pressed="true"] { border: 2px solid var(--specs-accent); padding: calc(var(--specs-space-3) - 1px) calc(var(--specs-space-3) - 1px) calc(var(--specs-space-3) - 1px) 39px; }
+.tile .ck {
+  position: absolute; left: var(--specs-space-3); top: 50%; transform: translateY(-50%);
+  width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--specs-border);
+  display: grid; place-items: center; font-size: var(--specs-font-sm); color: var(--specs-bg-white);
+}
+.tile[aria-pressed="true"] .ck { background: var(--specs-accent); border-color: var(--specs-accent); }
+.tile.is-blocked { background: var(--specs-bg-surface); box-shadow: none; }
+.tile.is-blocked .nm, .tile.is-blocked .pr, .tile.is-blocked .tm, .tile.is-blocked .ps { color: var(--specs-text-faint); }
+.tile.is-blocked .ck { border-style: dashed; }
+
+.st-ok { color: var(--specs-success); }
+.st-check { color: var(--specs-warning); }
+.st-block { color: var(--specs-warning); }
+.st-ask { color: var(--specs-text-secondary); }
+
+/* 모바일 상세 */
+.detail {
+  margin-top: var(--specs-space-3); padding: var(--specs-space-4);
+  border: 1px solid var(--specs-border); border-radius: var(--specs-radius-md); background: var(--specs-bg-surface);
+}
+.detail h3 { font-size: var(--specs-font-lg); font-weight: 800; }
+.detail dl { display: grid; grid-template-columns: 72px 1fr; gap: var(--specs-space-2) var(--specs-space-3); margin-top: var(--specs-space-3); }
+.detail dt { color: var(--specs-text-muted); font-size: var(--specs-font-sm); padding-top: 2px; }
+.detail .sub { display: block; font-size: var(--specs-font-sm); color: var(--specs-text-secondary); }
+.detail .links { display: flex; flex-wrap: wrap; gap: var(--specs-space-2) var(--specs-space-4); margin-top: var(--specs-space-3); font-size: var(--specs-font-sm); }
+.hint { margin-top: var(--specs-space-3); font-size: var(--specs-font-sm); color: var(--specs-text-muted); }
+
+/* 불가·안내 노트 */
+.note {
+  margin-top: var(--specs-space-3); padding: var(--specs-space-3) var(--specs-space-4);
+  border-left: 3px solid var(--specs-warning); border-radius: var(--specs-radius-sm);
+  background: var(--specs-bg-surface);
+}
+.note b { display: block; color: var(--specs-warning); font-size: var(--specs-font-sm); margin-bottom: var(--specs-space-1); }
+.note a { display: inline-block; margin-top: var(--specs-space-2); font-size: var(--specs-font-sm); }
+
+/* 데스크톱 비교표 */
+.cmp { display: none; width: 100%; border-collapse: separate; border-spacing: 0; margin-top: var(--specs-space-4); table-layout: fixed; }
+.cmp th, .cmp td { padding: var(--specs-space-3) var(--specs-space-4); text-align: left; vertical-align: top; border-bottom: 1px solid var(--specs-border); }
+.cmp thead th { font-size: var(--specs-font-lg); font-weight: 800; border-bottom: 2px solid var(--specs-border); }
+.cmp thead th .ext { margin-top: 2px; }
+.cmp thead th.rowh { width: 120px; }
+.cmp tbody th { font-size: var(--specs-font-sm); color: var(--specs-text-muted); font-weight: 600; }
+.cmp .pr { font-size: var(--specs-font-price); font-weight: 800; }
+.cmp .sub { display: block; font-size: var(--specs-font-sm); color: var(--specs-text-secondary); margin-top: 2px; }
+.cmp td.is-sel, .cmp th.is-sel { box-shadow: inset 2px 0 0 var(--specs-accent), inset -2px 0 0 var(--specs-accent); }
+.cmp thead th.is-sel { box-shadow: inset 2px 0 0 var(--specs-accent), inset -2px 0 0 var(--specs-accent), inset 0 2px 0 var(--specs-accent); }
+.cmp tr.btnrow td.is-sel { box-shadow: inset 2px 0 0 var(--specs-accent), inset -2px 0 0 var(--specs-accent), inset 0 -2px 0 var(--specs-accent); }
+.cmp td.is-blocked, .cmp th.is-blocked { background: var(--specs-bg-surface); color: var(--specs-text-faint); }
+.cmp td.is-blocked .sub { color: var(--specs-text-faint); }
+.cmp tr.btnrow td { border-bottom: 0; }
+.pick {
+  width: 100%; min-height: var(--specs-tap); border-radius: var(--specs-radius-sm);
+  border: 1px solid var(--specs-accent); color: var(--specs-accent); font-weight: 700; background: var(--specs-bg-white);
+}
+.pick:hover { border-color: var(--specs-accent-hover); color: var(--specs-accent-hover); }
+.pick[aria-pressed="true"] { background: var(--specs-accent); color: var(--specs-bg-white); }
+.pick.why { border-color: var(--specs-border); color: var(--specs-text-secondary); }
+
+/* '인화만' 진입로 */
+.printonly {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--specs-space-3);
+  margin-top: var(--specs-space-4); padding: var(--specs-space-3) var(--specs-space-4);
+  border: 1px solid var(--specs-border); border-radius: var(--specs-radius-md);
+  color: var(--specs-text-primary); text-decoration: none;
+}
+.printonly:hover { border-color: var(--specs-accent); color: var(--specs-text-primary); }
+.printonly b { display: block; }
+.printonly .sub { font-size: var(--specs-font-sm); color: var(--specs-text-secondary); }
+.printonly .arr { flex: none; color: var(--specs-accent); font-weight: 800; }
+
+/* S3~S6 */
+.card {
+  margin-top: var(--specs-space-3); padding: var(--specs-space-4);
+  border: 1px solid var(--specs-border); border-radius: var(--specs-radius-md); background: var(--specs-bg-white);
+}
+.spec-row { display: flex; flex-wrap: wrap; gap: var(--specs-space-2); margin-top: var(--specs-space-2); }
+.spec-row span { padding: var(--specs-space-1) var(--specs-space-3); border-radius: var(--specs-radius-sm); background: var(--specs-bg-surface); font-weight: 600; }
+.src { font-size: var(--specs-font-sm); color: var(--specs-text-muted); margin-top: var(--specs-space-3); }
+.more { display: inline-block; margin-top: var(--specs-space-3); font-weight: 700; }
+.route { list-style: none; margin-top: var(--specs-space-3); display: grid; gap: var(--specs-space-2); }
+.route li { display: flex; gap: var(--specs-space-2); align-items: baseline; }
+.route .tag { flex: none; font-size: var(--specs-font-sm); font-weight: 700; min-width: 56px; }
+
+.studio { display: grid; gap: var(--specs-space-4); }
+.ph {
+  aspect-ratio: 4 / 3; border-radius: var(--specs-radius-md); background: var(--specs-border);
+  display: grid; place-items: center; color: var(--specs-text-muted); font-size: var(--specs-font-sm);
+}
+.studio .name { font-size: var(--specs-font-lg); font-weight: 800; }
+.studio .links { display: flex; flex-wrap: wrap; gap: var(--specs-space-2); margin-top: var(--specs-space-3); }
+.btn-line {
+  display: inline-flex; align-items: center; min-height: var(--specs-tap); padding: 0 var(--specs-space-4);
+  border: 1px solid var(--specs-border); border-radius: var(--specs-radius-sm);
+  color: var(--specs-text-primary); text-decoration: none; font-weight: 600;
+}
+.btn-line:hover { border-color: var(--specs-accent); color: var(--specs-accent); }
+
+.keep { display: grid; grid-template-columns: 1fr 1fr; gap: var(--specs-space-2); margin-top: var(--specs-space-3); }
+.keep div { padding: var(--specs-space-4); border-radius: var(--specs-radius-md); background: var(--specs-bg-surface); }
+.keep b { display: block; font-size: var(--specs-font-sm); color: var(--specs-text-muted); margin-bottom: var(--specs-space-1); }
+.keep p { font-weight: 700; }
+
+.faq details { border-bottom: 1px solid var(--specs-border); }
+.faq summary { min-height: var(--specs-tap); padding: var(--specs-space-3) 0; font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: var(--specs-space-3); }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; color: var(--specs-text-muted); }
+.faq details[open] summary::after { content: "−"; }
+.faq .a { padding: 0 0 var(--specs-space-4); color: var(--specs-text-secondary); }
+
+.foot { margin-top: var(--specs-space-7); padding: var(--specs-space-5) 0; border-top: 1px solid var(--specs-border); font-size: var(--specs-font-sm); color: var(--specs-text-muted); }
+
+/* 하단 고정 결정 바 (방향 B 주 CTA) */
+.bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  background: var(--specs-bg-white); border-top: 1px solid var(--specs-border); box-shadow: var(--specs-shadow-card);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.bar .row { min-height: var(--specs-bar-h); display: flex; align-items: center; gap: var(--specs-space-3); }
+.bar .info { flex: 1; min-width: 0; }
+.bar .l1 { font-size: var(--specs-font-sm); color: var(--specs-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar .l2 { font-size: var(--specs-font-lg); font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar .l2 small { font-size: var(--specs-font-sm); font-weight: 500; color: var(--specs-text-muted); }
+.bar .empty { font-size: var(--specs-font-base); color: var(--specs-text-secondary); }
+.bar .opt { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--specs-space-4); padding: 0 0 var(--specs-space-3); border-top: 1px solid var(--specs-border); padding-top: var(--specs-space-2); font-size: var(--specs-font-sm); }
+.bar .opt label { display: inline-flex; align-items: center; gap: var(--specs-space-1); min-height: 32px; cursor: pointer; }
+.bar .opt input { width: 16px; height: 16px; accent-color: var(--specs-accent); }
+.bar .opt .ext { flex-basis: 100%; }
+.go {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  min-height: 48px; padding: 0 var(--specs-space-4); border-radius: var(--specs-radius-md);
+  background: var(--specs-accent); color: var(--specs-bg-white); font-weight: 800; text-decoration: none; white-space: nowrap;
+}
+.go:hover { background: var(--specs-accent-hover); color: var(--specs-bg-white); }
+.go[aria-disabled="true"] { background: var(--specs-border); color: var(--specs-text-faint); pointer-events: none; }
+
+@media (min-width: 900px) {
+  .wrap { padding: 0 var(--specs-space-6); }
+  .s1 { padding-top: var(--specs-space-7); }
+  .s1 h1 { font-size: var(--specs-font-h1-wide); }
+  .tabs { max-width: 560px; }
+  section { padding-top: var(--specs-space-7); }
+  .tiles, .detail, .hint { display: none !important; }
+  .cmp { display: table; }
+  .printonly { max-width: 640px; }
+  .studio { grid-template-columns: 320px 1fr; align-items: center; }
+  .keep { max-width: 640px; }
+  .faq { max-width: 760px; }
+  .go { padding: 0 var(--specs-space-6); }
+}
+</style>
+</head>
+<body>
+
+<header class="hdr"><div class="wrap">
+  <a class="logo" href="/id-photo" aria-label="MONKOS 증명사진관"><b>MONKOS</b><span>증명사진관</span></a>
+  <nav aria-label="허브 메뉴"><a href="/specs">규격 가이드</a></nav>
+</div></header>
+
+<main>
+  <!-- S1 히어로 + 용도 탭 -->
+  <section class="s1" aria-labelledby="h1">
+    <div class="wrap">
+      <p class="eyebrow">MONKOS 증명사진관</p>
+      <h1 id="h1">증명사진, 어디에 쓰실 건가요?</h1>
+      <p class="lede">용도를 고르면 AI 증명사진 · 온라인 맞춤 보정 · 방문 촬영이 값과 함께 나란히 나옵니다.</p>
+      <div class="tabs" role="tablist" aria-label="용도" id="tabs"></div>
+      <div class="subchips" role="group" aria-label="서류" id="subchips"></div>
+    </div>
+  </section>
+
+  <!-- S2 비교표 -->
+  <section aria-labelledby="h2-cmp" id="panel" role="tabpanel">
+    <div class="wrap">
+      <div class="s2-head">
+        <h2 id="h2-cmp">완성 방법 3가지</h2>
+        <p class="docnow" id="docnow"></p>
+      </div>
+      <p class="freeline" id="freeline"></p>
+      <div class="tiles" id="tiles" role="group" aria-label="완성 방법 선택"></div>
+      <div class="detail" id="detail" hidden aria-live="polite"></div>
+      <p class="hint" id="tileHint">방법 하나를 누르면 받는 것과 조건이 펼쳐집니다.</p>
+      <table class="cmp" id="cmp" aria-label="완성 방법 비교"></table>
+      <div class="note" id="note" hidden aria-live="polite"></div>
+
+      <!-- '인화만' 진입로 — 탭과 무관 -->
+      <a class="printonly" href="https://monk.kr/monk_studio/store/print/print.html" data-tier="print">
+        <span>
+          <b>가지고 계신 사진을 인화만 하기</b>
+          <span class="sub">₩10,000(매장 수령) · 우편 +₩1,800 · 3일 내외</span>
+          <span class="ext">몽크사진관 사이트에서 이어집니다</span>
+        </span>
+        <span class="arr" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- S3 선택 서류 규격 요약 (프로필류에서는 숨김) -->
+  <section aria-labelledby="h2-spec" id="s3">
+    <div class="wrap">
+      <h2 id="h2-spec">서류 규격</h2>
+      <div class="card" id="spec"></div>
+    </div>
+  </section>
+
+  <!-- S4 이 서류에는 이 방법 -->
+  <section aria-labelledby="h2-route">
+    <div class="wrap">
+      <h2 id="h2-route">이 용도에는 이 방법</h2>
+      <div class="card" id="route"></div>
+    </div>
+  </section>
+
+  <!-- S5 사진관 다리 -->
+  <section aria-labelledby="h2-studio">
+    <div class="wrap">
+      <h2 id="h2-studio">온라인 결과가 마음에 들지 않으면 매장에서 다시 찍으세요</h2>
+      <div class="card studio">
+        <div class="ph" role="img" aria-label="샘플 사진 자리">샘플 사진 자리</div>
+        <div>
+          <p class="name">미사역 몽크사진관</p>
+          <p class="lede" id="studioPrice"></p>
+          <div class="links">
+            <a class="btn-line" id="studioLink" href="https://monk.kr/monk_studio/id_photo/id_photo.html" data-tier="studio">사진관 안내 보기</a>
+            <a class="btn-line" href="https://talk.naver.com/W5UJ45" target="_blank" rel="noopener" data-tier="studio">네이버 톡톡 문의</a>
+            <a class="btn-line" href="tel:031-791-5030" data-tier="studio">전화 031-791-5030</a>
+          </div>
+          <p class="ext" style="margin-top: var(--specs-space-2);">사진관 안내는 몽크사진관 사이트에서 이어집니다</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S6 얼굴은 그대로 (리드 수정 문구 유지) -->
+  <section aria-labelledby="h2-keep">
+    <div class="wrap">
+      <h2 id="h2-keep">바꾸는 건 조명과 옷이지, 얼굴이 아닙니다</h2>
+      <div class="keep">
+        <div><b>그대로</b><p>얼굴</p></div>
+        <div><b>정리</b><p>조명 · 옷</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S8 FAQ (S7 후기는 실데이터가 없어 넣지 않음) -->
+  <section class="faq" aria-labelledby="h2-faq">
+    <div class="wrap">
+      <h2 id="h2-faq">자주 묻는 질문</h2>
+      <div style="margin-top: var(--specs-space-2);">
+        <details>
+          <summary>정부24에 바로 올릴 수 있나요?</summary>
+          <div class="a">서류마다 제출 방법과 조건이 다릅니다. 고르신 서류의 규격 페이지에서 공식 안내를 확인해 주세요. 여권은 정부24 온라인 신청 화면에도 AI 편집·가공·합성 사진 불가가 안내됩니다. <a id="faqSpec" href="/specs/passport/kr">규격 자세히 보기</a></div>
+        </details>
+        <details>
+          <summary>인화는 며칠 걸리나요?</summary>
+          <div class="a">미사역 몽크사진관에서 매장 수령하시거나, 우편(준등기)으로 받으실 수 있습니다. 우편은 ₩1,800이 더해지고 3일 내외 걸립니다. <a href="https://monk.kr/monk_studio/store/print/print.html">인화 주문 자세히 보기</a><span class="ext">몽크사진관 사이트에서 이어집니다</span></div>
+        </details>
+        <details>
+          <summary>세 가지 방법은 어떻게 다른가요?</summary>
+          <div class="a">AI 증명사진은 셀카로 촬영해 온라인에서 바로 받습니다. 온라인 맞춤 보정은 가지고 계신 사진을 몽크사진관 작가가 얼굴은 그대로 두고 보정해 드립니다. 방문 촬영은 미사역 몽크사진관에서 직접 찍습니다. <a href="https://monk.kr/monk_studio/store/retouch/retouch.html">보정 자세히 보기</a> · <a href="https://monk.kr/monk_studio/id_photo/id_photo.html">사진관 자세히 보기</a><span class="ext">몽크사진관 사이트에서 이어집니다</span></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot"><div class="wrap">MONKOS 증명사진관 · 몽크사진관 031-791-5030 · <a href="/">MONKOS 홈</a></div></footer>
+</main>
+
+<!-- 하단 고정 결정 바 -->
+<div class="bar" id="bar" role="region" aria-label="선택한 방법으로 시작">
+  <div class="wrap">
+    <div class="row">
+      <div class="info" id="barInfo" aria-live="polite"></div>
+      <a class="go" id="go" aria-disabled="true" role="link">이 방법으로 시작</a>
+    </div>
+    <div class="opt" id="barOpt" hidden></div>
+  </div>
+</div>
+
+<script>
+/* 정적 시안: 용도·서류·방법·인화 옵션 선택 상태만. 서버 호출·결제·업로드 없음.
+   데이터는 한 묶음으로 둔다 — 실구현 시 기획안 §7 ⑧ 단일 정본(JSON)으로 옮길 자리. */
+(function () {
+  var MOFA = 'https://www.passport.go.kr/home/kor/contents.do?menuPos=32';
+  var TALK = 'https://talk.naver.com/W5UJ45';
+  var EXT_MONK = '몽크사진관 사이트에서 이어집니다';
+  var EXT_TALK = '네이버 톡톡에서 이어집니다';
+  var PRINT = 10000, MAIL = 1800;
+
+  var DOCS = {
+    passport: { label: '여권',       href: '/specs/passport/kr', ai: 'block' },
+    id:       { label: '주민등록증', href: '/specs/id/kr',       ai: 'check' },
+    license:  { label: '운전면허',   href: '/specs/license/kr',  ai: 'check' },
+    visa:     { label: '비자(미국)', href: '/specs/visa/us',     ai: 'check' },
+    resume:   { label: '이력서·취업', href: '/specs/resume/kr',   ai: 'ok' }
+  };
+  var GROUPS = [
+    { id: 'gov',     label: '여권·비자류', docs: ['passport', 'id', 'license', 'visa'], free: true },
+    { id: 'job',     label: '취업사진류', docs: ['resume'], free: true },
+    { id: 'profile', label: '프로필류',   docs: [], free: false }
+  ];
+
+  var AI_ID = { id: 'ai', name: 'AI 증명사진', price: '₩9,900', amount: 9900, priceSub: '첫 로그인 시 무료 체험',
+    time: '약 3분', get: 'AI로 보정한 증명사진 파일', cond: '셀카로 촬영해 시작합니다 · 로그인 필요',
+    href: 'https://idphoto-kr.monkos.ai/prep', cta: '셀카로 촬영하기', print: 'separate' };
+  var RETOUCH_ID = { id: 'retouch', name: '온라인 맞춤 보정', by: '몽크사진관', price: '₩10,000', amount: 10000, priceSub: '보정+인화 ₩20,000',
+    time: '보정본을 메일로 받음', get: '가지고 계신 사진을 얼굴 보정·정장 변경·헤어 정리·규격 맞추기 — 얼굴은 그대로',
+    cond: '주문 후 원본 사진을 메일로 보냅니다', href: 'https://monk.kr/monk_studio/store/retouch/retouch.html',
+    cta: '이 방법으로 시작', ext: EXT_MONK, print: 'bundle' };
+  var STUDIO_ID = { id: 'studio', name: '방문 촬영', by: '몽크사진관', price: '₩30,000부터', priceSub: '디럭스 ₩50,000 · 프리미엄 ₩70,000',
+    time: '방문 촬영', get: '매장에서 촬영한 증명사진', cond: '미사역 몽크사진관 방문 · 예약은 톡톡·전화',
+    href: 'https://monk.kr/monk_studio/id_photo/id_photo.html', cta: '이 방법으로 시작', ext: EXT_MONK };
+
+  var METHODS = {
+    gov: [AI_ID, RETOUCH_ID, STUDIO_ID],
+    job: [AI_ID, RETOUCH_ID, STUDIO_ID],
+    profile: [
+      { id: 'ai', name: 'MONKOS 헤드샷', price: '한 컷 10c', priceSub: '₩1,500 · 첫 로그인 시 1컷 무료 체험',
+        time: '약 30초(헤드샷 페이지 표기)', get: 'AI 프로필 사진(헤드샷) 1컷', cond: '셀카 한 장을 올려 시작합니다',
+        href: '/headshot', cta: '이 방법으로 시작' },
+      { id: 'retouch', name: '온라인 맞춤 보정', by: '몽크사진관', price: '톡톡 문의', priceSub: '프로필 보정은 문의로 안내합니다',
+        time: '문의 후 안내', get: '문의 후 안내', cond: '네이버 톡톡으로 문의합니다', ask: true,
+        href: TALK, cta: '톡톡으로 문의하기', ext: EXT_TALK },
+      { id: 'studio', name: '방문 촬영', by: '몽크사진관', price: '₩70,000부터', priceSub: 'B ₩150,000 · C ₩300,000',
+        time: '방문 촬영', get: '매장에서 촬영한 프로필 사진', cond: '미사역 몽크사진관 방문 · 예약은 톡톡·전화',
+        href: 'https://monk.kr/monk_studio/profile/profile.html', cta: '이 방법으로 시작', ext: EXT_MONK }
+    ]
+  };
+
+  var state = { group: 'gov', doc: null, method: null, note: null, print: false, mail: false };
+
+  function $(id) { return document.getElementById(id); }
+  function won(n) { return '₩' + n.toLocaleString('ko-KR'); }
+  function grp() { return GROUPS.filter(function (g) { return g.id === state.group; })[0]; }
+  function methods() { return METHODS[state.group]; }
+  function mObj(id) { return methods().filter(function (m) { return m.id === id; })[0]; }
+  function doc() { return state.doc ? DOCS[state.doc] : null; }
+
+  /* AI 열 상태: 여권·비자류에서만 서류에 따라 달라진다 */
+  function aiStatus() {
+    if (state.group === 'job') return 'ok';
+    if (state.group === 'profile') return null;
+    return doc() ? doc().ai : 'pending';
+  }
+  function statusOf(m) {
+    if (m.ask) return 'ask';
+    if (m.id === 'ai') return aiStatus();
+    /* 리드 수정 12:49 — 작가님 12:40 현장 판정: 보정·배경 작업은 사진관·AI 공통 업계 실무. 여권 제한 근거는 얼굴 재생성(D2)뿐 → 여권 × 보정 = 가능 */
+    return null;
+  }
+  function stHtml(m) {
+    var s = statusOf(m);
+    if (s === 'ok') return '<span class="st-ok">이 용도 가능</span>';
+    if (s === 'check') return '<span class="st-check">제출처 기준 확인</span>';
+    if (s === 'block') return '<span class="st-block">여권은 선택 불가 — 외교부 기준</span>';
+    if (s === 'pending') return '<span class="st-check">여권 불가 · 그 외 서류는 제출처 기준 확인</span>';
+    if (s === 'ask') return '<span class="st-ask">현재 정해진 상품 없음 — 톡톡 문의</span>';
+    return '';
+  }
+  function canPrint(m) { return m && (m.print === 'separate' || m.print === 'bundle'); }
+
+  /* 용도 탭 */
+  $('tabs').innerHTML = GROUPS.map(function (g) {
+    return '<button class="tab" type="button" role="tab" aria-controls="panel" aria-selected="false" data-g="' + g.id + '">' + g.label + '</button>';
+  }).join('');
+  $('tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('.tab'); if (!b || b.dataset.g === state.group) return;
+    state.group = b.dataset.g;
+    var g = grp();
+    state.doc = g.docs.length === 1 ? g.docs[0] : null;
+    state.method = null; state.note = null; state.print = false; state.mail = false;
+    render();
+  });
+
+  $('subchips').addEventListener('click', function (e) {
+    var b = e.target.closest('.chip'); if (!b) return;
+    state.doc = b.dataset.doc; state.note = null;
+    if (state.method === 'ai' && aiStatus() === 'block') { state.method = null; state.print = false; state.mail = false; }
+    render();
+  });
+
+  function pickMethod(mid) {
+    var m = mObj(mid), s = statusOf(m);
+    if (s === 'block') { state.note = 'block'; render(); return; }
+    if (s === 'pending') { state.note = 'pending'; render(); return; }
+    state.note = null;
+    state.method = (state.method === mid) ? null : mid;
+    if (!canPrint(mObj(state.method))) { state.print = false; state.mail = false; }
+    render();
+  }
+  $('tiles').addEventListener('click', function (e) { var t = e.target.closest('.tile'); if (t) pickMethod(t.dataset.tier); });
+  $('cmp').addEventListener('click', function (e) { var b = e.target.closest('.pick'); if (b) pickMethod(b.dataset.tier); });
+
+  $('barOpt').addEventListener('change', function (e) {
+    if (e.target.id === 'optPrint') { state.print = e.target.checked; if (!state.print) state.mail = false; }
+    if (e.target.id === 'optMail') { state.mail = e.target.checked; if (state.mail) state.print = true; }
+    renderBar();
+  });
+
+  function renderTabs() {
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) {
+      t.setAttribute('aria-selected', String(t.dataset.g === state.group));
+    });
+    var g = grp();
+    $('subchips').hidden = g.docs.length < 2;
+    $('subchips').innerHTML = g.docs.map(function (id) {
+      return '<button class="chip" type="button" aria-pressed="' + (state.doc === id) + '" data-doc="' + id + '">' + DOCS[id].label + '</button>';
+    }).join('');
+    var d = doc();
+    $('docnow').innerHTML = g.id === 'gov'
+      ? (d ? '선택한 서류: <b>' + d.label + '</b>' : '서류를 고르면 AI 증명사진 가능 여부가 표시됩니다')
+      : '용도: <b>' + g.label + '</b>';
+  }
+
+  function renderFree() {
+    var g = grp(), el = $('freeline');
+    if (!g.free) { el.hidden = true; return; }
+    var href = doc() ? doc().href : '/specs';
+    el.innerHTML = '<span>규격만 맞추면 되나요?</span><a href="' + href + '" data-tier="free">무료로 맞추기 →</a>' +
+      '<span class="ext">서류 규격(크기·머리 위치)에 맞춘 사진 파일 · 워터마크 없는 고화질 ₩2,000</span>';
+    el.hidden = false;
+  }
+
+  function renderTiles() {
+    $('tiles').innerHTML = methods().map(function (m) {
+      var s = statusOf(m), blocked = s === 'block';
+      var sel = state.method === m.id;
+      return '<button type="button" class="tile' + (blocked ? ' is-blocked' : '') + '" data-tier="' + m.id + '"' +
+        ' aria-pressed="' + sel + '"' + (blocked ? ' aria-disabled="true"' : '') + '>' +
+        '<span class="ck" aria-hidden="true">' + (sel ? '✓' : '') + '</span>' +
+        '<span class="nm">' + m.name + '</span><span class="pr">' + m.price + '</span>' +
+        '<span class="tm">' + (m.by ? m.by + ' · ' : '') + m.time + '</span><span class="ps">' + m.priceSub + '</span>' +
+        (s ? '<span class="st">' + stHtml(m) + '</span>' : '') +
+        '</button>';
+    }).join('');
+
+    var det = $('detail'), m = state.method ? mObj(state.method) : null;
+    if (m) {
+      var links = m.id === 'studio'
+        ? '<div class="links"><a href="' + TALK + '" target="_blank" rel="noopener">네이버 톡톡 문의</a><a href="tel:031-791-5030">전화 031-791-5030</a></div>' : '';
+      det.innerHTML = '<h3>' + m.name + (m.by ? ' <span class="ext" style="display:inline">· ' + m.by + '</span>' : '') + '</h3>' +
+        '<dl><dt>가격</dt><dd>' + m.price + '<span class="sub">' + m.priceSub + '</span></dd>' +
+        '<dt>소요</dt><dd>' + m.time + '</dd>' +
+        '<dt>받는 것</dt><dd>' + m.get + '</dd>' +
+        '<dt>조건</dt><dd>' + m.cond + '</dd>' +
+        (statusOf(m) ? '<dt>이 용도</dt><dd>' + stHtml(m) + '</dd>' : '') +
+        (canPrint(m) ? '<dt>인화</dt><dd>아래 바에서 "인화해서 받기"를 더할 수 있습니다</dd>' : '') +
+        '</dl>' + links + (m.ext ? '<p class="ext" style="margin-top:var(--specs-space-3)">' + m.ext + '</p>' : '');
+      det.hidden = false;
+    } else det.hidden = true;
+    $('tileHint').hidden = !!m || !!state.note;
+  }
+
+  function renderTable() {
+    var ms = methods();
+    function cls(m) {
+      var c = [];
+      if (state.method === m.id) c.push('is-sel');
+      if (statusOf(m) === 'block') c.push('is-blocked');
+      return c.length ? ' class="' + c.join(' ') + '"' : '';
+    }
+    function row(label, fn, rc) {
+      return '<tr' + (rc ? ' class="' + rc + '"' : '') + '><th scope="row">' + label + '</th>' +
+        ms.map(function (m) { return '<td' + cls(m) + '>' + fn(m) + '</td>'; }).join('') + '</tr>';
+    }
+    $('cmp').innerHTML =
+      '<thead><tr><th class="rowh" scope="col"><span class="sub">방법</span></th>' +
+      ms.map(function (m) { return '<th scope="col"' + cls(m) + '>' + m.name + (m.by ? '<span class="ext">' + m.by + '</span>' : '') + '</th>'; }).join('') +
+      '</tr></thead><tbody>' +
+      row('가격', function (m) { return '<span class="pr">' + m.price + '</span><span class="sub">' + m.priceSub + '</span>'; }) +
+      row('소요', function (m) { return m.time; }) +
+      row('받는 것', function (m) { return m.get; }) +
+      row('조건', function (m) { return m.cond; }) +
+      row('이 용도', function (m) { return stHtml(m); }) +
+      row('', function (m) {
+        var s = statusOf(m);
+        if (s === 'block') return '<button type="button" class="pick why" data-tier="' + m.id + '">왜 안 되나요?</button>';
+        var sel = state.method === m.id;
+        return '<button type="button" class="pick" data-tier="' + m.id + '" aria-pressed="' + sel + '">' + (sel ? '선택됨 ✓' : '이 방법 고르기') + '</button>' +
+          (m.ext ? '<span class="ext" style="margin-top:var(--specs-space-1)">' + m.ext + '</span>' : '');
+      }, 'btnrow') + '</tbody>';
+  }
+
+  function renderNote() {
+    var n = $('note');
+    if (state.note === 'block') {
+      n.innerHTML = '<b>여권 · AI 증명사진 선택 불가</b>여권 사진은 얼굴을 새로 만든 사진을 받지 않습니다 — 외교부 기준. 여권에는 얼굴을 그대로 두는 온라인 맞춤 보정, 방문 촬영, 위의 무료 규격 맞추기를 권합니다.' +
+        '<br><a href="' + MOFA + '" target="_blank" rel="noopener">출처: 대한민국 여권 안내 (외교부)</a>';
+      n.hidden = false;
+    } else if (state.note === 'pending') {
+      n.innerHTML = '<b>어떤 서류인지 먼저 골라 주세요</b>여권은 얼굴을 새로 만든 사진을 받지 않아 AI 증명사진을 고를 수 없습니다(외교부 기준). 주민등록증·운전면허·비자는 제출처 기준을 확인한 뒤 고르세요.' +
+        '<br><a href="' + MOFA + '" target="_blank" rel="noopener">출처: 대한민국 여권 안내 (외교부)</a>';
+      n.hidden = false;
+    } else n.hidden = true;
+  }
+
+  function renderBar() {
+    var go = $('go'), opt = $('barOpt'), d = doc(), g = grp();
+    var ctx = g.label + (d && g.docs.length > 1 ? ' · ' + d.label : '');
+    var m = state.method ? mObj(state.method) : null;
+    if (!m) {
+      $('barInfo').innerHTML = '<div class="l1">' + ctx + '</div><div class="empty">방법을 고르면 바로 시작할 수 있어요</div>';
+      go.textContent = '이 방법으로 시작';
+      go.setAttribute('aria-disabled', 'true'); go.removeAttribute('href'); go.removeAttribute('data-tier'); go.removeAttribute('target');
+      opt.hidden = true; fitBody(); return;
+    }
+    var price = m.price, sub = m.priceSub, extLine = m.ext || '';
+    if (canPrint(m) && state.print) {
+      if (m.print === 'bundle') { price = '₩20,000'; sub = '보정+인화'; }
+      else {
+        var total = m.amount + PRINT + (state.mail ? MAIL : 0);
+        price = won(total);
+        sub = 'AI ' + won(m.amount) + ' + 인화 ' + won(PRINT) + (state.mail ? ' + 우편 ' + won(MAIL) : '');
+      }
+    }
+    $('barInfo').innerHTML = '<div class="l1">' + ctx + ' · ' + m.name + '</div>' +
+      '<div class="l2">' + price + ' <small>' + sub + '</small></div>' +
+      (extLine ? '<div class="ext">' + extLine + '</div>' : '');
+    go.textContent = m.cta;
+    go.setAttribute('aria-disabled', 'false');
+    go.setAttribute('href', m.href);
+    go.setAttribute('data-tier', m.id); // 실구현 시 hub_tier_click(tier) 측정 자리 — 기획안 §8
+    if (m.href === TALK) go.setAttribute('target', '_blank'); else go.removeAttribute('target');
+
+    if (canPrint(m)) {
+      var h = '<label><input type="checkbox" id="optPrint"' + (state.print ? ' checked' : '') + '> 인화해서 받기 ' +
+        (m.print === 'bundle' ? '(보정+인화 ₩20,000)' : '+₩10,000 (매장 수령)') + '</label>';
+      if (m.print === 'separate') {
+        h += '<label><input type="checkbox" id="optMail"' + (state.mail ? ' checked' : '') + '> 우편 +₩1,800 · 3일 내외</label>' +
+          '<span class="ext">인화 주문은 몽크사진관 사이트에서 이어집니다 — AI 결과 파일을 받은 뒤 따로 주문합니다</span>';
+      } else {
+        h += '<span class="ext">보정+인화는 몽크사진관 사이트에서 고릅니다</span>';
+      }
+      opt.innerHTML = h; opt.hidden = false;
+    } else opt.hidden = true;
+    fitBody();
+  }
+
+  /* 바 높이가 바뀌어도 마지막 콘텐츠가 가려지지 않게 */
+  function fitBody() {
+    document.body.style.paddingBottom = 'calc(' + $('bar').offsetHeight + 'px + var(--specs-space-6))';
+  }
+
+  function renderSpec() {
+    var g = grp(), d = doc(), el = $('spec');
+    $('s3').hidden = !g.free;
+    if (!g.free) return;
+    if (!d) { el.innerHTML = '<p class="lede">위에서 서류를 고르면 규격 요약이 여기에 나옵니다.</p>'; return; }
+    if (state.doc === 'passport') {
+      el.innerHTML = '<p><b>대한민국 여권</b></p>' +
+        '<div class="spec-row"><span>3.5×4.5cm</span><span>머리 높이 3.2~3.6cm</span><span>흰 배경</span></div>' +
+        '<p class="src">외교부 기준 · <a href="' + MOFA + '" target="_blank" rel="noopener">대한민국 여권 안내 (외교부)</a></p>' +
+        '<a class="more" href="' + d.href + '">규격 자세히 보기</a>';
+    } else {
+      el.innerHTML = '<p><b>' + d.label + '</b></p><p class="lede">규격 수치와 공식 출처는 규격 페이지에 정리되어 있습니다.</p>' +
+        '<a class="more" href="' + d.href + '">규격 자세히 보기</a>';
+    }
+    $('faqSpec').setAttribute('href', d.href);
+  }
+
+  function renderRoute() {
+    var g = grp(), d = doc(), el = $('route'), lead;
+    if (g.id === 'profile') lead = '프로필 사진은 MONKOS 헤드샷으로 온라인에서 만들거나, 미사역 몽크사진관에서 방문 촬영할 수 있습니다. 프로필 보정은 톡톡으로 문의해 주세요.';
+    else if (g.id === 'job') lead = '이력서·취업 사진은 세 가지 방법 모두 쓸 수 있습니다. 규격만 맞추면 되면 무료로 맞출 수 있습니다.';
+    else if (!d) lead = '서류마다 쓸 수 있는 방법이 다릅니다. 위에서 서류를 고르면 여기에서 알려 드립니다.';
+    else if (state.doc === 'passport') lead = '여권 사진은 얼굴을 새로 만든 사진을 받지 않습니다(외교부 기준). 그래서 MONKOS는 여권에 얼굴을 그대로 두는 방법만 권합니다.';
+    else lead = d.label + ' 사진은 제출처마다 받는 기준이 다릅니다. 규격 페이지의 공식 안내를 확인한 뒤 고르세요.';
+    var list = '';
+    if (g.id !== 'gov' || d) {
+      list = '<ul class="route">' + (g.free ? '<li><span class="tag st-ok">무료</span><span>규격만 맞추기 · 무료</span></li>' : '') +
+        methods().map(function (m) {
+          var s = statusOf(m) || 'ok';
+          var t = s === 'ok' ? '가능' : s === 'check' ? '확인 후' : s === 'ask' ? '문의' : '불가';
+          return '<li><span class="tag st-' + s + '">' + t + '</span><span>' + m.name + ' · ' + m.price + '</span></li>';
+        }).join('') + '</ul>';
+    }
+    el.innerHTML = '<p>' + lead + '</p>' + list +
+      (state.doc === 'passport' && g.id === 'gov' ? '<p class="src"><a href="' + MOFA + '" target="_blank" rel="noopener">출처: 대한민국 여권 안내 (외교부)</a></p>' : '');
+  }
+
+  function renderStudio() {
+    var s = mObj('studio');
+    $('studioPrice').textContent = '방문 촬영 ' + s.price + ' · ' + s.priceSub;
+    $('studioLink').setAttribute('href', s.href);
+  }
+
+  function render() {
+    renderTabs(); renderFree(); renderTiles(); renderTable(); renderNote(); renderBar();
+    renderSpec(); renderRoute(); renderStudio();
+  }
+
+  window.addEventListener('resize', fitBody);
+  render();
+})();
+</script>
+
+<!-- 근거표: 같은 폴더 근거표.md -->
+</body>
+</html>

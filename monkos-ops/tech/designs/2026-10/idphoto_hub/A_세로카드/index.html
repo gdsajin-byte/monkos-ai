@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MONKOS 증명사진관 — 용도를 고르면 완성 방법을 나란히</title>
+<!-- 시안 A "용도 탭 고정 + 세로 카드" (10-28 개편: 1차 탭 = 용도 3, 탭마다 방법 카드 + 인화 추가 옵션 + '인화만' 카드) — 정적 시안.
+     서버 호출·결제·업로드 없음. 버튼은 현행 페이지로 이동만 한다.
+     배치(D1 변경 10-28 12:32): monkos.ai 포털 서브 허브 /id-photo(제안 경로). 바로 착지하는 입구 — 허브 고유 헤더, 형제 서비스 링크 없음. -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+<style>
+/* ── 토큰 ───────────────────────────────────────────────
+   현행 정본: monkos_AI/portal/public/components/specs-funnel/tokens.css 5~24행 (값 그대로)
+   [신규] 표시가 붙은 값은 tokens.css에 없는 값 — 반환 "신규 값" 목록 참조 */
+:root {
+  --specs-accent: #6c4fff;
+  --specs-accent-hover: #5a3de6;
+  --specs-text-primary: #1a1a1a;
+  --specs-text-secondary: #555;
+  --specs-text-muted: #888;
+  --specs-text-faint: #aaa;
+  --specs-bg-white: #fff;
+  --specs-bg-surface: #f7f7fb;
+  --specs-border: #e8e8ef;
+  --specs-success: #16a34a;
+  --specs-error: #dc2626;
+  --specs-warning: #d97706;
+  --specs-radius-sm: 8px;
+  --specs-radius-md: 12px;
+  --specs-radius-lg: 16px;
+  --specs-shadow-card: 0 2px 12px rgba(0,0,0,.06);
+  --specs-shadow-heavy: 0 10px 30px rgba(15,15,40,.28);
+  --specs-font-sm: 12px;
+  --specs-font-base: 14px;
+  --specs-font-lg: 16px;
+  /* 글꼴 스택: render-shell.js 117행과 같음 */
+  --specs-font-family: 'Pretendard', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* [신규] 아래는 tokens.css에 없는 값 */
+  --specs-font-xl: 20px;
+  --specs-font-2xl: 24px;
+  --specs-font-3xl: 36px;
+  --specs-space-1: 4px;
+  --specs-space-2: 8px;
+  --specs-space-3: 12px;
+  --specs-space-4: 16px;
+  --specs-space-5: 24px;
+  --specs-space-6: 40px;
+  --specs-radius-pill: 999px;
+  --specs-accent-tint: rgba(108,79,255,.08);
+  --specs-container: 1120px;
+  --specs-tap: 44px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+/* render-shell.js 115행과 같은 가로 넘침 차단 */
+html, body { overflow-x: hidden; overflow-x: clip; }
+body {
+  word-break: keep-all; /* 리드 수정 12:41 — 어절 중간 줄바꿈 방지 */
+  font-family: var(--specs-font-family);
+  font-size: var(--specs-font-base);
+  line-height: 1.5;
+  color: var(--specs-text-primary);
+  background: var(--specs-bg-white);
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: 88px; /* 하단 고정 줄 높이만큼 */
+}
+a { color: inherit; }
+.wrap { width: 100%; max-width: var(--specs-container); margin: 0 auto; padding: 0 var(--specs-space-4); }
+
+/* 상단 바 — 허브 고유 헤더 */
+.top { border-bottom: 1px solid var(--specs-border); }
+.top .wrap { height: 48px; display: flex; align-items: center; justify-content: space-between; }
+.brand { font-weight: 800; font-size: var(--specs-font-lg); text-decoration: none; letter-spacing: .02em; }
+.brand span { font-weight: 600; color: var(--specs-text-secondary); margin-left: var(--specs-space-1); }
+.top-link { font-size: var(--specs-font-sm); color: var(--specs-text-secondary); text-decoration: none; }
+
+/* S1 히어로 */
+.hero { padding-top: var(--specs-space-4); padding-bottom: var(--specs-space-2); } /* 리드 수정 12:41 — .wrap 좌우 여백 덮어쓰기 해소 */
+.hero h1 { font-size: var(--specs-font-2xl); font-weight: 800; line-height: 1.3; letter-spacing: -.01em; }
+.hero p { margin-top: var(--specs-space-1); color: var(--specs-text-secondary); font-size: var(--specs-font-base); }
+
+/* S1 용도 탭 — sticky */
+.chipbar { position: sticky; top: 0; z-index: 20; background: var(--specs-bg-white); border-bottom: 1px solid var(--specs-border); }
+.chips { display: flex; gap: var(--specs-space-2); padding: var(--specs-space-3) var(--specs-space-4); max-width: var(--specs-container); margin: 0 auto; }
+.chip {
+  flex: 1 1 0; min-width: 0; height: 40px; padding: 0 var(--specs-space-2);
+  border: 1px solid var(--specs-border); border-radius: var(--specs-radius-pill);
+  background: var(--specs-bg-white); color: var(--specs-text-primary);
+  font: inherit; font-size: var(--specs-font-base); font-weight: 700; cursor: pointer; white-space: nowrap;
+}
+.chip:hover { border-color: var(--specs-accent); }
+.chip[aria-pressed="true"] { background: var(--specs-accent); border-color: var(--specs-accent); color: var(--specs-bg-white); }
+.chip:focus-visible, .btn:focus-visible, .linkbtn:focus-visible, .addon input:focus-visible { outline: 2px solid var(--specs-accent); outline-offset: 2px; }
+
+/* 섹션 공통 */
+section { padding: var(--specs-space-5) 0; }
+.sec-title { font-size: var(--specs-font-xl); font-weight: 800; line-height: 1.35; }
+.sec-head { margin-bottom: var(--specs-space-4); }
+
+/* S2 방법 카드 — 같은 크기·같은 무게 */
+#methods { padding-top: var(--specs-space-4); scroll-margin-top: 64px; } /* 리드 수정 12:41 — sticky 칩 줄 높이만큼 */
+#methods .sec-title { font-size: var(--specs-font-lg); }
+.cards { display: grid; grid-template-columns: 1fr; gap: var(--specs-space-3); }
+.card {
+  display: flex; flex-direction: column; gap: var(--specs-space-2);
+  padding: var(--specs-space-4); border: 1px solid var(--specs-border); border-radius: var(--specs-radius-md);
+  background: var(--specs-bg-white); box-shadow: var(--specs-shadow-card); min-width: 0;
+  scroll-margin-top: 72px;
+}
+.card-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--specs-space-2); }
+.card-name { font-size: var(--specs-font-lg); font-weight: 700; }
+.card-name small { display: block; font-size: var(--specs-font-sm); font-weight: 600; color: var(--specs-text-muted); }
+.card-price { font-size: var(--specs-font-xl); font-weight: 800; white-space: nowrap; text-align: right; }
+.card-price small { font-size: var(--specs-font-sm); font-weight: 600; color: var(--specs-text-muted); margin-left: 2px; }
+.card-note { font-size: var(--specs-font-sm); color: var(--specs-accent); font-weight: 600; }
+.meta { display: grid; grid-template-columns: auto 1fr; column-gap: var(--specs-space-3); row-gap: 2px; }
+.meta dt { color: var(--specs-text-muted); }
+.avail { display: inline-flex; align-items: center; gap: 6px; font-size: var(--specs-font-sm); font-weight: 700; }
+.avail::before { content: ""; flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.avail.ok { color: var(--specs-success); }
+.avail.check { color: var(--specs-warning); }
+.subline { font-size: var(--specs-font-sm); color: var(--specs-text-secondary); padding: var(--specs-space-2) var(--specs-space-3); background: var(--specs-bg-surface); border-radius: var(--specs-radius-sm); }
+.card-actions { margin-top: auto; display: flex; flex-direction: column; gap: var(--specs-space-2); padding-top: var(--specs-space-1); }
+.btn {
+  display: flex; align-items: center; justify-content: center; min-height: var(--specs-tap);
+  padding: 0 var(--specs-space-4); border-radius: var(--specs-radius-sm);
+  background: var(--specs-accent); color: var(--specs-bg-white); border: 1px solid var(--specs-accent);
+  font-weight: 700; font-size: var(--specs-font-base); text-decoration: none; cursor: pointer; font-family: inherit; text-align: center;
+}
+.btn:hover { background: var(--specs-accent-hover); border-color: var(--specs-accent-hover); }
+.btn.ghost { background: var(--specs-bg-white); color: var(--specs-accent); }
+.btn.ghost:hover { background: var(--specs-accent-tint); }
+.minor { display: flex; gap: var(--specs-space-4); justify-content: center; font-size: var(--specs-font-sm); }
+.minor a { color: var(--specs-text-secondary); text-decoration: underline; text-underline-offset: 2px; }
+/* monk.kr로 넘어가는 지점 표기 (D1 변경) */
+.handoff { font-size: var(--specs-font-sm); color: var(--specs-text-muted); text-align: center; }
+
+/* 인화 추가 옵션 (정적 체크 — 값 표시만, 결제 연동 없음) */
+.addon { display: flex; align-items: flex-start; gap: var(--specs-space-2); padding: var(--specs-space-2) var(--specs-space-3); border: 1px dashed var(--specs-border); border-radius: var(--specs-radius-sm); font-size: var(--specs-font-sm); color: var(--specs-text-secondary); cursor: pointer; }
+.addon input { margin-top: 2px; accent-color: var(--specs-accent); width: 16px; height: 16px; flex: 0 0 auto; }
+.addon strong { color: var(--specs-text-primary); }
+.addon-more { display: none; font-size: var(--specs-font-sm); }
+.addon-more a { color: var(--specs-accent); font-weight: 700; text-decoration: none; }
+.card.has-addon .addon { border-style: solid; border-color: var(--specs-accent); background: var(--specs-accent-tint); }
+.card.has-addon .addon-more { display: block; }
+
+/* 여권 안내 카드 — 회색 처리, 같은 자리·같은 크기 */
+.card.is-guide { background: var(--specs-bg-surface); box-shadow: none; }
+.card.is-guide .card-name { color: var(--specs-text-secondary); }
+.guide-tag { font-size: var(--specs-font-sm); font-weight: 700; color: var(--specs-text-secondary); border: 1px solid var(--specs-border); background: var(--specs-bg-white); border-radius: var(--specs-radius-pill); padding: 2px var(--specs-space-2); white-space: nowrap; }
+.guide-msg { font-weight: 700; }
+.guide-msg em { font-style: normal; color: var(--specs-text-muted); font-weight: 600; }
+.guide-rec { color: var(--specs-text-secondary); }
+.guide-src { font-size: var(--specs-font-sm); }
+.guide-src a { color: var(--specs-accent); font-weight: 600; text-underline-offset: 2px; }
+.visa-box { background: var(--specs-bg-white); border: 1px solid var(--specs-border); border-radius: var(--specs-radius-sm); padding: var(--specs-space-3); display: flex; flex-direction: column; gap: var(--specs-space-2); }
+.visa-box .row { display: flex; justify-content: space-between; align-items: baseline; gap: var(--specs-space-2); }
+.visa-box .row strong { font-size: var(--specs-font-lg); }
+.linkbtn { background: none; border: 0; padding: 0; font: inherit; font-size: var(--specs-font-sm); color: var(--specs-accent); font-weight: 700; cursor: pointer; text-align: left; }
+
+/* 카드급이 아닌 한 줄 (무료 규격 맞춤 / 프로필 보정 문의) */
+.thinline { margin-top: var(--specs-space-3); padding: var(--specs-space-3) 0; border-top: 1px solid var(--specs-border); border-bottom: 1px solid var(--specs-border); }
+.thinline p { color: var(--specs-text-secondary); }
+.thinline p strong { color: var(--specs-text-primary); }
+.thinline .aux { display: block; font-size: var(--specs-font-sm); color: var(--specs-text-muted); }
+.thinline a.inline { color: var(--specs-accent); font-weight: 700; text-decoration: none; }
+.doclinks { display: flex; flex-wrap: wrap; gap: var(--specs-space-2); margin-top: var(--specs-space-2); }
+.doclinks a { font-size: var(--specs-font-sm); font-weight: 600; color: var(--specs-text-secondary); text-decoration: none; border: 1px solid var(--specs-border); border-radius: var(--specs-radius-pill); padding: var(--specs-space-1) var(--specs-space-3); }
+.doclinks a:hover { border-color: var(--specs-accent); color: var(--specs-accent); }
+
+/* '인화만' 진입 카드 — 탭과 무관하게 항상 */
+.print-only { margin-top: var(--specs-space-4); flex-direction: column; }
+.print-only .btn { width: 100%; }
+.po-line { margin-top: var(--specs-space-1); }
+
+/* S3 규격 요약 / S4 정직 안내 */
+.panel { border: 1px solid var(--specs-border); border-radius: var(--specs-radius-md); padding: var(--specs-space-4); background: var(--specs-bg-white); }
+.panel + .panel { margin-top: var(--specs-space-3); }
+.spec-list { display: grid; grid-template-columns: 1fr 1fr; gap: var(--specs-space-2); margin: var(--specs-space-3) 0; }
+.spec-list div { background: var(--specs-bg-surface); border-radius: var(--specs-radius-sm); padding: var(--specs-space-3); }
+.spec-list dt { font-size: var(--specs-font-sm); color: var(--specs-text-muted); }
+.spec-list dd { font-size: var(--specs-font-lg); font-weight: 700; }
+.panel-title { font-weight: 700; font-size: var(--specs-font-lg); }
+.panel p { color: var(--specs-text-secondary); margin-top: var(--specs-space-1); }
+.panel p a { color: var(--specs-accent); font-weight: 600; }
+.textlink { display: inline-block; margin-top: var(--specs-space-3); color: var(--specs-accent); font-weight: 700; text-decoration: none; }
+.textlink:hover { text-decoration: underline; }
+.route { list-style: none; margin-top: var(--specs-space-3); }
+.route li { display: flex; justify-content: space-between; gap: var(--specs-space-3); padding: var(--specs-space-2) 0; border-bottom: 1px solid var(--specs-border); }
+.route li:last-child { border-bottom: 0; }
+.route .r-ok { color: var(--specs-success); font-weight: 700; white-space: nowrap; }
+.route .r-check { color: var(--specs-warning); font-weight: 700; white-space: nowrap; }
+.route .r-no { color: var(--specs-text-muted); font-weight: 700; white-space: nowrap; }
+
+/* S5 사진관 다리 */
+.studio { background: var(--specs-bg-surface); border-radius: var(--specs-radius-lg); padding: var(--specs-space-5) var(--specs-space-4); }
+.studio-name { font-size: var(--specs-font-xl); font-weight: 800; }
+.studio p { color: var(--specs-text-secondary); margin-top: var(--specs-space-2); }
+.studio .prices { margin-top: var(--specs-space-3); color: var(--specs-text-primary); }
+.studio-actions { display: grid; grid-template-columns: 1fr; gap: var(--specs-space-2); margin-top: var(--specs-space-4); }
+.studio .handoff { margin-top: var(--specs-space-2); }
+
+/* S6 얼굴은 그대로 */
+.face-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--specs-space-2); margin-top: var(--specs-space-4); }
+.face-box { border: 1px solid var(--specs-border); border-radius: var(--specs-radius-md); padding: var(--specs-space-4); }
+.face-box dt { font-size: var(--specs-font-sm); color: var(--specs-text-muted); font-weight: 700; }
+.face-box dd { font-size: var(--specs-font-lg); font-weight: 700; margin-top: var(--specs-space-1); }
+.face-box.keep dd { color: var(--specs-accent); }
+
+/* S8 FAQ */
+.faq details { border-bottom: 1px solid var(--specs-border); }
+.faq summary { list-style: none; cursor: pointer; padding: var(--specs-space-4) 0; font-weight: 700; display: flex; justify-content: space-between; gap: var(--specs-space-3); }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; color: var(--specs-text-muted); font-weight: 400; }
+.faq details[open] summary::after { content: "−"; }
+.faq .a { padding: 0 0 var(--specs-space-4); color: var(--specs-text-secondary); }
+.faq .a a { color: var(--specs-accent); font-weight: 600; }
+
+footer { border-top: 1px solid var(--specs-border); padding: var(--specs-space-5) 0; color: var(--specs-text-muted); font-size: var(--specs-font-sm); }
+.foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--specs-space-2); }
+.foot a { color: var(--specs-text-secondary); }
+
+/* 모바일 하단 고정 줄 — 보조(가장 가벼운 무게) */
+.dock {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  background: var(--specs-bg-white); border-top: 1px solid var(--specs-border);
+  padding: var(--specs-space-2) var(--specs-space-4) calc(var(--specs-space-2) + env(safe-area-inset-bottom));
+}
+.dock .btn { width: 100%; }
+.dock-sub { text-align: center; font-size: var(--specs-font-sm); color: var(--specs-text-muted); margin-top: var(--specs-space-1); }
+
+/* ── 데스크톱 ── */
+@media (min-width: 720px) {
+  .studio-actions { grid-template-columns: repeat(3, 1fr); }
+  .spec-list { grid-template-columns: repeat(4, 1fr); }
+}
+@media (min-width: 960px) {
+  body { padding-bottom: 0; }
+  .dock { display: none; }
+  .hero { padding-top: var(--specs-space-6); padding-bottom: var(--specs-space-4); }
+  .hero h1 { font-size: var(--specs-font-3xl); }
+  .hero p { font-size: var(--specs-font-lg); }
+  .chips { justify-content: flex-start; }
+  .chip { flex: 0 0 auto; padding: 0 var(--specs-space-5); }
+  section { padding: var(--specs-space-6) 0; }
+  #methods { padding-top: var(--specs-space-5); }
+  .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--specs-space-4); align-items: stretch; }
+  .card { padding: var(--specs-space-5) var(--specs-space-4); }
+  .print-only { flex-direction: row; align-items: center; justify-content: space-between; gap: var(--specs-space-5); }
+  .print-only .btn { width: auto; min-width: 200px; }
+  .print-only .card-actions { margin-top: 0; padding-top: 0; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--specs-space-4); }
+  .two-col .panel + .panel { margin-top: 0; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="https://monkos.ai/id-photo">MONKOS<span>증명사진관</span></a>
+    <nav aria-label="허브 메뉴"><a class="top-link" href="https://monkos.ai/specs">규격 가이드</a></nav>
+  </div>
+</header>
+
+<!-- S1 히어로 + 용도 탭 -->
+<div class="wrap hero">
+  <h1>어디에 쓰실 사진인가요?</h1>
+  <p>여권·비자, 취업, 프로필 — 용도를 고르면 AI · 온라인 보정 · 몽크사진관 촬영을 값과 함께 나란히 보여 드립니다. 어느 방법이든 인화해서 받을 수 있어요.</p>
+</div>
+
+<nav class="chipbar" aria-label="용도 선택">
+  <div class="chips" id="tabs">
+    <button type="button" class="chip" data-use="passport" aria-pressed="true">여권·비자류</button>
+    <button type="button" class="chip" data-use="job" aria-pressed="false">취업사진류</button>
+    <button type="button" class="chip" data-use="profile" aria-pressed="false">프로필류</button>
+  </div>
+</nav>
+
+<main>
+  <!-- S2 방법 카드 (탭마다 교체) + 무료 한 줄 + '인화만' 카드 -->
+  <section id="methods" aria-live="polite">
+    <div class="wrap">
+      <div class="sec-head"><h2 class="sec-title" id="methods-title"></h2></div>
+      <div class="cards" id="cards"><!-- JS --></div>
+      <div id="thinline"><!-- JS: 무료 규격 맞춤 한 줄 / 프로필 보정 문의 한 줄 --></div>
+
+      <article class="card print-only" id="card-print-only" data-tier="print_only">
+        <div>
+          <div class="card-head"><h3 class="card-name">가지고 계신 사진을 인화만 하기<small>몽크사진관 인화</small></h3></div>
+          <p class="po-line"><strong>₩10,000</strong> (매장 수령, 당일) · 우편(준등기) +₩1,800 · 3일 내외</p>
+          <p class="avail ok po-line">여권 · 운전 · 민증 · 반명함 · 비자 사진 파일</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn ghost" data-tier-click="print_only" href="https://monk.kr/monk_studio/store/print/print.html">인화 주문하기</a>
+          <p class="handoff">몽크사진관 사이트에서 이어집니다</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- S3 규격 요약 + S4 정직 안내 (탭마다 교체) -->
+  <section id="spec">
+    <div class="wrap two-col" id="spec-wrap">
+      <div class="panel" id="spec-panel"></div>
+      <div class="panel" id="route-panel"></div>
+    </div>
+  </section>
+
+  <!-- S5 사진관 다리 -->
+  <section id="studio">
+    <div class="wrap">
+      <div class="studio">
+        <h2 class="studio-name">미사역 몽크사진관</h2>
+        <p>온라인 결과가 마음에 들지 않으면 매장에서 다시 찍으세요.</p>
+        <p class="prices">증명사진 촬영 ₩30,000부터 · 프로필 촬영 ₩70,000부터</p>
+        <div class="studio-actions">
+          <a class="btn" data-tier-click="studio" href="https://monk.kr/monk_studio/id_photo/id_photo.html">증명사진 촬영 안내</a>
+          <a class="btn ghost" data-tier-click="studio_talk" href="https://talk.naver.com/W5UJ45">네이버 톡톡 문의</a>
+          <a class="btn ghost" data-tier-click="studio_tel" href="tel:031-791-5030">전화 031-791-5030</a>
+        </div>
+        <p class="handoff">촬영 안내는 몽크사진관 사이트에서 이어집니다</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- S6 얼굴은 그대로 (리드 문구 유지) -->
+  <section class="face">
+    <div class="wrap">
+      <h2 class="sec-title">바꾸는 건 조명과 옷이지, 얼굴이 아닙니다.</h2>
+      <dl class="face-grid">
+        <div class="face-box keep"><dt>그대로</dt><dd>얼굴</dd></div>
+        <div class="face-box"><dt>정리</dt><dd>조명 · 옷</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- S8 FAQ (S7 후기는 실데이터 없음 — 넣지 않음) -->
+  <section class="faq">
+    <div class="wrap">
+      <h2 class="sec-title sec-head">자주 묻는 질문</h2>
+      <details>
+        <summary>정부24에 바로 올릴 수 있나요?</summary>
+        <div class="a">정부24 온라인 신청에는 사진 파일 요건이 따로 있습니다. 서류별 요건은 <a href="https://monkos.ai/specs">규격 가이드</a>에서 공식 출처와 함께 확인해 주세요.</div>
+      </details>
+      <details>
+        <summary>인화는 며칠 걸리나요?</summary>
+        <div class="a">매장(미사역 몽크사진관) 수령은 당일 가능합니다. 우편은 준등기(+₩1,800)로 보내 드리며 발송 후 3일 내외 걸립니다. <a href="https://monk.kr/monk_studio/store/print/print.html">인화 주문 자세히 보기(몽크사진관 사이트)</a></div>
+      </details>
+      <details>
+        <summary>사진관과 뭐가 다른가요?</summary>
+        <div class="a">온라인은 지금 휴대폰으로 바로 만들고, 사진관은 매장에 오셔서 촬영합니다. 같은 MONKOS 증명사진관의 다른 방법이라, 온라인 결과가 마음에 들지 않으면 매장에서 다시 찍으실 수 있습니다. <a href="https://monk.kr/monk_studio/id_photo/id_photo.html">사진관 촬영 자세히 보기(몽크사진관 사이트)</a></div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot"><span>MONKOS 증명사진관 · 미사역 몽크사진관 031-791-5030</span><a href="https://monkos.ai/">MONKOS 홈</a></div>
+</footer>
+
+<!-- 모바일 하단 고정 줄 (960px 이상 숨김) — 보조. 무료는 카드급 무게가 아니므로 테두리 버튼 -->
+<div class="dock" id="dock">
+  <a class="btn ghost" id="dock-btn" data-tier-click="free_dock" href="https://monkos.ai/specs/passport/kr">규격만 맞추기 — 무료</a>
+  <p class="dock-sub" id="dock-sub">AI · 보정 · 촬영 모두 인화해서 받을 수 있어요</p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  /* 가격·문구는 정본(config.js · MONK_kr HTML)에서 파생되어야 한다 — 기획안 §7 ⑧(신규). 시안에서는 지시 값을 그대로 둔다. */
+  var URL = {
+    mofa: 'https://www.passport.go.kr/home/kor/contents.do?menuPos=32',
+    ai: 'https://idphoto-kr.monkos.ai/prep',
+    headshot: 'https://monkos.ai/headshot',
+    retouch: 'https://monk.kr/monk_studio/store/retouch/retouch.html',
+    studioId: 'https://monk.kr/monk_studio/id_photo/id_photo.html',
+    studioProfile: 'https://monk.kr/monk_studio/profile/profile.html',
+    print: 'https://monk.kr/monk_studio/store/print/print.html',
+    talk: 'https://talk.naver.com/W5UJ45',
+    specs: 'https://monkos.ai/specs'
+  };
+  var FREE_DOCS = {
+    passport: ['여권', '/specs/passport/kr'], id: ['주민등록증', '/specs/id/kr'], license: ['운전면허', '/specs/license/kr'],
+    visa: ['비자(미국)', '/specs/visa/us'], resume: ['이력서', '/specs/resume/kr']
+  };
+  var USES = {
+    passport: { name: '여권·비자류', cards: ['aiPassport', 'retouchPassport', 'studioId'], free: ['passport', 'id', 'license', 'visa'] },
+    job:      { name: '취업사진류', cards: ['ai', 'retouch', 'studioId'], free: ['resume'] },
+    profile:  { name: '프로필류', cards: ['headshot', 'studioProfile'], free: null }
+  };
+
+  /* 인화 추가 옵션 — 체크는 표시만. 결과 파일이 인화 주문으로 자동으로 넘어가지 않는다(기획안 §7 ⑨ 신규). */
+  function addon(kind) {
+    if (kind === 'retouch') {
+      return '<label class="addon"><input type="checkbox" data-addon="retouch"><span><strong>인화까지 받기</strong> — 보정+인화 ₩20,000</span></label>' +
+        '<p class="handoff">보정 주문은 몽크사진관 사이트에서 이어집니다</p>';
+    }
+    var label = kind === 'profile'
+      ? '<strong>인화해서 받기</strong> — 증명·서류사진 규격 +₩10,000(매장 수령) · 우편 +₩1,800 · 그 밖의 크기는 톡톡 문의'
+      : '<strong>인화해서 받기</strong> +₩10,000(매장 수령) · 우편 +₩1,800';
+    var more = kind === 'online'
+      ? '결과 파일을 받으신 뒤 인화 주문에서 올려 주세요. <a data-tier-click="print_addon" href="' + URL.print + '">인화 주문 →</a>'
+      : '<a data-tier-click="print_addon" href="' + URL.print + '">인화 주문 →</a>';
+    return '<label class="addon"><input type="checkbox" data-addon="print"><span>' + label + '</span></label>' +
+      '<p class="addon-more">' + more + '</p>' +
+      '<p class="handoff">인화 주문은 몽크사진관 사이트에서 이어집니다</p>';
+  }
+
+  var CARDS = {
+    ai: function () {
+      return card('ai', '',
+        '<div class="card-head"><h3 class="card-name">AI 증명사진<small>MONKOS</small></h3><p class="card-price">₩9,900</p></div>' +
+        '<p class="card-note">첫 로그인 시 무료 체험</p>' +
+        '<dl class="meta"><dt>소요</dt><dd>약 3분</dd><dt>받는 것</dt><dd>셀카 한 장으로 만든 증명사진 파일</dd></dl>' +
+        '<p class="avail ok">취업 사진에 쓸 수 있어요</p>' +
+        '<p class="subline">셀카를 찍으면 촬영을 안내해 드립니다 · 로그인 필요</p>' +
+        '<div class="card-actions"><a class="btn" data-tier-click="ai" href="' + URL.ai + '">셀카로 촬영하기</a>' + addon('online') + '</div>');
+    },
+    aiPassport: function () {
+      /* D2 ①: 여권은 안내 카드. 같은 자리에서 비자 경로는 열어 둔다 */
+      return card('ai', 'is-guide',
+        '<div class="card-head"><h3 class="card-name">AI 증명사진<small>MONKOS</small></h3><span class="guide-tag">여권은 안내</span></div>' +
+        '<p class="guide-msg">여권 사진은 얼굴을 새로 만든 사진을 받지 않습니다 <em>— 외교부 기준</em></p>' +
+        '<p class="guide-src"><a href="' + URL.mofa + '" target="_blank" rel="noopener">대한민국 여권 안내 (외교부) ↗</a></p>' +
+        '<p class="guide-rec">여권은 얼굴을 그대로 두는 온라인 맞춤 보정, 몽크사진관 방문 촬영, 무료 규격 맞춤을 권합니다. <button type="button" class="linkbtn" data-scroll="card-studioId">방문 촬영 보기</button></p>' +
+        '<div class="visa-box">' +
+          '<div class="row"><span><strong>비자 사진이라면</strong></span><span><strong>₩9,900</strong></span></div>' +
+          '<p class="avail check">제출처 기준을 확인한 뒤 사용</p>' +
+          '<p class="card-note">첫 로그인 시 무료 체험 · 약 3분</p>' +
+          '<a class="btn" data-tier-click="ai" href="' + URL.ai + '">셀카로 촬영하기</a>' +
+        '</div>' +
+        '<div class="card-actions">' + addon('online') + '</div>');
+    },
+    retouch: function () { return retouchCard(false); },
+    retouchPassport: function () { return retouchCard(true); },
+    studioId: function () {
+      return card('studioId', '',
+        '<div class="card-head"><h3 class="card-name">방문 촬영<small>몽크사진관</small></h3><p class="card-price">₩30,000<small>부터</small></p></div>' +
+        '<dl class="meta"><dt>소요</dt><dd>매장 방문 촬영</dd><dt>상품</dt><dd>디럭스 ₩50,000 · 프리미엄 ₩70,000</dd></dl>' +
+        '<p class="avail ok">미사역 몽크사진관</p>' +
+        '<div class="card-actions"><a class="btn" data-tier-click="studio" href="' + URL.studioId + '">촬영 안내 · 예약</a>' +
+        '<div class="minor"><a data-tier-click="studio_talk" href="' + URL.talk + '">톡톡 문의</a><a data-tier-click="studio_tel" href="tel:031-791-5030">031-791-5030</a></div>' +
+        '<p class="handoff">촬영 안내는 몽크사진관 사이트에서 이어집니다</p>' + addon('studio') + '</div>');
+    },
+    headshot: function () {
+      return card('headshot', '',
+        '<div class="card-head"><h3 class="card-name">MONKOS 헤드샷<small>온라인</small></h3><p class="card-price">10c<small>(₩1,500) 한 컷</small></p></div>' +
+        '<dl class="meta"><dt>받는 것</dt><dd>헤드샷 1컷 파일</dd><dt>결제</dt><dd>크레딧 10c(로그인) · 회원가입 없이 바로 결제도 있어요</dd></dl>' +
+        '<p class="avail ok">프로필 사진에 쓸 수 있어요</p>' +
+        '<div class="card-actions"><a class="btn" data-tier-click="headshot" href="' + URL.headshot + '">헤드샷 만들기</a>' + addon('profile') + '</div>');
+    },
+    studioProfile: function () {
+      return card('studioProfile', '',
+        '<div class="card-head"><h3 class="card-name">프로필 방문 촬영<small>몽크사진관</small></h3><p class="card-price">₩70,000<small>부터</small></p></div>' +
+        '<dl class="meta"><dt>상품</dt><dd>프로필사진 A ₩70,000 · B ₩150,000 · 작가 프리미어 ₩300,000</dd><dt>A 기준</dt><dd>30분 촬영 · 정밀보정 1컷 파일</dd></dl>' +
+        '<p class="avail ok">미사역 몽크사진관</p>' +
+        '<div class="card-actions"><a class="btn" data-tier-click="studio" href="' + URL.studioProfile + '">프로필 촬영 안내 · 예약</a>' +
+        '<div class="minor"><a data-tier-click="studio_talk" href="' + URL.talk + '">톡톡 문의</a><a data-tier-click="studio_tel" href="tel:031-791-5030">031-791-5030</a></div>' +
+        '<p class="handoff">촬영 안내는 몽크사진관 사이트에서 이어집니다</p>' + addon('profile') + '</div>');
+    }
+  };
+
+  function retouchCard(isPassport) {
+    /* 리드 수정 12:48 — 작가님 12:40 현장 판정: 사진관·AI 공통으로 보정·배경 작업은 업계 실무. 여권 제한 근거는 얼굴 재생성 여부(D2)뿐 → 보정은 가능 */
+    var avail = isPassport
+      ? '<p class="avail ok">여권·비자 사진에 쓸 수 있어요 · 얼굴은 그대로</p>'
+      : '<p class="avail ok">취업 사진에 쓸 수 있어요</p>';
+    return card('retouch', '',
+      '<div class="card-head"><h3 class="card-name">온라인 맞춤 보정<small>몽크사진관</small></h3><p class="card-price" data-retouch-price>₩10,000<small>보정 파일</small></p></div>' +
+      '<dl class="meta"><dt>받는 것</dt><dd>가지고 계신 증명사진을 작가가 손본 파일</dd><dt>해 드리는 것</dt><dd>얼굴 보정 · 정장 변경 · 헤어 정리 · 규격 맞추기</dd></dl>' +
+      '<p class="card-note">원래 얼굴은 그대로 둡니다</p>' +
+      avail +
+      '<div class="card-actions"><a class="btn" data-tier-click="retouch" href="' + URL.retouch + '">보정 주문하기</a>' + addon('retouch') + '</div>');
+  }
+
+  function card(id, cls, inner) {
+    return '<article class="card ' + cls + '" id="card-' + id + '" data-tier="' + id + '">' + inner + '</article>';
+  }
+
+  function thinline(use) {
+    if (use.free) {
+      var links = use.free.map(function (k) {
+        return '<a data-tier-click="free" href="https://monkos.ai' + FREE_DOCS[k][1] + '">' + FREE_DOCS[k][0] + '</a>';
+      }).join('');
+      return '<div class="thinline"><p><strong>규격만 맞추면 되나요?</strong> 무료로 맞추기 →' +
+        '<span class="aux">워터마크 없는 고화질은 ₩2,000 · 즉시</span></p><div class="doclinks">' + links + '</div></div>';
+    }
+    return '<div class="thinline"><p><strong>프로필 보정</strong>은 톡톡으로 문의해 주세요. ' +
+      '<a class="inline" data-tier-click="retouch_talk" href="' + URL.talk + '">네이버 톡톡 문의 →</a></p></div>';
+  }
+
+  function specPanel(key) {
+    if (key === 'passport') {
+      return '<h2 class="panel-title">대한민국 여권 사진 규격</h2>' +
+        '<dl class="spec-list"><div><dt>크기</dt><dd>3.5×4.5cm</dd></div><div><dt>머리 높이</dt><dd>3.2~3.6cm</dd></div>' +
+        '<div><dt>배경</dt><dd>흰 배경</dd></div><div><dt>기준</dt><dd>외교부</dd></div></dl>' +
+        '<a class="textlink" href="https://monkos.ai/specs/passport/kr">규격 자세히 보기 →</a>';
+    }
+    if (key === 'job') {
+      return '<h2 class="panel-title">이력서 사진 규격</h2>' +
+        '<p>크기·배경은 규격 페이지에서 확인하세요.</p>' +
+        '<a class="textlink" href="https://monkos.ai/specs/resume/kr">규격 자세히 보기 →</a>';
+    }
+    return '';
+  }
+
+  function routePanel(key) {
+    if (key === 'passport') {
+      return '<h2 class="panel-title">여권·비자류에는 이 방법</h2>' +
+        '<p>여권 사진은 얼굴을 새로 만든 사진을 받지 않습니다(외교부). 그래서 여권은 얼굴을 그대로 두는 온라인 맞춤 보정이나 몽크사진관 방문 촬영을 권합니다. <a href="' + URL.mofa + '" target="_blank" rel="noopener">외교부 안내 ↗</a></p>' +
+        '<ul class="route">' +
+          '<li><span>여권 · AI 증명사진</span><span class="r-no">권하지 않음</span></li>' +
+          '<li><span>여권 · 온라인 맞춤 보정</span><span class="r-ok">권함</span></li>' +
+          '<li><span>여권 · 방문 촬영</span><span class="r-ok">권함</span></li>' +
+          '<li><span>비자 · AI 증명사진</span><span class="r-check">제출처 확인</span></li>' +
+          '<li><span>주민등록증 · 운전면허</span><span class="r-check">공식 안내 확인</span></li>' +
+        '</ul>';
+    }
+    if (key === 'job') {
+      return '<h2 class="panel-title">취업사진류에는 이 방법</h2>' +
+        '<p>이력서·취업 사진에는 세 가지 방법을 모두 쓸 수 있습니다. 어느 방법이든 인화해서 받을 수 있어요.</p>' +
+        '<ul class="route"><li><span>AI 증명사진</span><span class="r-ok">가능</span></li>' +
+        '<li><span>온라인 맞춤 보정</span><span class="r-ok">가능</span></li><li><span>방문 촬영</span><span class="r-ok">가능</span></li></ul>';
+    }
+    return '<h2 class="panel-title">프로필류에는 이 방법</h2>' +
+      '<p>온라인 헤드샷이나 몽크사진관 프로필 촬영을 고르실 수 있습니다. 프로필 보정은 톡톡으로 문의해 주세요.</p>';
+  }
+
+  function select(key, opts) {
+    var use = USES[key];
+    if (!use) return;
+    document.querySelectorAll('#tabs .chip').forEach(function (c) { c.setAttribute('aria-pressed', c.dataset.use === key ? 'true' : 'false'); });
+    document.getElementById('methods-title').textContent = use.name + ' 사진, 이렇게 완성할 수 있어요';
+    document.getElementById('cards').innerHTML = use.cards.map(function (c) { return CARDS[c](); }).join('');
+    document.getElementById('thinline').innerHTML = thinline(use);
+    var sp = specPanel(key), specEl = document.getElementById('spec-panel');
+    specEl.innerHTML = sp; specEl.hidden = !sp;
+    document.getElementById('spec-wrap').classList.toggle('two-col', !!sp);
+    document.getElementById('route-panel').innerHTML = routePanel(key);
+    var dockBtn = document.getElementById('dock-btn');
+    if (use.free) {
+      dockBtn.textContent = '규격만 맞추기 — 무료';
+      dockBtn.href = 'https://monkos.ai' + FREE_DOCS[use.free[0]][1];
+    } else {
+      dockBtn.textContent = '프로필 촬영 안내 보기';
+      dockBtn.href = URL.studioProfile;
+    }
+    if (history.replaceState) history.replaceState(null, '', '#use=' + key);
+    /* 측정 자리: GA4 hub_doc_select {doc_type=용도} — 기획안 §8 (신규, 시안에서는 호출 없음) */
+    if (opts && opts.scroll) document.getElementById('methods').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  document.getElementById('tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('.chip');
+    if (b) select(b.dataset.use);
+  });
+  document.addEventListener('change', function (e) {
+    var t = e.target;
+    if (!t.matches || !t.matches('[data-addon]')) return;
+    var c = t.closest('.card');
+    c.classList.toggle('has-addon', t.checked);
+    if (t.dataset.addon === 'retouch') {
+      var p = c.querySelector('[data-retouch-price]');
+      p.innerHTML = t.checked ? '₩20,000<small>보정+인화</small>' : '₩10,000<small>보정 파일</small>';
+    }
+  });
+  document.addEventListener('click', function (e) {
+    var s = e.target.closest('[data-scroll]');
+    if (s) { e.preventDefault(); var el = document.getElementById(s.dataset.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    /* 측정 자리: [data-tier-click] → GA4 hub_tier_click {tier, doc_type} — 기획안 §8 (신규) */
+  });
+
+  var m = /use=([a-z]+)/.exec(location.hash);
+  select(m && USES[m[1]] ? m[1] : 'passport');
+})();
+</script>
+</body>
+</html>
+<!--
+근거표(요약) — 상세는 같은 폴더 근거표.md
+S1 히어로·용도 탭 → 의도 1·2 / S2 방법 카드 → 의도 2·3 + 개편 지시(12:39·12:40) / 여권 안내 카드 → 기획안 §4 D2 / 인화 추가 옵션·'인화만' → 개편 지시 + print.html / 무료 한 줄 → 작가님 09-28 동시 제시 / S3·S4·S5·S6·S8 → 기획안 §5
+-->
