@@ -174,6 +174,7 @@ domain: "governance/infrastructure"
 | 2026-10-28 | iMac/쌍아 | PETITION_20261028 5인 만장일치 의결(D1 K3 문구·D2 접두사 폐기·K1 끝 문장 막내3 보정) → 집행 지시 막내1 | [ORDER_20261028_iMac쌍아_막내1_MONK_OS_헌법개정_집행](../../orders/2026-10/ORDER_20261028_iMac쌍아_막내1_MONK_OS_헌법개정_집행.md) | ✅ |
 | 2026-10-28 | iMac/쌍아 | 헌법 10-28 개정 집행 완료(쌍아 직접 실행) — CLAUDE.md K1~K5·ch8 4조 표기표·5조 고객 대면 표현·재앵커 27곳·에센스, 훅 146/146 | [PETITION_20261028_쌍아_피할것7_정방향우선](../../../../governance/constitution/petitions/PETITION_20261028_쌍아_피할것7_정방향우선.md) | ✅ |
 | 2026-10-28 | iMac/민아 | 헌법 개정 집행본(54d81d94) 민아 사후 감수 — K1~K5·ch8 표기표·재앵커 27곳 일치, 🔴 AGENTS.md 미갱신 1·🟡 잔존 6 | [REVIEW_20261028_iMac민아_MONK_OS_헌법개정_집행본_사후감수](../../reports/2026-10/REVIEW_20261028_iMac민아_MONK_OS_헌법개정_집행본_사후감수.md) | ✅ |
+| 2026-10-28 | iMac/쌍아 | E11 시각 헤더 보강 지시 → 막내1 | [ORDER_20261028_iMac쌍아_막내1_MONK_OS_E11시각헤더_보강](../../orders/2026-10/ORDER_20261028_iMac쌍아_막내1_MONK_OS_E11시각헤더_보강.md) | ✅ |
 
 ---
 
