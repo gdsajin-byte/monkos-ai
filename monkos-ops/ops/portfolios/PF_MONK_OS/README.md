@@ -162,6 +162,7 @@ domain: "governance/infrastructure"
 | 2026-10-25 | iMac/쌍아 | **ORDER** active PF 전수 상태 점검표 — PF마다 마지막 실제 활동·현재 상태·제안 상태(active/paused/completed)·근거 (읽기 전용, 상태 변경 없음) | [ORDER_20261025_iMac쌍아_막내18_MONK_OS_PF상태점검표](../../orders/2026-10/ORDER_20261025_iMac쌍아_막내18_MONK_OS_PF상태점검표.md) | ⏳ |
 | 2026-10-25 | iMac/쌍아-막내18 | **REPORT** REPORT_20261025_iMac쌍아-막내18_MONK_OS_PF상태점검표 | [REPORT_20261025_iMac쌍아-막내18_MONK_OS_PF상태점검표](../../reports/2026-10/REPORT_20261025_iMac쌍아-막내18_MONK_OS_PF상태점검표.md) | 📁 |
 | 2026-10-25 | iMac/쌍아 | **세션 마감 PF 체크 보강** — '문서 없는 사건 대조'(배포·결정이 PF에 없으면 보충)·'귀속 확인' 추가(작가님 10-25 13:38 승인). 시각 헤더 대조 훅 E11(10-24, 막내16)과 함께 기록 공백 보정 | `.claude/commands/session-end.md (f5beea18)` | ✅ |
+| 2026-10-28 | ?/? | **ORDER** 피할 것'의 실체 전수조사 — 헌법·법률·규정·훅에 흩어진 금지·승인·게이트를 한 장으로, 사고 근거와 실제 비용을 붙여서 | [ORDER_20261028_iMac쌍아_막내1_MONK_OS_피할것_실체_전수조사](../../orders/2026-10/ORDER_20261028_iMac쌍아_막내1_MONK_OS_피할것_실체_전수조사.md) | ⏳ |
 
 ---
 
