@@ -1,0 +1,22 @@
+{
+ "390": {
+  "scrollW": 390,
+  "innerW": 390,
+  "docH": 844,
+  "http4xx": [],
+  "overflow": [],
+  "fonts": [],
+  "fixed": [],
+  "banned": []
+ },
+ "1440": {
+  "scrollW": 1440,
+  "innerW": 1440,
+  "docH": 900,
+  "http4xx": [],
+  "overflow": [],
+  "fonts": [],
+  "fixed": [],
+  "banned": []
+ }
+}
