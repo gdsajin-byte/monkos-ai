@@ -223,7 +223,27 @@ async function refundFreeQuota(req) {
   }
 }
 
+// 우리 자동화(iMac 브리핑 프로브 curl -A monkos-probe)는 계측 적재 제외 (2026-10-28)
+const INTERNAL_PROBE_UA = 'monkos-probe';
+function isInternalProbe(req) {
+  return (req.headers['user-agent'] || '').includes(INTERNAL_PROBE_UA);
+}
+
+/**
+ * 엣지 중계 page_view 한도 초과 = 사이트맵 순회 크롤러로 판정 (2026-10-28 track 429 원인 확정).
+ * IP 원문 대신 해시 앞 8자로 IP당 분 1회만 기록.
+ */
+function logBotSuspect(ip) {
+  const hash = crypto.createHash('sha256').update(String(ip || '')).digest('hex').slice(0, 8);
+  if (!global._botSuspectLogged) global._botSuspectLogged = {};
+  const now = Date.now();
+  if (now - (global._botSuspectLogged[hash] || 0) < 60000) return;
+  global._botSuspectLogged[hash] = now;
+  log(`[track] bot_suspect ip#${hash} — 엣지 page_view 분당 한도 초과, 204·무적재`, 'WARNING');
+}
+
 function trackPageView(req) {
+  if (isInternalProbe(req)) return;
   const urlObj = new URL(req.url, `http://${req.headers.host}`);
   const utmParams = {};
   for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']) {
@@ -1058,10 +1078,29 @@ const httpServer = createServer(async (req, res) => {
 
   // === 유저 트래킹 (rate-limit + payload cap) ===
   if (urlPath === '/api/track' && req.method === 'POST') {
-    if (!checkRateLimit(req, 'track', 60)) { res.writeHead(429); return res.end(); }
+    const withinLimit = checkRateLimit(req, 'track', 60);
 
     const contentLength = parseInt(req.headers['content-length'] || '0');
     if (contentLength > 1048576) { res.writeHead(413); return res.end(); }
+
+    if (!withinLimit) {
+      // 신뢰 엣지가 중계한 page_view만의 한도 초과는 크롤러 순회 — 204로 끝내고 적재하지 않는다.
+      // 클라이언트 직접 이벤트(click_cta 등)의 한도 초과는 종전대로 429.
+      const edge = resolveEdgeClient(req);
+      if (edge.trusted) {
+        let overEvents = [];
+        try { overEvents = (await parseJsonBody(req)).events || []; } catch { overEvents = []; }
+        if (overEvents.length && overEvents.every((e) => e?.event_name === 'page_view')) {
+          logBotSuspect(edge.ip);
+          res.writeHead(204);
+          return res.end();
+        }
+      }
+      res.writeHead(429);
+      return res.end();
+    }
+
+    if (isInternalProbe(req)) { res.writeHead(204); return res.end(); }
 
     const body = await parseJsonBody(req);
     const events = (body.events || []).slice(0, 10);

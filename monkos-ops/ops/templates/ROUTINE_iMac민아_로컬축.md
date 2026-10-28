@@ -108,10 +108,11 @@ launchctl list | grep -E 'ai\.monkos|com\.monkos|com\.monk\.'
 **2-8 live — 라이브 프로브 (2회 히트 규칙, live-verify.md)**
 ```bash
 for u in https://monkos.ai/ https://monk.kr/ https://idphoto-kr.monkos.ai/ https://idphoto-jp.monkos.ai/ https://studio.monkos.ai/ https://image.monkos.ai/; do
-  curl -s -o /dev/null "$u"                                          # 1차: 재검증 트리거 (판정 미사용)
-  curl -s -o /dev/null -w "$u %{http_code} %{time_total}s\n" "$u"     # 2차: 판정
+  curl -s -A monkos-probe -o /dev/null "$u"                                          # 1차: 재검증 트리거 (판정 미사용)
+  curl -s -A monkos-probe -o /dev/null -w "$u %{http_code} %{time_total}s\n" "$u"     # 2차: 판정
 done
 ```
+> `-A monkos-probe`: 우리 자동화 프로브 표식 — 포털은 이 UA의 page_view를 적재하지 않는다(2026-10-28, track 429 후속 A안).
 4xx/5xx는 🔴 후보 — 단 대조군(같은 호스트 다른 정상 경로) 1회로 조회 유효성부터 배제한다. 매팅(`matte.monkos.ai`)은 4060 의도적 비가동(530=정상)이라 프로브하지 않는다.
 
 ### 3. 산출 — 브리핑 1부
