@@ -112,6 +112,7 @@ status: active
 | 09/26 | iMac/민아 | **어드민 리뷰 갤러리 게이트 배지 분리** (작가님 지시) — "유료·credits" 2건이 웰컴 10c 소진으로 판명(잔액 0·충전 0) → 원장 `charge` 존재 여부로 웰컴/구매 판정(`lib/credit-source.js`), generations에 `creditSource` 스냅샷, 배지 5종(무료·웰컴·구매크레딧·즉시결제·유료T1) + 범례 "매출 N건". 테스트 10건. dev rev 00190 2회 히트 판정 welcome 3·token 1·free 196, 양성 대조군(purchased) 라이브 부재. 선행 결함: 3스위트 `LEMON_JP_VARIANTS` 모킹 누락(칩 발행). AGENT-API-KEYS 부분 노출 자기 적발 → v2 로테이션(작가님)·prod에서 구키 401 실측. 작가님 승인 후 prod rev 00564 [예외], 라이브 2회 히트 welcome 2 정합 | c7fad349 · `COMPLETION_20260926_iMac민아_어드민리뷰_게이트배지분리.md` | ✅ |
 | 10/28 | iMac/쌍아 | /api/track 429 664건(CF 이그레스 IP 버킷 추정) 원인·수정 지시 → 막내2 | [ORDER_20261028_iMac쌍아_막내2_PORTAL_track429_엣지IP버킷](../../orders/2026-10/ORDER_20261028_iMac쌍아_막내2_PORTAL_track429_엣지IP버킷.md) | ✅ |
 | 10/28 | iMac/쌍아-막내2 | /api/track 429 664건 원인 확정 — 신뢰 판정 정상(양성 대조군), 해외 크롤러를 워커 firePageView가 중계→실IP별 레이트리밋. 크롤러 page_view 적재 오염이 실피해. 수정안 A(오리진 봇 분리)+B(워커 UA 필터) 결정 대기 | [REPORT_20261028_iMac막내2_PORTAL_track429_원인확정](../../reports/2026-10/REPORT_20261028_iMac막내2_PORTAL_track429_원인확정.md) | ⏳ |
+| 10/28 | iMac/쌍아 | track A안(엣지 page_view 한도 초과 204 무적재) 구현·크롤러 출처 지시 → 막내2 | [ORDER_20261028_iMac쌍아_막내2_PORTAL_track_봇페이지뷰_A안_크롤러출처](../../orders/2026-10/ORDER_20261028_iMac쌍아_막내2_PORTAL_track_봇페이지뷰_A안_크롤러출처.md) | ✅ |
 | 10/28 | iMac/쌍아-막내2 | track 429 A안 구현·dev 검증(dev 00205-9th, prod 미배포) + 크롤러 출처: 사이트맵 순회·UA 로테이션 스크레이퍼, 09-08·10-27 재방문, 실IP·ASN 미확인(ASN 로깅 제안) | [COMPLETION_20261028_iMac막내2_track429](../../reports/2026-10/COMPLETION_20261028_iMac막내2_track429.md) | ✅ |
 
 ---

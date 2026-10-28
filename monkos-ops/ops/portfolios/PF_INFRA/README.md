@@ -206,6 +206,8 @@ secret env               # SM → .env 일괄 동기화
 | 10/27 | iMac/쌍아 | **DEPLOY** 매팅 워밍 조건부화·백업 안내(6언어)·알림 사유 분리 prod 반영 — 포털 monkos-portal-00570-22q · 엣지 fde2fe79 (2회 히트 ko·ja·id·vi 정합, 작가님 배포 승인 10-27 20:22·20:49) | — | ✅ |
 | 10/28 | iMac/쌍아 | preview.monkos.ai 도메인 매핑 인증서 정체(ACME 404 131건) 조사·정리안 지시 → 막내3 | [ORDER_20261028_iMac쌍아_막내3_INFRA_preview도메인매핑_인증서](../../orders/2026-10/ORDER_20261028_iMac쌍아_막내3_INFRA_preview도메인매핑_인증서.md) | ✅ |
 | 10/28 | iMac/쌍아-막내3 | **REPORT** preview.monkos.ai 도메인 매핑 인증서 정체 + ACME 404 원인 — 조회만, 변경 0 | [REPORT_20261028_iMac막내3_preview도메인_인증서](../../reports/2026-10/REPORT_20261028_iMac막내3_preview도메인_인증서.md) | 📁 |
+| 10/28 | iMac/쌍아 | M-A ACME 워커 제외 라우트 + P-A preview 매핑 삭제 집행 지시 → 막내3(작가님 18:29 승인) | [ORDER_20261028_iMac쌍아_막내3_INFRA_ACME워커제외라우트_preview매핑삭제](../../orders/2026-10/ORDER_20261028_iMac쌍아_막내3_INFRA_ACME워커제외라우트_preview매핑삭제.md) | ✅ |
+| 10/28 | iMac/쌍아 | P-A 집행 — preview.monkos.ai 도메인 매핑 삭제(쌍아, 작가님 승인). 사후 5개 True·monkos.ai 2회 히트 200. M-A는 도구 한계로 대기 | — | ✅ |
 
 ---
 | 08/13 | iMac/민아 | **2주 운영 감사 — 4060 매팅 불통 확정 + 폴백 체계 실전 검증** — matte.monkos.ai 전 경로 530(CF 터널 불통) + Tailscale 노드 소멸 + SSH 타임아웃 = 기계 자체 오프라인. 마지막 4060 정상 서빙 08-12 16:54 KST → 08-13 01:14 KST부터 전량 프리플라이트 불통. 14일 매팅 74건 중 RunPod 폴백 약 27건(36%), 최근 3일 사실상 전량 RunPod(종량 과금 중). 야간·새벽 간헐 이탈 포함 15일 중 8일 이탈 관측. **유저 실패 0건** — 07-25 조치(세마포어·줄서기·25s) 실전 합격: 최악 08-10 20:49 KST 4060 hang+RunPod 순간 동시실패에도 200/87.7s 납품, 504 재발 0. 물리 점검(전원/네트워크) 필요 | 세션 보고 (sessions/2026-08/2026-08-13_iMac_민아.md) | 🔴 4060 물리 확인 대기 |
