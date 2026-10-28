@@ -233,13 +233,15 @@ function isInternalProbe(req) {
  * 엣지 중계 page_view 한도 초과 = 사이트맵 순회 크롤러로 판정 (2026-10-28 track 429 원인 확정).
  * IP 원문 대신 해시 앞 8자로 IP당 분 1회만 기록.
  */
-function logBotSuspect(ip) {
+function logBotSuspect(ip, req) {
   const hash = crypto.createHash('sha256').update(String(ip || '')).digest('hex').slice(0, 8);
   if (!global._botSuspectLogged) global._botSuspectLogged = {};
   const now = Date.now();
   if (now - (global._botSuspectLogged[hash] || 0) < 60000) return;
   global._botSuspectLogged[hash] = now;
-  log(`[track] bot_suspect ip#${hash} — 엣지 page_view 분당 한도 초과, 204·무적재`, 'WARNING');
+  const asn = String(req?.headers?.['x-monkos-client-asn'] || '').slice(0, 12);
+  const asOrg = String(req?.headers?.['x-monkos-client-asorg'] || '').slice(0, 80);
+  log(`[track] bot_suspect ip#${hash} asn=${asn || '-'} org=${asOrg || '-'} — 엣지 page_view 분당 한도 초과, 204·무적재`, 'WARNING');
 }
 
 function trackPageView(req) {
@@ -1091,7 +1093,7 @@ const httpServer = createServer(async (req, res) => {
         let overEvents = [];
         try { overEvents = (await parseJsonBody(req)).events || []; } catch { overEvents = []; }
         if (overEvents.length && overEvents.every((e) => e?.event_name === 'page_view')) {
-          logBotSuspect(edge.ip);
+          logBotSuspect(edge.ip, req);
           res.writeHead(204);
           return res.end();
         }

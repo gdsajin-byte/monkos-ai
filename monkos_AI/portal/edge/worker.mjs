@@ -74,6 +74,9 @@ function firePageView(request, env, ctx, issuedSid = null) {
     'X-Monkos-Client-IP': request.headers.get('CF-Connecting-IP') || '',
     'X-Monkos-Client-Country': country,
     'User-Agent': request.headers.get('User-Agent') || '',
+    // 접속망 식별 (2026-10-28 크롤러 출처 확정용 — 오리진은 bot_suspect 로그에만 사용)
+    'X-Monkos-Client-ASN': String(request.cf?.asn || ''),
+    'X-Monkos-Client-ASOrg': (request.cf?.asOrganization || '').slice(0, 80),
   });
   if (env.EDGE_TRUST_KEY) headers.set('X-Monkos-Edge-Key', env.EDGE_TRUST_KEY); // 신뢰 판정 + page_view 허용 게이트
 
@@ -201,6 +204,10 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
+
+    // 0) 관리형 인증서 갱신(ACME HTTP-01)은 워커를 거치지 않고 존 원 오리진(Cloud Run 도메인 매핑 = Google 프런트)으로.
+    //    같은 존 서브리퀘스트는 워커를 재발화하지 않고 DNS 오리진으로 간다. run.app 폴백으로 보내면 404 → 갱신 실패(10-09~, 만료 11-15).
+    if (path.startsWith('/.well-known/acme-challenge/')) return fetch(request);
 
     // 1) 동적 표면은 즉시 오리진 (자산 조회 자체를 건너뜀 — admin 인증 가드·API·SSR 정본 보호)
     const dynamicPrefix = /^\/(api|auth|admin|toss-|crop|tg)\b|^\/(llms\.txt|sitemap\.xml|sitemap-static\.xml|sitemap-blog\.xml)$/;
