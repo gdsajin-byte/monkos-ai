@@ -114,6 +114,7 @@ status: active
 | 10/28 | iMac/쌍아-막내2 | /api/track 429 664건 원인 확정 — 신뢰 판정 정상(양성 대조군), 해외 크롤러를 워커 firePageView가 중계→실IP별 레이트리밋. 크롤러 page_view 적재 오염이 실피해. 수정안 A(오리진 봇 분리)+B(워커 UA 필터) 결정 대기 | [REPORT_20261028_iMac막내2_PORTAL_track429_원인확정](../../reports/2026-10/REPORT_20261028_iMac막내2_PORTAL_track429_원인확정.md) | ⏳ |
 | 10/28 | iMac/쌍아 | track A안(엣지 page_view 한도 초과 204 무적재) 구현·크롤러 출처 지시 → 막내2 | [ORDER_20261028_iMac쌍아_막내2_PORTAL_track_봇페이지뷰_A안_크롤러출처](../../orders/2026-10/ORDER_20261028_iMac쌍아_막내2_PORTAL_track_봇페이지뷰_A안_크롤러출처.md) | ✅ |
 | 10/28 | iMac/쌍아-막내2 | track 429 A안 구현·dev 검증(dev 00205-9th, prod 미배포) + 크롤러 출처: 사이트맵 순회·UA 로테이션 스크레이퍼, 09-08·10-27 재방문, 실IP·ASN 미확인(ASN 로깅 제안) | [COMPLETION_20261028_iMac막내2_track429](../../reports/2026-10/COMPLETION_20261028_iMac막내2_track429.md) | ✅ |
+| 10/28 | iMac/쌍아 | prod 배포 00571-4mm — track A안(엣지 page_view 한도 초과 204 무적재·bot_suspect+ASN)·monkos-probe 제외. 2회 히트 200 | — | ✅ |
 
 ---
 
