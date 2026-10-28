@@ -165,6 +165,7 @@ status: active
 | 10/28 | ?/? | **ORDER** playwright MCP 래퍼 — 9222 부재 시 디버그 크롬 자동 기동 + cdp_setup.sh start 무한 대기 수정 | [ORDER_20261028_iMac쌍아_막내1_CDP_playwright래퍼_9222자동기동](../../orders/2026-10/ORDER_20261028_iMac쌍아_막내1_CDP_playwright래퍼_9222자동기동.md) | ⏳ |
 | 10/28 | iMac/쌍아 | **분업 원칙 확정(작가님 11:29)** — Playwright=첫 탐색·패턴 파악, 사이트 카드=정리, CDP=동시·병렬 투입. 04/05 진단 Playwright 우위 판정의 운용 정식화. 이음매: ref→고정 선택자 변환, 포트 분리 전제. §1 설계 원칙 등재 | [2026-10-28_iMac_쌍아](../../sessions/2026-10/2026-10-28_iMac_쌍아.md) | ✅ |
 | 10/28 | iMac/쌍아-막내1 | **playwright 래퍼 9222 자동 기동** — 미응답 시 같은 포트로 cdp_setup start(출력 stderr)·~10s 대기·실패 시 ❌ exit 1, 대체 포트 연결 금지. cdp_setup start 크롬 출력 로그 분리(nohup·logs/PORT.log)로 파이프 무한 대기 해소(구 15s+ → 1s). 스모크 9229: 자동 기동·stdout 187B 전부 JSON·음성 exit 1 / 9222 무접촉(PID 79007 불변). 실세션 Reconnect는 작가님 확인 대기 | [2026-10-28_iMac_쌍아-막내1](../../sessions/2026-10/2026-10-28_iMac_쌍아-막내1.md) | ✅ |
+| 10/28 | iMac/쌍아-막내1 | **playwright 래퍼 9222 자동 기동 + cdp_setup 파이프 무한 대기 수정 + @playwright/mcp@0.0.83 버전 고정** — 스모크 9229 대체 전량 통과, 9222 불변. 쌍아 병합 24655a78·cd40ac9d. 실세션 Reconnect 확인은 작가님 대기 | [COMPLETION_20261028_iMac쌍아-막내1_CDP_playwright래퍼](../../reports/2026-10/COMPLETION_20261028_iMac쌍아-막내1_CDP_playwright래퍼.md) | ✅ |
 ---
 
 ## 3. Phase 현황
