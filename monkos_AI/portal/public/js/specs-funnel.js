@@ -1429,7 +1429,7 @@ var SpecsFunnel = (function(){
         setGenMessage(T.genBackupWorking, genSub);
       }, 10000);
     }
-    // 유료 경로 실패 = 서버 refundGate가 생성권(토큰 쿼터·크레딧)을 되돌린다 — 실측 확인된 경로만 (헌법 4조 4항)
+    // 유료 경로 실패 = 서버 refundGate가 생성권(토큰 쿼터·크레딧)을 되돌린다 — 실측 확인된 경로만 (ch8 5조 — 되는 것만)
     window.__genRefundTimer = setTimeout(function(){
       if(T.genRefundAssure) genSub = T.genRefundAssure;
       if(genBk){ setGenMessage(T.genStillWorking2 || GEN_TEXT_DEFAULT, genSub); }
