@@ -730,3 +730,6 @@
 | 2026-10-25 21:59 | 갱신 | project_monkos_sovereignty.md — 손오공·근두운 선언 | iMac/쌍아 |
 | 2026-10-25 22:52 | 갱신 | feedback_license_warnings_at_launch.md — 트렌드 대화에 우려 꼬리표 재발 교정 | iMac/쌍아 |
 | 2026-10-25 22:55 | 갱신 | project_humanities_sensibility_layer.md — 장삼이사·살아 있는 NPC 게임 축 연결 | iMac/쌍아 |
+
+| 2026-10-29 14:03 | 갱신 | project_soso_design_lead.md — 10-28 첫 실가동 사실(시안 A·B·결정 대기·팀 미노출→서브에이전트 553k) + MEMORY.md 1행 | iMac/민아 |
+| 2026-10-29 14:41 | 신규 | feedback_design_tokens_reference_not_constraint.md — 토큰=기준점·틀 아님(작가님 14:41) + MEMORY.md 1행 | iMac/쌍아 |
