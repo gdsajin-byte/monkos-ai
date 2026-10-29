@@ -81,7 +81,7 @@
 
 ## Google Ads API 버전
 
-- 정본: `scripts/ads_api_version` (1행, 현재 v22). `scripts/ads.sh`·`scripts/collectors/collect_keywords.js`가 읽는다. 환경변수 `ADS_API_VERSION`으로 임시 재정의 가능.
+- 정본: `scripts/ads_api_version` (1행, 현재 v24 — 10-29 v22 폐기로 교체). `scripts/ads.sh`·`scripts/collectors/collect_keywords.js`가 읽는다. 환경변수 `ADS_API_VERSION`으로 임시 재정의 가능.
 - 구버전은 404로 실패한다. 수집기는 Google Planner 0행이면 🔴 알림 + exit 1 (2026-09-15 신설 — 09-01 월배치 무음 실패 재발 방지). `--dry-run`으로 적재 없이 스모크.
 
 ## 가격

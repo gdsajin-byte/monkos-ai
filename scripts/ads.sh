@@ -7,7 +7,7 @@ set -euo pipefail
 
 PROJECT="monkos"
 # Google Ads API 버전 정본 = scripts/ads_api_version (collect_keywords.js와 공유). 환경변수로 임시 재정의 가능
-ADS_API_VERSION="${ADS_API_VERSION:-$(cat "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/ads_api_version" 2>/dev/null || echo v22)}"
+ADS_API_VERSION="${ADS_API_VERSION:-$(cat "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/ads_api_version" 2>/dev/null || echo v24)}"
 ADS_BASE="https://googleads.googleapis.com/${ADS_API_VERSION}"
 
 # SM에서 시크릿 로드
