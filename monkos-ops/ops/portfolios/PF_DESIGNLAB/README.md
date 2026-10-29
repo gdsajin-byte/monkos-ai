@@ -79,6 +79,8 @@ status: active
 | 10/28 | iMac/maker-A | **DESIGN** 증명사진관 허브 시안 A(서류 칩 고정 + 세로 카드 4장) — 근거표 | [근거표](../../../tech/designs/2026-10/idphoto_hub/A_세로카드/근거표.md) | ⏳ |
 | 10/28 | iMac/소소 | **DESIGN** 증명사진관 허브(/id-photo) — 시안 A·B 결정 요청 + 남은 닫힌 질문 | [03_결정요청](../../../tech/designs/2026-10/idphoto_hub/03_결정요청.md) | ⏳ |
 | 10/29 | ?/? | **ORDER** 소소(디자인 TF) 강화용 외부 하네스·디자인 도구·스킬 벤치마크 조사 — 조사 보고서 1건, 설치·코드 변경 없음 | [ORDER_20261029_iMac쌍아_막내1_DESIGNLAB_디자인하네스_벤치마크](../../orders/2026-10/ORDER_20261029_iMac쌍아_막내1_DESIGNLAB_디자인하네스_벤치마크.md) | ⏳ |
+| 10/29 | iMac/쌍아-막내1 | **RESEARCH** 소소(디자인 TF) 강화용 외부 하네스·디자인 도구·스킬 벤치마크 | [RESEARCH_20261029_iMac쌍아-막내1_DESIGNLAB_디자인하네스_벤치마크](../../reports/2026-10/RESEARCH_20261029_iMac쌍아-막내1_DESIGNLAB_디자인하네스_벤치마크.md) | 📁 |
+| 10/29 | iMac/쌍아-막내1 | **COMPLETION** COMPLETION_20261029_iMac쌍아-막내1_DESIGNLAB_디자인하네스_벤치마크 | [COMPLETION_20261029_iMac쌍아-막내1_DESIGNLAB_디자인하네스_벤치마크](../../reports/2026-10/COMPLETION_20261029_iMac쌍아-막내1_DESIGNLAB_디자인하네스_벤치마크.md) | ✅ |
 
 ---
 
