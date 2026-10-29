@@ -83,6 +83,7 @@ status: active
 | 10/29 | iMac/쌍아-막내1 | **COMPLETION** COMPLETION_20261029_iMac쌍아-막내1_DESIGNLAB_디자인하네스_벤치마크 | [COMPLETION_20261029_iMac쌍아-막내1_DESIGNLAB_디자인하네스_벤치마크](../../reports/2026-10/COMPLETION_20261029_iMac쌍아-막내1_DESIGNLAB_디자인하네스_벤치마크.md) | ✅ |
 | 10/29 | iMac/민아 | 소소 1차 과제 브리프 발행 — 디자인 시스템 아티팩트 등록(MONKOS AI·몽크사진관 2벌, 현행 그대로), 데스크톱 세션 기동(작가님 15:09 '소소에게 맡기자') | [ORDER_20261029_iMac민아_소소_DESIGNLAB_디자인시스템_아티팩트등록](../../orders/2026-10/ORDER_20261029_iMac민아_소소_DESIGNLAB_디자인시스템_아티팩트등록.md) | ✅ |
 | 10/29 | iMac/소소 | **DESIGN** 디자인 시스템 아티팩트 등록 1단계 — MONKOS AI(포털 토큰 3곳) · 몽크사진관(꾸 팔레트), 현행 그대로 | [DESIGN_20261029_iMac소소_디자인시스템_아티팩트등록](../../../tech/designs/2026-10/DESIGN_20261029_iMac소소_디자인시스템_아티팩트등록.md) | ⏳ |
+| 10/29 | ?/? | **ORDER** 온라인 사진관" 컨셉 랜딩 시안 — 레퍼런스 충분 검토 후 UI 설계 (기존 디자인·허브 시안 A·B와 무관하게 새로) | [ORDER_20261029_iMac쌍아_소소_DESIGNLAB_온라인사진관_랜딩시안](../../orders/2026-10/ORDER_20261029_iMac쌍아_소소_DESIGNLAB_온라인사진관_랜딩시안.md) | ⏳ |
 
 ---
 
