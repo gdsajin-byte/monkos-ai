@@ -128,3 +128,6 @@
 {"ts": "2026-10-29 06:31 KST", "id": 192, "event": "resolve", "evidence": "06:31 216.239.32.21 SNI 실측 notAfter=2027-01-26(WR3) — 11-15에서 연장", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-10-29 06:31 KST", "id": 187, "event": "note", "text": "10-29 06:31 origin/main 001ebab9 코드 22행 잔존, makne9 05287ce3 미머지(9일)", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-10-29 06:31 KST", "id": 181, "event": "note", "text": "10-29 06:31 portal 00571-4mm 평문 의심 6 동일, SM GOOGLE_CLIENT_SECRET 부재", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-30 06:31 KST", "id": 187, "event": "note", "text": "06:30 origin/main c0ca4bd1 monkos_AI 코드 gemini-2.5-flash 22행·11파일 그대로, makne9 ahead 3 미머지", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-30 06:31 KST", "id": 181, "event": "note", "text": "06:30 portal 00571-4mm 평문 의심 6 그대로, SM GOOGLE_CLIENT_SECRET 없음(대조군 TX_API_KEY 있음)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-30 06:31 KST", "id": 193, "event": "open", "axis": "live", "severity": "ℹ️", "title": "monk.kr 미배포 3커밋(10-29 15:23~15:33, 꾸 결정 — 출장촬영 링크 카드·탭별 주소·네이버톡톡 주소 교정). 실배포 e3f88bf2(10-26). 라이브 /biztrip/interior.html=홈 폴백(title 불일치) 2회 히트 확인 — 배포 트리거 작가님", "owner": "작가님", "by": "iMac/민아-헤드리스"}
