@@ -3,7 +3,7 @@ type: design
 date: 2026-10-29
 device: iMac
 agent: 소소
-status: 등록 완료 — 캡처·기본값 지정은 작가님 로그인 대기
+status: 등록 완료 — 캡처 5장 확보(16:22~16:26), 기본값 지정 메뉴는 현 UI 5곳에서 미발견
 portfolio: PF_DESIGNLAB
 subject: "디자인 시스템 아티팩트 등록 1단계 — MONKOS AI(포털 토큰 3곳) · 몽크사진관(꾸 팔레트), 현행 그대로"
 ---
@@ -16,7 +16,9 @@ subject: "디자인 시스템 아티팩트 등록 1단계 — MONKOS AI(포털 �
 
 ## 0. 결론 1줄
 
-Design System 아티팩트 **2벌 등록 완료**(비공개), Design 캔버스 1장에 MONKOS AI 토큰 **설치 확인**(파일 sha256 일치). **화면 캡처와 "기본값" 지정 2건은 작가님 클릭이 필요**해 대기 중이다.
+Design System 아티팩트 **2벌 등록 완료**(비공개), Design 캔버스 1장에 MONKOS AI 토큰이 **자동 적용됨을 화면으로 실증**(색 피커 Theme 탭이 아트보드의 hex를 `portal-accent`·`portal-ink` 등 토큰 이름으로 인식, 캡처 §4) + 파일 sha256 일치. **"기본값" 지정 메뉴는 현 UI 5곳을 뒤져도 없다**(§6-2) — 캔버스마다 MONKOS AI를 명시 설치하는 현행 방식으로 운용 가능.
+
+> **[2026-10-29 16:27 KST]** 갱신: 작가님 16:21 "이제 로그인 되었어"(민아 페인 로그인 → 소소 페인에 공유 확인) 이후 캡처·메뉴 확인 완료. 15:24 초판의 "로그인 대기" 문구는 §4·§6에서 교체.
 
 ## 1. 아티팩트 URL
 
@@ -68,7 +70,13 @@ Design System 아티팩트 **2벌 등록 완료**(비공개), Design 캔버스 1
 - 캔버스 생성 시 `quickstart`가 "기본값 없음 → 어느 시스템인지 물어라"를 냈다. 브리프 §2-3(기본값 = MONKOS AI)에 따라 **MONKOS AI를 명시 설치**: `project/ds/monkos-ai/tokens.json`(서버 복사) + `canvas.json` `designSystems` 레코드(artifact `MDy3QGJXNBQ7kf1unXAMu7`, version `1793254861-84d3`).
 - **설치 확인(파일 대조)**: 캔버스에서 `project/ds/monkos-ai/tokens.json`을 읽어 sha256 `1bc3b77e…fcb55c4` = 소소가 올린 원본 tokens.json과 **일치**(9,505 bytes). 캔버스 색상 피커·텍스트 스타일 메뉴는 이 파일을 읽는다(타입 문서 기준).
 - 시안 1장: 허브 서비스 카드 실카피(`portal/public/index.html:308` — "LIVE / AI 증명사진 / 여권·이력서 — 사진관 품질 AI 리터칭. ICAO 국제 규격. / 촬영 시작 →")를 `portal-*` 값으로 조판. 트윅 1개 `accent` 스와치 = #4a3aba·#6c4fff·#6c5ce7(같은 역할 다른 값을 한 자리에서 비교).
-- **화면 캡처: 미완.** 앱 내 브라우저 페인이 claude.ai **미로그인**("이 페이지를 보려면 로그인하세요", 15:20·15:23 2회 확인). 자격 증명 입력은 에이전트 금지 영역, 9222·9223 미접속(브리프 §0), Claude in Chrome 전환은 작가님 동의 전 안 함. 작가님이 페인(tab-3, 캔버스 URL 대기 중)에서 로그인하면 즉시 캡처한다.
+- **화면 캡처 5장** (`captures/`, 앱 내 브라우저 페인, 16:22~16:26 — 15:20·15:23·15:55 세 차례는 페인 미로그인으로 불가, 작가님 16:21 로그인 후 공유 확인):
+  1. [실증 캔버스 — 허브 CTA 카드 161% 핏](captures/CAPTURE_20261029_소소_실증캔버스_허브CTA카드_161pct.jpg) — 아트보드 "허브 CTA 카드 — portal-* 토큰" 렌더(Pretendard·portal-bg·카드·LIVE 배지·#4a3aba 버튼)
+  2. [색 피커 — MONKOS AI 토큰명 인식](captures/CAPTURE_20261029_소소_실증캔버스_색피커_MONKOS_AI토큰명.jpg) — **"작동한다"의 증거.** 요소 선택 → 색 피커 **Theme** 탭 "In this artboard"에 `portal-ink`·`portal-accent`·`portal-accent-l`·`portal-green`·`portal-ink-m`·`portal-ink-l`·`portal-white`가 **이름으로** 나열되고 아래 "MONKOS AI" 섹션이 이어짐. 인라인 hex를 설치된 tokens.json과 대조해 토큰으로 묶은 것
+  3. [DS MONKOS AI 개요·커버](captures/CAPTURE_20261029_소소_DS_MONKOS_AI_개요_커버.jpg) — 커버(3컬럼 타일+점 격자) + README 상단. 커버는 첫 로드에 비어 있다가 스크롤·재진입 후 렌더(지연 로드)
+  4. [DS 몽크사진관 개요·커버](captures/CAPTURE_20261029_소소_DS_몽크사진관_개요_커버.jpg) — 커버(3:4 프레임 격자) + README 상단. 같은 지연 로드(10초 대기만으로는 빈 칸, 스크롤 후 렌더)
+  5. [설정 › 디자인 시스템 목록](captures/CAPTURE_20261029_소소_설정_디자인시스템_목록5.jpg) — 5개 중 2개가 이번 등록분(§6-2)
+- 콘솔: 405 리소스 오류 3건(아티팩트 페이지 공통, 렌더 영향 없음 — 원인 미추적).
 
 ## 5. 산출 파일
 
