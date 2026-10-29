@@ -96,3 +96,27 @@ Design System 아티팩트 **2벌 등록 완료**(비공개), Design 캔버스 1
 
 - 세션 컨텍스트 315k / 1M(32%, 15:23 `get_usage`). 5시간 창 37%, 주간 Fable 14%.
 - 서브에이전트 0(팀 없이 완료 — 브리프 §0 "이 과제는 팀 없이도 된다").
+
+## 8. 독립 실행형(옛 claude.ai/design) 디자인 시스템 3건 조사 — 이관 판단 자료
+
+**[2026-10-29 17:04 KST]** iMac/소소 → 작가님 (출처: 작가님 17:01 "조사해"). 방법: DesignSync 도구는 인증 필요로 불가 → 앱 내 브라우저 페인에서 설정 › 디자인 시스템의 링크로 각 프로젝트 열람(읽기만, "Check"는 이동 가능 여부 점검 버튼으로 변경 없음). 독립판은 **12-14 폐쇄**("You can keep using this version until December 14").
+
+| # | 이름 | 생성 | 내용 | 이동 점검(Check) | 판정 |
+|---|---|---|---|---|---|
+| 1 | **Industry** (`/design/p/e9399313…`) | 2026-09-09 게시, "Published", org default 버튼 있음 | 내장 템플릿 파생 — 스틸블루 #5980a6·Barlow Condensed/Barlow·청사진 와이어프레임(모서리 + 마크). MONK 브랜드와 무관 | **이동 불가** — "Design systems that started from a built-in one can't move." 다운로드만 가능 | **버림**(내장 템플릿이라 보존 가치 0). 삭제는 작가님 |
+| 2 | **Design System** (`/design/p/019dd785…`) | 2026-04-29 13:35 KST(UUIDv7) | **빈 프로젝트** — "Set up your design system" 설정 마법사 첫 화면에서 멈춤, 생성물 없음 | 해당 없음 | **버림**. 삭제는 작가님 |
+| 3 | **MONKOS Design System** (`/design/p/019dd7d5…`) | 2026-04-29 15:03 KST(UUIDv7), **미게시** | 철창이 자료(`철창이/` 폴더: MONKOS_Pricing_v2.jsx·크롭앱 프로토 jsx·REALIGN_20260419 설계서·에코시스템 SVG·OG 카드·스크린샷)로 생성한 실질 시스템. README(콘텐츠 원칙·시각 기초·아이콘)·colors_and_type.css·카드 15장·UI 키트 2(idphoto 모바일·monkos.ai 마케팅 데스크톱)·마크 SVG 3(**재구성본** — 원본 아이콘 미수신) | **이동 가능** — "Nothing found in the way" | **이관 보존 권고**(아래) |
+
+### 8-1. MONKOS Design System(04-29 철창이안) — 현행 코드 정본과의 관계
+
+- 팔레트가 **다크 제품 + 라이트 마케팅 2계열**: 보라 #6C5CE7(주)·#5C4EBA(OG 워드마크), 다크 사다리 #06080D→#0A0E17→#0E1219→#151B25→#1A2235, 텍스트 #F1F5F9/#94A3B8/#64748B, 시맨틱 #10B981·#F59E0B·#EF4444·#3B82F6, 에코시스템 4색(#85B7EB·#5DCAA5·#F0997B·#AFA9EC). 글꼴 Pretendard/Noto Sans JP/Inter/JetBrains Mono(전부 대체 로드), Lucide, 4pt 그리드, 앱 아이콘 rx 22.
+- 현행 코드(§3)와 겹치는 값: #6C5CE7 = `portal-accent-l`(portal.css:21), #0A0E17 = `portal-deep`(portal.css:26). **다른 값**: 현행 기본은 **라이트**(`portal-bg` #fafaf8, 주색 #4a3aba / #6c4fff)인데 이 안은 **다크 제품 UI**를 전제. 즉 04-29 시점 프로토·설계서 기반 **구상안**이지 현행 정본 반영이 아니다. 그 세션의 자가 고지도 "live 사이트 HTML 없이 OG 카드·크롭앱 코드로 재구성" "아이콘 미수신·마크는 재구성" "폰트 대체".
+- 그래서 **기본값·시안 근거로 쓰지 않는다**(정본은 코드, 1단계 원칙). 가치는 ① 철창이의 콘텐츠 원칙(보이스·캐싱·숫자 표기·금지 패턴) ② 에코시스템 4색 ③ UI 키트 2장 — **참고 자료**로서.
+
+### 8-2. 닫힌 선택 (작가님)
+
+1. **MONKOS Design System** — ① **이관 보존**(권고: 작가님이 해당 페이지 "Check → Move" 1클릭 → 아티팩트로 이동, 이름 뒤에 "(04-29 철창이안·참고)" 붙여 기본값·시안 근거에서 제외) ② 버림(12-14 자동 소멸, 삭제 불필요) ③ 콘텐츠 원칙·4색만 MONKOS AI README에 발췌 후 버림(소소 작업 1건)
+2. **Industry·Design System** — ① 삭제(작가님, 설정 › 디자인 시스템 행 메뉴 "삭제") ② 방치(12-14 소멸)
+3. 부수: 독립판에만 **"Set as org default"** 버튼이 있다. 아티팩트형 디자인 시스템의 기본값 지정 UI는 아직 없음(§6-2) — 엔스 측 이행 중으로 보임.
+
+캡처: [Industry 이동 불가](captures/CAPTURE_20261029_소소_독립판_Industry_이동불가.jpg) · [Design System 빈 마법사](captures/CAPTURE_20261029_소소_독립판_DesignSystem_빈마법사.jpg) · [MONKOS DS 이동 가능](captures/CAPTURE_20261029_소소_독립판_MONKOS_DS_이동가능.jpg)
