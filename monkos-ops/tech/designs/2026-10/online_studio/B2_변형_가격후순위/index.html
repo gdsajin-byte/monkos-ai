@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>몽크사진관 — 온라인 사진관 (시안 B: 오늘 받는 사진관)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+/* 시안 B "오늘 받는 사진관" — 변수 근거는 같은 폴더 근거표.md ② */
+:root{
+  /* 현행 monk.kr TEAL/GRAY (id_photo.html:59-65) */
+  --ink:#263238;
+  --ink-2:#455A64;          /* 보조 글자 + 캡션(현행 캡션 #78909C는 3.35:1이라 글자에 쓰지 않음) */
+  --accent:#80CBC4;         /* 테두리·배지·점에만. 글자색 금지 */
+  --line:#CFD8DC;           /* 테두리·구분선·사진 자리 상자 */
+  --surface:#FFFFFF;
+  --btn:#000000;
+  --btn-text:#FFFFFF;
+  /* 제안 1건: 배경 톤 (현행 --bg #ECEFF1) */
+  --bg:#F6F1E9;
+  /* 형태 — 현행 Tailwind 값 */
+  --r-btn:12px;             /* rounded-xl */
+  --r-card:16px;            /* rounded-2xl */
+  --r-pill:999px;           /* rounded-full (BEST CHOICE 배지) */
+  --r-photo:0;
+  /* 글자 */
+  --font:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
+  --fw-title:600;
+  --fs-body:16px; --lh-body:24px;
+  --fs-cap:14px;  --lh-cap:20px;
+  --fs-h1:30px;   --lh-h1:38px;
+  --fs-h2:22px;   --lh-h2:30px;
+  --fs-h3:18px;   --lh-h3:26px;
+  --fs-price:26px;
+  /* 간격 — Tailwind 4px 단계 */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s8:32px; --s12:48px; --s16:64px;
+  --tap:48px;
+  --maxw:1120px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);background:var(--bg);word-break:keep-all;overflow-wrap:break-word;overflow-x:hidden}
+h1,h2,h3,p,ul,ol,dl,dd,figure{margin:0;padding:0}
+ul,ol{list-style:none}
+a{color:inherit}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--s5)}
+section{padding:var(--s12) 0}
+h2{font-size:var(--fs-h2);line-height:var(--lh-h2);font-weight:var(--fw-title);letter-spacing:-0.02em}
+h3{font-size:var(--fs-h3);line-height:var(--lh-h3);font-weight:var(--fw-title);letter-spacing:-0.01em}
+.cap{font-size:var(--fs-cap);line-height:var(--lh-cap);color:var(--ink-2)}
+.lead{color:var(--ink-2);margin-top:var(--s2)}
+.num{font-variant-numeric:tabular-nums}
+
+/* 버튼 — 현행: 검정 #000 · 흰 글자 · rounded-xl · h-12 */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);padding:0 var(--s6);border-radius:var(--r-btn);background:var(--btn);color:var(--btn-text);font-weight:700;font-size:var(--fs-body);text-decoration:none;border:0}
+.btn-sm{min-height:44px;padding:0 var(--s4);font-size:var(--fs-cap)}
+.btn-line{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn:focus-visible,.tier:focus-visible,.use:focus-visible,summary:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+
+/* 사진 자리 상자 — 회색 · 각진 모서리 */
+.ph{background:var(--line);border-radius:var(--r-photo);display:flex;align-items:center;justify-content:center;text-align:center;padding:var(--s2);color:var(--ink-2);font-size:var(--fs-cap);line-height:var(--lh-cap);font-weight:600}
+.ph-34{aspect-ratio:3/4}
+.ph-43{aspect-ratio:4/3}
+.slot{background:var(--line);color:var(--ink-2);font-size:var(--fs-cap);line-height:var(--lh-cap);padding:var(--s4);border-radius:var(--r-photo)}
+
+/* 헤더 */
+.hd{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.hd .wrap{display:flex;align-items:center;justify-content:space-between;min-height:56px}
+.logo{display:inline-flex;align-items:center;min-height:44px;font-weight:700;font-size:var(--fs-h3);letter-spacing:-0.02em;text-decoration:none}
+
+/* 히어로 */
+#hero{padding:var(--s8) 0 var(--s6)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s8)}
+.badges{display:flex;flex-wrap:wrap;gap:var(--s2);margin-bottom:var(--s4)}
+.badge{display:inline-flex;align-items:center;gap:var(--s2);min-height:36px;padding:0 var(--s3);background:var(--surface);border:1.5px solid var(--accent);border-radius:var(--r-pill);font-size:var(--fs-cap);font-weight:600}
+.badge svg{flex:none}
+h1{font-size:var(--fs-h1);line-height:var(--lh-h1);font-weight:var(--fw-title);letter-spacing:-0.03em}
+.hero-sub{margin-top:var(--s3);color:var(--ink-2)}
+.hero-cta{margin-top:var(--s5)}
+.hero-cta .btn{width:100%}
+.hero-cond{margin-top:var(--s2);text-align:center}
+.hero-photo{display:none}
+
+/* 티어 카드 3 */
+#tiers{padding-top:var(--s4)}
+.sec-head{margin-bottom:var(--s5)}
+.tiers{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s3)}
+.tier{position:relative;display:grid;grid-template-columns:72px minmax(0,1fr);gap:var(--s4);align-items:start;padding:var(--s4);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);text-decoration:none;color:var(--ink)}
+.tier.rec{border:2px solid var(--accent)}
+.tier .thumb{width:72px}
+.tier-arrow{position:absolute;right:var(--s3);bottom:var(--s3);color:var(--ink-2)}
+.tier-top h3{padding-right:var(--s1)}
+.tier-kind{font-size:var(--fs-cap);line-height:var(--lh-cap);color:var(--ink-2);font-weight:600}
+.tier-top{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s2);flex-wrap:wrap}
+.price{font-size:var(--fs-price);line-height:32px;font-weight:700;letter-spacing:-0.02em;white-space:nowrap}
+.price small{font-size:var(--fs-body);font-weight:400}
+.tier-desc{margin-top:var(--s1);font-size:15px;line-height:22px}
+.tier-meta{margin-top:var(--s2);display:grid;gap:2px}
+.tier-meta li{display:flex;gap:var(--s2);align-items:flex-start}
+.dot{flex:none;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-top:7px}
+.tier-go{display:none;margin-top:var(--s3);align-items:center;gap:var(--s1);font-weight:700;font-size:var(--fs-cap)}
+.tag{position:absolute;top:-12px;left:var(--s4);background:var(--accent);color:var(--ink);font-size:var(--fs-cap);line-height:var(--lh-cap);font-weight:700;padding:2px var(--s3);border-radius:var(--r-pill)}
+.uses-line{margin-top:var(--s4);padding:var(--s3) var(--s4);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card)}
+
+/* 실물 사진관 */
+#studio{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.studio-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s8)}
+.facts{margin-top:var(--s6);display:grid;gap:0;border-top:1px solid var(--line)}
+.facts div{display:grid;grid-template-columns:88px minmax(0,1fr);gap:var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--line)}
+.facts dt{font-size:var(--fs-cap);line-height:var(--lh-body);color:var(--ink-2);font-weight:600}
+.slots{margin-top:var(--s5);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
+.studio-btns{margin-top:var(--s5);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
+.studio-btns .btn{padding:0 var(--s3)}
+.photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
+.photos .wide{grid-column:1 / -1}
+.ba{grid-column:1 / -1;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);border:1px solid var(--line);padding:var(--s2)}
+.ba figcaption{grid-column:1 / -1;text-align:center}
+
+/* 용도 */
+.uses{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
+.uses li{display:flex}
+.use{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:64px;padding:var(--s3) var(--s4);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);text-decoration:none;font-weight:600}
+.use .cap{font-weight:400}
+
+/* 단계 */
+.steps{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s3)}
+.step{display:grid;grid-template-columns:40px minmax(0,1fr);gap:var(--s3);padding:var(--s4);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card)}
+.step-n{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700}
+.step.opt{border-style:dashed}
+.step .cap{margin-top:2px}
+
+/* 인화 */
+.print-box{margin-top:var(--s6);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:var(--s2) var(--s5) var(--s5)}
+.sizes{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s3)}
+.size{display:inline-flex;align-items:center;min-height:36px;padding:0 var(--s3);border:1px solid var(--line);border-radius:var(--r-btn);font-size:var(--fs-cap);font-weight:600}
+.print-price{display:grid;gap:0}
+.print-price li{display:flex;justify-content:space-between;gap:var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--line)}
+.print-price b{white-space:nowrap}
+.nope{margin-top:var(--s4);display:flex;gap:var(--s2)}
+
+/* 후기 자리 */
+.reviews{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s3)}
+.review{min-height:120px;display:flex;flex-direction:column;justify-content:center;gap:var(--s1)}
+
+/* FAQ */
+.faq{border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{min-height:56px;display:flex;align-items:center;justify-content:space-between;gap:var(--s3);cursor:pointer;list-style:none;font-weight:600;padding:var(--s3) 0}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary svg{flex:none;transition:transform .2s}
+.faq details[open] summary svg{transform:rotate(180deg)}
+.faq .ans{padding:0 0 var(--s4);color:var(--ink-2)}
+.ph-inline{display:inline;background:var(--line);color:var(--ink-2);padding:0 var(--s1)}
+
+/* 푸터 */
+.ft{padding:var(--s8) 0 calc(var(--s8) + 80px);border-top:1px solid var(--line);background:var(--surface)}
+
+/* 모바일 하단 고정 CTA */
+.fixed-cta{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:var(--s3) var(--s5) calc(var(--s3) + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--line);transition:transform .2s}
+.fixed-cta .btn{width:100%}
+.fixed-cta.off{transform:translateY(110%)}
+
+@media (min-width:768px){
+  .fixed-cta{display:none}
+  .ft{padding-bottom:var(--s8)}
+  .wrap{padding:0 var(--s8)}
+  section{padding:var(--s16) 0}
+  :root{--fs-h1:44px;--lh-h1:54px;--fs-h2:30px;--lh-h2:40px;--fs-price:30px}
+  #hero{padding:var(--s16) 0 var(--s8)}
+  .hero-grid{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);align-items:center}
+  .hero-photo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
+  .hero-cta{display:flex;align-items:center;gap:var(--s4)}
+  .hero-cta .btn{width:auto;padding:0 var(--s8)}
+  .hero-cond{margin-top:0;text-align:left}
+  .tiers{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4)}
+  .tier{grid-template-columns:minmax(0,1fr);padding:var(--s6)}
+  .tier .thumb{width:96px}
+  .tier-go{display:inline-flex;align-items:center;gap:var(--s1)}
+  .tier-arrow{display:none}
+  .studio-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+  .photos{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .photos .wide{grid-column:auto}
+  .ba{grid-template-columns:repeat(2,minmax(0,168px));justify-content:center;padding:var(--s3)}
+  .uses{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .steps{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .step{grid-template-columns:minmax(0,1fr)}
+  .print-box{margin-top:0}
+  .print-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s8);align-items:start}
+  .reviews{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+</style>
+</head>
+<body>
+
+<!-- 1. 헤더 -->
+<header class="hd" id="top">
+  <div class="wrap">
+    <a class="logo" href="#top">몽크사진관</a>
+    <a class="btn btn-sm" href="#start" data-route="미정(Q1) — 현행 무료 체험 진입은 idphoto-kr /prep">지금 시작</a>
+  </div>
+</header>
+
+<main>
+<!-- 2. 히어로 -->
+<section id="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <ul class="badges" aria-label="소요 시간">
+        <li class="badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>무료 체험 · 3분이면 완성</li>
+        <li class="badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="6" width="18" height="13"/><path d="M3 7l9 6 9-6"/></svg>인화 우편 3일 내외</li>
+      </ul>
+      <h1>셀카 한 장으로,<br>사진관 결과물을 받아요</h1>
+      <p class="hero-sub">사진관 안 가도 됩니다. 원하시면 사진관이 직접 손봐 드립니다.</p>
+      <div class="hero-cta" id="heroCta">
+        <a class="btn" href="#start" data-route="미정(Q1) — 현행 idphoto-kr /prep">무료로 체험하기</a>
+        <p class="cap hero-cond num">첫 로그인 시 무료 체험</p>
+      </div>
+    </div>
+    <div class="hero-photo" aria-hidden="true">
+      <div class="ph ph-34">결과물 컷<br>규격 증명사진 파일</div>
+      <div class="ph ph-34">결과물 컷<br>인화된 증명사진</div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. 용도 선택 -->
+<section id="uses" aria-labelledby="uses-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="uses-h">어떤 사진이 필요하세요?</h2>
+    </div>
+    <ul class="uses">
+      <li><a class="use" href="#start" data-use="passport">여권</a></li>
+      <li><a class="use" href="#start" data-use="id-card">주민등록증</a></li>
+      <li><a class="use" href="#start" data-use="license">운전면허</a></li>
+      <li><a class="use" href="#start" data-use="resume">이력서 · 취업</a></li>
+      <li><a class="use" href="#start" data-use="visa">비자</a></li>
+      <li><a class="use" href="/monk_studio/profile/profile.html">프로필</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 3. 티어 카드 3 (나란히) -->
+<section id="tiers" aria-labelledby="tiers-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="tiers-h">용도를 고르셨다면, 어떻게 받으실까요?</h2>
+    </div>
+    <div class="tiers">
+      <a class="tier" href="#start" data-route="미정(Q1) — 현행 idphoto-kr /prep">
+        <div class="ph ph-34 thumb">AI<br>결과</div>
+        <div>
+          <div class="tier-top"><h3>AI 파일</h3><p class="price num">9,900<small>원</small></p></div>
+          <p class="tier-desc">AI 증명사진 · 3분이면 완성</p>
+          <ul class="tier-meta cap">
+            <li><span class="dot"></span><span class="num">첫 로그인 시 무료 체험 · 이후 1장 ₩9,900</span></li>
+            <li><span class="dot"></span><span class="num">고화질 단건 2,000원</span></li>
+          </ul>
+          <span class="tier-go">무료로 체험하기 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
+        </div>
+      <svg class="tier-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+      <a class="tier" href="/monk_studio/store/retouch/retouch.html#id">
+        <div class="ph ph-34 thumb">보정<br>결과</div>
+        <div>
+          <div class="tier-top"><h3>사진관 보정 파일</h3><p class="price num">10,000<small>원</small></p></div>
+          <p class="tier-desc">온라인 맞춤 보정 · 사진관이 봅니다</p>
+          <ul class="tier-meta cap">
+            <li><span class="dot"></span><span>얼굴 보정 · 의상 변경 · 헤어 변경, 원래 얼굴은 그대로</span></li>
+          </ul>
+          <span class="tier-go">보정 맡기기 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
+        </div>
+      <svg class="tier-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+      <a class="tier rec" href="/monk_studio/store/retouch/retouch.html#id">
+        <span class="tag">추천</span>
+        <div class="ph ph-34 thumb">인화물</div>
+        <div>
+          <div class="tier-top"><h3>보정 + 인화 배송</h3><p class="price num">20,000<small>원</small></p></div>
+          <p class="tier-desc">사진관이 보고, 인화해서 보내 드립니다</p>
+          <ul class="tier-meta cap">
+            <li><span class="dot"></span><span class="num">우편 +1,800원 · 3일 내외</span></li>
+          </ul>
+          <span class="tier-go">보정 + 인화 맡기기 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
+        </div>
+      <svg class="tier-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+    <p class="uses-line cap"><b style="color:var(--ink)">용도</b> 여권 · 민증 · 면허 · 이력서 · 비자</p>
+  </div>
+</section>
+
+<!-- 4. 실물 사진관 -->
+<section id="studio" aria-labelledby="studio-h">
+  <div class="wrap studio-grid">
+    <div>
+      <h2 id="studio-h">온라인이지만, 사진관입니다</h2>
+      <p class="lead">보정을 맡기시면 미사역 몽크사진관의 작가가 직접 손봐 드립니다. 직접 오셔서 찍으셔도 됩니다.</p>
+      <dl class="facts">
+        <div><dt>위치</dt><dd>미사역 지하 연결 · 그랑파사쥬 B1층 다이소 바로 옆</dd></div>
+        <div><dt>주차</dt><dd>주차 90분 무료</dd></div>
+        <div><dt>방문 촬영</dt><dd><span class="num">30,000원부터</span><br><span class="cap">촬영 후 20분 완성 · 작가 1:1 보정</span></dd></div>
+        <div><dt>프로필 촬영</dt><dd class="num">70,000원부터</dd></div>
+      </dl>
+      <div class="slots">
+        <p class="slot">[실측 후 기입: 사진관 운영 연수]</p>
+        <p class="slot">[실측 후 기입: 예 누적 주문 수]</p>
+      </div>
+      <div class="studio-btns">
+        <a class="btn btn-line" href="https://booking.naver.com/booking/13/bizes/1177662">방문 촬영 예약</a>
+        <a class="btn btn-line" href="/monk_studio/monk_studio.html">오시는 길</a>
+      </div>
+    </div>
+    <div class="photos">
+      <div class="ph ph-43">매장 컷<br>입구·간판</div>
+      <div class="ph ph-43">매장 컷<br>촬영실</div>
+      <div class="ph ph-43 wide">작업대 컷<br>보정 작업 중인 모니터·손</div>
+      <figure class="ba">
+        <div class="ph ph-34">보정 전</div>
+        <div class="ph ph-34">보정 후</div>
+        <figcaption class="cap">본인으로 보이는 보정</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- 6. 진행 단계 -->
+<section id="steps" aria-labelledby="steps-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="steps-h">이렇게 받습니다</h2>
+    </div>
+    <ol class="steps">
+      <li class="step"><span class="step-n">1</span><div><h3>사진 올리기</h3><p class="cap">셀카 한 장이면 됩니다</p></div></li>
+      <li class="step"><span class="step-n">2</span><div><h3>AI가 규격을 맞춥니다</h3><p class="cap">3분이면 완성</p></div></li>
+      <li class="step opt"><span class="step-n">3</span><div><h3>사진관이 봅니다</h3><p class="cap">보정을 고른 경우 · 얼굴은 그대로, 흠만 정리</p></div></li>
+      <li class="step"><span class="step-n">4</span><div><h3>파일 또는 인화로 받기</h3><p class="cap">파일 다운로드 · 보정본은 이메일 · 인화는 우편 3일 내외</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- 7. 인화 배송 -->
+<section id="print" aria-labelledby="print-h">
+  <div class="wrap print-grid">
+    <div>
+      <h2 id="print-h">인화해서 보내 드립니다</h2>
+      <p class="lead">증명·서류사진은 종류와 상관없이 같은 가격입니다. 엡손 정품 인화지와 잉크를 씁니다.</p>
+      <ul class="sizes" aria-label="인화 사이즈">
+        <li class="size num">여권 3.5×4.5</li>
+        <li class="size num">반명함 3×4</li>
+        <li class="size num">명함판 5×7</li>
+      </ul>
+    </div>
+    <div class="print-box">
+      <ul class="print-price num">
+        <li><span>인화</span><b>10,000원</b></li>
+        <li><span>우편(준등기)</span><b>+1,800원 · 3일 내외</b></li>
+      </ul>
+      <p class="nope cap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg><span>토·일요일과 공휴일은 배달하지 않습니다. 일반·대형 인화는 이 주문이 아닌 네이버 톡톡으로 받습니다.</span></p>
+      <a class="btn" style="width:100%;margin-top:var(--s5)" href="/monk_studio/store/print/print.html">인화 주문하기</a>
+    </div>
+  </div>
+</section>
+
+<!-- 8. 후기 자리 -->
+<section id="reviews" aria-labelledby="reviews-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="reviews-h">받아 보신 분들</h2>
+    </div>
+    <ul class="reviews">
+      <li class="slot review"><b>[후기 1 자리]</b><span>[실측 후 기입: 실제 후기 본문 · 용도 · 날짜]</span></li>
+      <li class="slot review"><b>[후기 2 자리]</b><span>[실측 후 기입: 실제 후기 본문 · 용도 · 날짜]</span></li>
+      <li class="slot review"><b>[후기 3 자리]</b><span>[실측 후 기입: 실제 후기 본문 · 용도 · 날짜]</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 9. FAQ -->
+<section id="faq" aria-labelledby="faq-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="faq-h">자주 묻는 질문</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>AI 증명사진과 사진관 보정은 무엇이 다른가요?<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <p class="ans">AI 증명사진(9,900원)은 AI가 규격·배경·조명·피부를 맞추며 3분이면 완성됩니다. 사진관 보정(10,000원, 인화 포함 20,000원)은 몽크사진관 작가가 얼굴 보정·의상 변경·헤어 변경을 직접 해 드리고, 원래 얼굴은 그대로 둡니다.</p>
+      </details>
+      <details>
+        <summary>인화는 언제 받나요?<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <p class="ans">준등기 우편으로 보내 드리며 발송 후 3일 내외 걸립니다(우편요금 1,800원). 토·일요일과 공휴일은 배달하지 않습니다. 미사역 매장에서 받으셔도 됩니다.</p>
+      </details>
+      <details>
+        <summary>사진이 흐릿해도 인화되나요?<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <p class="ans">올려 주신 사진의 화질을 먼저 확인해 드립니다. 인화하기에 부족하면 미리 연락드리고, 원하지 않으시면 결제를 취소해 드립니다.</p>
+      </details>
+      <details>
+        <summary>올린 사진은 어떻게 되나요?<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <p class="ans">보정·인화로 보내 주신 사진은 그 작업에만 쓰고, 작업 후 자동 삭제됩니다. AI 증명사진의 보관 기준은 <span class="ph-inline">[정책 확인 후 기입]</span></p>
+      </details>
+      <details>
+        <summary>결과가 마음에 들지 않으면 어떻게 하나요?<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <p class="ans"><span class="ph-inline">[정책 확인 후 기입]</span></p>
+      </details>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- 10. 푸터 -->
+<footer class="ft" id="footer">
+  <div class="wrap">
+    <p style="font-weight:700">몽크사진관</p>
+    <p class="cap" style="margin-top:var(--s2)"><span class="ph-inline">[연락처]</span></p>
+  </div>
+</footer>
+
+<!-- 11. 모바일 하단 고정 CTA (768px 미만) -->
+<div class="fixed-cta off" id="fixedCta">
+  <a class="btn" href="#start" data-route="미정(Q1) — 현행 idphoto-kr /prep">무료로 체험하기</a>
+</div>
+
+<script>
+/* 히어로 CTA가 보이는 동안에는 하단 고정 CTA를 숨긴다(버튼 2개 동시 노출 방지) */
+(function(){
+  var bar=document.getElementById('fixedCta'),hero=document.getElementById('heroCta');
+  if(!('IntersectionObserver' in window)){bar.classList.remove('off');return;}
+  new IntersectionObserver(function(e){bar.classList.toggle('off',e[0].isIntersecting);}).observe(hero);
+})();
+</script>
+<!-- 근거표: 같은 폴더 근거표.md -->
+</body>
+</html>
