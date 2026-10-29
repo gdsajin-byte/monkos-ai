@@ -23,7 +23,7 @@ window.MONK_CONFIG = {
 
     // 외부 서비스
     EXTERNAL: {
-        NAVER_TALK: 'https://talk.naver.com/ct/w4n9my',
+        NAVER_TALK: 'https://talk.naver.com/W5UJ45',
         KAKAO_CHANNEL: 'https://pf.kakao.com/_xnxnxn'
     },
 
