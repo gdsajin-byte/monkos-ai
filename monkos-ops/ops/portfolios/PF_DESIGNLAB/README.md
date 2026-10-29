@@ -81,6 +81,7 @@ status: active
 | 10/29 | ?/? | **ORDER** 소소(디자인 TF) 강화용 외부 하네스·디자인 도구·스킬 벤치마크 조사 — 조사 보고서 1건, 설치·코드 변경 없음 | [ORDER_20261029_iMac쌍아_막내1_DESIGNLAB_디자인하네스_벤치마크](../../orders/2026-10/ORDER_20261029_iMac쌍아_막내1_DESIGNLAB_디자인하네스_벤치마크.md) | ⏳ |
 | 10/29 | iMac/쌍아-막내1 | **RESEARCH** 소소(디자인 TF) 강화용 외부 하네스·디자인 도구·스킬 벤치마크 | [RESEARCH_20261029_iMac쌍아-막내1_DESIGNLAB_디자인하네스_벤치마크](../../reports/2026-10/RESEARCH_20261029_iMac쌍아-막내1_DESIGNLAB_디자인하네스_벤치마크.md) | 📁 |
 | 10/29 | iMac/쌍아-막내1 | **COMPLETION** COMPLETION_20261029_iMac쌍아-막내1_DESIGNLAB_디자인하네스_벤치마크 | [COMPLETION_20261029_iMac쌍아-막내1_DESIGNLAB_디자인하네스_벤치마크](../../reports/2026-10/COMPLETION_20261029_iMac쌍아-막내1_DESIGNLAB_디자인하네스_벤치마크.md) | ✅ |
+| 10/29 | iMac/민아 | 소소 1차 과제 브리프 발행 — 디자인 시스템 아티팩트 등록(MONKOS AI·몽크사진관 2벌, 현행 그대로), 데스크톱 세션 기동(작가님 15:09 '소소에게 맡기자') | [ORDER_20261029_iMac민아_소소_DESIGNLAB_디자인시스템_아티팩트등록](../../orders/2026-10/ORDER_20261029_iMac민아_소소_DESIGNLAB_디자인시스템_아티팩트등록.md) | ✅ |
 
 ---
 
