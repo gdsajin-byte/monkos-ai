@@ -78,3 +78,21 @@
 - **순서**: `Page.setDocumentContent(HTML)` → `Emulation.setDeviceMetricsOverride(1280x670, scale:2)` → `Page.captureScreenshot(clip)` → base64 디코드 → 파일 저장
 - **재현성**: 100%
 - **실패 조건**: deviceScaleFactor:2 + 전체 페이지 캡처 시 Claude API 이미지 크기 초과 (CASE-011)
+
+---
+
+## GP-009: 디버그 크롬 주인 표시 (창 이름·테마 색·탭 그룹 칩)
+
+- **조건**: Chrome 156(macOS), 포트별 user-data-dir 디버그 크롬. 10-29 iMac/쌍아 9229 시험(작가님 요청 — "탭이 아닌 크롬 자체에 누구 브라우저인지").
+- **순서**:
+  1. 기동 플래그 `--window-name="[9222] iMac/쌍아"` → 맥 창 목록·미션 컨트롤·Dock 메뉴에 창 이름. 탭 이동 후에도 유지(실측).
+  2. 기동 플래그 `--enable-unsafe-extension-debugging` → 브라우저 WS로 `Extensions.loadUnpacked {path}` → 확장 id 반환.
+  3. 테마 확장(manifest `theme.colors.frame`) → 창 테두리 색 변경(캡처 실측).
+  4. 탭 그룹 확장(`permissions: tabs, tabGroups`, SW에서 묶이지 않은 탭을 `chrome.tabs.group` → `tabGroups.update{title,color}`, `tabs.onCreated`·`tabGroups.onRemoved` 때 재실행) → Claude in Chrome식 색 칩. `tabGroups.query` 실측 `["민아 · 9229","purple"]`, 창 이름에 "민아 · 9229 그룹에 속함".
+- **재현성**: 1회 실측(시험 포트). 스크립트화 미착수 — 작가님 10-29 "메인 이슈 아님, 기록만".
+- **실패 조건**:
+  - `--load-extension`은 Chrome 156에서 무시됨(`--disable-features=DisableLoadExtensionCommandLineSwitch` 병용도 무시) → CDP `Extensions.loadUnpacked`만 동작.
+  - 액션 배지(`chrome.action.setBadgeText`)는 퍼즐 메뉴 안에 숨음(고정 안 됨). 프로필 이름(`Local State` info_cache 프리셋)은 툴바에 안 뜨고 로그인 권유 칩이 자리 차지.
+  - 탭 그룹 색은 크롬 9색 한정(grey·blue·red·yellow·green·pink·purple·cyan·orange).
+  - `--enable-unsafe-extension-debugging`은 CDP로 확장 설치·제거를 허용 — 로컬(127.0.0.1) 전용 디버그 프로필 한정 사용.
+- **적용 시 위치**: `scripts/tools/cdp_setup.sh start {포트} {주인}` 인자 확장(미구현).
