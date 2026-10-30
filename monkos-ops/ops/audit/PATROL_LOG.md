@@ -659,3 +659,10 @@
 > ## secret map (2026-10-29 09:30)
 ```
 - ⚠️ 경보 표식 4건 (스냅샷 /Users/jeong-kyushin/.monkos/patrol/snap_20261029.txt 참조)
+
+## [2026-10-30 09:30 KST] 순찰 감지
+```diff
+< ## secret map (2026-10-29 09:30)
+> ## secret map (2026-10-30 09:30)
+```
+- ⚠️ 경보 표식 4건 (스냅샷 /Users/jeong-kyushin/.monkos/patrol/snap_20261030.txt 참조)
