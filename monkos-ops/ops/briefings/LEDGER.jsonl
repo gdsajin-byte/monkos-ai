@@ -131,3 +131,6 @@
 {"ts": "2026-10-30 06:31 KST", "id": 187, "event": "note", "text": "06:30 origin/main c0ca4bd1 monkos_AI 코드 gemini-2.5-flash 22행·11파일 그대로, makne9 ahead 3 미머지", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-10-30 06:31 KST", "id": 181, "event": "note", "text": "06:30 portal 00571-4mm 평문 의심 6 그대로, SM GOOGLE_CLIENT_SECRET 없음(대조군 TX_API_KEY 있음)", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-10-30 06:31 KST", "id": 193, "event": "open", "axis": "live", "severity": "ℹ️", "title": "monk.kr 미배포 3커밋(10-29 15:23~15:33, 꾸 결정 — 출장촬영 링크 카드·탭별 주소·네이버톡톡 주소 교정). 실배포 e3f88bf2(10-26). 라이브 /biztrip/interior.html=홈 폴백(title 불일치) 2회 히트 확인 — 배포 트리거 작가님", "owner": "작가님", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-31 06:31 KST", "id": 187, "event": "note", "text": "06:31 origin/main 4f75490f monkos_AI 코드 gemini-2.5-flash 22행 11파일 동일, makne9-gemini3x ahead 3 미머지", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-31 06:31 KST", "id": 181, "event": "note", "text": "06:30 portal 00571-4mm 평문 의심 6 동일. SM 부재 GITHUB_TOKEN·GOOGLE_CLIENT_SECRET 2개(대조군 TX_API_KEY 있음)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-10-31 06:31 KST", "id": 193, "event": "note", "text": "06:31 미배포 3커밋 동일, 실배포 e3f88bf2. 라이브 /monk_studio/biztrip/interior.html 2차 히트 200·홈 title. 대조군 monk.kr/ 동일 title", "by": "iMac/민아-헤드리스"}
