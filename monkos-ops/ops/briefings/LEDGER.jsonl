@@ -134,3 +134,7 @@
 {"ts": "2026-10-31 06:31 KST", "id": 187, "event": "note", "text": "06:31 origin/main 4f75490f monkos_AI 코드 gemini-2.5-flash 22행 11파일 동일, makne9-gemini3x ahead 3 미머지", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-10-31 06:31 KST", "id": 181, "event": "note", "text": "06:30 portal 00571-4mm 평문 의심 6 동일. SM 부재 GITHUB_TOKEN·GOOGLE_CLIENT_SECRET 2개(대조군 TX_API_KEY 있음)", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-10-31 06:31 KST", "id": 193, "event": "note", "text": "06:31 미배포 3커밋 동일, 실배포 e3f88bf2. 라이브 /monk_studio/biztrip/interior.html 2차 히트 200·홈 title. 대조군 monk.kr/ 동일 title", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-01 06:31 KST", "id": 193, "event": "resolve", "evidence": "06:31 버튼 run 41140069458 headSha 5411962 — 566e6cc 포함, 잔량 0. 라이브 /monk_studio/biztrip/interior 2회 히트 title=출장 인테리어사진, 대조군 / 홈 title", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-01 06:31 KST", "id": 187, "event": "note", "text": "06:31 origin/main f87bd9c monkos_AI 코드 gemini-2.5-flash 22행 11파일 동일, makne9-gemini3x ahead 3 미머지", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-01 06:31 KST", "id": 181, "event": "note", "text": "06:30 portal 00571-4mm 평문 의심 6 동일. SM 부재 GITHUB_TOKEN·GOOGLE_CLIENT_SECRET 2개(대조군 TX_API_KEY 있음)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-01 06:31 KST", "id": 146, "event": "note", "text": "06:31 origin/main f87bd9c portal/lib/matte.js 429 처리 grep 0행, vton/runpod.js:14 REST v1 사용 중. 호출부 전수는 미측정", "by": "iMac/민아-헤드리스"}
