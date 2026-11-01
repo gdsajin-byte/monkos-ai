@@ -85,3 +85,4 @@ NSFW 커뮤니티(Civitai 사실계)가 인체 리얼리즘을 선도하는 게 
 | 2026-10-25 | iMac/쌍아 | **실증** 이너 베이스 → 레이어드 의상: MUSE_C(시야) 이너웨어 원본(SUB_101·SUB_208, Imagen 4 초기 제작·재생성 불가 자산)에 Gemini 3 Pro Image I2I로 버건디·차콜 숏 스커트 정장 6컷 — 얼굴·체형 유지(작가님 판정: 폴더=한 캐릭터, 스타일링 차이 용인). Kling 4.0으로 이너 원본 광고 씬 생성 통과·Flow 정책 차단 | — | 🔄 |
 | 2026-10-26 | iMac/쌍아 | **레이어드 6종** SUB_215(monk.kr 증명/프로필 대표 모델) 이너 원본 → 의상 6종(트렌치·시스루·니트·슬립·데님·트위드), 얼굴·체형·정면 구도 고정 I2I(Gemini 3 Pro Image) — 6컷 일관성 확인. 룩북 그리드 시범 | — | 🔄 |
 | 2026-11-02 | ?/? | **ORDER** VTON pod 제어(lib/vton/runpod.js) RunPod REST v1 → v2 이전 — 11-15 v1 폐기 대응, dev 검증까지 (원장 146) | [ORDER_20261102_iMac쌍아_막내_VTON_RunPod_REST_v2이전](../../orders/2026-11/ORDER_20261102_iMac쌍아_막내_VTON_RunPod_REST_v2이전.md) | ⏳ |
+| 2026-11-02 | ?/? | **COMPLETION** COMPLETION_20261102_iMac쌍아-막내1_VTON_RunPod_REST_v2이전 | [COMPLETION_20261102_iMac쌍아-막내1_VTON_RunPod_REST_v2이전](../../reports/2026-11/COMPLETION_20261102_iMac쌍아-막내1_VTON_RunPod_REST_v2이전.md) | ✅ |
