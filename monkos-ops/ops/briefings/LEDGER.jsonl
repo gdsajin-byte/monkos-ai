@@ -138,3 +138,10 @@
 {"ts": "2026-11-01 06:31 KST", "id": 187, "event": "note", "text": "06:31 origin/main f87bd9c monkos_AI 코드 gemini-2.5-flash 22행 11파일 동일, makne9-gemini3x ahead 3 미머지", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-11-01 06:31 KST", "id": 181, "event": "note", "text": "06:30 portal 00571-4mm 평문 의심 6 동일. SM 부재 GITHUB_TOKEN·GOOGLE_CLIENT_SECRET 2개(대조군 TX_API_KEY 있음)", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-11-01 06:31 KST", "id": 146, "event": "note", "text": "06:31 origin/main f87bd9c portal/lib/matte.js 429 처리 grep 0행, vton/runpod.js:14 REST v1 사용 중. 호출부 전수는 미측정", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-02 06:32 KST", "id": 187, "event": "note", "text": "06:32 origin/main 2bb2d122 monkos_AI 코드 gemini-2.5-flash 22행 11파일 동일, makne9-gemini3x ahead 3 미머지", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-02 06:32 KST", "id": 181, "event": "note", "text": "06:32 portal 00571-4mm 평문 의심 이름 6 동일. GOOGLE_CLIENT_SECRET·GITHUB_TOKEN SM 없음, 나머지 4 존재", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-02 06:32 KST", "id": 146, "event": "note", "text": "06:32 origin/main 2bb2d122 REST v1 호출 vton/runpod.js 3곳(48·68·107행, pods 조회·start·stop), 타 경로 0. matte.js 백오프는 503만(310행), 429 리터럴 0행", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-02 06:32 KST", "id": 174, "event": "note", "text": "06:32 secret check GOOGLE_CLIENT_SECRET 없음(대조군 TX_API_KEY 존재)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-02 06:32 KST", "id": 116, "event": "note", "text": "06:32 secret check BIZINFO_API_KEY 없음(대조군 TX_API_KEY 존재)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-02 06:32 KST", "id": 183, "event": "note", "text": "06:32 Pages 시크릿 6 동일, §E에만 10 동일. 평문 var 여부 미확인", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-02 06:32 KST", "id": 194, "event": "open", "axis": "local", "severity": "⏸️", "title": "본진 미커밋·미추적 3일+ 3건: MEMORY_CHANGELOG_iMac.md·audit/RUNPOD_USAGE.jsonl·sessions/2026-10/2026-10-29_iMac_민아.md (10-29 수정분)", "owner": "미배정", "by": "iMac/민아-헤드리스"}
