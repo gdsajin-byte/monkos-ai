@@ -11,7 +11,12 @@
 import { RUNPOD_API_KEY, RUNPOD_POD_ID, log } from '../shared/config.js';
 import { requireAdmin } from '../cms/admin-auth.js';
 
-const RUNPOD_REST = 'https://rest.runpod.io/v1';
+const RUNPOD_REST = 'https://api.runpod.io/v2';
+const podUrl = () => `${RUNPOD_REST}/pods/${RUNPOD_POD_ID}`;
+// v2 PodStatus 중 전원이 켜진(과금 중) 상태. v1 desiredStatus는 부팅 중에도 RUNNING이었고
+// 프론트는 running=false를 "GPU 꺼짐"으로 표시하므로, 부팅 단계도 running=true를 유지한다.
+const POWERED_STATUSES = new Set(['PROVISIONING', 'STARTING', 'RUNNING']);
+const RATE_LIMIT_MESSAGE = '요청 한도 초과 — 잠시 후 재시도';
 const COMFY_PORT = 8188;
 // RunPod http 포트는 결정적 프록시 URL로 노출된다 (8188=http, 22=tcp).
 const comfyBase = () => `https://${RUNPOD_POD_ID}-${COMFY_PORT}.proxy.runpod.net`;
@@ -45,9 +50,20 @@ function readRawBuffer(req) {
 }
 
 async function getPod() {
-  const r = await fetch(`${RUNPOD_REST}/pods/${RUNPOD_POD_ID}`, { headers: rpHeaders() });
-  if (!r.ok) throw new Error(`RunPod 상태 조회 실패 (${r.status})`);
+  const r = await fetch(podUrl(), { headers: rpHeaders() });
+  if (!r.ok) {
+    throw new Error(`RunPod 상태 조회 실패 (${r.status})${r.status === 429 ? ` ${RATE_LIMIT_MESSAGE}` : ''}`);
+  }
   return r.json();
+}
+
+// v2 전원 제어 단일 경로 — body {"action":"start"|"stop"}
+function podAction(action) {
+  return fetch(`${podUrl()}/action`, {
+    method: 'POST',
+    headers: rpHeaders(),
+    body: JSON.stringify({ action }),
+  });
 }
 
 async function comfyHealthy() {
@@ -65,16 +81,14 @@ export async function handlePodStart(req, res) {
   if (!requireAdmin(req, res)) return;
   if (!configured(res)) return;
   try {
-    const r = await fetch(`${RUNPOD_REST}/pods/${RUNPOD_POD_ID}/start`, {
-      method: 'POST',
-      headers: rpHeaders(),
-    });
-    const text = await r.text();
+    const r = await podAction('start');
     log(`[VTON] pod start 요청: ${r.status}`, r.ok ? 'INFO' : 'WARNING');
     // GPU 가용성 Low 등으로 실패할 수 있음 — 프론트가 재시도
     json(res, r.ok ? 200 : 502, {
       ok: r.ok,
-      message: r.ok ? '부팅 요청됨 — status 폴링으로 준비 확인' : 'pod start 실패 (GPU 가용성 등) — 재시도 필요',
+      message: r.ok
+        ? '부팅 요청됨 — status 폴링으로 준비 확인'
+        : r.status === 429 ? RATE_LIMIT_MESSAGE : 'pod start 실패 (GPU 가용성 등) — 재시도 필요',
       runpodStatus: r.status,
     });
   } catch (e) {
@@ -89,9 +103,9 @@ export async function handlePodStatus(req, res) {
   if (!configured(res)) return;
   try {
     const pod = await getPod();
-    const podStatus = pod.desiredStatus || pod.status || 'UNKNOWN';
-    const running = podStatus === 'RUNNING';
-    const comfyReady = running ? await comfyHealthy() : false;
+    const podStatus = pod.status || 'UNKNOWN';
+    const running = POWERED_STATUSES.has(podStatus);
+    const comfyReady = podStatus === 'RUNNING' ? await comfyHealthy() : false;
     json(res, 200, { podId: RUNPOD_POD_ID, podStatus, running, comfyReady });
   } catch (e) {
     log(`[VTON] pod status 에러: ${e.message}`, 'ERROR');
@@ -104,12 +118,13 @@ export async function handlePodStop(req, res) {
   if (!requireAdmin(req, res)) return;
   if (!configured(res)) return;
   try {
-    const r = await fetch(`${RUNPOD_REST}/pods/${RUNPOD_POD_ID}/stop`, {
-      method: 'POST',
-      headers: rpHeaders(),
-    });
+    const r = await podAction('stop');
     log(`[VTON] pod stop 요청: ${r.status}`, r.ok ? 'INFO' : 'WARNING');
-    json(res, r.ok ? 200 : 502, { ok: r.ok, runpodStatus: r.status });
+    json(res, r.ok ? 200 : 502, {
+      ok: r.ok,
+      runpodStatus: r.status,
+      ...(r.status === 429 ? { message: RATE_LIMIT_MESSAGE } : {}),
+    });
   } catch (e) {
     log(`[VTON] pod stop 에러: ${e.message}`, 'ERROR');
     json(res, 502, { ok: false, error: e.message });
