@@ -244,13 +244,26 @@ export function normalizeExtraction(raw, { appHint, fileMtimeMs, uploadMs }) {
 }
 
 /** 이미지 1장 판독 — 모델 호출. 실패는 던진다(무음 강등 금지) */
-export async function extractFromImage({ ai, model, imageBase64, mimeType, appHint }) {
-  const resp = await ai.models.generateContent({
-    model,
-    contents: [{ role: 'user', parts: [{ inlineData: { mimeType, data: imageBase64 } }, { text: buildPrompt(appHint) }] }],
-    // 사고(thinking) 끔 — 글자 옮기기 작업이라 이득이 없고 응답만 늦어진다 (10-05 합성 캡처 실측: 켬 14.3초)
-    config: { temperature: 0, maxOutputTokens: 16384, responseMimeType: 'application/json', responseSchema: RESPONSE_SCHEMA, thinkingConfig: { thinkingBudget: 0 } },
-  });
+export async function extractFromImage({ ai, model, imageBase64, mimeType, appHint, timeoutMs }) {
+  let resp;
+  try {
+    resp = await ai.models.generateContent({
+      model,
+      contents: [{ role: 'user', parts: [{ inlineData: { mimeType, data: imageBase64 } }, { text: buildPrompt(appHint) }] }],
+      // 사고(thinking) 최소 — 글자 옮기기 작업이라 이득이 없고 응답만 늦어진다 (10-05 합성 캡처 실측: 켬 14.3초)
+      // 3.x는 thinkingBudget 미지원(400 "Thinking budget is not supported") → thinkingLevel MINIMAL (10-22 실측)
+      config: {
+        temperature: 0, maxOutputTokens: 16384, responseMimeType: 'application/json', responseSchema: RESPONSE_SCHEMA, thinkingConfig: { thinkingLevel: 'MINIMAL' },
+        ...(timeoutMs ? { abortSignal: AbortSignal.timeout(timeoutMs) } : {}),
+      },
+    });
+  } catch (e) {
+    // 시간 초과·429는 원인을 그대로 밝힌다 (내부 도구 — 건너뛰지 않고 명시 오류)
+    // SDK가 송신 중 중단을 'exception AbortError: … sending request' 일반 Error로 감싸는 경우가 있어 메시지도 본다(10-22 실측)
+    if (e?.name === 'AbortError' || e?.name === 'TimeoutError' || /AbortError|TimeoutError|aborted/i.test(e?.message || '')) throw new Error(`판독 시간 초과 (${Math.round(timeoutMs / 1000)}초)`);
+    if (e?.status === 429) throw new Error('판독 요청 한도 초과 (429) — 잠시 후 다시 시도');
+    throw e;
+  }
   const text = (resp.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
   if (!text) {
     const reason = resp.candidates?.[0]?.finishReason || resp.promptFeedback?.blockReason || 'empty';

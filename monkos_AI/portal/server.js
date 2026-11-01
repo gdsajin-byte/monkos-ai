@@ -15,7 +15,7 @@ import { resolveEdgeClient } from './lib/shared/edge-trust.js';
 
 // === 공통 인프라 ===
 import {
-  PORT, PROJECT_ID, LOCATION, log, firestore,
+  PORT, PROJECT_ID, LOCATION, TEXT_MODEL, log, firestore,
   ALLOWED_ORIGINS, MIME_TYPES, usersCollection,
   GOOGLE_CLIENT_ID, LEMONSQUEEZY_API_KEY, TOSS_SECRET_KEY,
   TELEGRAM_BOT_TOKEN, TELEGRAM_EVENT_BOT_TOKEN, TELEGRAM_TEAM_BOT_TOKEN,
@@ -1449,7 +1449,7 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log(`프로젝트: ${PROJECT_ID}`);
   log(`리전: ${LOCATION}`);
   log(`인증: Vertex AI ADC`);
-  log(`챗봇: gemini-2.5-flash`);
+  log(`텍스트 모델(CMS·콜스코프): ${TEXT_MODEL} @global`);
   log(`DB: Firestore`);
   log('='.repeat(60));
   log(`Google Client ID: ${GOOGLE_CLIENT_ID ? '설정됨' : '미설정'}`);

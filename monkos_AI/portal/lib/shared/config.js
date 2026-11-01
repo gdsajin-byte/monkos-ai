@@ -117,14 +117,18 @@ export const firestore = new Firestore({ projectId: PROJECT_ID });
 export const usersCollection = firestore.collection('users');
 
 // === Vertex AI ===
+// 텍스트 전용. Gemini 3.x 텍스트 GA 모델은 global 로케이션에만 배치된다(2026-10-22 실호출 실측 —
+// us-central1은 gemini-3.5-flash 404). 2.5 이전(Google 통지 10-20 기한)으로 global 전환.
 export const ai = new GoogleGenAI({
   vertexai: true,
   project: PROJECT_ID,
-  location: LOCATION,
+  location: 'global',
 });
+// 텍스트 모델 정본 — CMS(ai.js·translate.js·slug.js)·콜스코프·챗봇 로그가 이 상수를 쓴다
+export const TEXT_MODEL = 'gemini-3.5-flash';
 
 // 이미지 생성 전용 — Gemini 이미지 GA 모델은 global 로케이션에만 배치된다
-// (2026-08-27 Vertex Imagen 계열 전면 폐지 대응). 텍스트용 `ai`는 us-central1 정상 동작 중이라 무변경.
+// (2026-08-27 Vertex Imagen 계열 전면 폐지 대응). 텍스트용 `ai`도 10-22부터 global.
 export const aiImage = new GoogleGenAI({
   vertexai: true,
   project: PROJECT_ID,
@@ -132,7 +136,9 @@ export const aiImage = new GoogleGenAI({
 });
 export const CMS_IMAGE_MODEL = 'gemini-3.1-flash-image';
 // 콜스코프(어드민 내부 도구) 캡처 판독 — CMS 텍스트 경로(lib/cms/ai.js·translate.js)와 같은 모델을 `ai`로 호출한다
-export const CALLSCOPE_MODEL = 'gemini-2.5-flash';
+export const CALLSCOPE_MODEL = TEXT_MODEL;
+// 콜스코프 판독 호출당 상한 — 정상 3~4s(10-22 합성 캡처 실측), 이상 사례 204s 1건. 내부 도구라 초과 시 명시 오류(건너뛰기 아님)
+export const CALLSCOPE_TIMEOUT_MS = 30000;
 
 // === Telegram API URL ===
 export const TELEGRAM_CS_API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;

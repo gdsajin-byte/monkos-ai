@@ -54,13 +54,15 @@ function log(msg, severity = 'INFO', meta = {}) {
 // === Vertex AI ADC 통합 인증 ===
 // gemini-3-pro-image Vertex AI 등록 확인 (2026-06-19, 07-22 GA 전환)
 // AI Studio API Key 의존 제거 → 전 모델 Vertex AI ADC로 통합
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
+// 텍스트 전용. Gemini 3.x 텍스트 GA 모델은 global 로케이션에만 배치된다(2026-10-22 실호출 실측 —
+// us-central1은 gemini-3.5-flash 404). 2.5 이전(Google 통지 10-20 기한)으로 global 전환.
 const ai = new GoogleGenAI({
   vertexai: true,
   project: PROJECT_ID,
-  location: LOCATION,
+  location: 'global',
 });
+const TEXT_MODEL = 'gemini-3.5-flash';
 
 const imageAI = new GoogleGenAI({
   vertexai: true,
@@ -298,8 +300,25 @@ function extractBase64(base64Input) {
   return base64Input.includes(',') ? base64Input.split(',')[1] : base64Input;
 }
 
+// === 텍스트 호출 가드 (ORDER_20261022 Gemini35_타임아웃가드) ===
+// 3.5-flash@global 실측(10-22): 이미지 사전분석 dev 18콜 3.3~10.9s(p95 ≈ 11s), 이상 사례 약 60콜 중 429 1·200s+ 2.
+// 호출당 15s 상한. 초과·429는 재시도·폴백 없이 즉시 '사전분석 생략' — 고객 생성 흐름을 막지 않는다(과금·생성권 규칙 불변).
+const PRECHECK_TIMEOUT_MS = 15000;
+const IS_DEV_SERVICE = (process.env.K_SERVICE || '').endsWith('-dev');
+function textGuardReason(err) {
+  // SDK가 송신 중 중단을 'exception AbortError: … sending request' 일반 Error로 감싸 올리는 경우가 있어 메시지도 본다(10-22 실측)
+  if (err?.name === 'AbortError' || err?.name === 'TimeoutError' || /AbortError|TimeoutError|aborted/i.test(err?.message || '')) return 'timeout';
+  if (err?.status === 429 || /\b429\b|RESOURCE_EXHAUSTED/.test(err?.message || '')) return '429';
+  return null;
+}
+// dev 전용 강제 타임아웃 시험 — X-Precheck-Timeout-Ms 헤더 (prod는 무시)
+function precheckTimeoutFor(req) {
+  const v = Number(req.get('x-precheck-timeout-ms'));
+  return IS_DEV_SERVICE && v > 0 ? v : PRECHECK_TIMEOUT_MS;
+}
+
 // === 사전분석 폴백 모델 ===
-const PRECHECK_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
+const PRECHECK_MODELS = [TEXT_MODEL, 'gemini-3.5-flash-lite'];
 
 // === 사전분석 (SPA 호환 — Vertex AI ADC) ===
 const PRE_CHECK_INSTRUCTION = `이 사진이 증명사진 AI 생성의 원본으로 사용 가능한지 판단해 주세요.
@@ -326,7 +345,7 @@ score: 종합 점수 (0-100, 60 이상이면 suitable=true)
 issues: 명백한 결격만 기재 (빈 배열이면 문제 없음)
 suggestion: 사용자에게 보여줄 한줄 한국어 조언`;
 
-async function runPreCheck(imageBase64) {
+async function runPreCheck(imageBase64, timeoutMs = PRECHECK_TIMEOUT_MS) {
   const data = extractBase64(imageBase64);
 
   for (const model of PRECHECK_MODELS) {
@@ -344,6 +363,7 @@ async function runPreCheck(imageBase64) {
         config: {
           responseMimeType: 'application/json',
           temperature: 0.2,
+          abortSignal: AbortSignal.timeout(timeoutMs),
         },
       });
 
@@ -356,6 +376,11 @@ async function runPreCheck(imageBase64) {
       } catch { /* JSON 파싱 실패 → 다음 모델 */ }
       return { suitable: true, score: 0, raw: text };
     } catch (err) {
+      const reason = textGuardReason(err);
+      if (reason) {
+        log(`[Precheck-Skip] reason=${reason} model=${model}`, 'WARNING');
+        return { suitable: true, score: 0, skipped: true, reason, note: '사전분석 생략' };
+      }
       log(`[사전분석][${model}] 실패: ${err.message} → 폴백`);
       if (model === PRECHECK_MODELS[PRECHECK_MODELS.length - 1]) {
         return { suitable: true, score: 0, note: '분석 실패' };
@@ -410,7 +435,7 @@ app.get('/api/info', (req, res) => {
 app.post('/api/pre-check', async (req, res) => {
   try {
     if (!req.body.image) return res.status(400).json({ error: '이미지 필요' });
-    const result = await runPreCheck(req.body.image);
+    const result = await runPreCheck(req.body.image, precheckTimeoutFor(req));
     res.json(result);
   } catch (err) {
     log(`[API][pre-check] 에러: ${err.message}`, 'ERROR');
@@ -422,7 +447,7 @@ app.post('/api/pre-check', async (req, res) => {
 app.post('/api/precheck', async (req, res) => {
   try {
     if (!req.body.image) return res.status(400).json({ error: '이미지가 필요합니다' });
-    const result = await runPreCheck(req.body.image);
+    const result = await runPreCheck(req.body.image, precheckTimeoutFor(req));
     res.json(result);
   } catch (err) {
     log(`[API][precheck] 에러: ${err.message}`, 'ERROR');
@@ -664,7 +689,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log(`리전: ${LOCATION}`);
   log(`인증: 하이브리드 (ADC + API Key)`);
   log(`Imagen I2I: 활성 (gemini-3-pro-image, API Key)`);
-  log(`사전분석: 활성 (gemini-2.5-flash)`);
+  log(`사전분석: 활성 (${PRECHECK_MODELS.join(' → ')} @global)`);
   // 2026-07-25: 클라이언트 키는 /config.js 서빙 시 치환 주입 — 미주입이면 위젯이 조용히 안 뜬다(무음 강등 금지)
   const tossClientKey = process.env.TOSS_CLIENT_KEY || '';
   const isDevService = (process.env.K_SERVICE || '').includes('-dev');

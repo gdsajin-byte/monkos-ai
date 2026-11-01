@@ -48,13 +48,15 @@ function log(msg, severity = 'INFO', meta = {}) {
 // === Vertex AI ADC 統合認証 ===
 // gemini-3-pro-image Vertex AI 登録確認 (2026-06-19, 07-22 GA転換)
 // AI Studio API Key 依存除去 → 全モデル Vertex AI ADCに統合
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
+// テキスト専用。Gemini 3.x テキスト GA モデルは global ロケーションのみ(2026-10-22 実呼び出し実測 —
+// us-central1 は gemini-3.5-flash 404)。2.5 移行(Google 通知 10-20 期限)に伴い global へ切替。
 const ai = new GoogleGenAI({
   vertexai: true,
   project: PROJECT_ID,
-  location: LOCATION,
+  location: 'global',
 });
+const TEXT_MODEL = 'gemini-3.5-flash';
 
 const imageAI = new GoogleGenAI({
   vertexai: true,
@@ -293,8 +295,25 @@ function extractBase64(base64Input) {
   return base64Input.includes(',') ? base64Input.split(',')[1] : base64Input;
 }
 
+// === テキスト呼び出しガード (ORDER_20261022 Gemini35_タイムアウトガード) ===
+// 3.5-flash@global 実測(10-22): 画像事前分析 dev 18回 3.3~10.9s(p95 ≈ 11s)、異常 約60回中 429 1・200s超 2。
+// 1回15s上限。超過・429はリトライ・フォールバックせず即「事前分析省略」— 生成フローを止めない(課金・生成権ルール不変)。
+const PRECHECK_TIMEOUT_MS = 15000;
+const IS_DEV_SERVICE = (process.env.K_SERVICE || '').endsWith('-dev');
+function textGuardReason(err) {
+  // SDK は送信中の中断を 'exception AbortError: … sending request' の一般 Error で包むことがあるためメッセージも見る(10-22 実測)
+  if (err?.name === 'AbortError' || err?.name === 'TimeoutError' || /AbortError|TimeoutError|aborted/i.test(err?.message || '')) return 'timeout';
+  if (err?.status === 429 || /\b429\b|RESOURCE_EXHAUSTED/.test(err?.message || '')) return '429';
+  return null;
+}
+// dev 専用の強制タイムアウト試験 — X-Precheck-Timeout-Ms ヘッダー (prod は無視)
+function precheckTimeoutFor(req) {
+  const v = Number(req.get('x-precheck-timeout-ms'));
+  return IS_DEV_SERVICE && v > 0 ? v : PRECHECK_TIMEOUT_MS;
+}
+
 // === 事前分析 フォールバックモデル ===
-const PRECHECK_MODELS = ['gemini-2.5-flash'];
+const PRECHECK_MODELS = [TEXT_MODEL];
 
 // === 事前分析 (SPA互換 — Gemini 2.0 Flash via Vertex AI ADC) ===
 const PRE_CHECK_INSTRUCTION = `この写真が証明写真の原本として適切かどうか分析してください。
@@ -323,7 +342,7 @@ score: 総合スコア (0-100、70以上ならsuitable=true)
 issues: 問題リスト (空配列なら問題なし)
 suggestion: ユーザーに表示する一行日本語アドバイス`;
 
-async function runPreCheck(imageBase64) {
+async function runPreCheck(imageBase64, timeoutMs = PRECHECK_TIMEOUT_MS) {
   const data = extractBase64(imageBase64);
 
   for (const model of PRECHECK_MODELS) {
@@ -341,6 +360,7 @@ async function runPreCheck(imageBase64) {
         config: {
           responseMimeType: 'application/json',
           temperature: 0.2,
+          abortSignal: AbortSignal.timeout(timeoutMs),
         },
       });
 
@@ -353,6 +373,11 @@ async function runPreCheck(imageBase64) {
       } catch { /* JSONパース失敗 → 次のモデル */ }
       return { suitable: true, score: 0, raw: text };
     } catch (err) {
+      const reason = textGuardReason(err);
+      if (reason) {
+        log(`[Precheck-Skip] reason=${reason} model=${model}`, 'WARNING');
+        return { suitable: true, score: 0, skipped: true, reason, note: '事前分析省略' };
+      }
       log(`[事前分析][${model}] 失敗: ${err.message} → フォールバック`);
       if (model === PRECHECK_MODELS[PRECHECK_MODELS.length - 1]) {
         return { suitable: true, score: 0, note: '分析失敗' };
@@ -376,7 +401,7 @@ async function detectFace(imageBuffer) {
   try {
     const base64 = imageBuffer.toString('base64');
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: TEXT_MODEL,
       contents: [{
         role: 'user',
         parts: [
@@ -384,7 +409,7 @@ async function detectFace(imageBuffer) {
           { text: FACE_DETECT_PROMPT },
         ],
       }],
-      config: { responseMimeType: 'application/json', temperature: 0.1 },
+      config: { responseMimeType: 'application/json', temperature: 0.1, abortSignal: AbortSignal.timeout(PRECHECK_TIMEOUT_MS) },
     });
 
     const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -405,7 +430,7 @@ async function detectFace(imageBuffer) {
     log('[FaceDetect] パース失敗 → フォールバッククロップ');
     return null;
   } catch (err) {
-    log(`[FaceDetect] エラー: ${err.message} → フォールバッククロップ`);
+    log(`[FaceDetect] エラー(${textGuardReason(err) || 'other'}): ${err.message} → フォールバッククロップ`);
     return null;
   }
 }
@@ -449,7 +474,7 @@ app.get('/api/info', (req, res) => {
 app.post('/api/pre-check', async (req, res) => {
   try {
     if (!req.body.image) return res.status(400).json({ error: '画像が必要です' });
-    const result = await runPreCheck(req.body.image);
+    const result = await runPreCheck(req.body.image, precheckTimeoutFor(req));
     res.json(result);
   } catch (err) {
     log(`[API][pre-check] エラー: ${err.message}`, 'ERROR');
@@ -461,7 +486,7 @@ app.post('/api/pre-check', async (req, res) => {
 app.post('/api/precheck', async (req, res) => {
   try {
     if (!req.body.image) return res.status(400).json({ error: '画像が必要です' });
-    const result = await runPreCheck(req.body.image);
+    const result = await runPreCheck(req.body.image, precheckTimeoutFor(req));
     res.json(result);
   } catch (err) {
     log(`[API][precheck] エラー: ${err.message}`, 'ERROR');
@@ -692,7 +717,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log(`リージョン: ${LOCATION}`);
   log(`認証: ハイブリッド (ADC + API Key)`);
   log(`Imagen I2I: アクティブ (gemini-3-pro-image, API Key)`);
-  log('事前分析: アクティブ (gemini-2.5-flash)');
+  log(`事前分析: アクティブ (${TEXT_MODEL} @global)`);
   log('='.repeat(60));
   log('エンドポイント:');
   log('  GET  /health              — ヘルスチェック');
