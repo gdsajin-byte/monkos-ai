@@ -56,3 +56,11 @@ portfolio: PF_IDPHOTO
 - ② 위치 정정 `specs-funnel.js` `startToss`(1365~1444). 위젯 인스턴스를 바깥 변수에 보관(재오픈 대응), 미선택 시 버튼 **실제 비활성**(톤만 바꾸면 결제 실패 알림 누적).
 - ③ 의상 기본값은 성인만 "단정한 정장(기본)". **아기는 "지금 옷 그대로" 유지** + `idphoto-generate.js:162` 폴백을 아기일 때 `:120` 원복 문구로 분기(현재 아기 기본값에 성인 정장 프롬프트가 들어가는 버그). `attire-presets.json` es 라벨 누락 보충.
 - ④ 가드 3곳으로 확대: 생성·다운로드 + **status 폴링(`payments.js:812`)** — dev 토큰이면 prod에서 토큰 미반환(전환 지표 오염 차단). dev-grant 경로는 `requireAdmin` 인증 + `pending` 주문만.
+
+### 5-1. 민아 보탬 (용아 보정분 검토 — 4건 전부 동의)
+
+**[2026-11-03 00:07 KST]** iMac/쌍아 → 작가님 — 출처: 민아 00:06 세션 간 회신
+
+- ② 보관 대상은 `renderPaymentMethods()`·`renderAgreement()` 반환 인스턴스. 재오픈 시 선택·약관 상태만 재계산. 비활성 버튼엔 안내 문구. **헤드샷(`headshot.js:669-709`)도 같은 패턴** → 공용 함수로 두 표면 한 번에(범위 결정). credits.html 선택 검사 없음은 별건.
+- ③ 피커 0번 칩(`attire-picker.js:422-426`)을 `age==='baby'`로 라벨 분기.
+- ④ prod에서 dev 토큰 주문은 토큰만 빼면 `paid`라 무한 폴링 → **status를 종료값(failed 분기)으로** 내린다. `AGENT_API_KEYS` dev·prod 공통 주입 확인(새 시크릿 불요). `directOrders.paymentToken` 기록은 유지(브라우저 동선 검증용), 토큰·주문 양쪽 devGrant 플래그로 3곳 가드.
