@@ -4,9 +4,16 @@
   "default_option": {
     "id": "original",
     "labels": {
+      "ko": "단정한 정장(기본)",
+      "ja": "きちんとしたスーツ(標準)",
+      "en": "Neat suit (default)",
+      "es": "Traje formal (predeterminado)"
+    },
+    "labels_baby": {
       "ko": "지금 옷 그대로",
       "ja": "今の服のまま",
-      "en": "Keep current outfit"
+      "en": "Keep current outfit",
+      "es": "Mantener la ropa actual"
     },
     "attire_desc": null
   },
