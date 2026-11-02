@@ -78,6 +78,8 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 10/28 | iMac/막내3 | **REPORT** 증명사진 경쟁 탐색 — 국내 AI 3 · 실물 1 · 해외 4 · 우리 현행 3 | [REPORT_20261028_iMac막내3_증명사진_경쟁탐색](../../reports/2026-10/REPORT_20261028_iMac막내3_증명사진_경쟁탐색.md) | 📁 |
 | 10/28 | iMac/막내3 | **PROPOSAL** MONKOS 증명사진관 허브 페이지 기획안 — 소소(디자인 TF) 시험 가동 브리프 | [PROPOSAL_20261028_iMac막내3_증명사진관허브_기획안](../../proposals/PROPOSAL_20261028_iMac막내3_증명사진관허브_기획안.md) | ⏳ |
 | 10/28 | iMac/막내3 | **COMPLETION** 증명사진 경쟁 탐색 + 증명사진관 허브 기획안 (소소 브리프) | [COMPLETION_20261028_iMac쌍아-막내3_IDPHOTO_경쟁탐색_허브기획안](../../reports/2026-10/COMPLETION_20261028_iMac쌍아-막내3_IDPHOTO_경쟁탐색_허브기획안.md) | ✅ |
+| 11/02 | iMac/민아 | 미국 비자 입력 사진 포맷 부족 판정·메시지 체계 제안 (민아) — 규격 숫자화·2단 판정·제출용 JPEG. 현행: 저해상도 무경고 확대 + us-visa 산출물 PNG. 결정 4건 대기 | [PROPOSAL_20261102_iMac민아_IDPHOTO_미국비자_입력포맷_판정메시지](../../proposals/PROPOSAL_20261102_iMac민아_IDPHOTO_미국비자_입력포맷_판정메시지.md) | ✅ |
+| 11/02 | ?/? | **ORDER** 미국 비자(us-visa) 입력 해상도 판정 1단계 — fileRules 숫자화 + 서버 precheck 크롭 해상도 추정 + low_res 메시지 4언어, dev 검증까지 | [ORDER_20261102_iMac쌍아_막내_IDPHOTO_미국비자_입력해상도판정_1단계](../../orders/2026-11/ORDER_20261102_iMac쌍아_막내_IDPHOTO_미국비자_입력해상도판정_1단계.md) | ⏳ |
 
 ### Phase 1 — idphoto-kr/jp 웹 서비스 (01/16~02/14)
 
