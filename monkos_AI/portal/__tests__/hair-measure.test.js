@@ -53,6 +53,18 @@ describe('measureTopContact', () => {
   });
 });
 
+describe('머리끝 행 — 반투명 경계 제외', () => {
+  test('옅은 번짐 줄은 머리끝이 아니고, 맨 위 접촉 판정은 그대로 민감하다', async () => {
+    const halo = await sharp({ create: { width: 40, height: 10, channels: 3, background: '#30D030' } }).png().toBuffer();
+    const solid = await sharp({ create: { width: 40, height: 50, channels: 3, background: '#000000' } }).png().toBuffer();
+    const buf = await sharp({ create: { width: W, height: H, channels: 3, background: BG } })
+      .composite([{ input: halo, left: 30, top: 0 }, { input: solid, left: 30, top: 10 }]).png().toBuffer();
+    const r = await measureTopContact(buf, BG);
+    expect(r.hairTopRatio).toBe(0.1);
+    expect(r.touched).toBe(true);
+  });
+});
+
 describe('checkCrownContact', () => {
   const faceBox = { x: 0.3, y: 0.2, w: 0.4, h: 0.5 };
   const run = async (runMatte, extra = {}) => {

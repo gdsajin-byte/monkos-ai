@@ -9,6 +9,8 @@ import sharp from 'sharp';
 
 const HAIR_BG_TOLERANCE = 15;
 const HAIR_ROW_RATIO = 0.02;
+// 머리끝 행은 반투명 경계를 뺀다 — 흰 배경 사진은 매팅 경계가 머리 위로 번져 15 기준이면 약 1.2mm 높게 잡힌다 (2026-11-03 실측, 밝은 두피 표본)
+const HAIR_TOP_TOLERANCE = 100;
 const PROFILE_ROWS = 5; // 로그용 상단 행별 접촉값 (임계 재산정 근거)
 
 // 임계 근거: COMPLETION_20261102 정수리게이트_실측전환 N·X 표 (dev 실측).
@@ -31,14 +33,16 @@ export async function measureTopContact(imageBuf, bgColor, colFromRatio = 0, col
   let hairRow = null, contactRatio = 0;
   const rowContacts = [];
   for (let y = 0; y < H; y++) {
-    let hits = 0;
+    let hits = 0, solidHits = 0;
     for (let x = from; x < to; x++) {
       const i = (y * W + x) * C;
-      if (Math.abs(data[i] - bg[0]) > HAIR_BG_TOLERANCE || Math.abs(data[i + 1] - bg[1]) > HAIR_BG_TOLERANCE || Math.abs(data[i + 2] - bg[2]) > HAIR_BG_TOLERANCE) hits++;
+      const diff = Math.max(Math.abs(data[i] - bg[0]), Math.abs(data[i + 1] - bg[1]), Math.abs(data[i + 2] - bg[2]));
+      if (diff > HAIR_BG_TOLERANCE) hits++;
+      if (diff > HAIR_TOP_TOLERANCE) solidHits++;
     }
     if (y === 0) contactRatio = hits / cols;
     if (y < PROFILE_ROWS) rowContacts.push(+(hits / cols).toFixed(3));
-    if (hairRow === null && hits >= threshold) hairRow = y;
+    if (hairRow === null && solidHits >= threshold) hairRow = y;
     if (hairRow !== null && y >= PROFILE_ROWS - 1) break;
   }
   return {
