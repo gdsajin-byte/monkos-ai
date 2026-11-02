@@ -83,3 +83,44 @@ export async function checkCrownContact({ imageBuf, faceBox, slug, engineState, 
     clearTimeout(timer);
   }
 }
+
+// ── 머리끝 배치 판정 (ORDER_20261103 여권머리끝_눈48상한) ──
+// 판정 주체는 precheck이고 생성은 그 프레임을 그대로 재단한다. 두상 크기는 건드리지 않고 틀만 위로 평행 이동한다(위치 이동만, 얼굴 픽셀 불변).
+export const HAIR_PLACEMENT_SLUGS = new Set(['kr-passport', 'jp-passport']);
+export const HAIR_MARGIN_MIN_MM = 0.5; // 머리 위 최소 여백 (2026-11-03 작가님)
+export const EYE_RATIO_MAX = 0.48;     // 이보다 내리면 얼굴이 너무 내려간다 (2026-11-03 작가님 — 경고 상한 유지)
+const EPS = 1e-9;
+
+/**
+ * 머리끝 실측으로 프레임 배치를 정한다.
+ * @param frame 눈 앵커 프레임 (원본 좌표) / lines.eyeY·chinY 원본 좌표 / hairTopRatio 머리끝 행 ÷ 원본 높이
+ * @returns verdict: 'pass'(그대로) | 'moved'(틀을 올림) | 'no_room'(눈 상한 안에서 안 들어옴 — 프레임 유지)
+ */
+export function resolveHairPlacement({ frame, lines, hairTopRatio, imageHeight, frameHmm }) {
+  const mmPerPx = frameHmm / frame.h;
+  const hairTopY = hairTopRatio * imageHeight;
+  const marginBeforeMm = (hairTopY - frame.y) * mmPerPx;
+  const eyeRatio = (y) => (lines.eyeY - y) / frame.h;
+
+  let verdict = 'pass', y = frame.y;
+  if (marginBeforeMm < HAIR_MARGIN_MIN_MM - EPS) {
+    const wanted = hairTopY - HAIR_MARGIN_MIN_MM / mmPerPx;
+    if (eyeRatio(wanted) <= EYE_RATIO_MAX + EPS) { verdict = 'moved'; y = wanted; }
+    else verdict = 'no_room';
+  }
+  const placed = verdict === 'moved' ? { ...frame, y } : frame;
+  const round = (v) => +v.toFixed(2);
+  return {
+    verdict, frame: placed,
+    marginBeforeMm: round(marginBeforeMm),
+    marginAfterMm: round((hairTopY - y) * mmPerPx),
+    eyeBeforePct: round(eyeRatio(frame.y) * 100),
+    eyeAfterPct: round(eyeRatio(y) * 100),
+    chinBelowMm: round((y + frame.h - lines.chinY) * mmPerPx),
+  };
+}
+
+/** 머리끝 판정 대상·입력이 유효할 때만 true — 무효면 판정 없이 기존 프레임 */
+export function hairPlacementApplies(slug, hairTopRatio) {
+  return HAIR_PLACEMENT_SLUGS.has(slug) && Number.isFinite(hairTopRatio) && hairTopRatio >= 0 && hairTopRatio <= 1;
+}

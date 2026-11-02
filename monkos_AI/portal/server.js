@@ -45,7 +45,7 @@ import { cropToSpec, warmupCropEngine, getSpecCropParams } from './lib/spec-crop
 import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, getMatteEngineState, stripDataUri, getSpecBgColor, cropMetaWithinSpec, runMatteChain } from './lib/matte.js';
 import { judgeMetrics, metricsFromFit } from './lib/spec-judge.js';
 import { assessFov, fovRejectionReason, fitCacheGet, fitCacheSet } from './lib/fit-fov.js';
-import { checkCrownContact } from './lib/hair-measure.js';
+import { checkCrownContact, resolveHairPlacement, hairPlacementApplies, HAIR_PLACEMENT_SLUGS } from './lib/hair-measure.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
@@ -534,11 +534,20 @@ const httpServer = createServer(async (req, res) => {
           : { x: faceBox.x, y: faceBox.y, w: faceBox.w, h: faceBox.h };
         detectSrc = 'legacy';
       }
-      const { frame, lines, gate } = cachedFit || await computeFitGeometry({ buf, W, H, fbPx, spec, slug, cropEngineUrl: CROP_ENGINE_URL, slog, sharp });
+      const fitGeom = cachedFit || await computeFitGeometry({ buf, W, H, fbPx, spec, slug, cropEngineUrl: CROP_ENGINE_URL, slog, sharp });
+      let { frame } = fitGeom;
+      const { lines, gate } = fitGeom;
       if (!frame) {
         slog(`[Fit] ${slug}: 정규화·재시도 후에도 신뢰 랜드마크 확보 실패 → fit 포기 (기존 경로 폴백)`);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         return res.end(JSON.stringify({ success: false, code: 'FIT_SANITY' }));
+      }
+      // 머리끝 배치 — precheck 실측값을 받아 같은 산식으로 틀을 옮긴다 (미리보기 틀 = 최종 재단). 인스턴스가 달라도 재매팅 없음
+      let hairPlacement = null;
+      if (hairPlacementApplies(slug, body.hairTopRatio)) {
+        hairPlacement = resolveHairPlacement({ frame, lines, hairTopRatio: body.hairTopRatio, imageHeight: H, frameHmm: spec.frameHmm });
+        frame = hairPlacement.frame;
+        slog(`[Fit] ${slug}: 머리끝 ${hairPlacement.verdict} 여백 ${hairPlacement.marginBeforeMm}→${hairPlacement.marginAfterMm}mm 눈 ${hairPlacement.eyeBeforePct}→${hairPlacement.eyeAfterPct}% 턱아래 ${hairPlacement.chinBelowMm}mm`);
       }
       const frameInitial = { ...frame };
       const fov = assessFov(frame, { width: W, height: H }, spec.frameW);
@@ -575,7 +584,7 @@ const httpServer = createServer(async (req, res) => {
       slog(`[Fit] ${slug}: face=${metrics.faceMm}mm top=${metrics.topMm}mm btm=${metrics.bottomMm}mm eye=${(metrics.eyeRatio * 100).toFixed(1)}% judge=${judge.blocked ? 'BLOCKED' : judge.face + '/' + judge.eye} vision=${vision ? (vision.note || 'ok') : 'skip'} detect=${detectSrc}${gate ? ` gate={mouth:${gate.mouthOpen},eyeL:${gate.eyeOpenL},eyeR:${gate.eyeOpenR},roll:${gate.rollDeg},yaw:${gate.yawRatio}}` : ''}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({
-        success: true, frame, frameInitial, outside, fov, lines, gate, poseCheck, imageSize: { width: W, height: H }, meta, metrics, judge, vision,
+        success: true, frame, frameInitial, outside, fov, hairPlacement, lines, gate, poseCheck, imageSize: { width: W, height: H }, meta, metrics, judge, vision,
         spec: { frameW: spec.frameW, frameH: spec.frameH, frameHmm: spec.frameHmm, headHeightMin: spec.headHeightMinMm || spec.faceMinMm, headHeightMax: spec.headHeightMaxMm || null, faceTargetMm: spec.faceTargetMm },
       }));
     } catch (err) {
@@ -705,6 +714,7 @@ const httpServer = createServer(async (req, res) => {
       }
       timings.gates = Date.now() - tStats;
       // 화각 기하·정수리 실측은 서로 독립 — 병렬 실행. 둘 다 실패하면 판정 없이 통과 + WARNING
+      let fitGeom = null;
       const runFovCheck = async () => {
         const fovSpec = getSpecCropParams(body.slug);
         if (!fovSpec) return null;
@@ -722,6 +732,7 @@ const httpServer = createServer(async (req, res) => {
             return null;
           }
           fitCacheSet(fitCacheKey(body.slug, norm.b64), g);
+          fitGeom = g;
           const r = assessFov(g.frame, { width: norm.width, height: norm.height }, fovSpec.frameW);
           slog(`[IDPhoto][precheck] ${body.slug} 화각 outside=${JSON.stringify(r.outside)} mag=${r.magnification} faceRatio=${faceRatio} verdict=${r.verdict} raw=${r.rawVerdict} cause=${r.cause}`);
           return r;
@@ -732,7 +743,7 @@ const httpServer = createServer(async (req, res) => {
           timings.fit = Date.now() - t;
         }
       };
-      let fov = null, crownCheck = null;
+      let fov = null, crownCheck = null, hairPlacement = null;
       if (measurable && faceBox) {
         const wantFov = body.slug && CROP_ENGINE_URL && matteEnabled() && matteSlugAllowed(body.slug);
         const tParallel = Date.now();
@@ -747,6 +758,19 @@ const httpServer = createServer(async (req, res) => {
         if (crownCheck) timings.crown = crownCheck.ms ?? 0;
         if (crownCheck && crownCheck.touched) { measurable = false; reason = 'fov_tight_top'; }
         else if (fov && fov.verdict === 'block') { measurable = false; reason = fovRejectionReason(fov); }
+        // 머리끝 배치 판정 — 정수리 실측이 끝난 매팅 결과만 쓴다. 실측이 없으면 판정 없이 통과(checkCrownContact가 WARNING)
+        if (measurable && fov && fitGeom && crownCheck?.status === 'measured') {
+          if (hairPlacementApplies(body.slug, crownCheck.hairTopRatio)) {
+            const fovSpec = getSpecCropParams(body.slug);
+            hairPlacement = resolveHairPlacement({ frame: fitGeom.frame, lines: fitGeom.lines, hairTopRatio: crownCheck.hairTopRatio, imageHeight: norm.height, frameHmm: fovSpec.frameHmm });
+            slog(`[IDPhoto][precheck] ${body.slug} 머리끝 ${hairPlacement.verdict} 여백 ${hairPlacement.marginBeforeMm}→${hairPlacement.marginAfterMm}mm 눈 ${hairPlacement.eyeBeforePct}→${hairPlacement.eyeAfterPct}% 턱아래 ${hairPlacement.chinBelowMm}mm`);
+            if (hairPlacement.verdict === 'moved') fov = assessFov(hairPlacement.frame, { width: norm.width, height: norm.height }, fovSpec.frameW);
+            // 눈 상한 안에서 머리가 안 들어옴 → 무료 매팅으로 규정 사진 불가, AI 경로·다른 사진만
+            else if (hairPlacement.verdict === 'no_room') fov = { ...fov, verdict: 'warn', cause: 'head_margin', aiOnly: true };
+          } else if (HAIR_PLACEMENT_SLUGS.has(body.slug)) {
+            log(`[IDPhoto][precheck] ${body.slug} 머리끝 미검출 → 판정 없이 통과`, 'WARNING');
+          }
+        }
       }
       if (measurable) warmupMatteEngine(); // 게이트 통과자만 예열 — 구경·불합격 트래픽 웜 비용 차단 (자체 서버 불통 시에만 RunPod)
       // engineReady=false → 백업 처리 예정. 고객 화면 사전 안내용 — 엔진명은 싣지 않는다 (ch8)
@@ -754,6 +778,7 @@ const httpServer = createServer(async (req, res) => {
       const out = { measurable, rejectionReason: reason, faceBox, faceRatio, checks: [], engineReady };
       if (fov) out.fov = fov;
       if (crownCheck) out.crownCheck = crownCheck;
+      if (hairPlacement) out.hairPlacement = hairPlacement;
       timings.total = Date.now() - t0;
       out.timings = timings;
       // 미리보기 썸네일 배선(§10-2)은 §11-1로 제거 — sharp가 HEIC를 디코드하지 못해 성립하지 않았다.

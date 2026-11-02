@@ -2,7 +2,7 @@
  * 정수리 실측 — 상단 접촉 판정 경계 (ORDER_20261102 정수리게이트_실측전환)
  */
 import sharp from 'sharp';
-import { measureTopContact, checkCrownContact, CROWN_CONTACT_RATIO } from '../lib/hair-measure.js';
+import { measureTopContact, checkCrownContact, CROWN_CONTACT_RATIO, resolveHairPlacement, hairPlacementApplies } from '../lib/hair-measure.js';
 
 const BG = '#00FF00';
 const W = 100, H = 100;
@@ -102,5 +102,55 @@ describe('checkCrownContact', () => {
     expect(r.status).toBe('skipped_backup');
     expect(called).toBe(0);
     expect(warns[0]).toMatch('생략');
+  });
+});
+
+describe('resolveHairPlacement — 눈 48%·여백 0.5mm 경계', () => {
+  // 프레임 높이 450px = 45mm(1px = 0.1mm), 프레임 y=100, 눈은 프레임 상단에서 43%
+  const frame = { x: 0, y: 100, w: 350, h: 450 };
+  const lines = { eyeY: 100 + 450 * 0.43, chinY: 100 + 450 * 0.86 };
+  const place = (hairY) => resolveHairPlacement({ frame, lines, hairTopRatio: hairY / 1000, imageHeight: 1000, frameHmm: 45 });
+
+  test('여백 충분 → 그대로', () => {
+    const r = place(130);
+    expect(r.verdict).toBe('pass');
+    expect(r.frame).toBe(frame);
+    expect(r.marginAfterMm).toBe(3);
+  });
+
+  test('여백 정확히 0.5mm → 그대로 / 0.1mm 부족 → 이동', () => {
+    expect(place(105).verdict).toBe('pass');
+    const r = place(104);
+    expect(r.verdict).toBe('moved');
+    expect(r.frame.y).toBeCloseTo(99);
+    expect(r.marginAfterMm).toBe(0.5);
+    expect(r.eyeAfterPct).toBeCloseTo(43.22, 1);
+  });
+
+  test('머리가 틀 밖 → 틀을 올려 여백 0.5mm, 크기 불변', () => {
+    const r = place(90);
+    expect(r.verdict).toBe('moved');
+    expect(r.marginBeforeMm).toBe(-1);
+    expect(r.frame.y).toBeCloseTo(85);
+    expect(r.frame.h).toBe(450);
+  });
+
+  test('눈 정확히 48% → 채택 / 넘으면 no_room·프레임 유지', () => {
+    // 눈 48% = y 77.5, 머리끝 = 77.5 + 5 = 82.5
+    const at = place(82.5);
+    expect(at.verdict).toBe('moved');
+    expect(at.eyeAfterPct).toBeCloseTo(48, 5);
+    const over = place(82);
+    expect(over.verdict).toBe('no_room');
+    expect(over.frame).toBe(frame);
+    expect(over.eyeAfterPct).toBe(43);
+  });
+
+  test('적용 범위 — kr·jp 여권, 유효 비율만', () => {
+    expect(hairPlacementApplies('kr-passport', 0.1)).toBe(true);
+    expect(hairPlacementApplies('jp-passport', 0)).toBe(true);
+    expect(hairPlacementApplies('us-visa', 0.1)).toBe(false);
+    expect(hairPlacementApplies('kr-passport', null)).toBe(false);
+    expect(hairPlacementApplies('kr-passport', 1.5)).toBe(false);
   });
 });
