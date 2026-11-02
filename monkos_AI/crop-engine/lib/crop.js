@@ -268,8 +268,20 @@ export async function fitSpecGeometry(imageBuffer, landmarks, spec, opts = {}) {
     padded: !canClampX || !canClampY,
   };
 
+  const frame = { x: extractLeft / p.scale, y: extractTop / p.scale, w: frameW / p.scale, h: frameH / p.scale };
+  const { width: imgW, height: imgH } = p.imageSize;
+  // 프레임 높이·너비 대비 입력 이미지 밖 비율 0~1. 러프 크롭을 넣으면 러프 창 기준임에 주의 —
+  // 포털 고객 판정은 원본 좌표로 역산해 lib/fit-fov.js에서 다시 잰다.
+  const outside = {
+    top: +(Math.max(0, -frame.y) / frame.h).toFixed(4),
+    bottom: +(Math.max(0, frame.y + frame.h - imgH) / frame.h).toFixed(4),
+    left: +(Math.max(0, -frame.x) / frame.w).toFixed(4),
+    right: +(Math.max(0, frame.x + frame.w - imgW) / frame.w).toFixed(4),
+  };
+
   return {
-    frame: { x: extractLeft / p.scale, y: extractTop / p.scale, w: frameW / p.scale, h: frameH / p.scale },
+    frame,
+    outside,
     lines: p.lines,
     imageSize: p.imageSize,
     meta,
