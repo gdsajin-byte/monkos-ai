@@ -29,19 +29,24 @@ export async function measureTopContact(imageBuf, bgColor, colFromRatio = 0, col
   const topRows = Math.max(1, Math.round(H * CROWN_TOP_ROWS_RATIO));
 
   let hairRow = null, contactRatio = 0;
+  const rowContacts = [];
   for (let y = 0; y < H; y++) {
     let hits = 0;
     for (let x = from; x < to; x++) {
       const i = (y * W + x) * C;
       if (Math.abs(data[i] - bg[0]) > HAIR_BG_TOLERANCE || Math.abs(data[i + 1] - bg[1]) > HAIR_BG_TOLERANCE || Math.abs(data[i + 2] - bg[2]) > HAIR_BG_TOLERANCE) hits++;
     }
-    if (y < topRows) contactRatio = Math.max(contactRatio, hits / cols);
+    if (y < topRows) {
+      contactRatio = Math.max(contactRatio, hits / cols);
+      rowContacts.push(+(hits / cols).toFixed(3));
+    }
     if (hairRow === null && hits >= threshold) hairRow = y;
     if (hairRow !== null && y >= topRows) break;
   }
   return {
     hairTopRatio: hairRow === null ? null : +(hairRow / H).toFixed(4),
     contactRatio: +contactRatio.toFixed(4),
+    rowContacts,
     touched: contactRatio >= CROWN_CONTACT_RATIO,
   };
 }

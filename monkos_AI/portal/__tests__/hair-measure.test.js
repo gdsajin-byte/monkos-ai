@@ -49,6 +49,6 @@ describe('measureTopContact', () => {
 
   test('전경 없음 → hairTopRatio null', async () => {
     const r = await measureTopContact(await img(0, 0, 0, 0), BG);
-    expect(r).toEqual({ hairTopRatio: null, contactRatio: 0, touched: false });
+    expect(r).toEqual({ hairTopRatio: null, contactRatio: 0, rowContacts: [0], touched: false });
   });
 });
