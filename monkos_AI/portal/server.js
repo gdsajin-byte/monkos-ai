@@ -72,6 +72,7 @@ import { handlePodStart, handlePodStatus, handlePodStop, handleComfyProxy } from
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+const DETECT_LONG_SIDE = 1024;
 const fitCacheKey = (slug, b64) => `${slug}:${crypto.createHash('sha1').update(b64).digest('hex')}`;
 
 /**
@@ -95,7 +96,7 @@ async function computeFitGeometry({ buf, W, H, fbPx, spec, slug, cropEngineUrl, 
     const outW = Math.max(64, Math.round(winW * sc));
     const outH = Math.max(64, Math.round(winH * sc));
     const b = await sharp(buf).extract({ left, top, width: winW, height: winH })
-      .resize(outW, outH, { fit: 'fill' }).png().toBuffer();
+      .resize(outW, outH, { fit: 'fill' }).jpeg({ quality: 92 }).toBuffer(); // PNG 대비 전송량 축소 — 왕복이 지연의 주 구간 (2026-11-02 구간 계측)
     return { buf: b, rx: left, ry: top, scale: sc };
   }
   // ② crop-engine 기하 피팅 — 정규화 입력, 랜드마크 해부학 검증, 실패 시 스케일 바꿔 1회 재시도.
@@ -614,11 +615,22 @@ const httpServer = createServer(async (req, res) => {
       let det = null;
       const tDetect = Date.now();
       try {
+        // 검출은 긴 변 1024px 축소본으로 — 전송량 축소, 좌표는 정규화 프레임으로 되돌린다 (2026-11-02 구간 계측)
+        const { default: sharpDet } = await import('sharp');
+        const detBuf = await sharpDet(norm.buf).resize(DETECT_LONG_SIDE, DETECT_LONG_SIDE, { fit: 'inside', withoutEnlargement: true }).jpeg({ quality: 90 }).toBuffer();
+        const detMeta = await sharpDet(detBuf).metadata();
         det = await fetch(`${CROP_ENGINE_URL}/api/detect`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: norm.b64 }),
+          body: JSON.stringify({ image: detBuf.toString('base64') }),
           signal: AbortSignal.timeout(15000),
         }).then((r) => r.json());
+        const detK = norm.width / detMeta.width;
+        if (det && Array.isArray(det.faces)) {
+          for (const f of det.faces) {
+            f.bbox = f.bbox.map((v) => v * detK);
+            if (Array.isArray(f.kps)) f.kps = f.kps.map(([x, y]) => [x * detK, y * detK]);
+          }
+        }
       } catch (de) {
         slog(`[IDPhoto][precheck] SCRFD 불가 (${de.message}) → fail-open (fit이 재검출·방어)`);
       }
