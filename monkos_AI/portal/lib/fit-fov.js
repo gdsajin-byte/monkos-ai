@@ -54,20 +54,25 @@ export function judgeWide(magnification) {
 
 const RANK = { ok: 0, warn: 1, block: 2 };
 
+// 화각 반려 스위치 — 첫 배포는 warn만 (2026-11-02 쌍아 결정: 딱 맞춘 증명사진 재업로드 수용, 1~2주 로그 후 전환 판단).
+// false면 block 수준도 진행 가능한 경고로 내보내고 rawVerdict에 원 판정을 남긴다. 정수리 실측 반려는 이 스위치와 무관
+export const FOV_BLOCK_ENABLED = false;
+
 /**
  * 종합 판정. 수준이 높은 쪽을 택하고, 같으면 이탈(몸이 잘리는 문제)을 먼저 말한다.
  * @param frameW 규격 출력 폭 px
- * @returns {{ frame, imageSize, outside, magnification, verdict, cause }} cause: narrow | off_center | wide | null(ok)
+ * @returns {{ frame, imageSize, outside, magnification, verdict, rawVerdict, cause }} cause: narrow | off_center | wide | null(ok)
  */
-export function assessFov(frame, imageSize, frameW) {
+export function assessFov(frame, imageSize, frameW, blockEnabled = FOV_BLOCK_ENABLED) {
   const outside = frameOutside(frame, imageSize);
   const magnification = +(frameW / frame.w).toFixed(3);
   const tight = judgeFov(outside);
   const wide = judgeWide(magnification);
-  const verdict = RANK[tight] >= RANK[wide] ? tight : wide;
+  const rawVerdict = RANK[tight] >= RANK[wide] ? tight : wide;
   let cause = null;
-  if (verdict !== 'ok') cause = RANK[tight] >= RANK[wide] ? fovCause(outside) : 'wide';
-  return { frame, imageSize, outside, magnification, verdict, cause };
+  if (rawVerdict !== 'ok') cause = RANK[tight] >= RANK[wide] ? fovCause(outside) : 'wide';
+  const verdict = rawVerdict === 'block' && !blockEnabled ? 'warn' : rawVerdict;
+  return { frame, imageSize, outside, magnification, verdict, rawVerdict, cause };
 }
 
 const BLOCK_REASON = { narrow: 'fov_tight_side', off_center: 'fov_off_center', wide: 'fov_wide' };
@@ -75,4 +80,22 @@ const BLOCK_REASON = { narrow: 'fov_tight_side', off_center: 'fov_off_center', w
 /** block 판정의 반려 코드 (rej_{코드} 문구) */
 export function fovRejectionReason(fov) {
   return BLOCK_REASON[fov.cause] || null;
+}
+
+// precheck가 계산한 기하를 /fit이 재사용 — 같은 사진을 두 번 검출·피팅하지 않는다. 좌표만 담고 사진은 담지 않는다.
+// 인스턴스 메모리라 다른 인스턴스로 가면 미스 → 기존대로 재계산
+const FIT_CACHE_TTL_MS = 10 * 60 * 1000;
+const FIT_CACHE_MAX = 300;
+const fitCache = new Map();
+
+export function fitCacheGet(key, now = Date.now()) {
+  const hit = fitCache.get(key);
+  if (!hit) return null;
+  if (now - hit.at > FIT_CACHE_TTL_MS) { fitCache.delete(key); return null; }
+  return hit.geometry;
+}
+
+export function fitCacheSet(key, geometry, now = Date.now()) {
+  if (fitCache.size >= FIT_CACHE_MAX) fitCache.delete(fitCache.keys().next().value);
+  fitCache.set(key, { at: now, geometry });
 }

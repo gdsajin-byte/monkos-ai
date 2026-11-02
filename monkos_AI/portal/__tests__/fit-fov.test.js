@@ -1,7 +1,7 @@
 /**
  * 화각 판정 — 이탈량·배율·경계값 (ORDER_20261102 미국비자_화각부족판정, 정수리 지시서 §8)
  */
-import { frameOutside, judgeFov, judgeWide, fovCause, assessFov, fovRejectionReason, FOV_WARN_RATIO, FOV_BLOCK_RATIO, FOV_WIDE_WARN, FOV_WIDE_BLOCK } from '../lib/fit-fov.js';
+import { frameOutside, judgeFov, judgeWide, fovCause, assessFov, fovRejectionReason, fitCacheGet, fitCacheSet, FOV_BLOCK_ENABLED, FOV_WARN_RATIO, FOV_BLOCK_RATIO, FOV_WIDE_WARN, FOV_WIDE_BLOCK } from '../lib/fit-fov.js';
 
 const IMG = { width: 1000, height: 1000 };
 const o = (v) => ({ top: 0, bottom: 0, left: 0, right: 0, ...v });
@@ -72,32 +72,64 @@ describe('assessFov', () => {
   const inside = { x: 100, y: 100, w: 500, h: 500 };
 
   test('프레임 안 + 원본 충분 → ok, cause 없음', () => {
-    const r = assessFov(inside, IMG, 400);
+    const r = assessFov(inside, IMG, 400, true);
     expect(r).toMatchObject({ verdict: 'ok', cause: null, magnification: 0.8, frame: inside, imageSize: IMG });
     expect(fovRejectionReason(r)).toBeNull();
   });
 
   test('배율 1.2 → wide warn', () => {
-    expect(assessFov(inside, IMG, 600)).toMatchObject({ verdict: 'warn', cause: 'wide' });
+    expect(assessFov(inside, IMG, 600, true)).toMatchObject({ verdict: 'warn', cause: 'wide' });
   });
 
   test('배율 2 → wide block + 반려 코드', () => {
-    const r = assessFov(inside, IMG, 1000);
+    const r = assessFov(inside, IMG, 1000, true);
     expect(r).toMatchObject({ verdict: 'block', cause: 'wide' });
     expect(fovRejectionReason(r)).toBe('fov_wide');
   });
 
   test('이탈 block이 wide warn보다 우선', () => {
-    const r = assessFov({ x: -200, y: 0, w: 1000, h: 1100 }, IMG, 1100);
+    const r = assessFov({ x: -200, y: 0, w: 1000, h: 1100 }, IMG, 1100, true);
     expect(r.verdict).toBe('block');
     expect(fovRejectionReason(r)).toBe('fov_tight_side');
   });
 
   test('같은 수준이면 이탈을 먼저 말한다', () => {
-    expect(assessFov({ x: -60, y: 0, w: 1000, h: 1000 }, IMG, 1100)).toMatchObject({ verdict: 'warn', cause: 'off_center' });
+    expect(assessFov({ x: -60, y: 0, w: 1000, h: 1000 }, IMG, 1100, true)).toMatchObject({ verdict: 'warn', cause: 'off_center' });
   });
 
   test('한쪽 이탈 block → fov_off_center', () => {
-    expect(fovRejectionReason(assessFov({ x: 200, y: 0, w: 900, h: 900 }, IMG, 400))).toBe('fov_off_center');
+    expect(fovRejectionReason(assessFov({ x: 200, y: 0, w: 900, h: 900 }, IMG, 400, true))).toBe('fov_off_center');
+  });
+});
+
+describe('warn 전용 스위치', () => {
+  const far = { x: 100, y: 100, w: 500, h: 500 };
+
+  test('현행 기본값은 warn 전용', () => {
+    expect(FOV_BLOCK_ENABLED).toBe(false);
+  });
+
+  test('꺼져 있으면 block도 warn으로 내보내고 원 판정은 남긴다', () => {
+    expect(assessFov(far, IMG, 1000, false)).toMatchObject({ verdict: 'warn', rawVerdict: 'block', cause: 'wide' });
+  });
+
+  test('켜면 block', () => {
+    expect(assessFov(far, IMG, 1000, true)).toMatchObject({ verdict: 'block', rawVerdict: 'block' });
+  });
+
+  test('warn·ok는 스위치와 무관', () => {
+    expect(assessFov(far, IMG, 600, false)).toMatchObject({ verdict: 'warn', rawVerdict: 'warn' });
+    expect(assessFov(far, IMG, 400, false)).toMatchObject({ verdict: 'ok', rawVerdict: 'ok', cause: null });
+  });
+});
+
+describe('fitCache', () => {
+  test('저장·조회·만료', () => {
+    const g = { frame: { x: 1 } };
+    fitCacheSet('k', g, 1000);
+    expect(fitCacheGet('k', 1000)).toBe(g);
+    expect(fitCacheGet('k', 1000 + 10 * 60 * 1000 + 1)).toBeNull();
+    expect(fitCacheGet('k', 1000)).toBeNull();
+    expect(fitCacheGet('없음')).toBeNull();
   });
 });

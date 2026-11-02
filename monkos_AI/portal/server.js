@@ -44,7 +44,7 @@ import { generateIdPhoto, buildT1Prompt } from './lib/idphoto-generate.js';
 import { cropToSpec, warmupCropEngine, getSpecCropParams } from './lib/spec-crop.js';
 import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, getMatteEngineState, stripDataUri, getSpecBgColor, cropMetaWithinSpec, runMatteChain } from './lib/matte.js';
 import { judgeMetrics, metricsFromFit } from './lib/spec-judge.js';
-import { assessFov, fovRejectionReason } from './lib/fit-fov.js';
+import { assessFov, fovRejectionReason, fitCacheGet, fitCacheSet } from './lib/fit-fov.js';
 import { checkCrownContact } from './lib/hair-measure.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
@@ -71,6 +71,8 @@ import { BLOG_REDIRECTS } from './lib/cms/redirects.js';
 import { handlePodStart, handlePodStatus, handlePodStop, handleComfyProxy } from './lib/vton/runpod.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const fitCacheKey = (slug, b64) => `${slug}:${crypto.createHash('sha1').update(b64).digest('hex')}`;
 
 /**
  * 러프 크롭 → crop-engine 기하 피팅 → 원본 좌표 역산 + 랜드마크 검증. /fit·precheck(화각 판정) 공용.
@@ -501,10 +503,12 @@ const httpServer = createServer(async (req, res) => {
       //   Gemini 박스의 흔들림(카나리 7호·금일 오배치)이 뿌리라 검출을 결정론 엔진으로 교체.
       // 폴백 legacy = 클라이언트 전달 Gemini faceBox (비율 0~1 정본). FACE_DETECT_ENGINE=legacy로 원복.
       const CROP_ENGINE_URL = process.env.CROP_ENGINE_URL || '';
+      const cachedFit = fitCacheGet(fitCacheKey(slug, norm.b64));
+      if (cachedFit) slog(`[Fit] ${slug}: precheck 기하 재사용 (검출·피팅 생략)`);
       let rx = 0, ry = 0, roughScale = 1, roughBuf = buf;
       let fbPx = null;
       let detectSrc = 'none';
-      if ((process.env.FACE_DETECT_ENGINE || 'scrfd') !== 'legacy' && CROP_ENGINE_URL) {
+      if (!cachedFit && (process.env.FACE_DETECT_ENGINE || 'scrfd') !== 'legacy' && CROP_ENGINE_URL) {
         try {
           const det = await fetch(`${CROP_ENGINE_URL}/api/detect`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -528,7 +532,7 @@ const httpServer = createServer(async (req, res) => {
           : { x: faceBox.x, y: faceBox.y, w: faceBox.w, h: faceBox.h };
         detectSrc = 'legacy';
       }
-      const { frame, lines, gate } = await computeFitGeometry({ buf, W, H, fbPx, spec, slug, cropEngineUrl: CROP_ENGINE_URL, slog, sharp });
+      const { frame, lines, gate } = cachedFit || await computeFitGeometry({ buf, W, H, fbPx, spec, slug, cropEngineUrl: CROP_ENGINE_URL, slog, sharp });
       if (!frame) {
         slog(`[Fit] ${slug}: 정규화·재시도 후에도 신뢰 랜드마크 확보 실패 → fit 포기 (기존 경로 폴백)`);
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -597,6 +601,7 @@ const httpServer = createServer(async (req, res) => {
       // 엔진 생사(1순위 자체 서버 /health, 60s 캐시)를 검수와 병렬로 조회 — 응답 engineReady 용 (2026-10-27)
       const enginePromise = matteEnabled() ? getMatteEngineState().catch(() => 'primary') : Promise.resolve('primary');
       const norm = await normalizeImage(body.image);
+      const timings = { normalize: Date.now() - t0 };
       // 디코드가 선행 실패했으면 fail-open 금지 — "fit이 재검출·방어한다"는 전제는 픽셀을 못 여는
       // 이미지에 성립하지 않는다. 검출 실패를 측정성 통과로 흘려보내면 유저는 깨진 사진을 들고
       // 유료 생성까지 진행한다 (2026-07-25 §11-2).
@@ -607,6 +612,7 @@ const httpServer = createServer(async (req, res) => {
       }
       const CROP_ENGINE_URL = process.env.CROP_ENGINE_URL || '';
       let det = null;
+      const tDetect = Date.now();
       try {
         det = await fetch(`${CROP_ENGINE_URL}/api/detect`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -616,6 +622,8 @@ const httpServer = createServer(async (req, res) => {
       } catch (de) {
         slog(`[IDPhoto][precheck] SCRFD 불가 (${de.message}) → fail-open (fit이 재검출·방어)`);
       }
+      timings.detect = Date.now() - tDetect;
+      const tStats = Date.now();
       let measurable = true, reason = null, faceBox = null, faceRatio = null;
       let bright = null, shadowDiff = null, rollDeg = null, yawRatio = null, nFaces = null, crownMargin = null;
       let posePitch = null, poseYaw = null, poseRoll = null, poseModel = null;
@@ -682,40 +690,50 @@ const httpServer = createServer(async (req, res) => {
           } catch { /* 통계 실패 시 게이트 미적용 */ }
         }
       }
-      // 화각 판정 — 사람 조건을 통과한 사진만, 전 규격 공통. 기하 실패는 판정 없이 통과 + WARNING
-      let fov = null;
-      if (measurable && body.slug && faceBox && CROP_ENGINE_URL && matteEnabled() && matteSlugAllowed(body.slug)) {
+      timings.gates = Date.now() - tStats;
+      // 화각 기하·정수리 실측은 서로 독립 — 병렬 실행. 둘 다 실패하면 판정 없이 통과 + WARNING
+      const runFovCheck = async () => {
         const fovSpec = getSpecCropParams(body.slug);
-        if (fovSpec) {
-          try {
-            const { default: sharp } = await import('sharp');
-            const [bx1, by1, bx2, by2] = det.faces.filter((f) => f.score >= 0.45)[0].bbox;
-            const g = await computeFitGeometry({
-              buf: norm.buf, W: norm.width, H: norm.height,
-              fbPx: { x: bx1, y: by1, w: bx2 - bx1, h: by2 - by1 },
-              spec: fovSpec, slug: body.slug, cropEngineUrl: CROP_ENGINE_URL, slog, sharp, timeoutMs: 15000,
-            });
-            if (g.frame) {
-              fov = assessFov(g.frame, { width: norm.width, height: norm.height }, fovSpec.frameW);
-              if (fov.verdict === 'block') { measurable = false; reason = fovRejectionReason(fov); }
-              slog(`[IDPhoto][precheck] ${body.slug} 화각 outside=${JSON.stringify(fov.outside)} mag=${fov.magnification} faceRatio=${faceRatio} verdict=${fov.verdict} cause=${fov.cause}`);
-            } else {
-              log(`[IDPhoto][precheck] ${body.slug} 화각 판정 불가 (프레임 없음) → 판정 없이 통과`, 'WARNING');
-            }
-          } catch (fe) {
-            log(`[IDPhoto][precheck] ${body.slug} 화각 판정 불가 (${fe.message}) → 판정 없이 통과`, 'WARNING');
+        if (!fovSpec) return null;
+        const t = Date.now();
+        try {
+          const { default: sharp } = await import('sharp');
+          const [bx1, by1, bx2, by2] = det.faces.filter((f) => f.score >= 0.45)[0].bbox;
+          const g = await computeFitGeometry({
+            buf: norm.buf, W: norm.width, H: norm.height,
+            fbPx: { x: bx1, y: by1, w: bx2 - bx1, h: by2 - by1 },
+            spec: fovSpec, slug: body.slug, cropEngineUrl: CROP_ENGINE_URL, slog, sharp, timeoutMs: 15000,
+          });
+          if (!g.frame) {
+            log(`[IDPhoto][precheck] ${body.slug} 화각 판정 불가 (프레임 없음) → 판정 없이 통과`, 'WARNING');
+            return null;
           }
+          fitCacheSet(fitCacheKey(body.slug, norm.b64), g);
+          const r = assessFov(g.frame, { width: norm.width, height: norm.height }, fovSpec.frameW);
+          slog(`[IDPhoto][precheck] ${body.slug} 화각 outside=${JSON.stringify(r.outside)} mag=${r.magnification} faceRatio=${faceRatio} verdict=${r.verdict} raw=${r.rawVerdict} cause=${r.cause}`);
+          return r;
+        } catch (fe) {
+          log(`[IDPhoto][precheck] ${body.slug} 화각 판정 불가 (${fe.message}) → 판정 없이 통과`, 'WARNING');
+          return null;
+        } finally {
+          timings.fit = Date.now() - t;
         }
-      }
-      // 정수리 실측 — 축소본 매팅 1회, 머리 폭 열에서 최상단 접촉 판정. 실패·타임아웃은 판정 없이 통과 + WARNING.
-      // 자체 서버 불통(backup)이면 호출하지 않는다: RunPod 콜드는 5초 안에 못 끝나고 과금만 남는다
-      let crownCheck = null;
-      if (measurable && faceBox && matteEnabled()) {
-        crownCheck = await checkCrownContact({
-          imageBuf: norm.buf, faceBox, slug: body.slug || 'precheck',
-          engineState: await enginePromise, runMatte: runMatteChain, warn: (msg) => log(msg, 'WARNING'),
-        });
-        if (crownCheck.touched) { measurable = false; reason = 'fov_tight_top'; }
+      };
+      let fov = null, crownCheck = null;
+      if (measurable && faceBox) {
+        const wantFov = body.slug && CROP_ENGINE_URL && matteEnabled() && matteSlugAllowed(body.slug);
+        const tParallel = Date.now();
+        [fov, crownCheck] = await Promise.all([
+          wantFov ? runFovCheck() : null,
+          matteEnabled() ? enginePromise.then((engineState) => checkCrownContact({
+            imageBuf: norm.buf, faceBox, slug: body.slug || 'precheck',
+            engineState, runMatte: runMatteChain, warn: (msg) => log(msg, 'WARNING'),
+          })) : null,
+        ]);
+        timings.parallel = Date.now() - tParallel;
+        if (crownCheck) timings.crown = crownCheck.ms ?? 0;
+        if (crownCheck && crownCheck.touched) { measurable = false; reason = 'fov_tight_top'; }
+        else if (fov && fov.verdict === 'block') { measurable = false; reason = fovRejectionReason(fov); }
       }
       if (measurable) warmupMatteEngine(); // 게이트 통과자만 예열 — 구경·불합격 트래픽 웜 비용 차단 (자체 서버 불통 시에만 RunPod)
       // engineReady=false → 백업 처리 예정. 고객 화면 사전 안내용 — 엔진명은 싣지 않는다 (ch8)
@@ -723,9 +741,11 @@ const httpServer = createServer(async (req, res) => {
       const out = { measurable, rejectionReason: reason, faceBox, faceRatio, checks: [], engineReady };
       if (fov) out.fov = fov;
       if (crownCheck) out.crownCheck = crownCheck;
+      timings.total = Date.now() - t0;
+      out.timings = timings;
       // 미리보기 썸네일 배선(§10-2)은 §11-1로 제거 — sharp가 HEIC를 디코드하지 못해 성립하지 않았다.
       // 서버 디코더(B안)를 도입하면 이 자리에 축소본을 실어 클라이언트 미리보기를 복구한다.
-      slog(`[IDPhoto][precheck] 코드게이트 측정성=${measurable}${reason ? `(${reason})` : ''} faces=${nFaces} fbH=${faceRatio !== null ? Math.round(faceRatio * norm.height) : '-'}px faceRatio=${faceRatio} fov=${fov ? `${fov.verdict}/${fov.cause}/${fov.magnification}` : '-'} crown=${crownMargin} crownCheck=${crownCheck ? JSON.stringify(crownCheck) : '-'} bright=${bright} shadow=${shadowDiff} roll=${rollDeg} yaw=${yawRatio} engineReady=${engineReady} ${Date.now() - t0}ms`);
+      slog(`[IDPhoto][precheck] 코드게이트 측정성=${measurable}${reason ? `(${reason})` : ''} faces=${nFaces} fbH=${faceRatio !== null ? Math.round(faceRatio * norm.height) : '-'}px faceRatio=${faceRatio} fov=${fov ? `${fov.verdict}/${fov.cause}/${fov.magnification}` : '-'} crown=${crownMargin} crownCheck=${crownCheck ? JSON.stringify(crownCheck) : '-'} bright=${bright} shadow=${shadowDiff} roll=${rollDeg} yaw=${yawRatio} engineReady=${engineReady} timings=${JSON.stringify(timings)}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify(out));
     } catch (err) {
