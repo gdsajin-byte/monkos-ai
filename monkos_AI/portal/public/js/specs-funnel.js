@@ -156,6 +156,77 @@ var SpecsFunnel = (function(){
     el.textContent = msg;
     el.style.display = '';
   }
+  /* 판정 문구 — {spec}·{side} 치환. fov_wide에는 원본 사진 안내를 덧붙인다 */
+  function fovText(key, fov){
+    var txt = T[key];
+    if(!txt) return null;
+    var o = (fov && fov.outside) || {};
+    txt = txt.replace('{spec}', CFG.specLabel || '').replace('{side}', (o.left > o.right) ? (T.fov_side_left || '') : (T.fov_side_right || ''));
+    if(key.indexOf('fov_wide') >= 0 && T.fov_wide_note) txt += ' ' + T.fov_wide_note;
+    return txt;
+  }
+  /* 내 사진 위 규격 틀 (DESIGN 추천화각 §5-3) — 좌표는 판정 응답의 프레임(원본 좌표).
+     틀 밖으로 잘려 나가는 부분은 어둡게, 틀이 사진을 넘친 부분은 빨강, 부족한 쪽 테두리는 주황. */
+  function clearFovOverlay(){
+    var old = document.getElementById('v2-fov-overlay');
+    if(old && old.parentNode) old.parentNode.removeChild(old);
+    var ci = document.getElementById('v2-check-img');
+    if(ci) ci.style.visibility = '';
+  }
+  function fovOverlaySvg(fov, topShort){
+    var NS = 'http://www.w3.org/2000/svg';
+    var f = fov.frame, W = fov.imageSize.width, H = fov.imageSize.height, o = fov.outside;
+    function el(name, attrs){
+      var n = document.createElementNS(NS, name);
+      for(var k in attrs) n.setAttribute(k, attrs[k]);
+      return n;
+    }
+    var ux = Math.min(0, f.x), uy = Math.min(0, f.y);
+    var uw = Math.max(W, f.x + f.w) - ux, uh = Math.max(H, f.y + f.h) - uy;
+    var svg = el('svg', { id: 'v2-fov-overlay', viewBox: ux + ' ' + uy + ' ' + uw + ' ' + uh, preserveAspectRatio: 'xMidYMid meet', role: 'img' });
+    svg.appendChild(el('image', { href: uploadedBase64, x: 0, y: 0, width: W, height: H, preserveAspectRatio: 'none' }));
+    // 틀 밖으로 잘려 나가는 부분
+    svg.appendChild(el('path', { d: 'M' + ux + ' ' + uy + 'h' + uw + 'v' + uh + 'h' + (-uw) + 'z M' + f.x + ' ' + f.y + 'h' + f.w + 'v' + f.h + 'h' + (-f.w) + 'z', fill: 'rgba(15,15,40,.45)', 'fill-rule': 'evenodd' }));
+    // 틀이 사진을 넘친 부분 = 사진 사각형 바깥 + 틀 안
+    var red = 'rgba(220,38,38,.45)';
+    if(f.x < 0) svg.appendChild(el('rect', { x: f.x, y: f.y, width: -f.x, height: f.h, fill: red }));
+    if(f.x + f.w > W) svg.appendChild(el('rect', { x: W, y: f.y, width: f.x + f.w - W, height: f.h, fill: red }));
+    var ix = Math.max(0, f.x), iw = Math.min(W, f.x + f.w) - ix;
+    if(f.y < 0) svg.appendChild(el('rect', { x: ix, y: f.y, width: iw, height: -f.y, fill: red }));
+    if(f.y + f.h > H) svg.appendChild(el('rect', { x: ix, y: H, width: iw, height: f.y + f.h - H, fill: red }));
+    // 틀
+    var sw = Math.max(uw, uh) * 0.008;
+    svg.appendChild(el('rect', { x: f.x, y: f.y, width: f.w, height: f.h, fill: 'none', stroke: '#ffffff', 'stroke-width': sw }));
+    // 부족한 쪽 테두리
+    var orange = '#f97316', osw = sw * 1.8, EPS = 0.005;
+    function side(x1, y1, x2, y2){ svg.appendChild(el('line', { x1: x1, y1: y1, x2: x2, y2: y2, stroke: orange, 'stroke-width': osw })); }
+    if(o.left > EPS) side(f.x, f.y, f.x, f.y + f.h);
+    if(o.right > EPS) side(f.x + f.w, f.y, f.x + f.w, f.y + f.h);
+    if(o.bottom > EPS) side(f.x, f.y + f.h, f.x + f.w, f.y + f.h);
+    if(o.top > EPS || topShort) side(f.x, f.y, f.x + f.w, f.y);
+    return svg;
+  }
+  /* 반려 화면: 확인 이미지 자리 / 통과 화면: fit 스테이지 위 */
+  function showFovOverlay(data){
+    clearFovOverlay();
+    var fov = data && data.fov;
+    if(!fov || !fov.frame || !fov.imageSize || !fov.outside) return;
+    var topShort = !!(data.crownCheck && data.crownCheck.touched);
+    var svg = fovOverlaySvg(fov, topShort);
+    if(data.measurable === false){
+      var ci = document.getElementById('v2-check-img');
+      if(!ci || !ci.parentNode) return;
+      ci.style.visibility = 'hidden';
+      svg.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;background:#fff;';
+      if(getComputedStyle(ci.parentNode).position === 'static') ci.parentNode.style.position = 'relative';
+      ci.parentNode.appendChild(svg);
+    } else {
+      var stage = document.getElementById('v2-fit-stage');
+      if(!stage) return;
+      svg.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;background:#fff;z-index:2;';
+      stage.appendChild(svg);
+    }
+  }
   function showError(msg){ errorMsg.textContent = msg; errorMsg.classList.add('show'); noteError(msg, errorMsg); }
   function hideError(){ errorMsg.classList.remove('show'); hidePayError(); hideReportLink(); }
   /* 결제 영역 에러 (2026-09-19 결함 A) — 전역 #v2-error 는 결제 단계 *위*의 정적 요소라
@@ -531,6 +602,7 @@ var SpecsFunnel = (function(){
     fitResult = null; precheckData = null;
     showEngineNotice(false);
     showFovNotice(false);
+    clearFovOverlay();
     var mime = (file && file.type) || '';
     var ext = fileExt(file && file.name);
     if(!mime.match(/image\/(jpeg|png|webp)/i) && ALLOWED_EXT.indexOf(ext) < 0){
@@ -573,15 +645,17 @@ var SpecsFunnel = (function(){
           // 규정 8항목은 결과 화면에서 사후 표시 (ORDER_20260707 Task 1: 사전=측정성만)
           if(data.measurable === false){
             summary.className = 'v2-checklist-summary v2-summary-fail';
-            summary.textContent = (data.rejectionReason && T['rej_' + data.rejectionReason]) || T.rejDefault;
+            summary.textContent = (data.rejectionReason && fovText('rej_' + data.rejectionReason, data.fov)) || T.rejDefault;
+            showFovOverlay(data);
             document.getElementById('v2-btn-proceed').style.display = 'none';
             checkActions.style.display = 'flex';
           } else {
             prepareFreeReady();
             showEngineNotice(engineBackup());
             showFovNotice(data.fov && data.fov.verdict === 'warn'
-              ? (data.fov.cause === 'off_center' ? T.warn_narrow_fov_off_center : T.warn_narrow_fov)
+              ? fovText(data.fov.cause === 'off_center' ? 'warn_fov_off_center' : data.fov.cause === 'wide' ? 'warn_fov_wide' : 'warn_fov_tight_side', data.fov)
               : null);
+            showFovOverlay(data);
           }
           // 이미지 저장을 검수 시점에 선행 — 결제 클릭 체인에서 캔버스 압축을 제거해
           // 토스 결제창의 user activation 만료(팝업 차단)를 방지 (2026-07-05 E2E 실패 수정)
@@ -892,6 +966,7 @@ var SpecsFunnel = (function(){
   function fitAfter(ms, fn){ fitTimers.push(setTimeout(fn, ms)); }
 
   function runFit(){
+    clearFovOverlay();
     showPhase(phaseFit);
     fitClearTimers();
     var stage = document.getElementById('v2-fit-stage');

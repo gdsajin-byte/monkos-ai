@@ -44,7 +44,7 @@ import { generateIdPhoto, buildT1Prompt } from './lib/idphoto-generate.js';
 import { cropToSpec, warmupCropEngine, getSpecCropParams } from './lib/spec-crop.js';
 import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, getMatteEngineState, stripDataUri, getSpecBgColor, cropMetaWithinSpec, runMatteChain } from './lib/matte.js';
 import { judgeMetrics, metricsFromFit } from './lib/spec-judge.js';
-import { frameOutside, judgeFov, fovCause, fovExposed } from './lib/fit-fov.js';
+import { assessFov, fovRejectionReason } from './lib/fit-fov.js';
 import { checkCrownContact } from './lib/hair-measure.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
@@ -535,9 +535,9 @@ const httpServer = createServer(async (req, res) => {
         return res.end(JSON.stringify({ success: false, code: 'FIT_SANITY' }));
       }
       const frameInitial = { ...frame };
-      const outside = frameOutside(frame, { width: W, height: H });
-      const fov = { outside, verdict: judgeFov(outside), cause: fovCause(outside) };
-      slog(`[Fit] ${slug}: 화각 outside=${JSON.stringify(outside)} verdict=${fov.verdict} cause=${fov.cause}`);
+      const fov = assessFov(frame, { width: W, height: H }, spec.frameW);
+      const { outside } = fov;
+      slog(`[Fit] ${slug}: 화각 outside=${JSON.stringify(outside)} mag=${fov.magnification} verdict=${fov.verdict} cause=${fov.cause}`);
 
       // ③ 코드 소견 — metrics 기반 (Gemini 비전 퇴출 2026-07-09)
       let vision = null;
@@ -635,13 +635,9 @@ const httpServer = createServer(async (req, res) => {
             const a1 = fbW * fbH, a2 = (second.bbox[2] - second.bbox[0]) * (second.bbox[3] - second.bbox[1]);
             if (a2 >= a1 * 0.3) { measurable = false; reason = 'multiple_faces'; }
           }
-          // 크기: 비율 기반 (2026-07-09 게이트 강화 → 12:00 완화: 재규격 여권사진 bbox 0.53~0.68 수용.
-          // 잘림 판정은 아래 정수리 여백 게이트가 담당, 0.80은 측량 신뢰 대역 위생 캡)
+          // 고정 얼굴 비율(20~80%)·박스 윗변 5% 게이트 폐지 (2026-11-02 DESIGN 추천화각 §3) — 규격별 화각 판정·정수리 실측이 대체. 비율은 로그용
           faceRatio = +(fbH / norm.height).toFixed(3);
-          if (measurable && faceRatio < 0.20) { measurable = false; reason = 'face_too_small'; }
-          if (measurable && faceRatio > 0.80) { measurable = false; reason = 'face_too_close'; }
-          // 위치: 상단·하단 잘림 + 좌우 치우침
-          if (measurable && y1 / norm.height < 0.05) { measurable = false; reason = 'head_cropped'; }
+          // 위치: 하단 잘림 + 좌우 치우침
           if (measurable && (norm.height - y2) / norm.height < 0.05) { measurable = false; reason = 'chin_cropped'; }
           const faceCenterX = (x1 + x2) / 2;
           if (measurable && Math.abs(faceCenterX - norm.width / 2) / norm.width > 0.15) { measurable = false; reason = 'off_center'; }
@@ -686,9 +682,9 @@ const httpServer = createServer(async (req, res) => {
           } catch { /* 통계 실패 시 게이트 미적용 */ }
         }
       }
-      // 화각 판정 — 노출 규격만 fit 기하를 추가 호출한다(다른 규격은 호출·응답 불변). 기하 실패는 fail-open (fit이 재검출·방어)
+      // 화각 판정 — 사람 조건을 통과한 사진만, 전 규격 공통. 기하 실패는 판정 없이 통과 + WARNING
       let fov = null;
-      if (measurable && fovExposed(body.slug) && faceBox && CROP_ENGINE_URL && matteEnabled() && matteSlugAllowed(body.slug)) {
+      if (measurable && body.slug && faceBox && CROP_ENGINE_URL && matteEnabled() && matteSlugAllowed(body.slug)) {
         const fovSpec = getSpecCropParams(body.slug);
         if (fovSpec) {
           try {
@@ -700,13 +696,14 @@ const httpServer = createServer(async (req, res) => {
               spec: fovSpec, slug: body.slug, cropEngineUrl: CROP_ENGINE_URL, slog, sharp, timeoutMs: 15000,
             });
             if (g.frame) {
-              const outside = frameOutside(g.frame, { width: norm.width, height: norm.height });
-              fov = { outside, verdict: judgeFov(outside), cause: fovCause(outside) };
-              if (fov.verdict === 'block') { measurable = false; reason = fov.cause === 'off_center' ? 'narrow_fov_off_center' : 'narrow_fov'; }
-              slog(`[IDPhoto][precheck] ${body.slug} 화각 outside=${JSON.stringify(outside)} verdict=${fov.verdict} cause=${fov.cause}`);
+              fov = assessFov(g.frame, { width: norm.width, height: norm.height }, fovSpec.frameW);
+              if (fov.verdict === 'block') { measurable = false; reason = fovRejectionReason(fov); }
+              slog(`[IDPhoto][precheck] ${body.slug} 화각 outside=${JSON.stringify(fov.outside)} mag=${fov.magnification} faceRatio=${faceRatio} verdict=${fov.verdict} cause=${fov.cause}`);
+            } else {
+              log(`[IDPhoto][precheck] ${body.slug} 화각 판정 불가 (프레임 없음) → 판정 없이 통과`, 'WARNING');
             }
           } catch (fe) {
-            slog(`[IDPhoto][precheck] 화각 판정 불가 (${fe.message}) → fail-open`);
+            log(`[IDPhoto][precheck] ${body.slug} 화각 판정 불가 (${fe.message}) → 판정 없이 통과`, 'WARNING');
           }
         }
       }
@@ -718,7 +715,7 @@ const httpServer = createServer(async (req, res) => {
           imageBuf: norm.buf, faceBox, slug: body.slug || 'precheck',
           engineState: await enginePromise, runMatte: runMatteChain, warn: (msg) => log(msg, 'WARNING'),
         });
-        if (crownCheck.touched) { measurable = false; reason = 'crown_cropped'; }
+        if (crownCheck.touched) { measurable = false; reason = 'fov_tight_top'; }
       }
       if (measurable) warmupMatteEngine(); // 게이트 통과자만 예열 — 구경·불합격 트래픽 웜 비용 차단 (자체 서버 불통 시에만 RunPod)
       // engineReady=false → 백업 처리 예정. 고객 화면 사전 안내용 — 엔진명은 싣지 않는다 (ch8)
@@ -728,7 +725,7 @@ const httpServer = createServer(async (req, res) => {
       if (crownCheck) out.crownCheck = crownCheck;
       // 미리보기 썸네일 배선(§10-2)은 §11-1로 제거 — sharp가 HEIC를 디코드하지 못해 성립하지 않았다.
       // 서버 디코더(B안)를 도입하면 이 자리에 축소본을 실어 클라이언트 미리보기를 복구한다.
-      slog(`[IDPhoto][precheck] 코드게이트 측정성=${measurable}${reason ? `(${reason})` : ''} faces=${nFaces} fbH=${faceRatio !== null ? Math.round(faceRatio * norm.height) : '-'}px crown=${crownMargin} crownCheck=${crownCheck ? JSON.stringify(crownCheck) : '-'} bright=${bright} shadow=${shadowDiff} roll=${rollDeg} yaw=${yawRatio} engineReady=${engineReady} ${Date.now() - t0}ms`);
+      slog(`[IDPhoto][precheck] 코드게이트 측정성=${measurable}${reason ? `(${reason})` : ''} faces=${nFaces} fbH=${faceRatio !== null ? Math.round(faceRatio * norm.height) : '-'}px faceRatio=${faceRatio} fov=${fov ? `${fov.verdict}/${fov.cause}/${fov.magnification}` : '-'} crown=${crownMargin} crownCheck=${crownCheck ? JSON.stringify(crownCheck) : '-'} bright=${bright} shadow=${shadowDiff} roll=${rollDeg} yaw=${yawRatio} engineReady=${engineReady} ${Date.now() - t0}ms`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify(out));
     } catch (err) {

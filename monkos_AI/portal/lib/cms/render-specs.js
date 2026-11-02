@@ -681,6 +681,7 @@ ${relatedServices(ctx)}
     format: typeSlug,
     market,
     frameRatio: fitCropParams ? +(fitCropParams.frameH / fitCropParams.frameW).toFixed(4) : null,
+    specLabel: `${countryName} ${typeName}`,
     downloadName: `${countryName}_${typeName}_${locField(specData, 'size', lang).replace(/\s/g, '')}_MONKOS.jpg`,
     t: v2.js,
     pilot: true,

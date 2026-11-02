@@ -1,17 +1,18 @@
 /**
- * 화각 부족 판정 — 이탈량 계산·경계값·노출 범위 (ORDER_20261102 미국비자_화각부족판정)
+ * 화각 판정 — 이탈량·배율·경계값 (ORDER_20261102 미국비자_화각부족판정, 정수리 지시서 §8)
  */
-import { frameOutside, judgeFov, fovCause, fovExposed, FOV_WARN_RATIO, FOV_BLOCK_RATIO } from '../lib/fit-fov.js';
+import { frameOutside, judgeFov, judgeWide, fovCause, assessFov, fovRejectionReason, FOV_WARN_RATIO, FOV_BLOCK_RATIO, FOV_WIDE_WARN, FOV_WIDE_BLOCK } from '../lib/fit-fov.js';
 
 const IMG = { width: 1000, height: 1000 };
+const o = (v) => ({ top: 0, bottom: 0, left: 0, right: 0, ...v });
 
 describe('frameOutside', () => {
   test('프레임이 원본 안이면 전부 0', () => {
-    expect(frameOutside({ x: 100, y: 100, w: 500, h: 500 }, IMG)).toEqual({ top: 0, bottom: 0, left: 0, right: 0 });
+    expect(frameOutside({ x: 100, y: 100, w: 500, h: 500 }, IMG)).toEqual(o({}));
   });
 
   test('프레임이 원본과 정확히 일치하면 0 (경계)', () => {
-    expect(frameOutside({ x: 0, y: 0, w: 1000, h: 1000 }, IMG)).toEqual({ top: 0, bottom: 0, left: 0, right: 0 });
+    expect(frameOutside({ x: 0, y: 0, w: 1000, h: 1000 }, IMG)).toEqual(o({}));
   });
 
   test('네 방향을 프레임 크기 대비 비율로 계산', () => {
@@ -22,8 +23,6 @@ describe('frameOutside', () => {
 });
 
 describe('judgeFov', () => {
-  const o = (v) => ({ top: 0, bottom: 0, left: 0, right: 0, ...v });
-
   test('임계값 자체는 상향하지 않고 초과부터 상향', () => {
     expect(judgeFov(o({ left: FOV_WARN_RATIO }))).toBe('ok');
     expect(judgeFov(o({ left: FOV_WARN_RATIO + 0.0001 }))).toBe('warn');
@@ -44,9 +43,16 @@ describe('judgeFov', () => {
   });
 });
 
-describe('fovCause', () => {
-  const o = (v) => ({ top: 0, bottom: 0, left: 0, right: 0, ...v });
+describe('judgeWide', () => {
+  test('경계 — 1.0·1.5 자체는 상향하지 않는다', () => {
+    expect(judgeWide(FOV_WIDE_WARN)).toBe('ok');
+    expect(judgeWide(FOV_WIDE_WARN + 0.001)).toBe('warn');
+    expect(judgeWide(FOV_WIDE_BLOCK)).toBe('warn');
+    expect(judgeWide(FOV_WIDE_BLOCK + 0.001)).toBe('block');
+  });
+});
 
+describe('fovCause', () => {
   test('한쪽만 이탈하면 off_center (c15 실측값)', () => {
     expect(fovCause(o({ left: 0.028, right: 0.117 }))).toBe('off_center');
   });
@@ -60,17 +66,38 @@ describe('fovCause', () => {
   test('양쪽 이탈은 narrow (selfie_c09 실측값)', () => {
     expect(fovCause(o({ left: 0.11, right: 0.081, bottom: 0.04 }))).toBe('narrow');
   });
-
-  test('원인은 판정을 바꾸지 않는다', () => {
-    expect(judgeFov(o({ left: 0.028, right: 0.117 }))).toBe('block');
-  });
 });
 
-describe('fovExposed', () => {
-  test('us-visa만 노출', () => {
-    expect(fovExposed('us-visa')).toBe(true);
-    expect(fovExposed('kr-passport')).toBe(false);
-    expect(fovExposed('us-passport')).toBe(false);
-    expect(fovExposed(undefined)).toBe(false);
+describe('assessFov', () => {
+  const inside = { x: 100, y: 100, w: 500, h: 500 };
+
+  test('프레임 안 + 원본 충분 → ok, cause 없음', () => {
+    const r = assessFov(inside, IMG, 400);
+    expect(r).toMatchObject({ verdict: 'ok', cause: null, magnification: 0.8, frame: inside, imageSize: IMG });
+    expect(fovRejectionReason(r)).toBeNull();
+  });
+
+  test('배율 1.2 → wide warn', () => {
+    expect(assessFov(inside, IMG, 600)).toMatchObject({ verdict: 'warn', cause: 'wide' });
+  });
+
+  test('배율 2 → wide block + 반려 코드', () => {
+    const r = assessFov(inside, IMG, 1000);
+    expect(r).toMatchObject({ verdict: 'block', cause: 'wide' });
+    expect(fovRejectionReason(r)).toBe('fov_wide');
+  });
+
+  test('이탈 block이 wide warn보다 우선', () => {
+    const r = assessFov({ x: -200, y: 0, w: 1000, h: 1100 }, IMG, 1100);
+    expect(r.verdict).toBe('block');
+    expect(fovRejectionReason(r)).toBe('fov_tight_side');
+  });
+
+  test('같은 수준이면 이탈을 먼저 말한다', () => {
+    expect(assessFov({ x: -60, y: 0, w: 1000, h: 1000 }, IMG, 1100)).toMatchObject({ verdict: 'warn', cause: 'off_center' });
+  });
+
+  test('한쪽 이탈 block → fov_off_center', () => {
+    expect(fovRejectionReason(assessFov({ x: 200, y: 0, w: 900, h: 900 }, IMG, 400))).toBe('fov_off_center');
   });
 });
