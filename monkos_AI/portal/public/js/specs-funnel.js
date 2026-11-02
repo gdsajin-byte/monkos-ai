@@ -1345,6 +1345,8 @@ var SpecsFunnel = (function(){
   // 토스 결제위젯 방식 (2026-07-05 전환) — 상점 라이브 계약이 위젯 연동(live_gck)에만 있음.
   // 구 결제창(payment/live_ck) 방식은 API 개별연동 MID 계약 미완료로 라이브 결제 불가 (2026-03 위젯 전환 이력).
   var tossWidgets = null, tossWidgetRendered = false, tossRenderInFlight = false;
+  // 카드사·약관 미충족 시 결제 버튼 비활성 (toss-pay-guard.js). 스크립트가 없는 구본 HTML이면 null — 기존 동작 유지
+  var payGuard = null;
   // 위젯 로딩 표시 — 렌더가 4~18초 걸리는 동안 화면이 비어 있으면 고객은 고장으로 읽고 떠난다 (09-20 네이버 인앱 init 후 무기록 이탈)
   var PAY_LOADING = { ko: '결제창을 불러오는 중입니다…', ja: '決済画面を読み込んでいます…', en: 'Loading the payment form…', es: 'Cargando el formulario de pago…' };
   function setWidgetLoading(on){
@@ -1377,7 +1379,11 @@ var SpecsFunnel = (function(){
       persistOrder(); // 호출부의 persistOrder 는 lastTossInit 설정 전에 끝난다 — 여기서 다시 저장해야 복귀 재오픈이 성립
       var _cur = (d.currency === 'USD' || CFG.market !== 'kr') ? '$' : '₩';
       var _amt = _cur === '$' ? String(d.amount) : String(d.amount).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-      btn.textContent = T.payBtnLabel.replace('{price}', _cur + _amt);
+      var _priceLabel = T.payBtnLabel.replace('{price}', _cur + _amt);
+      if(!payGuard && window.TossPayGuard){
+        payGuard = window.TossPayGuard.create({ btn: btn, needCardLabel: T.payNeedCard, needAgreeLabel: T.payNeedAgree });
+      }
+      if(payGuard) payGuard.setPriceLabel(_priceLabel); else btn.textContent = _priceLabel;
       wrap.style.display = 'block';
       setWidgetOpenUI(true);
       // 렌더 멈춤 감시 — 프라미스가 끝나지 않으면 payBusy가 고착돼 첫 버튼이 영구 무반응이 된다.
@@ -1395,10 +1401,15 @@ var SpecsFunnel = (function(){
       }, 12000);
       tossWidgets.setAmount({ currency: d.currency || 'KRW', value: d.amount })
         .then(function(){
-          if(tossWidgetRendered) return;
+          // 재오픈은 렌더를 건너뛴다 — 보관한 인스턴스로 선택·약관 상태만 다시 잰다
+          if(tossWidgetRendered){ if(payGuard) payGuard.refresh(); return; }
+          var pmWidget;
           return tossWidgets.renderPaymentMethods({ selector: '#v2-pm' })
-            .then(function(){ return tossWidgets.renderAgreement({ selector: '#v2-agree' }); })
-            .then(function(){ tossWidgetRendered = true; });
+            .then(function(w){ pmWidget = w; return tossWidgets.renderAgreement({ selector: '#v2-agree' }); })
+            .then(function(agreementWidget){
+              tossWidgetRendered = true;
+              if(payGuard) payGuard.attach(pmWidget, agreementWidget);
+            });
         })
         .then(function(){
           renderSettled = true; clearTimeout(renderTimer);
@@ -1421,6 +1432,7 @@ var SpecsFunnel = (function(){
           reportPayFail('widget', (e && e.code) || 'RENDER_FAILED', (e && e.message) || '');
         });
       btn.onclick = function(){
+        if(payGuard && !payGuard.canPay()) return;
         gaTrack('pay_confirm_click', { payment_provider: GA_PAY.payment_provider }, true);
         hidePayError();
         var base = returnBase();

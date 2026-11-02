@@ -462,6 +462,7 @@
 }
 /* .hs-btn 의 transition: all 이 고정 전환 때 폭·위치를 애니메이션시키지 않게 opacity 로 한정 */
 #hsPayConfirm { transition: opacity 0.15s; }
+#hsPayConfirm:disabled { opacity: 0.6; cursor: not-allowed; }
 /* 인라인 style(width:100%;margin-top:12px)을 이겨야 해서 !important — transform 없이 좌우 auto 마진으로 중앙 정렬 */
 #hsPayConfirm.is-docked {
   position: fixed; left: 0; right: 0; bottom: calc(12px + env(safe-area-inset-bottom, 0px));

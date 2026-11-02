@@ -82,6 +82,8 @@ const I18N = {
       orLogin: '로그인하고 첫 1컷 무료 받기',
       orCharge: '또는 크레딧 충전하기 (충전할수록 할인)',
       confirmSuffix: '결제하기',
+      needCard: '카드사를 먼저 골라 주세요',
+      needAgree: '약관에 동의해 주세요',
       waiting: '결제 확인 중...',
       waitingHint: '결제 창에서 결제를 완료해주세요',
       confirming: '결제 승인 중...',
@@ -177,6 +179,8 @@ const I18N = {
       orLogin: 'Sign in & get your first headshot free',
       orCharge: 'Or top up credits (bulk discounts)',
       confirmSuffix: 'Pay',
+      needCard: 'Please choose a card company first',
+      needAgree: 'Please agree to the terms',
       waiting: 'Waiting for payment...',
       waitingHint: 'Complete the payment in the checkout window',
       confirming: 'Confirming payment...',
@@ -272,6 +276,8 @@ const I18N = {
       orLogin: 'ログインして初回1枚無料',
       orCharge: 'またはクレジットをチャージ（まとめ買い割引）',
       confirmSuffix: '支払う',
+      needCard: 'カード会社を選択してください',
+      needAgree: '利用規約に同意してください',
       waiting: '決済を確認中...',
       waitingHint: '決済ウィンドウでお支払いを完了してください',
       confirming: '決済を承認中...',
@@ -579,6 +585,7 @@ ${market === 'kr' ? '<script src="https://js.tosspayments.com/v2/standard"></scr
     i18n: d.pay,
   })};
 </script>
+${market === 'kr' ? '<script src="/js/toss-pay-guard.js"></script>' : ''}
 <script src="/js/headshot.js"></script>
 <script src="/js/track.js"></script>
 </body>

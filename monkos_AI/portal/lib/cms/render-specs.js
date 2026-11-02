@@ -698,7 +698,7 @@ ${relatedServices(ctx)}
   const pageScript = v2ClientCfg ? `window.__SPECS_CFG__ = ${JSON.stringify(v2ClientCfg)};` : '';
 
   const funnelAssets = isFunnelDisabled ? '' :
-    `\n<script src="/components/attire-picker/attire-picker.js?v=${ASSET_VER}" defer></script>` + specsJsTag('specs-funnel');
+    `\n<script src="/components/attire-picker/attire-picker.js?v=${ASSET_VER}" defer></script>` + (market === 'kr' ? specsJsTag('toss-pay-guard') : '') + specsJsTag('specs-funnel');
 
   return {
     title,
