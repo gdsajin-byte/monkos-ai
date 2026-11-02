@@ -156,7 +156,7 @@ var SpecsFunnel = (function(){
     h.textContent = fovText('fov_unusable_title', fov);
     var p = document.createElement('div');
     p.style.cssText = 'margin-top:8px;font-size:15px;line-height:1.5;color:#111827;';
-    p.textContent = fovText(fov.cause === 'off_center' ? 'fov_unusable_body_off' : 'fov_unusable_body', fov);
+    p.textContent = fovText(fov.cause === 'off_center' ? 'fov_unusable_body_off' : fov.cause === 'head_margin' ? 'fov_unusable_body_head' : 'fov_unusable_body', fov);
     box.appendChild(h); box.appendChild(p);
     var mk = document.getElementById('v2-fit-make');
     mk.textContent = T.fov_ai_btn.replace('{price}', CFG.price || '');
@@ -250,7 +250,7 @@ var SpecsFunnel = (function(){
     clearFovOverlay();
     var fov = data && data.fov;
     if(!fov || !fov.frame || !fov.imageSize || !fov.outside) return;
-    var topShort = !!(data.crownCheck && data.crownCheck.touched);
+    var topShort = !!(data.crownCheck && data.crownCheck.touched) || fov.cause === 'head_margin';
     var svg = fovOverlaySvg(fov, topShort);
     if(data.measurable === false){
       var ci = document.getElementById('v2-check-img');
@@ -697,7 +697,7 @@ var SpecsFunnel = (function(){
               applyFovAiOnly(data.fov);
             } else {
               showFovNotice(data.fov && data.fov.verdict === 'warn'
-                ? fovText(data.fov.cause === 'off_center' ? 'warn_fov_off_center' : data.fov.cause === 'wide' ? 'warn_fov_wide' : 'warn_fov_tight_side', data.fov)
+                ? fovText(data.fov.cause === 'off_center' ? 'warn_fov_off_center' : data.fov.cause === 'head_margin' ? 'warn_fov_head_margin' : data.fov.cause === 'wide' ? 'warn_fov_wide' : 'warn_fov_tight_side', data.fov)
                 : null);
             }
             showFovOverlay(data);
@@ -1082,7 +1082,7 @@ var SpecsFunnel = (function(){
 
     fetch('/api/idphoto/fit', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ image: uploadedBase64, slug: CFG.slug, faceBox: precheckData && precheckData.faceBox })
+      body: JSON.stringify({ image: uploadedBase64, slug: CFG.slug, faceBox: precheckData && precheckData.faceBox, hairTopRatio: precheckData && precheckData.crownCheck ? precheckData.crownCheck.hairTopRatio : null })
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
