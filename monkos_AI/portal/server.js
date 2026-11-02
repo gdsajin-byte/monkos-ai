@@ -44,7 +44,7 @@ import { generateIdPhoto, buildT1Prompt } from './lib/idphoto-generate.js';
 import { cropToSpec, warmupCropEngine, getSpecCropParams } from './lib/spec-crop.js';
 import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, getMatteEngineState, stripDataUri, getSpecBgColor, cropMetaWithinSpec, runMatteChain } from './lib/matte.js';
 import { judgeMetrics, metricsFromFit } from './lib/spec-judge.js';
-import { frameOutside, judgeFov, fovExposed } from './lib/fit-fov.js';
+import { frameOutside, judgeFov, fovCause, fovExposed } from './lib/fit-fov.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
@@ -535,8 +535,8 @@ const httpServer = createServer(async (req, res) => {
       }
       const frameInitial = { ...frame };
       const outside = frameOutside(frame, { width: W, height: H });
-      const fov = { outside, verdict: judgeFov(outside) };
-      slog(`[Fit] ${slug}: 화각 outside=${JSON.stringify(outside)} verdict=${fov.verdict}`);
+      const fov = { outside, verdict: judgeFov(outside), cause: fovCause(outside) };
+      slog(`[Fit] ${slug}: 화각 outside=${JSON.stringify(outside)} verdict=${fov.verdict} cause=${fov.cause}`);
 
       // ③ 코드 소견 — metrics 기반 (Gemini 비전 퇴출 2026-07-09)
       let vision = null;
@@ -700,9 +700,9 @@ const httpServer = createServer(async (req, res) => {
             });
             if (g.frame) {
               const outside = frameOutside(g.frame, { width: norm.width, height: norm.height });
-              fov = { outside, verdict: judgeFov(outside) };
-              if (fov.verdict === 'block') { measurable = false; reason = 'narrow_fov'; }
-              slog(`[IDPhoto][precheck] ${body.slug} 화각 outside=${JSON.stringify(outside)} verdict=${fov.verdict}`);
+              fov = { outside, verdict: judgeFov(outside), cause: fovCause(outside) };
+              if (fov.verdict === 'block') { measurable = false; reason = fov.cause === 'off_center' ? 'narrow_fov_off_center' : 'narrow_fov'; }
+              slog(`[IDPhoto][precheck] ${body.slug} 화각 outside=${JSON.stringify(outside)} verdict=${fov.verdict} cause=${fov.cause}`);
             }
           } catch (fe) {
             slog(`[IDPhoto][precheck] 화각 판정 불가 (${fe.message}) → fail-open`);

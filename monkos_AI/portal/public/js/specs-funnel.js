@@ -141,9 +141,9 @@ var SpecsFunnel = (function(){
     el.style.display = '';
   }
   /* 화각 부족 경고 (2026-11-02) — precheck fov.verdict==='warn'일 때만. 진행은 막지 않는다. 문구 키가 없는 언어는 생략 */
-  function showFovNotice(on){
+  function showFovNotice(msg){
     var el = document.getElementById('v2-fov-notice');
-    if(!on || !T.warn_narrow_fov){ if(el) el.style.display = 'none'; return; }
+    if(!msg){ if(el) el.style.display = 'none'; return; }
     if(!el){
       var anchor = document.getElementById('v2-fit-actions');
       if(!anchor || !anchor.parentNode) return;
@@ -153,7 +153,7 @@ var SpecsFunnel = (function(){
       el.style.cssText = 'margin:10px 0 0;font-size:13px;line-height:1.5;color:#a8693b;text-align:center;';
       anchor.parentNode.insertBefore(el, anchor.nextSibling);
     }
-    el.textContent = T.warn_narrow_fov;
+    el.textContent = msg;
     el.style.display = '';
   }
   function showError(msg){ errorMsg.textContent = msg; errorMsg.classList.add('show'); noteError(msg, errorMsg); }
@@ -579,7 +579,9 @@ var SpecsFunnel = (function(){
           } else {
             prepareFreeReady();
             showEngineNotice(engineBackup());
-            showFovNotice(!!(data.fov && data.fov.verdict === 'warn'));
+            showFovNotice(data.fov && data.fov.verdict === 'warn'
+              ? (data.fov.cause === 'off_center' ? T.warn_narrow_fov_off_center : T.warn_narrow_fov)
+              : null);
           }
           // 이미지 저장을 검수 시점에 선행 — 결제 클릭 체인에서 캔버스 압축을 제거해
           // 토스 결제창의 user activation 만료(팝업 차단)를 방지 (2026-07-05 E2E 실패 수정)

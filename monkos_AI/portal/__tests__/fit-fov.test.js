@@ -1,7 +1,7 @@
 /**
  * 화각 부족 판정 — 이탈량 계산·경계값·노출 범위 (ORDER_20261102 미국비자_화각부족판정)
  */
-import { frameOutside, judgeFov, fovExposed, FOV_WARN_RATIO, FOV_BLOCK_RATIO } from '../lib/fit-fov.js';
+import { frameOutside, judgeFov, fovCause, fovExposed, FOV_WARN_RATIO, FOV_BLOCK_RATIO } from '../lib/fit-fov.js';
 
 const IMG = { width: 1000, height: 1000 };
 
@@ -41,6 +41,28 @@ describe('judgeFov', () => {
 
   test('좌·우·아래 중 최댓값 기준', () => {
     expect(judgeFov(o({ left: 0.01, right: 0.06, bottom: 0.02 }))).toBe('warn');
+  });
+});
+
+describe('fovCause', () => {
+  const o = (v) => ({ top: 0, bottom: 0, left: 0, right: 0, ...v });
+
+  test('한쪽만 이탈하면 off_center (c15 실측값)', () => {
+    expect(fovCause(o({ left: 0.028, right: 0.117 }))).toBe('off_center');
+  });
+
+  test('경계 — 작은 쪽·아래 3%는 off_center, 초과는 narrow', () => {
+    expect(fovCause(o({ left: 0.03, right: 0.1, bottom: 0.03 }))).toBe('off_center');
+    expect(fovCause(o({ left: 0.0301, right: 0.1 }))).toBe('narrow');
+    expect(fovCause(o({ left: 0, right: 0.1, bottom: 0.0301 }))).toBe('narrow');
+  });
+
+  test('양쪽 이탈은 narrow (selfie_c09 실측값)', () => {
+    expect(fovCause(o({ left: 0.11, right: 0.081, bottom: 0.04 }))).toBe('narrow');
+  });
+
+  test('원인은 판정을 바꾸지 않는다', () => {
+    expect(judgeFov(o({ left: 0.028, right: 0.117 }))).toBe('block');
   });
 });
 

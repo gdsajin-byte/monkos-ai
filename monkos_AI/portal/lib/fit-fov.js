@@ -20,6 +20,16 @@ export function fovExposed(slug) {
 
 const ratio = (px, base) => +(Math.max(0, px) / base).toFixed(4);
 
+// 작은 쪽 좌우·아래가 모두 이 값 이하이면 거리 부족이 아니라 좌우 쏠림으로 본다 (2026-11-02 쌍아 결정). 문안만 가른다
+const FOV_ONE_SIDED_RATIO = 0.03;
+
+/** 이탈 원인 — 'off_center'(한쪽만 이탈) | 'narrow'. 판정(judgeFov)에는 영향 없음 */
+export function fovCause(outside) {
+  const oneSided = Math.min(outside.left, outside.right) <= FOV_ONE_SIDED_RATIO
+    && outside.bottom <= FOV_ONE_SIDED_RATIO;
+  return oneSided ? 'off_center' : 'narrow';
+}
+
 /** frame·imageSize(같은 좌표계) → 프레임 높이·너비 대비 원본 밖 비율 0~1 */
 export function frameOutside(frame, imageSize) {
   return {
