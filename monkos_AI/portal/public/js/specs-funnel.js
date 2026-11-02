@@ -165,7 +165,7 @@ var SpecsFunnel = (function(){
       hint.id = 'v2-fov-hint';
       hint.style.cssText = 'width:100%;margin:0;font-size:12px;line-height:1.45;color:#6b7280;text-align:center;';
       hint.textContent = T.fov_ai_hint;
-      mk.parentNode.insertBefore(hint, mk.nextSibling);
+      mk.parentNode.insertBefore(hint, mk); // 버튼 영역은 역순 배치 — DOM 앞이 화면 아래
     }
     var ch = document.getElementById('v2-fit-change');
     if(ch){ if(!ch.dataset.label) ch.dataset.label = ch.textContent; ch.textContent = T.fov_other_btn; }
