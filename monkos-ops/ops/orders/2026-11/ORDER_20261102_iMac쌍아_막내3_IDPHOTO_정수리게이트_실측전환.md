@@ -64,3 +64,14 @@ portfolio: PF_IDPHOTO
 ```
 [fix] precheck 정수리 게이트 추정 폐지 → 매팅 알파 실측 (PF_IDPHOTO)
 ```
+
+## 7. 추가 — 미국 비자 두상 목표 26 → 31mm
+
+**[2026-11-02 19:36 KST]** iMac/쌍아 → iMac/쌍아-막내3
+
+출처: 작가님 2026-11-02 19:36 iMac 쌍아 세션 사람 턴 "31 정도로 잡아보자"(규정 50~69%=25~35mm, 현행 26mm=51%는 `spec-crop.js:84` 하한+1 규칙 결과).
+
+1. `specs-data.json` us-visa에 `faceTargetExplicitMm: 31` 1건만. 규칙(`spec-crop.js:84`)은 건드리지 않는다.
+2. 정수리 실측 작업과 **별도 커밋**(롤백 단위 분리).
+3. 재측정: 막내3 화각 표본(c11·c12·c14·c15·selfie_c09·sweep 계열·close 계열)으로 26 vs 31 `outside` 전후 표 + 머리끝 여백(mm) — 잘림 0 확인. 화각 임계(5%·8%)는 유지하고 판정 분포 변화만 보고(임계 조정 제안은 표로).
+4. 다른 규격 불변(diff로 확인). 엣지 재배포 대상(specs-data) — prod 판정표에 명기.
