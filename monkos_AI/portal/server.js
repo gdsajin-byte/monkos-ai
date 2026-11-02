@@ -45,6 +45,7 @@ import { cropToSpec, warmupCropEngine, getSpecCropParams } from './lib/spec-crop
 import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, getMatteEngineState, stripDataUri, getSpecBgColor, cropMetaWithinSpec, runMatteChain } from './lib/matte.js';
 import { judgeMetrics, metricsFromFit } from './lib/spec-judge.js';
 import { frameOutside, judgeFov, fovCause, fovExposed } from './lib/fit-fov.js';
+import { checkCrownContact } from './lib/hair-measure.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
@@ -656,8 +657,8 @@ const httpServer = createServer(async (req, res) => {
             const eyeY = (k[0][1] + k[1][1]) / 2;
             const crownEstY = 2 * eyeY - y2;
             const hairTopEstY = crownEstY - (y2 - crownEstY) * 0.08;
+            // 추정값은 로그 전용 — 반려·경고에 쓰지 않는다 (2026-11-02 작가님: 잘리지 않은 사진에 "잘렸다" 금지). 판정은 아래 매팅 실측
             crownMargin = +(hairTopEstY / norm.height).toFixed(3);
-            if (measurable && hairTopEstY < 0) { measurable = false; reason = 'crown_cropped'; }
           }
           // 포즈 게이트 — 5점 kps (roll/yaw 충분, pitch는 캘리브레이션 후 복원)
           if (measurable && rollDeg !== null && Math.abs(rollDeg) > 8) { measurable = false; reason = 'head_tilted'; }
@@ -709,14 +710,25 @@ const httpServer = createServer(async (req, res) => {
           }
         }
       }
+      // 정수리 실측 — 축소본 매팅 1회, 머리 폭 열에서 최상단 접촉 판정. 실패·타임아웃은 판정 없이 통과 + WARNING.
+      // 자체 서버 불통(backup)이면 호출하지 않는다: RunPod 콜드는 5초 안에 못 끝나고 과금만 남는다
+      let crownCheck = null;
+      if (measurable && faceBox && matteEnabled()) {
+        crownCheck = await checkCrownContact({
+          imageBuf: norm.buf, faceBox, slug: body.slug || 'precheck',
+          engineState: await enginePromise, runMatte: runMatteChain, warn: (msg) => log(msg, 'WARNING'),
+        });
+        if (crownCheck.touched) { measurable = false; reason = 'crown_cropped'; }
+      }
       if (measurable) warmupMatteEngine(); // 게이트 통과자만 예열 — 구경·불합격 트래픽 웜 비용 차단 (자체 서버 불통 시에만 RunPod)
       // engineReady=false → 백업 처리 예정. 고객 화면 사전 안내용 — 엔진명은 싣지 않는다 (ch8)
       const engineReady = (await enginePromise) !== 'backup';
       const out = { measurable, rejectionReason: reason, faceBox, faceRatio, checks: [], engineReady };
       if (fov) out.fov = fov;
+      if (crownCheck) out.crownCheck = crownCheck;
       // 미리보기 썸네일 배선(§10-2)은 §11-1로 제거 — sharp가 HEIC를 디코드하지 못해 성립하지 않았다.
       // 서버 디코더(B안)를 도입하면 이 자리에 축소본을 실어 클라이언트 미리보기를 복구한다.
-      slog(`[IDPhoto][precheck] 코드게이트 측정성=${measurable}${reason ? `(${reason})` : ''} faces=${nFaces} fbH=${faceRatio !== null ? Math.round(faceRatio * norm.height) : '-'}px crown=${crownMargin} bright=${bright} shadow=${shadowDiff} roll=${rollDeg} yaw=${yawRatio} engineReady=${engineReady} ${Date.now() - t0}ms`);
+      slog(`[IDPhoto][precheck] 코드게이트 측정성=${measurable}${reason ? `(${reason})` : ''} faces=${nFaces} fbH=${faceRatio !== null ? Math.round(faceRatio * norm.height) : '-'}px crown=${crownMargin} crownCheck=${crownCheck ? JSON.stringify(crownCheck) : '-'} bright=${bright} shadow=${shadowDiff} roll=${rollDeg} yaw=${yawRatio} engineReady=${engineReady} ${Date.now() - t0}ms`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify(out));
     } catch (err) {

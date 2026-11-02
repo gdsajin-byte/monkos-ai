@@ -86,6 +86,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 11/02 | ?/? | **ORDER** precheck 정수리 잘림 게이트 — 추정(눈~박스 미러) 판정 폐지, 매팅 알파 실측으로 전환. 실제로 잘린 사진에만 "정수리가 잘렸어요" 표시, dev 검증까지 | [ORDER_20261102_iMac쌍아_막내3_IDPHOTO_정수리게이트_실측전환](../../orders/2026-11/ORDER_20261102_iMac쌍아_막내3_IDPHOTO_정수리게이트_실측전환.md) | ⏳ |
 | 11/02 | iMac/쌍아 | **DESIGN** DESIGN_20261102_IDPHOTO_추천화각_레퍼런스_경고 | [DESIGN_20261102_IDPHOTO_추천화각_레퍼런스_경고](../../../tech/designs/2026-11/DESIGN_20261102_IDPHOTO_추천화각_레퍼런스_경고.md) | ⏳ |
 | 11/02 | ?/? | **ORDER** 업로드 화면 추천 화각 레퍼런스 — specs 대표 여성 마스터 + 추천 범위(초록 점선)·규격 잘림 범위(흰 실선) 오버레이, dev까지 | [ORDER_20261102_iMac쌍아_막내4_IDPHOTO_추천화각_레퍼런스안내](../../orders/2026-11/ORDER_20261102_iMac쌍아_막내4_IDPHOTO_추천화각_레퍼런스안내.md) | ⏳ |
+| 11/02 | iMac/쌍아-막내3 | **COMPLETION** COMPLETION_20261102_iMac쌍아-막내3_IDPHOTO_정수리게이트_실측전환 | [COMPLETION_20261102_iMac쌍아-막내3_IDPHOTO_정수리게이트_실측전환](../../reports/2026-11/COMPLETION_20261102_iMac쌍아-막내3_IDPHOTO_정수리게이트_실측전환.md) | ✅ |
 
 ### Phase 1 — idphoto-kr/jp 웹 서비스 (01/16~02/14)
 
