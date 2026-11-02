@@ -6,9 +6,10 @@
  * 위쪽 이탈은 배경과 같은 색으로 채워져 보이지 않으므로 판정에서 제외한다.
  */
 
-// 임계 근거: COMPLETION_20261102 화각부족판정 임계 표 (dev 실측). 초안 warn 3%는 어깨가 가장자리에 닿지 않는 3.2~3.7%대를 오경보해 5%로 상향
+// 임계 근거: COMPLETION_20261102 화각부족판정 임계 표 (dev 실측). 초안 warn 3%는 어깨가 가장자리에 닿지 않는 3.2~3.7%대를 오경보해 5%로 상향.
+// block은 초안 12%에서 8%로 하향 — 11% 실물에서 몸 좌·우·아래 직선 잘림이 또렷해 출고 불가 품질 (2026-11-02 쌍아 결정)
 export const FOV_WARN_RATIO = 0.05;
-export const FOV_BLOCK_RATIO = 0.12;
+export const FOV_BLOCK_RATIO = 0.08;
 
 // 노출 규격 정본 — 판정 코드는 공통, 고객 노출은 여기 등재된 슬러그만
 const FOV_EXPOSED_SLUGS = new Set(['us-visa']);
