@@ -44,6 +44,7 @@ import { generateIdPhoto, buildT1Prompt } from './lib/idphoto-generate.js';
 import { cropToSpec, warmupCropEngine, getSpecCropParams } from './lib/spec-crop.js';
 import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, getMatteEngineState, stripDataUri, getSpecBgColor, cropMetaWithinSpec, runMatteChain } from './lib/matte.js';
 import { judgeMetrics, metricsFromFit } from './lib/spec-judge.js';
+import { frameOutside, judgeFov, fovCause, fovExposed } from './lib/fit-fov.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
@@ -69,6 +70,62 @@ import { BLOG_REDIRECTS } from './lib/cms/redirects.js';
 import { handlePodStart, handlePodStatus, handlePodStop, handleComfyProxy } from './lib/vton/runpod.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+/**
+ * 러프 크롭 → crop-engine 기하 피팅 → 원본 좌표 역산 + 랜드마크 검증. /fit·precheck(화각 판정) 공용.
+ * 신뢰 랜드마크를 못 얻으면 frame=null.
+ */
+async function computeFitGeometry({ buf, W, H, fbPx, spec, slug, cropEngineUrl, slog, sharp, timeoutMs = 45000 }) {
+  // FaceMesh 입력 정규화 (2026-07-07 작가님: "FaceMesh에겐 얼굴이 적정 크기로 나오는 입력을 보내야")
+  // — IDPASS 카메라 가이드가 강제하던 조건의 웹 재현: 얼굴 높이를 목표 px로 리사이즈해 전달
+  async function buildRough(targetFaceH) {
+    if (!fbPx || fbPx.w <= 10 || fbPx.h <= 10) return { buf, rx: 0, ry: 0, scale: 1 };
+    const fh = fbPx.h;
+    const top = Math.max(0, Math.round(fbPx.y - fh * 1.3));
+    const bottom = Math.min(H, Math.round(fbPx.y + fh * 2.7));
+    const cx = fbPx.x + fbPx.w / 2;
+    const winH = bottom - top;
+    const winW = Math.min(W, Math.round(winH * (spec.frameW / spec.frameH) * 1.4));
+    const left = Math.max(0, Math.min(W - winW, Math.round(cx - winW / 2)));
+    if (winH < 50 || winW < 50) return { buf, rx: 0, ry: 0, scale: 1 };
+    const sc = Math.min(2, targetFaceH / fh); // 얼굴을 targetFaceH px로 (업스케일은 2배 한도)
+    const outW = Math.max(64, Math.round(winW * sc));
+    const outH = Math.max(64, Math.round(winH * sc));
+    const b = await sharp(buf).extract({ left, top, width: winW, height: winH })
+      .resize(outW, outH, { fit: 'fill' }).png().toBuffer();
+    return { buf: b, rx: left, ry: top, scale: sc };
+  }
+  // ② crop-engine 기하 피팅 — 정규화 입력, 랜드마크 해부학 검증, 실패 시 스케일 바꿔 1회 재시도.
+  // 사일런트 미스(감지 성공 플래그 + 쓰레기 좌표)는 검증으로만 잡힌다 — 엉뚱한 가이드 절대 금지.
+  let frame = null, lines = null, gate = null;
+  for (const targetFaceH of [280, 200]) {
+    const rough = await buildRough(targetFaceH);
+    const fitRes = await fetch(`${cropEngineUrl}/api/fit-spec`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: rough.buf.toString('base64'), spec, hairScan: false }),
+      signal: AbortSignal.timeout(timeoutMs),
+    }).then((r) => r.json()).catch(() => null);
+    if (!fitRes || !fitRes.success || !fitRes.detected) continue;
+    const sc = rough.scale;
+    const cand = {
+      frame: { x: fitRes.frame.x / sc + rough.rx, y: fitRes.frame.y / sc + rough.ry, w: fitRes.frame.w / sc, h: fitRes.frame.h / sc },
+      lines: {
+        crownY: fitRes.lines.crownY / sc + rough.ry,
+        eyeY: fitRes.lines.eyeY / sc + rough.ry,
+        chinY: fitRes.lines.chinY / sc + rough.ry,
+        hairTopY: (fitRes.lines.hairTopY ?? fitRes.lines.crownY) / sc + rough.ry,
+        eyeCenterX: (fitRes.lines.eyeCenterX ?? 0) / sc + rough.rx,
+      },
+    };
+    // FaceMesh 자체 정합으로 사일런트 미스 판정 — Gemini faceBox는 러프 크롭 산정에만 사용
+    const faceH = cand.lines.chinY - cand.lines.crownY;
+    const eyeChinRatio = (cand.lines.chinY - cand.lines.eyeY) / (faceH || 1);
+    const ok = faceH > 30 && eyeChinRatio > 0.35 && eyeChinRatio < 0.70;
+    if (ok) { frame = cand.frame; lines = cand.lines; gate = fitRes.gate || null; break; }
+    slog(`[Fit] ${slug}: 랜드마크 검증 이탈 (targetFaceH=${targetFaceH}, faceH=${Math.round(faceH)}, eyeChinRatio=${eyeChinRatio.toFixed(3)}) → 재시도`);
+  }
+  return { frame, lines, gate };
+}
 
 async function normalizeImage(rawBase64) {
   const { default: sharp } = await import('sharp');
@@ -470,60 +527,16 @@ const httpServer = createServer(async (req, res) => {
           : { x: faceBox.x, y: faceBox.y, w: faceBox.w, h: faceBox.h };
         detectSrc = 'legacy';
       }
-      // FaceMesh 입력 정규화 (2026-07-07 작가님: "FaceMesh에겐 얼굴이 적정 크기로 나오는 입력을 보내야")
-      // — IDPASS 카메라 가이드가 강제하던 조건의 웹 재현: 얼굴 높이를 목표 px로 리사이즈해 전달
-      async function buildRough(targetFaceH) {
-        if (!fbPx || fbPx.w <= 10 || fbPx.h <= 10) return { buf, rx: 0, ry: 0, scale: 1 };
-        const fh = fbPx.h;
-        const top = Math.max(0, Math.round(fbPx.y - fh * 1.3));
-        const bottom = Math.min(H, Math.round(fbPx.y + fh * 2.7));
-        const cx = fbPx.x + fbPx.w / 2;
-        const winH = bottom - top;
-        const winW = Math.min(W, Math.round(winH * (spec.frameW / spec.frameH) * 1.4));
-        const left = Math.max(0, Math.min(W - winW, Math.round(cx - winW / 2)));
-        if (winH < 50 || winW < 50) return { buf, rx: 0, ry: 0, scale: 1 };
-        const sc = Math.min(2, targetFaceH / fh); // 얼굴을 targetFaceH px로 (업스케일은 2배 한도)
-        const outW = Math.max(64, Math.round(winW * sc));
-        const outH = Math.max(64, Math.round(winH * sc));
-        const b = await sharp(buf).extract({ left, top, width: winW, height: winH })
-          .resize(outW, outH, { fit: 'fill' }).png().toBuffer();
-        return { buf: b, rx: left, ry: top, scale: sc };
-      }
-      // ② crop-engine 기하 피팅 — 정규화 입력, 랜드마크 해부학 검증, 실패 시 스케일 바꿔 1회 재시도.
-      // 사일런트 미스(감지 성공 플래그 + 쓰레기 좌표)는 검증으로만 잡힌다 — 엉뚱한 가이드 절대 금지.
-      let frame = null, lines = null, gate = null;
-      for (const targetFaceH of [280, 200]) {
-        const rough = await buildRough(targetFaceH);
-        const fitRes = await fetch(`${CROP_ENGINE_URL}/api/fit-spec`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: rough.buf.toString('base64'), spec, hairScan: false }),
-          signal: AbortSignal.timeout(45000),
-        }).then((r) => r.json()).catch(() => null);
-        if (!fitRes || !fitRes.success || !fitRes.detected) continue;
-        const sc = rough.scale;
-        const cand = {
-          frame: { x: fitRes.frame.x / sc + rough.rx, y: fitRes.frame.y / sc + rough.ry, w: fitRes.frame.w / sc, h: fitRes.frame.h / sc },
-          lines: {
-            crownY: fitRes.lines.crownY / sc + rough.ry,
-            eyeY: fitRes.lines.eyeY / sc + rough.ry,
-            chinY: fitRes.lines.chinY / sc + rough.ry,
-            hairTopY: (fitRes.lines.hairTopY ?? fitRes.lines.crownY) / sc + rough.ry,
-            eyeCenterX: (fitRes.lines.eyeCenterX ?? 0) / sc + rough.rx,
-          },
-        };
-        // FaceMesh 자체 정합으로 사일런트 미스 판정 — Gemini faceBox는 러프 크롭 산정에만 사용
-        const faceH = cand.lines.chinY - cand.lines.crownY;
-        const eyeChinRatio = (cand.lines.chinY - cand.lines.eyeY) / (faceH || 1);
-        const ok = faceH > 30 && eyeChinRatio > 0.35 && eyeChinRatio < 0.70;
-        if (ok) { frame = cand.frame; lines = cand.lines; gate = fitRes.gate || null; break; }
-        slog(`[Fit] ${slug}: 랜드마크 검증 이탈 (targetFaceH=${targetFaceH}, faceH=${Math.round(faceH)}, eyeChinRatio=${eyeChinRatio.toFixed(3)}) → 재시도`);
-      }
+      const { frame, lines, gate } = await computeFitGeometry({ buf, W, H, fbPx, spec, slug, cropEngineUrl: CROP_ENGINE_URL, slog, sharp });
       if (!frame) {
         slog(`[Fit] ${slug}: 정규화·재시도 후에도 신뢰 랜드마크 확보 실패 → fit 포기 (기존 경로 폴백)`);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         return res.end(JSON.stringify({ success: false, code: 'FIT_SANITY' }));
       }
       const frameInitial = { ...frame };
+      const outside = frameOutside(frame, { width: W, height: H });
+      const fov = { outside, verdict: judgeFov(outside), cause: fovCause(outside) };
+      slog(`[Fit] ${slug}: 화각 outside=${JSON.stringify(outside)} verdict=${fov.verdict} cause=${fov.cause}`);
 
       // ③ 코드 소견 — metrics 기반 (Gemini 비전 퇴출 2026-07-09)
       let vision = null;
@@ -555,7 +568,7 @@ const httpServer = createServer(async (req, res) => {
       slog(`[Fit] ${slug}: face=${metrics.faceMm}mm top=${metrics.topMm}mm btm=${metrics.bottomMm}mm eye=${(metrics.eyeRatio * 100).toFixed(1)}% judge=${judge.blocked ? 'BLOCKED' : judge.face + '/' + judge.eye} vision=${vision ? (vision.note || 'ok') : 'skip'} detect=${detectSrc}${gate ? ` gate={mouth:${gate.mouthOpen},eyeL:${gate.eyeOpenL},eyeR:${gate.eyeOpenR},roll:${gate.rollDeg},yaw:${gate.yawRatio}}` : ''}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({
-        success: true, frame, frameInitial, lines, gate, poseCheck, imageSize: { width: W, height: H }, meta, metrics, judge, vision,
+        success: true, frame, frameInitial, outside, fov, lines, gate, poseCheck, imageSize: { width: W, height: H }, meta, metrics, judge, vision,
         spec: { frameW: spec.frameW, frameH: spec.frameH, frameHmm: spec.frameHmm, headHeightMin: spec.headHeightMinMm || spec.faceMinMm, headHeightMax: spec.headHeightMaxMm || null, faceTargetMm: spec.faceTargetMm },
       }));
     } catch (err) {
@@ -672,10 +685,35 @@ const httpServer = createServer(async (req, res) => {
           } catch { /* 통계 실패 시 게이트 미적용 */ }
         }
       }
+      // 화각 판정 — 노출 규격만 fit 기하를 추가 호출한다(다른 규격은 호출·응답 불변). 기하 실패는 fail-open (fit이 재검출·방어)
+      let fov = null;
+      if (measurable && fovExposed(body.slug) && faceBox && CROP_ENGINE_URL && matteEnabled() && matteSlugAllowed(body.slug)) {
+        const fovSpec = getSpecCropParams(body.slug);
+        if (fovSpec) {
+          try {
+            const { default: sharp } = await import('sharp');
+            const [bx1, by1, bx2, by2] = det.faces.filter((f) => f.score >= 0.45)[0].bbox;
+            const g = await computeFitGeometry({
+              buf: norm.buf, W: norm.width, H: norm.height,
+              fbPx: { x: bx1, y: by1, w: bx2 - bx1, h: by2 - by1 },
+              spec: fovSpec, slug: body.slug, cropEngineUrl: CROP_ENGINE_URL, slog, sharp, timeoutMs: 15000,
+            });
+            if (g.frame) {
+              const outside = frameOutside(g.frame, { width: norm.width, height: norm.height });
+              fov = { outside, verdict: judgeFov(outside), cause: fovCause(outside) };
+              if (fov.verdict === 'block') { measurable = false; reason = fov.cause === 'off_center' ? 'narrow_fov_off_center' : 'narrow_fov'; }
+              slog(`[IDPhoto][precheck] ${body.slug} 화각 outside=${JSON.stringify(outside)} verdict=${fov.verdict} cause=${fov.cause}`);
+            }
+          } catch (fe) {
+            slog(`[IDPhoto][precheck] 화각 판정 불가 (${fe.message}) → fail-open`);
+          }
+        }
+      }
       if (measurable) warmupMatteEngine(); // 게이트 통과자만 예열 — 구경·불합격 트래픽 웜 비용 차단 (자체 서버 불통 시에만 RunPod)
       // engineReady=false → 백업 처리 예정. 고객 화면 사전 안내용 — 엔진명은 싣지 않는다 (ch8)
       const engineReady = (await enginePromise) !== 'backup';
       const out = { measurable, rejectionReason: reason, faceBox, faceRatio, checks: [], engineReady };
+      if (fov) out.fov = fov;
       // 미리보기 썸네일 배선(§10-2)은 §11-1로 제거 — sharp가 HEIC를 디코드하지 못해 성립하지 않았다.
       // 서버 디코더(B안)를 도입하면 이 자리에 축소본을 실어 클라이언트 미리보기를 복구한다.
       slog(`[IDPhoto][precheck] 코드게이트 측정성=${measurable}${reason ? `(${reason})` : ''} faces=${nFaces} fbH=${faceRatio !== null ? Math.round(faceRatio * norm.height) : '-'}px crown=${crownMargin} bright=${bright} shadow=${shadowDiff} roll=${rollDeg} yaw=${yawRatio} engineReady=${engineReady} ${Date.now() - t0}ms`);
