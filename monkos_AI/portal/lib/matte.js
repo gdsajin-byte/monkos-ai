@@ -46,7 +46,6 @@ const MATTE_QUEUE_KNOCK_MS = 2000; // 서버가 Retry-After를 안 줄 때의 �
 const ALERT_COOLDOWN_MS = 10 * 60 * 1000; // 장애 경보 폭주 방지
 let lastAlertAt = 0;
 let lastBackupAlertAt = 0; // 백업 전환 알림 — '전 엔드포인트 실패' 경보와 쿨다운 키 분리
-const ENV_TAG = /-dev$/.test(process.env.K_SERVICE || '') ? '[dev] ' : '';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -245,7 +244,7 @@ function alertMatteDown(reason) {
 const BACKUP_ALERT_LABELS = { '프리플라이트 불통': 'iMac 불통', '포화 초과': 'iMac 포화', '호출 실패': 'iMac 호출 실패' };
 export function backupAlertText(slug, sec, reason) {
   const label = BACKUP_ALERT_LABELS[reason] || 'iMac 불통';
-  return `${ENV_TAG}⚠️ 매팅 백업 전환 — ${label}, RunPod 처리 (${slug}, ${sec}s)`;
+  return `⚠️ 매팅 백업 전환 — ${label}, RunPod 처리 (${slug}, ${sec}s)`;
 }
 
 function alertMatteBackup(slug, sec, reason) {

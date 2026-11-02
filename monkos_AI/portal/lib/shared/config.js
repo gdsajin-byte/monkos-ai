@@ -6,6 +6,7 @@
  * AUTH_SECRET: 인증 토큰 서명 전용 (미설정 시 LEMONSQUEEZY_WEBHOOK_SECRET 폴백)
  */
 
+import { withEnvTag } from './env-tag.js';
 import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
 import { GoogleGenAI } from '@google/genai';
 import { Firestore } from '@google-cloud/firestore';
@@ -328,7 +329,7 @@ export async function logTransaction({ userId, amount, type, service = 'portal',
 export async function sendTelegramMessage(chatId, text, botApi = TELEGRAM_CS_API) {
   try {
     const send = async (parseMode) => {
-      const body = { chat_id: chatId, text };
+      const body = { chat_id: chatId, text: withEnvTag(text) };
       if (parseMode) body.parse_mode = parseMode;
       const r = await fetch(`${botApi}/sendMessage`, {
         method: 'POST',

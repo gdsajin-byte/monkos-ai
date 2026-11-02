@@ -352,6 +352,150 @@ describe('결제 게이트 — consumeGenerateQuota / handleDownloadDirect', () 
 });
 
 // ============================================================
+describe('dev-grant + prod 거부 가드', () => {
+  const savedK = process.env.K_SERVICE;
+  afterEach(() => {
+    if (savedK === undefined) delete process.env.K_SERVICE; else process.env.K_SERVICE = savedK;
+  });
+  const asDev = () => { process.env.K_SERVICE = 'monkos-portal-dev'; };
+  const asProd = () => { process.env.K_SERVICE = 'monkos-portal'; };
+  async function grant() {
+    const order = await initKrOrder('us-visa');
+    const res = mockRes();
+    await payments.handleDirectDevGrant(postReq({ orderId: order.orderId }), res);
+    return { orderId: order.orderId, res };
+  }
+  const statusOf = async (orderId) => {
+    const res = mockRes();
+    await payments.handleDirectStatus({ url: `/api/payments/direct/status?orderId=${orderId}`, headers: { host: 'localhost' } }, res);
+    return res;
+  };
+
+  test('dev: pending 주문 → paid + 토큰, 양쪽 devGrant, payments 원장 미기록', async () => {
+    asDev();
+    const { orderId, res } = await grant();
+    expect(res.statusCode).toBe(200);
+    const token = res.body.paymentToken;
+    expect(token).toMatch(/^[a-f0-9]{64}$/);
+    expect(fakeFirestore._data.get(`directOrders/${orderId}`)).toMatchObject({ status: 'paid', devGrant: true, paymentToken: token });
+    expect(fakeFirestore._data.get(`directTokens/${token}`)).toMatchObject({ provider: 'dev-grant', devGrant: true, status: 'active' });
+    expect([...fakeFirestore._data.keys()].filter((k) => k.startsWith('payments/'))).toEqual([]);
+  });
+
+  test('dev: pending 아닌 주문 거부', async () => {
+    asDev();
+    const { orderId } = await grant();
+    const res = mockRes();
+    await payments.handleDirectDevGrant(postReq({ orderId }), res);
+    expect(res.statusCode).toBe(409);
+    expect(res.body.code).toBe('ORDER_NOT_PENDING');
+  });
+
+  test('dev: 없는 주문·형식 불량 거부', async () => {
+    asDev();
+    const r1 = mockRes();
+    await payments.handleDirectDevGrant(postReq({ orderId: 'SPECS-kr-x-aaaaaaaa' }), r1);
+    expect(r1.statusCode).toBe(404);
+    const r2 = mockRes();
+    await payments.handleDirectDevGrant(postReq({ orderId: '../x' }), r2);
+    expect(r2.statusCode).toBe(400);
+  });
+
+  test('dev: prod에서 생성한 주문 거부, 주문 불변', async () => {
+    asProd();
+    const order = await initKrOrder('us-visa');
+    expect(fakeFirestore._data.get(`directOrders/${order.orderId}`).originService).toBe('monkos-portal');
+    asDev();
+    const res = mockRes();
+    await payments.handleDirectDevGrant(postReq({ orderId: order.orderId }), res);
+    expect(res.statusCode).toBe(403);
+    expect(res.body.code).toBe('ORDER_NOT_DEV_ORIGIN');
+    expect(fakeFirestore._data.get(`directOrders/${order.orderId}`).status).toBe('pending');
+  });
+
+  test('dev: 표식 없는 구 주문 거부', async () => {
+    asDev();
+    const order = await initKrOrder('us-visa');
+    const key = `directOrders/${order.orderId}`;
+    const { originService, ...legacy } = fakeFirestore._data.get(key);
+    fakeFirestore._data.set(key, legacy);
+    const res = mockRes();
+    await payments.handleDirectDevGrant(postReq({ orderId: order.orderId }), res);
+    expect(res.statusCode).toBe(403);
+    expect(fakeFirestore._data.get(key).status).toBe('pending');
+  });
+
+  test('prod: 핸들러 자체가 404, 주문 불변', async () => {
+    asProd();
+    const order = await initKrOrder('us-visa');
+    const res = mockRes();
+    await payments.handleDirectDevGrant(postReq({ orderId: order.orderId }), res);
+    expect(res.statusCode).toBe(404);
+    expect(fakeFirestore._data.get(`directOrders/${order.orderId}`).status).toBe('pending');
+  });
+
+  test('dev: 발급 토큰으로 폴링·생성·다운로드 통과', async () => {
+    asDev();
+    const { orderId, res } = await grant();
+    const token = res.body.paymentToken;
+    const st = await statusOf(orderId);
+    expect(st.body).toMatchObject({ status: 'paid', paymentToken: token });
+    expect(await payments.consumeGenerateQuota(token)).toMatchObject({ ok: true });
+    const dl = mockRes();
+    await payments.handleDownloadDirect({ url: `/api/download/direct?token=${token}`, headers: { host: 'localhost' } }, dl);
+    expect(dl.statusCode).toBe(200);
+  });
+
+  describe.each([['monkos-portal'], [undefined]])('K_SERVICE=%s (dev 아님)', (k) => {
+    const setEnv = () => { if (k) process.env.K_SERVICE = k; else delete process.env.K_SERVICE; };
+
+    test('생성 거부 INVALID_TOKEN, 쿼터 불변', async () => {
+      asDev();
+      const { res } = await grant();
+      const token = res.body.paymentToken;
+      setEnv();
+      const gate = await payments.consumeGenerateQuota(token);
+      expect(gate).toMatchObject({ ok: false, code: 'INVALID_TOKEN' });
+      expect(fakeFirestore._data.get(`directTokens/${token}`).generateCount).toBe(0);
+    });
+
+    test('다운로드 거부 INVALID_TOKEN, 소모 안 됨', async () => {
+      asDev();
+      const { res } = await grant();
+      const token = res.body.paymentToken;
+      setEnv();
+      const dl = mockRes();
+      await payments.handleDownloadDirect({ url: `/api/download/direct?token=${token}`, headers: { host: 'localhost' } }, dl);
+      expect(dl.statusCode).toBe(404);
+      expect(dl.body.code).toBe('INVALID_TOKEN');
+      expect(fakeFirestore._data.get(`directTokens/${token}`).status).toBe('active');
+    });
+
+    test('폴링: 토큰 미반환 + 종료값 failed', async () => {
+      asDev();
+      const { orderId } = await grant();
+      setEnv();
+      const st = await statusOf(orderId);
+      expect(st.statusCode).toBe(200);
+      expect(st.body).toEqual({ orderId, status: 'failed' });
+    });
+  });
+
+  test('provider만 dev-grant이거나 devGrant만 있어도 거부 (둘 중 하나)', () => {
+    asProd();
+    expect(payments.tokenEnvOk({ provider: 'dev-grant' })).toBe(false);
+    expect(payments.tokenEnvOk({ provider: 'toss', devGrant: true })).toBe(false);
+  });
+
+  test('일반 토큰·주문은 prod에서 영향 없음', async () => {
+    asProd();
+    expect(payments.tokenEnvOk({ provider: 'toss' })).toBe(true);
+    const { token } = await payments.issueDirectToken({ orderId: 'o2', provider: 'toss' });
+    expect(fakeFirestore._data.get(`directTokens/${token}`).devGrant).toBeUndefined();
+    expect(await payments.consumeGenerateQuota(token)).toMatchObject({ ok: true });
+  });
+});
+
 describe('레몬 웹훅 — specs 단건 $2 분기', () => {
   function signBody(rawBody) {
     return createHmac('sha256', WEBHOOK_SECRET).update(rawBody).digest('hex');

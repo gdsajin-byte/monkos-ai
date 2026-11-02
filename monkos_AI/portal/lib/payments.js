@@ -1,5 +1,6 @@
 /** 담당: 막내2 (리파인) */
 
+import { isDevService } from './shared/env-tag.js';
 import { usersCollection, firestore, log, logTransaction, parseJsonBody, parseRawBody, createHmac, randomBytes, sendTelegramMessage, verifyAuthToken, TELEGRAM_TEAM_API, TEAM_CHAT_ID, LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET, LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL, LEMONSQUEEZY_STORE_ID, LEMONSQUEEZY_STORE_ID_JP, LEMON_JP_VARIANTS, LEMONSQUEEZY_VARIANT_SPECS_SINGLE, LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP, SINGLE_DOWNLOAD_VARIANTS, TOSS_SECRET_KEY, TOSS_CLIENT_KEY, VARIANT_CREDITS, TOSS_AMOUNT_CREDITS, PRODUCTS, DIRECT_PRICING, DIRECT_TOKEN_TTL_MS, DIRECT_TOKEN_MAX_GENERATES, parseCookies } from './shared/config.js';
 import { trackEvent } from './tracking.js';
 
@@ -585,10 +586,18 @@ const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,63}$/;
 const TOKEN_RE = /^[a-f0-9]{64}$/;
 
 /**
+ * dev-grant 토큰·주문은 dev 서비스에서만 유효. Firestore가 dev·prod 단일이라 이 가드가 없으면
+ * dev에서 발급한 토큰으로 prod 유료 생성·다운로드가 된다 (2026-11-03 최종안 §2).
+ */
+export function tokenEnvOk(d) {
+  return !((d?.provider === 'dev-grant' || d?.devGrant) && !isDevService());
+}
+
+/**
  * 다운로드 토큰 발급 (Firestore directTokens)
  * 생성 N회(DIRECT_TOKEN_MAX_GENERATES) 허용 → 다운로드에서 최종 소모.
  */
-export async function issueDirectToken({ orderId, slug, market, amount, currency, provider }) {
+export async function issueDirectToken({ orderId, slug, market, amount, currency, provider, devGrant }) {
   const token = randomBytes(32).toString('hex');
   const now = Date.now();
   const expiresAt = now + DIRECT_TOKEN_TTL_MS;
@@ -605,6 +614,7 @@ export async function issueDirectToken({ orderId, slug, market, amount, currency
     downloaded: false,
     createdAt: new Date(now).toISOString(),
     expiresAt,                 // epoch ms — TTL 24h
+    ...(devGrant ? { devGrant: true } : {}),
   });
   return { token, expiresAt };
 }
@@ -625,6 +635,9 @@ export async function consumeGenerateQuota(paymentToken) {
         return { ok: false, status: 402, error: '유효하지 않은 결제 토큰입니다', code: 'INVALID_TOKEN' };
       }
       const d = doc.data();
+      if (!tokenEnvOk(d)) {
+        return { ok: false, status: 402, error: '유효하지 않은 결제 토큰입니다', code: 'INVALID_TOKEN' };
+      }
       if (d.status !== 'active' || d.downloaded) {
         return { ok: false, status: 402, error: '이미 사용된 결제 토큰입니다', code: 'TOKEN_USED' };
       }
@@ -693,6 +706,7 @@ export async function handleDirectInit(req, res) {
       // [KR] 토스 — 금액 서버 고정 ₩2,000
       await firestore.collection('directOrders').doc(orderId).set({
         orderId, slug, market,
+        originService: process.env.K_SERVICE || null,
         provider: 'toss',
         amount: pricing.amount,
         currency: pricing.currency,
@@ -769,6 +783,7 @@ export async function handleDirectInit(req, res) {
 
     await firestore.collection('directOrders').doc(orderId).set({
       orderId, slug, market,
+      originService: process.env.K_SERVICE || null,
       provider: 'lemon',
       variantId: String(variantId),
       storeId,
@@ -808,6 +823,13 @@ export async function handleDirectStatus(req, res) {
       return;
     }
     const d = doc.data();
+    // dev 주문을 prod에서 폴링: 토큰을 빼고 'paid'를 주면 프론트가 2.5초 폴링을 멈추지 않는다.
+    // 'failed'는 specs-funnel.js·headshot.js 폴링의 종료 분기(failed|amount_mismatch|refunded)에 든다
+    if (!tokenEnvOk(d)) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ orderId, status: 'failed' }));
+      return;
+    }
     const out = { orderId, status: d.status };
     if (d.status === 'paid' && d.paymentToken) {
       out.paymentToken = d.paymentToken;
@@ -819,6 +841,36 @@ export async function handleDirectStatus(req, res) {
     log(`[Direct-Status] 에러: ${err.message}`, 'ERROR', { error: err.stack });
     res.writeHead(500, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
+  }
+}
+
+/**
+ * POST /api/payments/direct/dev-grant — 에이전트 결제 E2E (dev 전용, 실결제 없음)
+ * pending 주문을 paid로 넘기고 토큰 발급. 매출 원장 payments에는 쓰지 않는다.
+ * 경로 등록(server.js)과 requireAdmin이 1차 게이트, 여기 dev 판별이 2차, prod 소비처 tokenEnvOk가 3차.
+ */
+export async function handleDirectDevGrant(req, res) {
+  const send = (code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(obj)); };
+  if (!isDevService()) return send(404, { error: 'Not found' });
+  try {
+    const { orderId } = await parseJsonBody(req);
+    if (!ORDER_ID_RE.test(orderId || '')) return send(400, { error: '유효하지 않은 orderId', code: 'INVALID_ORDER_ID' });
+    const orderRef = firestore.collection('directOrders').doc(orderId);
+    const doc = await orderRef.get();
+    if (!doc.exists) return send(404, { error: '주문 없음', code: 'ORDER_NOT_FOUND' });
+    const order = doc.data();
+    // Firestore가 dev·prod 단일 — prod 고객 주문이 여기서 paid가 되지 않게 dev 서비스가 만든 주문만 허용
+    if (!/-dev$/.test(order.originService || '')) return send(403, { error: 'dev에서 생성한 주문만 가능', code: 'ORDER_NOT_DEV_ORIGIN' });
+    if (order.status !== 'pending') return send(409, { error: 'pending 주문만 가능', code: 'ORDER_NOT_PENDING', status: order.status });
+    const { token, expiresAt } = await issueDirectToken({
+      orderId, slug: order.slug, market: order.market, amount: order.amount, currency: order.currency, provider: 'dev-grant', devGrant: true,
+    });
+    await orderRef.update({ status: 'paid', paymentToken: token, tokenExpiresAt: expiresAt, paidAt: new Date().toISOString(), devGrant: true });
+    log(`[Direct-DevGrant] 발급: orderId=${orderId} (${order.slug})`);
+    return send(200, { success: true, orderId, paymentToken: token, tokenExpiresAt: expiresAt });
+  } catch (err) {
+    log(`[Direct-DevGrant] 에러: ${err.message}`, 'ERROR', { error: err.stack });
+    return send(500, { error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' });
   }
 }
 
@@ -1063,6 +1115,7 @@ export async function handleDownloadDirect(req, res) {
       const doc = await tx.get(tokenRef);
       if (!doc.exists) return { ok: false, status: 404, error: '유효하지 않은 토큰' };
       const d = doc.data();
+      if (!tokenEnvOk(d)) return { ok: false, status: 404, error: '유효하지 않은 토큰', code: 'INVALID_TOKEN' };
       if (d.status !== 'active' || d.downloaded) return { ok: false, status: 409, error: '이미 사용된 토큰' };
       if (typeof d.expiresAt === 'number' && Date.now() > d.expiresAt) return { ok: false, status: 404, error: '만료된 토큰' };
       tx.update(tokenRef, { downloaded: true, status: 'used', usedAt: new Date().toISOString() });
@@ -1071,7 +1124,7 @@ export async function handleDownloadDirect(req, res) {
 
     if (!result.ok) {
       res.writeHead(result.status, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ success: false, error: result.error }));
+      res.end(JSON.stringify({ success: false, error: result.error, ...(result.code ? { code: result.code } : {}) }));
       return;
     }
 

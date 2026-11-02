@@ -30,7 +30,7 @@ import {
 // === 핸들러 모듈 ===
 import { handleKakaoAuth, handleKakaoCallback, handleLineAuth, handleLineCallback, handleGoogleRedirectAuth, handleGoogleRedirectCallback, handleGoogleAuth, handleAuthToken, handleAuthVerify, handleAuthRefresh, handleVerifyCookie, handleLogout } from './lib/auth.js';
 import { handleCreditsGet, handleCreditsUse, handleCreditsRefund } from './lib/credits.js';
-import { handleCheckout, handleLemonSqueezyWebhook, handleTossWebhook, handleTossConfirm, handleTossDirect, handleDownloadDirect, handleTossSuccess, handleTossFail, handleDirectInit, handleDirectStatus, handleDirectFail, handlePayFail, consumeGenerateQuota, refundGenerateQuota } from './lib/payments.js';
+import { handleCheckout, handleLemonSqueezyWebhook, handleTossWebhook, handleTossConfirm, handleTossDirect, handleDownloadDirect, handleTossSuccess, handleTossFail, handleDirectInit, handleDirectStatus, handleDirectFail, handleDirectDevGrant, handlePayFail, consumeGenerateQuota, refundGenerateQuota } from './lib/payments.js';
 import { handleTelegramGateCode, handleTelegramMissionCode, handleConsentSns, handleMissionComplete, handleCreditsEvent } from './lib/events.js';
 import { handleTelegramCSWebhook, handleTelegramEventWebhook } from './lib/telegram.js';
 import { handleTelegramTeamWebhook, handleTeamNotify } from './lib/telegram-team.js';
@@ -49,6 +49,7 @@ import { checkCrownContact } from './lib/hair-measure.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
+import { isDevService } from './lib/shared/env-tag.js';
 import { handleDashboardSummary, handleDashboardUsers, handleDashboardUsers360, handleDashboardCredits, handleDashboardTraffic, handleDashboardCitadel, handleDashboardUserDetail, handleDashboardChannels } from './lib/cms/dashboard.js';
 import { handleDashboardGsc, handleDashboardNaver, handleDashboardBing, handleDashboardPerformance } from './lib/cms/seo-dashboard.js';
 import { handleBlogList, handleBlogGet, handleBlogCreate, handleBlogUpdate, handleBlogDelete } from './lib/cms/blog.js';
@@ -1109,6 +1110,11 @@ const httpServer = createServer(async (req, res) => {
       return res.end(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.', code: 'RATE_LIMITED' }));
     }
     return handleDirectStatus(req, res);
+  }
+  // 에이전트 결제 E2E — dev 서비스에만 존재하는 경로 (ORDER_20261103). prod에서는 일반 404로 떨어진다
+  if (isDevService() && urlPath === '/api/payments/direct/dev-grant' && req.method === 'POST') {
+    if (!requireAdmin(req, res)) return;
+    return handleDirectDevGrant(req, res);
   }
   // 결제 실패 수신 (2026-09-19) — 실패 사유의 정본. 서버 발급 orderId 아니면 핸들러가 거부
   if (urlPath === '/api/payments/direct/fail' && req.method === 'POST') {
