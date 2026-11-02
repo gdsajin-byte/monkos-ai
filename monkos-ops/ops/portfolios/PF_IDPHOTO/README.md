@@ -96,6 +96,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 11/03 | iMac/쌍아 | 결제 표면 ② 지시 — 막내5 재배정 (카드사 미선택 버튼 비활성, specs·헤드샷 공용) | [ORDER_20261103_iMac쌍아_막내4_IDPHOTO_카드사선택_사전안내_헤드샷포함](../../orders/2026-11/ORDER_20261103_iMac쌍아_막내4_IDPHOTO_카드사선택_사전안내_헤드샷포함.md) | ✅ |
 | 11/03 | iMac/쌍아 | 결제 표면 ③ 지시 — 막내6 재배정 (업셀 문구·의상 기본값 성인/아기·아기 정장 폴백 버그) | [ORDER_20261103_iMac쌍아_막내2_IDPHOTO_업셀문구_의상기본값_아기분기](../../orders/2026-11/ORDER_20261103_iMac쌍아_막내2_IDPHOTO_업셀문구_의상기본값_아기분기.md) | ✅ |
 | 11/03 | iMac/쌍아-막내6 | **COMPLETION** COMPLETION_20261103_iMac쌍아-막내6_IDPHOTO_업셀문구_의상기본값 | [COMPLETION_20261103_iMac쌍아-막내6_IDPHOTO_업셀문구_의상기본값](../../reports/2026-11/COMPLETION_20261103_iMac쌍아-막내6_IDPHOTO_업셀문구_의상기본값.md) | ✅ |
+| 11/03 | iMac/쌍아-막내3 | **COMPLETION** COMPLETION_20261103_iMac쌍아-막내3_IDPHOTO_dev알림_에이전트결제검증 | [COMPLETION_20261103_iMac쌍아-막내3_IDPHOTO_dev알림_에이전트결제검증](../../reports/2026-11/COMPLETION_20261103_iMac쌍아-막내3_IDPHOTO_dev알림_에이전트결제검증.md) | ✅ |
 
 ### Phase 1 — idphoto-kr/jp 웹 서비스 (01/16~02/14)
 
