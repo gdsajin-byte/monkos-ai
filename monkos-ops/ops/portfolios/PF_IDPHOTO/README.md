@@ -98,6 +98,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 11/03 | iMac/쌍아-막내6 | **COMPLETION** COMPLETION_20261103_iMac쌍아-막내6_IDPHOTO_업셀문구_의상기본값 | [COMPLETION_20261103_iMac쌍아-막내6_IDPHOTO_업셀문구_의상기본값](../../reports/2026-11/COMPLETION_20261103_iMac쌍아-막내6_IDPHOTO_업셀문구_의상기본값.md) | ✅ |
 | 11/03 | iMac/쌍아-막내3 | **COMPLETION** COMPLETION_20261103_iMac쌍아-막내3_IDPHOTO_dev알림_에이전트결제검증 | [COMPLETION_20261103_iMac쌍아-막내3_IDPHOTO_dev알림_에이전트결제검증](../../reports/2026-11/COMPLETION_20261103_iMac쌍아-막내3_IDPHOTO_dev알림_에이전트결제검증.md) | ✅ |
 | 11/03 | iMac/쌍아-막내5 | **COMPLETION** COMPLETION_20261103_iMac쌍아-막내5_IDPHOTO_카드사선택_사전안내 | [COMPLETION_20261103_iMac쌍아-막내5_IDPHOTO_카드사선택_사전안내](../../reports/2026-11/COMPLETION_20261103_iMac쌍아-막내5_IDPHOTO_카드사선택_사전안내.md) | ✅ |
+| 11/03 | iMac/쌍아 | 결제 표면 후속 ①~④ prod 00575-n66 + 엣지 배포(쌍아, 작가님 04:53 승인) — 카드사 미선택 버튼 가드·업셀 문구·아기 의상 기본값·dev 알림 태그·dev-grant(prod 404) | — | ✅ |
 
 ### Phase 1 — idphoto-kr/jp 웹 서비스 (01/16~02/14)
 
