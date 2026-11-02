@@ -4,7 +4,7 @@ date: 2026-11-02
 from: iMac/쌍아
 to: iMac/막내
 subject: 미국 비자(us-visa) 입력 해상도 판정 1단계 — fileRules 숫자화 + 서버 precheck 크롭 해상도 추정 + low_res 메시지 4언어, dev 검증까지
-status: 대기
+status: 폐기(대체 — ORDER_20261102_iMac쌍아_막내_IDPHOTO_미국비자_화각부족판정.md, 작가님 16:59 화각 재정의·미투입)
 portfolio: PF_IDPHOTO
 ---
 
