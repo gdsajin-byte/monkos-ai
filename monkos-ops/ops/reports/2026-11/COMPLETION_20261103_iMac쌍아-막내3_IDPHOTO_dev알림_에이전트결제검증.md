@@ -86,6 +86,14 @@ order: ORDER_20261103_iMac쌍아_막내3_IDPHOTO_dev알림태그_에이전트결
 | 엣지 | 불필요 | 렌더러·i18n·specs-data 변경 없음 |
 | crop-engine | 불필요 | |
 
+## 5-1. 보완 — dev 생성 주문만 허용 (§1-2 해소)
+
+출처: iMac/쌍아 04:34 세션 메시지(같은 지시서 범위). `init`이 주문에 `originService: K_SERVICE`를 기록하고, dev-grant는 이 값이 `-dev`로 끝나는 주문만 허용한다(그 외 403 `ORDER_NOT_DEV_ORIGIN`, 주문 불변). prod 고객 주문과 표식 없는 구 주문은 거부된다.
+
+검증: 단위 테스트 2건 추가(prod 생성 주문·표식 없는 주문), 포털 221건 통과. dev `00229-tzk`에서 init → grant 200, 표식 없는 구 주문 SPECS-kr-mvznfmlv-423d03dd → 403. 전체 E2E는 재실행하지 않았다(§3은 00227 기준).
+
+현재 dev = 00229-tzk(main 4a3bde23 + 61c222ca). 직전 확인은 00227이었고 그사이 00228이 올라갔는데, 제 배포가 덮었다. 막내5 배포로 추정되어 통지했다.
+
 ## 6. prod 음성 대조군 (prod 배포 후 쌍아 1회)
 
 dev에서 init → dev-grant로 새 토큰을 얻어 환경변수 `T`와 `O`(주문 ID)에 넣은 뒤. 토큰은 출력하지 않는다.
