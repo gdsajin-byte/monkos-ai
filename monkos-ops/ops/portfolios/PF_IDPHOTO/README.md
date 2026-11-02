@@ -88,6 +88,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 11/02 | ?/? | **ORDER** 업로드 화면 추천 화각 레퍼런스 — specs 대표 여성 마스터 + 추천 범위(초록 점선)·규격 잘림 범위(흰 실선) 오버레이, dev까지 | [ORDER_20261102_iMac쌍아_막내4_IDPHOTO_추천화각_레퍼런스안내](../../orders/2026-11/ORDER_20261102_iMac쌍아_막내4_IDPHOTO_추천화각_레퍼런스안내.md) | ⏳ |
 | 11/02 | iMac/쌍아-막내3 | **COMPLETION** COMPLETION_20261102_iMac쌍아-막내3_IDPHOTO_정수리게이트_실측전환 | [COMPLETION_20261102_iMac쌍아-막내3_IDPHOTO_정수리게이트_실측전환](../../reports/2026-11/COMPLETION_20261102_iMac쌍아-막내3_IDPHOTO_정수리게이트_실측전환.md) | ✅ |
 | 11/02 | iMac/쌍아-막내4 | 업로드 전 추천 화각 레퍼런스(설계 §5-4) 구현·dev 00217-bwt 검증, prod·엣지 미배포 | `monkos-ops/ops/reports/2026-11/COMPLETION_20261102_iMac쌍아-막내4_IDPHOTO_추천화각_레퍼런스안내.md` | ✅ |
+| 11/02 | iMac/민아 | 미국 비자 AI 유도·dev 결제 진입 실패 파악 보고 — 카드사 미선택 사전 유도(A-1)·AI 문구 일치 확인·[dev] 접두(C-1)·dev grant(D-1) 제안, 코드 수정 0 | [REPORT_20261102_iMac민아_IDPHOTO_미국비자_AI유도_결제진입_파악](../../reports/2026-11/REPORT_20261102_iMac민아_IDPHOTO_미국비자_AI유도_결제진입_파악.md) | ✅ |
 
 ### Phase 1 — idphoto-kr/jp 웹 서비스 (01/16~02/14)
 
