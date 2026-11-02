@@ -401,6 +401,30 @@ describe('dev-grant + prod 거부 가드', () => {
     expect(r2.statusCode).toBe(400);
   });
 
+  test('dev: prod에서 생성한 주문 거부, 주문 불변', async () => {
+    asProd();
+    const order = await initKrOrder('us-visa');
+    expect(fakeFirestore._data.get(`directOrders/${order.orderId}`).originService).toBe('monkos-portal');
+    asDev();
+    const res = mockRes();
+    await payments.handleDirectDevGrant(postReq({ orderId: order.orderId }), res);
+    expect(res.statusCode).toBe(403);
+    expect(res.body.code).toBe('ORDER_NOT_DEV_ORIGIN');
+    expect(fakeFirestore._data.get(`directOrders/${order.orderId}`).status).toBe('pending');
+  });
+
+  test('dev: 표식 없는 구 주문 거부', async () => {
+    asDev();
+    const order = await initKrOrder('us-visa');
+    const key = `directOrders/${order.orderId}`;
+    const { originService, ...legacy } = fakeFirestore._data.get(key);
+    fakeFirestore._data.set(key, legacy);
+    const res = mockRes();
+    await payments.handleDirectDevGrant(postReq({ orderId: order.orderId }), res);
+    expect(res.statusCode).toBe(403);
+    expect(fakeFirestore._data.get(key).status).toBe('pending');
+  });
+
   test('prod: 핸들러 자체가 404, 주문 불변', async () => {
     asProd();
     const order = await initKrOrder('us-visa');

@@ -706,6 +706,7 @@ export async function handleDirectInit(req, res) {
       // [KR] 토스 — 금액 서버 고정 ₩2,000
       await firestore.collection('directOrders').doc(orderId).set({
         orderId, slug, market,
+        originService: process.env.K_SERVICE || null,
         provider: 'toss',
         amount: pricing.amount,
         currency: pricing.currency,
@@ -782,6 +783,7 @@ export async function handleDirectInit(req, res) {
 
     await firestore.collection('directOrders').doc(orderId).set({
       orderId, slug, market,
+      originService: process.env.K_SERVICE || null,
       provider: 'lemon',
       variantId: String(variantId),
       storeId,
@@ -857,6 +859,8 @@ export async function handleDirectDevGrant(req, res) {
     const doc = await orderRef.get();
     if (!doc.exists) return send(404, { error: '주문 없음', code: 'ORDER_NOT_FOUND' });
     const order = doc.data();
+    // Firestore가 dev·prod 단일 — prod 고객 주문이 여기서 paid가 되지 않게 dev 서비스가 만든 주문만 허용
+    if (!/-dev$/.test(order.originService || '')) return send(403, { error: 'dev에서 생성한 주문만 가능', code: 'ORDER_NOT_DEV_ORIGIN' });
     if (order.status !== 'pending') return send(409, { error: 'pending 주문만 가능', code: 'ORDER_NOT_PENDING', status: order.status });
     const { token, expiresAt } = await issueDirectToken({
       orderId, slug: order.slug, market: order.market, amount: order.amount, currency: order.currency, provider: 'dev-grant', devGrant: true,
