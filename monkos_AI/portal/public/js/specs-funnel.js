@@ -158,7 +158,15 @@ var SpecsFunnel = (function(){
     p.style.cssText = 'margin-top:8px;font-size:15px;line-height:1.5;color:#111827;';
     p.textContent = fovText(fov.cause === 'off_center' ? 'fov_unusable_body_off' : 'fov_unusable_body', fov);
     box.appendChild(h); box.appendChild(p);
-    document.getElementById('v2-fit-make').textContent = T.fov_ai_btn.replace('{price}', CFG.price || '');
+    var mk = document.getElementById('v2-fit-make');
+    mk.textContent = T.fov_ai_btn.replace('{price}', CFG.price || '');
+    if(T.fov_ai_hint && !document.getElementById('v2-fov-hint')){
+      var hint = document.createElement('p');
+      hint.id = 'v2-fov-hint';
+      hint.style.cssText = 'width:100%;margin:0;font-size:12px;line-height:1.45;color:#6b7280;text-align:center;';
+      hint.textContent = T.fov_ai_hint;
+      mk.parentNode.insertBefore(hint, mk.nextSibling);
+    }
     var ch = document.getElementById('v2-fit-change');
     if(ch){ if(!ch.dataset.label) ch.dataset.label = ch.textContent; ch.textContent = T.fov_other_btn; }
     ['ip-fit-caption', 'ip-fit-t2-link'].forEach(function(id){ var e = document.getElementById(id); if(e) e.style.display = 'none'; });
@@ -167,6 +175,8 @@ var SpecsFunnel = (function(){
     fovAiOnly = false;
     var box = document.getElementById('v2-fit-summary');
     if(box) box.style.cssText = '';
+    var hint = document.getElementById('v2-fov-hint');
+    if(hint && hint.parentNode) hint.parentNode.removeChild(hint);
     var ch = document.getElementById('v2-fit-change');
     if(ch && ch.dataset.label) ch.textContent = ch.dataset.label;
   }
