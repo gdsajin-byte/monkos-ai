@@ -83,6 +83,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 11/02 | ?/? | **ORDER** 한국 여권 두상 잘림 — 매팅 결과에서 머리끝 실측 후 프레임 재배치(헤어 가드 실경로 복원), dev 비교 검증까지 | [ORDER_20261102_iMac쌍아_막내_IDPHOTO_한국여권_머리끝실측_프레임재배치](../../orders/2026-11/ORDER_20261102_iMac쌍아_막내_IDPHOTO_한국여권_머리끝실측_프레임재배치.md) | ⏳ |
 | 11/02 | ?/? | **ORDER** 미국 비자 여백 — fit 프레임의 원본 이탈량(상하좌우) 판정 + "더 멀리서·어깨까지" 안내, dev 검증까지 | [ORDER_20261102_iMac쌍아_막내_IDPHOTO_미국비자_화각부족판정](../../orders/2026-11/ORDER_20261102_iMac쌍아_막내_IDPHOTO_미국비자_화각부족판정.md) | ⏳ |
 | 11/02 | iMac/쌍아-막내3 | **COMPLETION** COMPLETION_20261102_iMac쌍아-막내3_IDPHOTO_미국비자_화각부족판정 | [COMPLETION_20261102_iMac쌍아-막내3_IDPHOTO_미국비자_화각부족판정](../../reports/2026-11/COMPLETION_20261102_iMac쌍아-막내3_IDPHOTO_미국비자_화각부족판정.md) | ✅ |
+| 11/02 | ?/? | **ORDER** precheck 정수리 잘림 게이트 — 추정(눈~박스 미러) 판정 폐지, 매팅 알파 실측으로 전환. 실제로 잘린 사진에만 "정수리가 잘렸어요" 표시, dev 검증까지 | [ORDER_20261102_iMac쌍아_막내3_IDPHOTO_정수리게이트_실측전환](../../orders/2026-11/ORDER_20261102_iMac쌍아_막내3_IDPHOTO_정수리게이트_실측전환.md) | ⏳ |
 
 ### Phase 1 — idphoto-kr/jp 웹 서비스 (01/16~02/14)
 
