@@ -11,7 +11,7 @@
  * 사용:
  *   var picker = AttirePicker.mount(el, { service:'idpass', gender:'m', age:'adult', lang:'ko',
  *     upload:true, warnLightTop:true, onChange:function(sel){} });
- *   picker.getAttireDesc();    // string | null(기본값=지금 옷 그대로 / 업로드)
+ *   picker.getAttireDesc();    // string | null(기본값 — 서버가 성인=정장·아기=지금 옷 유지 / 업로드)
  *   picker.getAttireImage();   // base64(jpeg, ≤1024px) | null — 업로드 선택 시
  *   picker.getSelection();     // { id, attire_desc, attire_image, labels, tags }
  */
@@ -132,7 +132,7 @@
       self.render();
       if (typeof self.opts.onReady === 'function') self.opts.onReady(self);
     }).catch(function (e) {
-      // 프리셋 로드 실패 = 피커 비표시 — 기본값(지금 옷 그대로) 경로가 항상 살아있어 퍼널 무손상
+      // 프리셋 로드 실패 = 피커 비표시 — 기본값(attire_desc 없음) 경로가 항상 살아있어 퍼널 무손상
       container.classList.add('atp-hidden');
       if (window.console) console.warn('[AttirePicker]', e.message);
     });
@@ -197,6 +197,11 @@
     this.warnEl.style.display = show ? '' : 'none';
   };
 
+  // 기본칩 라벨 — 서버 프롬프트와 일치: 아기=지금 옷 유지, 그 외=정장 (buildT1Prompt)
+  Picker.prototype.defaultLabels = function (d) {
+    return (this.age === 'baby' && d.labels_baby) || d.labels;
+  };
+
   Picker.prototype.getSelection = function () {
     if (this.selection) {
       var desc = this.selection.attire_desc || null;
@@ -214,7 +219,7 @@
       };
     }
     var d = (this.data && this.data.default_option) || { id: 'original', labels: {}, attire_desc: null };
-    return { id: d.id, attire_desc: d.attire_desc, attire_image: null, attireTie: null, labels: d.labels, tags: null };
+    return { id: d.id, attire_desc: d.attire_desc, attire_image: null, attireTie: null, labels: this.defaultLabels(d), tags: null };
   };
 
   Picker.prototype.getAttireDesc = function () { return this.getSelection().attire_desc || null; };
@@ -419,10 +424,10 @@
       return self.category === 'all' || it.tags.category === self.category;
     });
 
-    // 0번 고정: 지금 옷 그대로
+    // 0번 고정: 기본값 (성인=단정한 정장 / 아기=지금 옷 그대로)
     var d = this.data.default_option;
     row.appendChild(this.itemChip({
-      id: d.id, labels: d.labels, swatch: null, thumbnail: null, isDefault: true
+      id: d.id, labels: this.defaultLabels(d), swatch: null, thumbnail: null, isDefault: true
     }, !this.selection));
 
     items.forEach(function (it) {

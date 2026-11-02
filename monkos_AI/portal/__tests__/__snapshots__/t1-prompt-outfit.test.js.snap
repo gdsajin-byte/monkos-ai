@@ -1,0 +1,131 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`buildT1Prompt [OUTFIT] 성인 + attireDesc 없음 → 정장 1`] = `
+"IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
+
+PRESERVE (90%):
+- Face shape, eye shape, nose, lips, skin tone
+- Overall facial structure and unique characteristics
+- The person must be clearly recognizable as the SAME individual
+
+ENHANCE (10% creative freedom):
+- Slightly smoother skin, subtle beauty enhancement
+- Optimal lighting and flattering angles
+- Minor imperfections can be softened
+- Make them look their BEST version (not a different person)
+
+DO NOT:
+- Change gender, ethnicity, or age by more than 2-3 years
+- Alter fundamental facial features
+- Make them unrecognizable
+- Make eyes look intense, strained, or unnaturally wide — keep natural calm eye contact
+
+GOAL: "This is ME, but on my best day" - perfectly front-facing, studio flat lighting, 90% accuracy, 10% professional retouching.
+
+[IMAGE-TO-IMAGE TRANSFORM]
+[FORMAT] Official passport/visa photo. White background mandatory.
+[SUBJECT] This person is an adult woman.
+[OUTFIT] Replace current clothing with neat, professional dark business attire matching the person's gender presentation in the original photo (e.g., a dark suit with a plain light top, or an equivalent blouse/jacket). Clothing should look natural and properly fitted.
+[BACKGROUND] pure white (#FFFFFF) background
+[EXPRESSION] Keep the original facial expression but with mouth closed — lips gently together, no teeth visible. Eyes looking straight at the camera. A gentle soft smile is perfectly fine. Do NOT flatten the expression into a stiff blank face.
+[CONSTRAINT] Keep the person's face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.
+[FRAMING] Do NOT crop tightly. Output a WIDE chest-up portrait: the ENTIRE head fully visible with generous empty space above the hair, both shoulders and upper chest included. Leave plenty of margin — the photo will be cropped later by a separate system."
+`;
+
+exports[`buildT1Prompt [OUTFIT] 성인 + attireDesc 있음 → 그 문구 1`] = `
+"IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
+
+PRESERVE (90%):
+- Face shape, eye shape, nose, lips, skin tone
+- Overall facial structure and unique characteristics
+- The person must be clearly recognizable as the SAME individual
+
+ENHANCE (10% creative freedom):
+- Slightly smoother skin, subtle beauty enhancement
+- Optimal lighting and flattering angles
+- Minor imperfections can be softened
+- Make them look their BEST version (not a different person)
+
+DO NOT:
+- Change gender, ethnicity, or age by more than 2-3 years
+- Alter fundamental facial features
+- Make them unrecognizable
+- Make eyes look intense, strained, or unnaturally wide — keep natural calm eye contact
+
+GOAL: "This is ME, but on my best day" - perfectly front-facing, studio flat lighting, 90% accuracy, 10% professional retouching.
+
+[IMAGE-TO-IMAGE TRANSFORM]
+[FORMAT] Official passport/visa photo. White background mandatory.
+[SUBJECT] This person is an adult woman.
+[OUTFIT] Recolor the existing top to soft ivory
+[BACKGROUND] pure white (#FFFFFF) background
+[EXPRESSION] Keep the original facial expression but with mouth closed — lips gently together, no teeth visible. Eyes looking straight at the camera. A gentle soft smile is perfectly fine. Do NOT flatten the expression into a stiff blank face.
+[CONSTRAINT] Keep the person's face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.
+[FRAMING] Do NOT crop tightly. Output a WIDE chest-up portrait: the ENTIRE head fully visible with generous empty space above the hair, both shoulders and upper chest included. Leave plenty of margin — the photo will be cropped later by a separate system."
+`;
+
+exports[`buildT1Prompt [OUTFIT] 아기 + attireDesc 없음 → 지금 옷 유지 1`] = `
+"IDENTITY RULE: 95% SAME CHILD + 5% CLEANUP
+
+PRESERVE (95%):
+- Face shape, eye shape, nose, lips, skin tone
+- Overall facial structure and unique characteristics
+- Baby/toddler proportions — chubby cheeks, soft rounded face, baby fat
+- The child must be clearly recognizable as the SAME individual
+- Current facial expression (mouth open or closed — keep as-is)
+
+CLEANUP (5% — less than adult retouching):
+- Studio flat lighting and clean background
+- Minor color/exposure correction
+- Make them look clean and presentable (not "enhanced")
+
+DO NOT:
+- Apply adult-style beauty enhancement or skin smoothing
+- Change facial expression or mouth position
+- Alter fundamental facial features or baby proportions
+- Make the child look older or more mature
+
+GOAL: "This is my baby, looking clean and presentable" - studio lighting, tidy background, 95% accuracy, 5% minimal cleanup only.
+
+[IMAGE-TO-IMAGE TRANSFORM]
+[FORMAT] Official passport/visa photo. White background mandatory.
+[SUBJECT] This person is a baby girl (infant/toddler).
+[OUTFIT] Keep current clothing as-is. Only ensure it looks neat and tidy.
+[BACKGROUND] pure white (#FFFFFF) background
+[EXPRESSION] Keep the child's natural expression exactly as-is.
+[CONSTRAINT] Keep the person's face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.
+[FRAMING] Do NOT crop tightly. Output a WIDE chest-up portrait: the ENTIRE head fully visible with generous empty space above the hair, both shoulders and upper chest included. Leave plenty of margin — the photo will be cropped later by a separate system."
+`;
+
+exports[`buildT1Prompt [OUTFIT] 아기 + attireDesc 있음 → 그 문구 1`] = `
+"IDENTITY RULE: 95% SAME CHILD + 5% CLEANUP
+
+PRESERVE (95%):
+- Face shape, eye shape, nose, lips, skin tone
+- Overall facial structure and unique characteristics
+- Baby/toddler proportions — chubby cheeks, soft rounded face, baby fat
+- The child must be clearly recognizable as the SAME individual
+- Current facial expression (mouth open or closed — keep as-is)
+
+CLEANUP (5% — less than adult retouching):
+- Studio flat lighting and clean background
+- Minor color/exposure correction
+- Make them look clean and presentable (not "enhanced")
+
+DO NOT:
+- Apply adult-style beauty enhancement or skin smoothing
+- Change facial expression or mouth position
+- Alter fundamental facial features or baby proportions
+- Make the child look older or more mature
+
+GOAL: "This is my baby, looking clean and presentable" - studio lighting, tidy background, 95% accuracy, 5% minimal cleanup only.
+
+[IMAGE-TO-IMAGE TRANSFORM]
+[FORMAT] Official passport/visa photo. White background mandatory.
+[SUBJECT] This person is a baby girl (infant/toddler).
+[OUTFIT] Recolor the existing top to soft ivory
+[BACKGROUND] pure white (#FFFFFF) background
+[EXPRESSION] Keep the child's natural expression exactly as-is.
+[CONSTRAINT] Keep the person's face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.
+[FRAMING] Do NOT crop tightly. Output a WIDE chest-up portrait: the ENTIRE head fully visible with generous empty space above the hair, both shoulders and upper chest included. Leave plenty of margin — the photo will be cropped later by a separate system."
+`;

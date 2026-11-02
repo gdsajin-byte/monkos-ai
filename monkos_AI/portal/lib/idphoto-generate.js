@@ -1,6 +1,8 @@
 import { GoogleGenAI } from '@google/genai';
 import { log } from './shared/config.js';
 
+const OUTFIT_KEEP_CURRENT = 'Keep current clothing as-is. Only ensure it looks neat and tidy.';
+
 const PROJECT_ID = process.env.PROJECT_ID;
 const LOCATION = process.env.LOCATION || 'us-central1';
 
@@ -117,7 +119,7 @@ function buildPromptV5(body, model) {
   };
   // 성별 미상 시 단정 금지 — 원본 보존 선언 (2026-07-17 성전환 P0: 'adult man' 선언이 여성 사진을 남성화)
   parts.push(`[SUBJECT] ${SUBJECT_MAP[`${gender}-${age}`] || "Preserve this person's apparent gender and age exactly as shown in the original photo."}`);
-  parts.push('[OUTFIT] Keep current clothing as-is. Only ensure it looks neat and tidy.');
+  parts.push(`[OUTFIT] ${OUTFIT_KEEP_CURRENT}`);
   parts.push('[BACKGROUND] pure white (#FFFFFF) background');
 
   if (age === 'baby') {
@@ -134,6 +136,9 @@ function buildPromptV5(body, model) {
 
 // T1 의상 교체 프롬프트 (2026-07-11 v4 확정 — 작가님·쌍아 공동 튜닝)
 // 원본 → 나노2(의상+보정+배경+넓은화각) → crop-engine. RunPod 매팅 불필요.
+// attireDesc 없을 때 기본값: 성인=정장, 아기=지금 옷 유지 (헌법 1조 3항 — 아기 옷 유지가 원칙)
+const OUTFIT_DEFAULT_SUIT = "Replace current clothing with neat, professional dark business attire matching the person's gender presentation in the original photo (e.g., a dark suit with a plain light top, or an equivalent blouse/jacket). Clothing should look natural and properly fitted.";
+
 export function buildT1Prompt(attireDesc, opts) {
   const gender = opts?.gender || '';
   const age = opts?.age || 'adult';
@@ -159,7 +164,7 @@ export function buildT1Prompt(attireDesc, opts) {
 [IMAGE-TO-IMAGE TRANSFORM]
 [FORMAT] Official passport/visa photo. White background mandatory.
 [SUBJECT] ${subjectText}
-[OUTFIT] ${attireDesc || "Replace current clothing with neat, professional dark business attire matching the person's gender presentation in the original photo (e.g., a dark suit with a plain light top, or an equivalent blouse/jacket). Clothing should look natural and properly fitted."}
+[OUTFIT] ${attireDesc || (age === 'baby' ? OUTFIT_KEEP_CURRENT : OUTFIT_DEFAULT_SUIT)}
 [BACKGROUND] pure white (#FFFFFF) background
 ${expression}
 [CONSTRAINT] Keep the person's face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.
