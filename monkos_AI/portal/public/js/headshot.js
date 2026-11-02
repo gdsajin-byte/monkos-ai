@@ -609,6 +609,8 @@
 
   // 토스 결제위젯 방식 필수 — 상점 라이브 계약이 위젯(live_gck)에만 있음. 구 결제창(payment()) 금지.
   var tossWidgets = null, tossWidgetRendered = false, tossRenderInFlight = false;
+  // 카드사·약관 미충족 시 결제 버튼 비활성 (toss-pay-guard.js). 스크립트가 없는 구본 HTML이면 null — 기존 동작 유지
+  var payGuard = null;
   // 위젯 로딩 표시 (2026-09-20, specs 이식) — 렌더가 수 초~십수 초 걸리는 동안 화면이 비어 있으면 고객은 고장으로 읽고 떠난다
   var PAY_LOADING = { ko: '결제창을 불러오는 중입니다…', ja: '決済画面を読み込んでいます…', en: 'Loading the payment form…', es: 'Cargando el formulario de pago…' };
   function setWidgetLoading(on) {
@@ -644,7 +646,11 @@
       lastTossInit = { provider: 'toss', orderId: d.orderId, orderName: d.orderName, amount: d.amount, currency: d.currency, clientKey: d.clientKey };
       persistOrder(); // 호출부의 persistOrder 는 lastTossInit 설정 전에 끝난다 — 여기서 다시 저장해야 복귀 재오픈이 성립
       repersistForRedirect();
-      payConfirmBtn.textContent = '₩' + String(d.amount).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ' + (PT.confirmSuffix || '결제하기');
+      var priceLabel = '₩' + String(d.amount).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ' + (PT.confirmSuffix || '결제하기');
+      if (!payGuard && window.TossPayGuard) {
+        payGuard = window.TossPayGuard.create({ btn: payConfirmBtn, needCardLabel: PT.needCard, needAgreeLabel: PT.needAgree });
+      }
+      if (payGuard) payGuard.setPriceLabel(priceLabel); else payConfirmBtn.textContent = priceLabel;
       tossWidgetWrap.style.display = 'block';
       // 렌더 멈춤 감시 — 프라미스가 끝나지 않으면 payBusy가 고착돼 첫 버튼이 영구 무반응이 된다.
       // 12초 뒤 잠금을 풀고 사유를 보여준다. 위젯 영역은 닫지 않는다(늦게라도 뜨면 그대로 결제 가능).
@@ -666,10 +672,15 @@
       }, 12000);
       tossWidgets.setAmount({ currency: d.currency || 'KRW', value: d.amount })
         .then(function() {
-          if (tossWidgetRendered) return;
+          // 재오픈은 렌더를 건너뛴다 — 보관한 인스턴스로 선택·약관 상태만 다시 잰다
+          if (tossWidgetRendered) { if (payGuard) payGuard.refresh(); return; }
+          var pmWidget;
           return tossWidgets.renderPaymentMethods({ selector: '#hs-pm' })
-            .then(function() { return tossWidgets.renderAgreement({ selector: '#hs-agree' }); })
-            .then(function() { tossWidgetRendered = true; });
+            .then(function(w) { pmWidget = w; return tossWidgets.renderAgreement({ selector: '#hs-agree' }); })
+            .then(function(agreementWidget) {
+              tossWidgetRendered = true;
+              if (payGuard) payGuard.attach(pmWidget, agreementWidget);
+            });
         })
         .then(function() {
           renderSettled = true; clearTimeout(renderTimer);
@@ -694,6 +705,7 @@
         });
       // requestPayment는 반드시 버튼 클릭 제스처에서 직접 호출 (팝업 차단 방지)
       payConfirmBtn.onclick = function() {
+        if (payGuard && !payGuard.canPay()) return;
         gaPayTrack('pay_confirm_click');
         hidePayError();
         var base = returnBase();

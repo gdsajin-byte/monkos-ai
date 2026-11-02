@@ -151,6 +151,7 @@ a:hover { color: #5a3de6; }
   border-color: #6c4fff; background: rgba(108,79,255,0.05);
   box-shadow: 0 0 0 2px rgba(108,79,255,0.18);
 }
+#v2-pay-confirm:disabled { opacity: 0.6; cursor: not-allowed; }
 #v2-pay-confirm.is-docked {
   position: fixed; left: 50%; right: auto; transform: translateX(-50%);
   width: calc(100% - 24px); max-width: 560px; margin: 0;

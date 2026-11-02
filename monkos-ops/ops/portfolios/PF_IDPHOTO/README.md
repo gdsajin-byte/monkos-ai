@@ -97,6 +97,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 11/03 | iMac/쌍아 | 결제 표면 ③ 지시 — 막내6 재배정 (업셀 문구·의상 기본값 성인/아기·아기 정장 폴백 버그) | [ORDER_20261103_iMac쌍아_막내2_IDPHOTO_업셀문구_의상기본값_아기분기](../../orders/2026-11/ORDER_20261103_iMac쌍아_막내2_IDPHOTO_업셀문구_의상기본값_아기분기.md) | ✅ |
 | 11/03 | iMac/쌍아-막내6 | **COMPLETION** COMPLETION_20261103_iMac쌍아-막내6_IDPHOTO_업셀문구_의상기본값 | [COMPLETION_20261103_iMac쌍아-막내6_IDPHOTO_업셀문구_의상기본값](../../reports/2026-11/COMPLETION_20261103_iMac쌍아-막내6_IDPHOTO_업셀문구_의상기본값.md) | ✅ |
 | 11/03 | iMac/쌍아-막내3 | **COMPLETION** COMPLETION_20261103_iMac쌍아-막내3_IDPHOTO_dev알림_에이전트결제검증 | [COMPLETION_20261103_iMac쌍아-막내3_IDPHOTO_dev알림_에이전트결제검증](../../reports/2026-11/COMPLETION_20261103_iMac쌍아-막내3_IDPHOTO_dev알림_에이전트결제검증.md) | ✅ |
+| 11/03 | iMac/쌍아-막내5 | **COMPLETION** COMPLETION_20261103_iMac쌍아-막내5_IDPHOTO_카드사선택_사전안내 | [COMPLETION_20261103_iMac쌍아-막내5_IDPHOTO_카드사선택_사전안내](../../reports/2026-11/COMPLETION_20261103_iMac쌍아-막내5_IDPHOTO_카드사선택_사전안내.md) | ✅ |
 
 ### Phase 1 — idphoto-kr/jp 웹 서비스 (01/16~02/14)
 
