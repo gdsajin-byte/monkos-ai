@@ -82,6 +82,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 11/02 | ?/? | **ORDER** 미국 비자(us-visa) 입력 해상도 판정 1단계 — fileRules 숫자화 + 서버 precheck 크롭 해상도 추정 + low_res 메시지 4언어, dev 검증까지 | [ORDER_20261102_iMac쌍아_막내_IDPHOTO_미국비자_입력해상도판정_1단계](../../orders/2026-11/ORDER_20261102_iMac쌍아_막내_IDPHOTO_미국비자_입력해상도판정_1단계.md) | ⏳ |
 | 11/02 | ?/? | **ORDER** 한국 여권 두상 잘림 — 매팅 결과에서 머리끝 실측 후 프레임 재배치(헤어 가드 실경로 복원), dev 비교 검증까지 | [ORDER_20261102_iMac쌍아_막내_IDPHOTO_한국여권_머리끝실측_프레임재배치](../../orders/2026-11/ORDER_20261102_iMac쌍아_막내_IDPHOTO_한국여권_머리끝실측_프레임재배치.md) | ⏳ |
 | 11/02 | ?/? | **ORDER** 미국 비자 여백 — fit 프레임의 원본 이탈량(상하좌우) 판정 + "더 멀리서·어깨까지" 안내, dev 검증까지 | [ORDER_20261102_iMac쌍아_막내_IDPHOTO_미국비자_화각부족판정](../../orders/2026-11/ORDER_20261102_iMac쌍아_막내_IDPHOTO_미국비자_화각부족판정.md) | ⏳ |
+| 11/02 | iMac/쌍아-막내3 | **COMPLETION** COMPLETION_20261102_iMac쌍아-막내3_IDPHOTO_미국비자_화각부족판정 | [COMPLETION_20261102_iMac쌍아-막내3_IDPHOTO_미국비자_화각부족판정](../../reports/2026-11/COMPLETION_20261102_iMac쌍아-막내3_IDPHOTO_미국비자_화각부족판정.md) | ✅ |
 
 ### Phase 1 — idphoto-kr/jp 웹 서비스 (01/16~02/14)
 
