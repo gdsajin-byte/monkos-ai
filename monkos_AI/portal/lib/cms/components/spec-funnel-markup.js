@@ -1,4 +1,34 @@
 import { escapeHtml } from '../render-shell.js';
+import { getSpecCropParams } from '../../spec-crop.js';
+import { recommendedRect, specCropRect, REF_CANVAS, REF_ASSET_PATH } from '../../framing-overlay.js';
+
+// 추천 화각 안내 — 흰 배경 위에서도 보이도록 완성 범위 밖을 살짝 어둡게 하고 실선 밑에 어두운 선을 깐다
+function framingGuideMarkup(slug, v2) {
+  const eh = escapeHtml;
+  const shoot = recommendedRect();
+  const crop = specCropRect(getSpecCropParams(slug));
+  const rectAttr = (r) => `x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}"`;
+  const { width, height } = REF_CANVAS;
+  const cropLayer = crop ? `
+              <path class="v2-framing-dim" fill-rule="evenodd" d="M0 0H${width}V${height}H0Z M${crop.x} ${crop.y}h${crop.w}v${crop.h}h${-crop.w}Z"/>
+              <rect class="v2-framing-crop-casing" ${rectAttr(crop)}/>
+              <rect class="v2-framing-crop" ${rectAttr(crop)}/>` : '';
+  return `<figure class="v2-framing-guide">
+            <div class="v2-framing-stage">
+              <img src="${REF_ASSET_PATH}" width="${width}" height="${height}" alt="${eh(v2.framingAlt)}" loading="lazy" decoding="async">
+              <svg viewBox="0 0 ${width} ${height}" aria-hidden="true" focusable="false">${cropLayer}
+                <rect class="v2-framing-shoot" ${rectAttr(shoot)}/>
+              </svg>
+            </div>
+            <figcaption>
+              <p class="v2-framing-note">${eh(v2.framingNote)}</p>
+              <ul class="v2-framing-legend">
+                <li><i class="v2-framing-key-shoot"></i>${eh(v2.framingLegendShoot)}</li>
+                ${crop ? `<li><i class="v2-framing-key-crop"></i>${eh(v2.framingLegendCrop)}</li>` : ''}
+              </ul>
+            </figcaption>
+          </figure>`;
+}
 
 export function specFunnelMarkup(ctx) {
   const { slug, lang, specData, v2, typeName, fullName, market,
@@ -16,6 +46,7 @@ export function specFunnelMarkup(ctx) {
       <!-- Phase 1: 업로드 -->
       <div class="v2-make-layout" id="v2-phase-upload">
         <div class="v2-upload-with-guides">
+          ${framingGuideMarkup(slug, v2)}
           <div class="v2-upload-zone" id="v2-dropzone">
             <div class="v2-upload-icon">&#8615;</div>
             <div class="v2-upload-main-text">${eh(v2.dropText)}</div>
