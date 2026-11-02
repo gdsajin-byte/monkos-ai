@@ -92,6 +92,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 11/02 | iMac/쌍아-막내3 | **COMPLETION** COMPLETION_20261102_iMac쌍아-막내3_IDPHOTO_화각판정_일반화 | [COMPLETION_20261102_iMac쌍아-막내3_IDPHOTO_화각판정_일반화](../../reports/2026-11/COMPLETION_20261102_iMac쌍아-막내3_IDPHOTO_화각판정_일반화.md) | ✅ |
 | 11/02 | iMac/쌍아 | **PROPOSAL** PROPOSAL_20261102_iMac쌍아_IDPHOTO_결제표면_후속_최종안 | [PROPOSAL_20261102_iMac쌍아_IDPHOTO_결제표면_후속_최종안](../../proposals/PROPOSAL_20261102_iMac쌍아_IDPHOTO_결제표면_후속_최종안.md) | ⏳ |
 | 11/03 | iMac/쌍아 | 용아(Antigravity agy, 구독) 결제 표면 최종안 검토 — 보정 4건(②버튼 실제 비활성·위젯 보관 ③아기 기본 의상 정장 폴백 버그 ④status 폴링 가드·dev-grant requireAdmin) 최종안 §5 반영 | [REVIEW_20261102_iMac용아_IDPHOTO_결제표면_후속_최종안](../../reports/2026-11/REVIEW_20261102_iMac용아_IDPHOTO_결제표면_후속_최종안.md) | ✅ |
+| 11/03 | iMac/쌍아-막내5 | **COMPLETION** COMPLETION_20261103_iMac쌍아-막내5_IDPHOTO_카드사선택_사전안내 | [COMPLETION_20261103_iMac쌍아-막내5_IDPHOTO_카드사선택_사전안내](../../reports/2026-11/COMPLETION_20261103_iMac쌍아-막내5_IDPHOTO_카드사선택_사전안내.md) | ✅ |
 
 ### Phase 1 — idphoto-kr/jp 웹 서비스 (01/16~02/14)
 
