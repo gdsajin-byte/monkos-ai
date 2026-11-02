@@ -733,3 +733,6 @@
 
 | 2026-10-29 14:03 | 갱신 | project_soso_design_lead.md — 10-28 첫 실가동 사실(시안 A·B·결정 대기·팀 미노출→서브에이전트 553k) + MEMORY.md 1행 | iMac/민아 |
 | 2026-10-29 14:41 | 신규 | feedback_design_tokens_reference_not_constraint.md — 토큰=기준점·틀 아님(작가님 14:41) + MEMORY.md 1행 | iMac/쌍아 |
+| 2026-10-29 14:43 | 갱신 | project_4060_intentional_downtime.md — 재구축 완료(작가님 10-29)·테일넷 last seen ≈09-30·현재 꺼짐 + MEMORY.md 1행 | iMac/민아 |
+| 2026-10-29 15:01 | 추가 | reference_claude_design_docs.md — Claude Design 공식 문서·의도·Claude Code 연동 요약 + MEMORY.md 1행 | iMac/민아 |
+- 2026-11-02 21:38 KST MEMORY 추가: feedback_header_time_last_measured (헤더 시각=마지막 실측 복사, 작가님 21:37)
