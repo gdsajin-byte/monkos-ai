@@ -1,6 +1,7 @@
 {
   "us-passport": {
     "slug": "us-passport",
+    "faceTargetExplicitMm": 31,
     "country": "미국",
     "countryEn": "USA",
     "type": "여권",
