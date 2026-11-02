@@ -45,7 +45,7 @@ import { cropToSpec, warmupCropEngine, getSpecCropParams } from './lib/spec-crop
 import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, getMatteEngineState, stripDataUri, getSpecBgColor, cropMetaWithinSpec, runMatteChain } from './lib/matte.js';
 import { judgeMetrics, metricsFromFit } from './lib/spec-judge.js';
 import { frameOutside, judgeFov, fovCause, fovExposed } from './lib/fit-fov.js';
-import { measureTopContact } from './lib/hair-measure.js';
+import { checkCrownContact } from './lib/hair-measure.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
@@ -71,11 +71,6 @@ import { BLOG_REDIRECTS } from './lib/cms/redirects.js';
 import { handlePodStart, handlePodStatus, handlePodStop, handleComfyProxy } from './lib/vton/runpod.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-
-// precheck 정수리 실측 (ORDER_20261102 정수리게이트_실측전환)
-const CROWN_MATTE_LONG_SIDE = 512;
-const CROWN_MATTE_BG = '#00FF00'; // 측정 전용 — 흰머리·검은 머리 모두 배경과 갈리는 색
-const CROWN_MATTE_TIMEOUT_MS = 5000;
 
 /**
  * 러프 크롭 → crop-engine 기하 피팅 → 원본 좌표 역산 + 랜드마크 검증. /fit·precheck(화각 판정) 공용.
@@ -719,29 +714,11 @@ const httpServer = createServer(async (req, res) => {
       // 자체 서버 불통(backup)이면 호출하지 않는다: RunPod 콜드는 5초 안에 못 끝나고 과금만 남는다
       let crownCheck = null;
       if (measurable && faceBox && matteEnabled()) {
-        const tc = Date.now();
-        const engineState = await enginePromise;
-        if (engineState === 'backup') {
-          crownCheck = { status: 'skipped_backup' };
-          log('[IDPhoto][precheck] 정수리 실측 생략 (자체 매팅 서버 불통) → 판정 없이 통과', 'WARNING');
-        } else {
-          try {
-            const { default: sharp } = await import('sharp');
-            const small = await sharp(norm.buf).resize(CROWN_MATTE_LONG_SIDE, CROWN_MATTE_LONG_SIDE, { fit: 'inside', withoutEnlargement: true }).jpeg({ quality: 90 }).toBuffer();
-            const r = await Promise.race([
-              runMatteChain(small.toString('base64'), CROWN_MATTE_BG, body.slug || 'precheck'),
-              new Promise((_, rej) => setTimeout(() => rej(new Error(`타임아웃 ${CROWN_MATTE_TIMEOUT_MS}ms`)), CROWN_MATTE_TIMEOUT_MS)),
-            ]);
-            if (!r) throw new Error('매팅 체인 실패');
-            const cx = faceBox.x + faceBox.w / 2;
-            const m = await measureTopContact(Buffer.from(r.image, 'base64'), CROWN_MATTE_BG, cx - faceBox.w * 0.7, cx + faceBox.w * 0.7);
-            crownCheck = { status: 'measured', ...m, ms: Date.now() - tc };
-            if (m.touched) { measurable = false; reason = 'crown_cropped'; }
-          } catch (ce) {
-            crownCheck = { status: 'failed', ms: Date.now() - tc };
-            log(`[IDPhoto][precheck] 정수리 실측 실패 (${ce.message}) → 판정 없이 통과`, 'WARNING');
-          }
-        }
+        crownCheck = await checkCrownContact({
+          imageBuf: norm.buf, faceBox, slug: body.slug || 'precheck',
+          engineState: await enginePromise, runMatte: runMatteChain, warn: (msg) => log(msg, 'WARNING'),
+        });
+        if (crownCheck.touched) { measurable = false; reason = 'crown_cropped'; }
       }
       if (measurable) warmupMatteEngine(); // 게이트 통과자만 예열 — 구경·불합격 트래픽 웜 비용 차단 (자체 서버 불통 시에만 RunPod)
       // engineReady=false → 백업 처리 예정. 고객 화면 사전 안내용 — 엔진명은 싣지 않는다 (ch8)
