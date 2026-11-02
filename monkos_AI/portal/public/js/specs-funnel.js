@@ -141,6 +141,35 @@ var SpecsFunnel = (function(){
     el.style.display = '';
   }
   /* 화각 부족 경고 (2026-11-02) — precheck fov.verdict==='warn'일 때만. 진행은 막지 않는다. 문구 키가 없는 언어는 생략 */
+  /* 화각 부족 = 사용 불가 (2026-11-02 작가님 직접) — 무료 만들기를 닫고 AI 경로 + 다른 사진만 연다. 사진은 그대로 결제로 넘어간다 */
+  var fovAiOnly = false;
+  function applyFovAiOnly(fov){
+    fovAiOnly = true;
+    var box = document.getElementById('v2-fit-summary');
+    box.className = '';
+    box.textContent = '';
+    box.style.cssText = 'margin:0 0 12px;padding:14px 16px;border:2px solid #dc2626;border-radius:12px;background:#fef2f2;text-align:left;';
+    var h = document.createElement('div');
+    h.id = 'v2-fov-title';
+    h.setAttribute('role', 'alert');
+    h.style.cssText = 'font-size:20px;line-height:1.35;font-weight:800;color:#b91c1c;';
+    h.textContent = fovText('fov_unusable_title', fov);
+    var p = document.createElement('div');
+    p.style.cssText = 'margin-top:8px;font-size:15px;line-height:1.5;color:#111827;';
+    p.textContent = fovText(fov.cause === 'off_center' ? 'fov_unusable_body_off' : 'fov_unusable_body', fov);
+    box.appendChild(h); box.appendChild(p);
+    document.getElementById('v2-fit-make').textContent = T.fov_ai_btn.replace('{price}', CFG.price || '');
+    var ch = document.getElementById('v2-fit-change');
+    if(ch){ if(!ch.dataset.label) ch.dataset.label = ch.textContent; ch.textContent = T.fov_other_btn; }
+    ['ip-fit-caption', 'ip-fit-t2-link'].forEach(function(id){ var e = document.getElementById(id); if(e) e.style.display = 'none'; });
+  }
+  function resetFovAiOnly(){
+    fovAiOnly = false;
+    var box = document.getElementById('v2-fit-summary');
+    if(box) box.style.cssText = '';
+    var ch = document.getElementById('v2-fit-change');
+    if(ch && ch.dataset.label) ch.textContent = ch.dataset.label;
+  }
   function showFovNotice(msg){
     var el = document.getElementById('v2-fov-notice');
     if(!msg){ if(el) el.style.display = 'none'; return; }
@@ -162,7 +191,7 @@ var SpecsFunnel = (function(){
     if(!txt) return null;
     var o = (fov && fov.outside) || {};
     txt = txt.replace('{spec}', CFG.specLabel || '').replace('{side}', (o.left > o.right) ? (T.fov_side_left || '') : (T.fov_side_right || ''));
-    if(key.indexOf('fov_wide') >= 0 && T.fov_wide_note) txt += ' ' + T.fov_wide_note;
+    if(key.indexOf('_fov_wide') >= 0 && T.fov_wide_note) txt += ' ' + T.fov_wide_note;
     return txt;
   }
   /* 내 사진 위 규격 틀 (DESIGN 추천화각 §5-3) — 좌표는 판정 응답의 프레임(원본 좌표).
@@ -603,6 +632,7 @@ var SpecsFunnel = (function(){
     showEngineNotice(false);
     showFovNotice(false);
     clearFovOverlay();
+    resetFovAiOnly();
     var mime = (file && file.type) || '';
     var ext = fileExt(file && file.name);
     if(!mime.match(/image\/(jpeg|png|webp)/i) && ALLOWED_EXT.indexOf(ext) < 0){
@@ -652,9 +682,14 @@ var SpecsFunnel = (function(){
           } else {
             prepareFreeReady();
             showEngineNotice(engineBackup());
-            showFovNotice(data.fov && data.fov.verdict === 'warn'
-              ? fovText(data.fov.cause === 'off_center' ? 'warn_fov_off_center' : data.fov.cause === 'wide' ? 'warn_fov_wide' : 'warn_fov_tight_side', data.fov)
-              : null);
+            // AI 경로가 켜진 규격(CFG.t1)만 사용 불가 안내 — 꺼진 규격은 없는 기능을 약속하지 않고 경고로 둔다
+            if(data.fov && data.fov.aiOnly && CFG.t1 && T.fov_unusable_title && T.fov_ai_btn){
+              applyFovAiOnly(data.fov);
+            } else {
+              showFovNotice(data.fov && data.fov.verdict === 'warn'
+                ? fovText(data.fov.cause === 'off_center' ? 'warn_fov_off_center' : data.fov.cause === 'wide' ? 'warn_fov_wide' : 'warn_fov_tight_side', data.fov)
+                : null);
+            }
             showFovOverlay(data);
           }
           // 이미지 저장을 검수 시점에 선행 — 결제 클릭 체인에서 캔버스 압축을 제거해
@@ -1212,6 +1247,7 @@ var SpecsFunnel = (function(){
   document.getElementById('v2-fit-make').addEventListener('click', function(){
       if(freeBusy) return;
       if(hasUsableToken()) return doGenerate();
+      if(fovAiOnly) return proceedToPay();
       if(pilotFreeExhausted) return proceedToPay();
       if(fitResult && fitResult.frame) return doFreeGenerate();
       freeBusy = true; hideError();

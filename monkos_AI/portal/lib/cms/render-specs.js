@@ -8,7 +8,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { escapeHtml, layoutShell } from './render-shell.js';
 import { getSpecCropParams } from '../spec-crop.js';
-import { log, LEMONSQUEEZY_VARIANT_SPECS_SINGLE, LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP } from '../shared/config.js';
+import { log, LEMONSQUEEZY_VARIANT_SPECS_SINGLE, LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP, DIRECT_PRICING } from '../shared/config.js';
 import { COMMON_RULES, SPECS_I18N, V2_REJECTIONS, V2_DETAILS, V2_FAQ_FALLBACK, RESTR_LABELS } from './specs-i18n.js';
 import { specsUrl, specsCanonicalUrl, specsHreflangTags, SPECS_DOMAIN } from './specs-url.js';
 import { specHero } from './components/spec-hero.js';
@@ -686,7 +686,7 @@ ${relatedServices(ctx)}
     t: v2.js,
     pilot: true,
     t1: t1RetouchOn && !isColoredBg,
-    price: market === 'kr' ? '₩2,000' : '$1.99',
+    price: market === 'kr' ? `₩${DIRECT_PRICING.kr.amount.toLocaleString('en-US')}` : '$1.99',
     freeCap: process.env.FREE_QUOTA_BYPASS === '1' ? 999999 : 3,
     adsConv: process.env.GOOGLE_ADS_CONVERSION_ID ? {
       id: process.env.GOOGLE_ADS_CONVERSION_ID,

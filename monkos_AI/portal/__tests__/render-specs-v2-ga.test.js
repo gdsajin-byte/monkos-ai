@@ -21,6 +21,7 @@ jest.unstable_mockModule('../lib/shared/config.js', () => ({
   TEAM_CHAT_ID: '',
   LEMONSQUEEZY_VARIANT_SPECS_SINGLE: 'test-variant-single',
   LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP: 'test-variant-single-jp',
+  DIRECT_PRICING: { kr: { provider: 'toss', amount: 2000, currency: 'KRW' } },
 }));
 
 const { specsDetailFragment } = await import('../lib/cms/render-specs.js');

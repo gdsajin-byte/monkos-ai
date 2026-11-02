@@ -123,6 +123,22 @@ describe('warn 전용 스위치', () => {
   });
 });
 
+describe('aiOnly', () => {
+  test('이탈 warn·block은 AI 경로만', () => {
+    expect(assessFov({ x: -60, y: 0, w: 1000, h: 1000 }, IMG, 400, false)).toMatchObject({ cause: 'off_center', aiOnly: true });
+    expect(assessFov({ x: -60, y: 0, w: 1000, h: 1060 }, IMG, 400, false)).toMatchObject({ cause: 'narrow', aiOnly: true });
+  });
+
+  test('경계 — 이탈 5% 자체는 ok, 무료 유지', () => {
+    expect(assessFov({ x: -50, y: 0, w: 1000, h: 1000 }, IMG, 400, false)).toMatchObject({ verdict: 'ok', aiOnly: false });
+    expect(assessFov({ x: -51, y: 0, w: 1000, h: 1000 }, IMG, 400, false)).toMatchObject({ verdict: 'warn', aiOnly: true });
+  });
+
+  test('wide는 무료 유지', () => {
+    expect(assessFov({ x: 100, y: 100, w: 500, h: 500 }, IMG, 1000, false)).toMatchObject({ cause: 'wide', aiOnly: false });
+  });
+});
+
 describe('fitCache', () => {
   test('저장·조회·만료', () => {
     const g = { frame: { x: 1 } };

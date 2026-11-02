@@ -72,7 +72,9 @@ export function assessFov(frame, imageSize, frameW, blockEnabled = FOV_BLOCK_ENA
   let cause = null;
   if (rawVerdict !== 'ok') cause = RANK[tight] >= RANK[wide] ? fovCause(outside) : 'wide';
   const verdict = rawVerdict === 'block' && !blockEnabled ? 'warn' : rawVerdict;
-  return { frame, imageSize, outside, magnification, verdict, rawVerdict, cause };
+  // 몸이 프레임 밖으로 잘리는 사진(이탈 5% 초과)은 무료 매팅으로 규정 사진을 만들 수 없다 → 유료 AI 경로만 연다 (2026-11-02 작가님)
+  const aiOnly = cause === 'narrow' || cause === 'off_center';
+  return { frame, imageSize, outside, magnification, verdict, rawVerdict, cause, aiOnly };
 }
 
 const BLOCK_REASON = { narrow: 'fov_tight_side', off_center: 'fov_off_center', wide: 'fov_wide' };
