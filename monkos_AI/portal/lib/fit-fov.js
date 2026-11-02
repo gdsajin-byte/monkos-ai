@@ -6,8 +6,8 @@
  * 위쪽 이탈은 배경과 같은 색으로 채워져 보이지 않으므로 판정에서 제외한다.
  */
 
-// 임계 근거: COMPLETION_20261102 화각부족판정 임계 표 (dev 실측)
-export const FOV_WARN_RATIO = 0.03;
+// 임계 근거: COMPLETION_20261102 화각부족판정 임계 표 (dev 실측). 초안 warn 3%는 어깨가 가장자리에 닿지 않는 3.2~3.7%대를 오경보해 5%로 상향
+export const FOV_WARN_RATIO = 0.05;
 export const FOV_BLOCK_RATIO = 0.12;
 
 // 노출 규격 정본 — 판정 코드는 공통, 고객 노출은 여기 등재된 슬러그만

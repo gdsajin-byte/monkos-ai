@@ -40,7 +40,7 @@ describe('judgeFov', () => {
   });
 
   test('좌·우·아래 중 최댓값 기준', () => {
-    expect(judgeFov(o({ left: 0.01, right: 0.05, bottom: 0.02 }))).toBe('warn');
+    expect(judgeFov(o({ left: 0.01, right: 0.06, bottom: 0.02 }))).toBe('warn');
   });
 });
 
