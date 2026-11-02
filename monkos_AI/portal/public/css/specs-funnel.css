@@ -228,7 +228,28 @@ a:hover { color: #5a3de6; }
 }
 .v2-upload-zone .v2-upload-hint { font-size: 11px; color: #bbb; margin-top: 6px; }
 /* 업로드 존 단독 — 양옆 셀카/프로필 예시 제거 (2026-07-11 작가님: 잡스러움) */
-.v2-upload-with-guides { display: flex; align-items: center; justify-content: center; }
+.v2-upload-with-guides { display: flex; align-items: center; justify-content: center; gap: 24px; }
+/* 추천 화각 안내 — DESIGN_20261102 §2. 데스크톱은 업로드 박스 옆, 모바일은 위 */
+.v2-framing-guide { flex: 0 0 260px; width: 260px; margin: 0; min-width: 0; }
+.v2-framing-stage { position: relative; border-radius: 10px; overflow: hidden; border: 1px solid rgba(0,0,0,0.08); background: #fff; }
+.v2-framing-stage img { display: block; width: 100%; height: auto; }
+.v2-framing-stage svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.v2-framing-dim { fill: rgba(26,26,46,0.16); }
+.v2-framing-crop-casing, .v2-framing-crop, .v2-framing-shoot { fill: none; vector-effect: non-scaling-stroke; }
+.v2-framing-crop-casing { stroke: rgba(26,26,46,0.55); stroke-width: 4px; }
+.v2-framing-crop { stroke: #fff; stroke-width: 2px; }
+.v2-framing-shoot { stroke: #00B894; stroke-width: 2.5px; stroke-dasharray: 7 5; }
+.v2-framing-guide figcaption { margin-top: 10px; }
+.v2-framing-note { margin: 0 0 8px; font-size: 13px; line-height: 1.5; color: #444; text-align: left; word-break: keep-all; }
+.v2-framing-legend { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0; padding: 0; font-size: 11.5px; color: #666; }
+.v2-framing-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.v2-framing-legend i { display: inline-block; width: 18px; height: 0; }
+.v2-framing-key-shoot { border-top: 2.5px dashed #00B894; }
+.v2-framing-key-crop { border-top: 2px solid #fff; outline: 1px solid rgba(26,26,46,0.55); }
+@media (max-width: 700px) {
+  .v2-upload-with-guides { flex-direction: column; align-items: stretch; gap: 16px; }
+  .v2-framing-guide { flex: none; width: 100%; max-width: 240px; align-self: center; }
+}
 .v2-upload-guide { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(0,0,0,0.06); }
 .v2-guide-items { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
 .v2-guide-items span { font-size: 11px; color: #888; background: rgba(108,79,255,0.06); padding: 3px 8px; border-radius: 10px; }
