@@ -141,6 +141,45 @@ var SpecsFunnel = (function(){
     el.style.display = '';
   }
   /* 화각 부족 경고 (2026-11-02) — precheck fov.verdict==='warn'일 때만. 진행은 막지 않는다. 문구 키가 없는 언어는 생략 */
+  /* 화각 부족 = 사용 불가 (2026-11-02 작가님 직접) — 무료 만들기를 닫고 AI 경로 + 다른 사진만 연다. 사진은 그대로 결제로 넘어간다 */
+  var fovAiOnly = false;
+  function applyFovAiOnly(fov){
+    fovAiOnly = true;
+    var box = document.getElementById('v2-fit-summary');
+    box.className = '';
+    box.textContent = '';
+    box.style.cssText = 'margin:0 0 12px;padding:14px 16px;border:2px solid #dc2626;border-radius:12px;background:#fef2f2;text-align:left;';
+    var h = document.createElement('div');
+    h.id = 'v2-fov-title';
+    h.setAttribute('role', 'alert');
+    h.style.cssText = 'font-size:20px;line-height:1.35;font-weight:800;color:#b91c1c;';
+    h.textContent = fovText('fov_unusable_title', fov);
+    var p = document.createElement('div');
+    p.style.cssText = 'margin-top:8px;font-size:15px;line-height:1.5;color:#111827;';
+    p.textContent = fovText(fov.cause === 'off_center' ? 'fov_unusable_body_off' : 'fov_unusable_body', fov);
+    box.appendChild(h); box.appendChild(p);
+    var mk = document.getElementById('v2-fit-make');
+    mk.textContent = T.fov_ai_btn.replace('{price}', CFG.price || '');
+    if(T.fov_ai_hint && !document.getElementById('v2-fov-hint')){
+      var hint = document.createElement('p');
+      hint.id = 'v2-fov-hint';
+      hint.style.cssText = 'width:100%;margin:0;font-size:12px;line-height:1.45;color:#6b7280;text-align:center;';
+      hint.textContent = T.fov_ai_hint;
+      mk.parentNode.insertBefore(hint, mk); // 버튼 영역은 역순 배치 — DOM 앞이 화면 아래
+    }
+    var ch = document.getElementById('v2-fit-change');
+    if(ch){ if(!ch.dataset.label) ch.dataset.label = ch.textContent; ch.textContent = T.fov_other_btn; }
+    ['ip-fit-caption', 'ip-fit-t2-link'].forEach(function(id){ var e = document.getElementById(id); if(e) e.style.display = 'none'; });
+  }
+  function resetFovAiOnly(){
+    fovAiOnly = false;
+    var box = document.getElementById('v2-fit-summary');
+    if(box) box.style.cssText = '';
+    var hint = document.getElementById('v2-fov-hint');
+    if(hint && hint.parentNode) hint.parentNode.removeChild(hint);
+    var ch = document.getElementById('v2-fit-change');
+    if(ch && ch.dataset.label) ch.textContent = ch.dataset.label;
+  }
   function showFovNotice(msg){
     var el = document.getElementById('v2-fov-notice');
     if(!msg){ if(el) el.style.display = 'none'; return; }
@@ -155,6 +194,77 @@ var SpecsFunnel = (function(){
     }
     el.textContent = msg;
     el.style.display = '';
+  }
+  /* 판정 문구 — {spec}·{side} 치환. fov_wide에는 원본 사진 안내를 덧붙인다 */
+  function fovText(key, fov){
+    var txt = T[key];
+    if(!txt) return null;
+    var o = (fov && fov.outside) || {};
+    txt = txt.replace('{spec}', CFG.specLabel || '').replace('{side}', (o.left > o.right) ? (T.fov_side_left || '') : (T.fov_side_right || ''));
+    if(key.indexOf('_fov_wide') >= 0 && T.fov_wide_note) txt += ' ' + T.fov_wide_note;
+    return txt;
+  }
+  /* 내 사진 위 규격 틀 (DESIGN 추천화각 §5-3) — 좌표는 판정 응답의 프레임(원본 좌표).
+     틀 밖으로 잘려 나가는 부분은 어둡게, 틀이 사진을 넘친 부분은 빨강, 부족한 쪽 테두리는 주황. */
+  function clearFovOverlay(){
+    var old = document.getElementById('v2-fov-overlay');
+    if(old && old.parentNode) old.parentNode.removeChild(old);
+    var ci = document.getElementById('v2-check-img');
+    if(ci) ci.style.visibility = '';
+  }
+  function fovOverlaySvg(fov, topShort){
+    var NS = 'http://www.w3.org/2000/svg';
+    var f = fov.frame, W = fov.imageSize.width, H = fov.imageSize.height, o = fov.outside;
+    function el(name, attrs){
+      var n = document.createElementNS(NS, name);
+      for(var k in attrs) n.setAttribute(k, attrs[k]);
+      return n;
+    }
+    var ux = Math.min(0, f.x), uy = Math.min(0, f.y);
+    var uw = Math.max(W, f.x + f.w) - ux, uh = Math.max(H, f.y + f.h) - uy;
+    var svg = el('svg', { id: 'v2-fov-overlay', viewBox: ux + ' ' + uy + ' ' + uw + ' ' + uh, preserveAspectRatio: 'xMidYMid meet', role: 'img' });
+    svg.appendChild(el('image', { href: uploadedBase64, x: 0, y: 0, width: W, height: H, preserveAspectRatio: 'none' }));
+    // 틀 밖으로 잘려 나가는 부분
+    svg.appendChild(el('path', { d: 'M' + ux + ' ' + uy + 'h' + uw + 'v' + uh + 'h' + (-uw) + 'z M' + f.x + ' ' + f.y + 'h' + f.w + 'v' + f.h + 'h' + (-f.w) + 'z', fill: 'rgba(15,15,40,.45)', 'fill-rule': 'evenodd' }));
+    // 틀이 사진을 넘친 부분 = 사진 사각형 바깥 + 틀 안
+    var red = 'rgba(220,38,38,.45)';
+    if(f.x < 0) svg.appendChild(el('rect', { x: f.x, y: f.y, width: -f.x, height: f.h, fill: red }));
+    if(f.x + f.w > W) svg.appendChild(el('rect', { x: W, y: f.y, width: f.x + f.w - W, height: f.h, fill: red }));
+    var ix = Math.max(0, f.x), iw = Math.min(W, f.x + f.w) - ix;
+    if(f.y < 0) svg.appendChild(el('rect', { x: ix, y: f.y, width: iw, height: -f.y, fill: red }));
+    if(f.y + f.h > H) svg.appendChild(el('rect', { x: ix, y: H, width: iw, height: f.y + f.h - H, fill: red }));
+    // 틀
+    var sw = Math.max(uw, uh) * 0.008;
+    svg.appendChild(el('rect', { x: f.x, y: f.y, width: f.w, height: f.h, fill: 'none', stroke: '#ffffff', 'stroke-width': sw }));
+    // 부족한 쪽 테두리
+    var orange = '#f97316', osw = sw * 1.8, EPS = 0.005;
+    function side(x1, y1, x2, y2){ svg.appendChild(el('line', { x1: x1, y1: y1, x2: x2, y2: y2, stroke: orange, 'stroke-width': osw })); }
+    if(o.left > EPS) side(f.x, f.y, f.x, f.y + f.h);
+    if(o.right > EPS) side(f.x + f.w, f.y, f.x + f.w, f.y + f.h);
+    if(o.bottom > EPS) side(f.x, f.y + f.h, f.x + f.w, f.y + f.h);
+    if(o.top > EPS || topShort) side(f.x, f.y, f.x + f.w, f.y);
+    return svg;
+  }
+  /* 반려 화면: 확인 이미지 자리 / 통과 화면: fit 스테이지 위 */
+  function showFovOverlay(data){
+    clearFovOverlay();
+    var fov = data && data.fov;
+    if(!fov || !fov.frame || !fov.imageSize || !fov.outside) return;
+    var topShort = !!(data.crownCheck && data.crownCheck.touched);
+    var svg = fovOverlaySvg(fov, topShort);
+    if(data.measurable === false){
+      var ci = document.getElementById('v2-check-img');
+      if(!ci || !ci.parentNode) return;
+      ci.style.visibility = 'hidden';
+      svg.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;background:#fff;';
+      if(getComputedStyle(ci.parentNode).position === 'static') ci.parentNode.style.position = 'relative';
+      ci.parentNode.appendChild(svg);
+    } else {
+      var stage = document.getElementById('v2-fit-stage');
+      if(!stage) return;
+      svg.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;background:#fff;z-index:2;';
+      stage.appendChild(svg);
+    }
   }
   function showError(msg){ errorMsg.textContent = msg; errorMsg.classList.add('show'); noteError(msg, errorMsg); }
   function hideError(){ errorMsg.classList.remove('show'); hidePayError(); hideReportLink(); }
@@ -531,6 +641,8 @@ var SpecsFunnel = (function(){
     fitResult = null; precheckData = null;
     showEngineNotice(false);
     showFovNotice(false);
+    clearFovOverlay();
+    resetFovAiOnly();
     var mime = (file && file.type) || '';
     var ext = fileExt(file && file.name);
     if(!mime.match(/image\/(jpeg|png|webp)/i) && ALLOWED_EXT.indexOf(ext) < 0){
@@ -573,15 +685,22 @@ var SpecsFunnel = (function(){
           // 규정 8항목은 결과 화면에서 사후 표시 (ORDER_20260707 Task 1: 사전=측정성만)
           if(data.measurable === false){
             summary.className = 'v2-checklist-summary v2-summary-fail';
-            summary.textContent = (data.rejectionReason && T['rej_' + data.rejectionReason]) || T.rejDefault;
+            summary.textContent = (data.rejectionReason && fovText('rej_' + data.rejectionReason, data.fov)) || T.rejDefault;
+            showFovOverlay(data);
             document.getElementById('v2-btn-proceed').style.display = 'none';
             checkActions.style.display = 'flex';
           } else {
             prepareFreeReady();
             showEngineNotice(engineBackup());
-            showFovNotice(data.fov && data.fov.verdict === 'warn'
-              ? (data.fov.cause === 'off_center' ? T.warn_narrow_fov_off_center : T.warn_narrow_fov)
-              : null);
+            // AI 경로가 켜진 규격(CFG.t1)만 사용 불가 안내 — 꺼진 규격은 없는 기능을 약속하지 않고 경고로 둔다
+            if(data.fov && data.fov.aiOnly && CFG.t1 && T.fov_unusable_title && T.fov_ai_btn){
+              applyFovAiOnly(data.fov);
+            } else {
+              showFovNotice(data.fov && data.fov.verdict === 'warn'
+                ? fovText(data.fov.cause === 'off_center' ? 'warn_fov_off_center' : data.fov.cause === 'wide' ? 'warn_fov_wide' : 'warn_fov_tight_side', data.fov)
+                : null);
+            }
+            showFovOverlay(data);
           }
           // 이미지 저장을 검수 시점에 선행 — 결제 클릭 체인에서 캔버스 압축을 제거해
           // 토스 결제창의 user activation 만료(팝업 차단)를 방지 (2026-07-05 E2E 실패 수정)
@@ -892,6 +1011,7 @@ var SpecsFunnel = (function(){
   function fitAfter(ms, fn){ fitTimers.push(setTimeout(fn, ms)); }
 
   function runFit(){
+    clearFovOverlay();
     showPhase(phaseFit);
     fitClearTimers();
     var stage = document.getElementById('v2-fit-stage');
@@ -1137,6 +1257,7 @@ var SpecsFunnel = (function(){
   document.getElementById('v2-fit-make').addEventListener('click', function(){
       if(freeBusy) return;
       if(hasUsableToken()) return doGenerate();
+      if(fovAiOnly) return proceedToPay();
       if(pilotFreeExhausted) return proceedToPay();
       if(fitResult && fitResult.frame) return doFreeGenerate();
       freeBusy = true; hideError();

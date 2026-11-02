@@ -1,9 +1,9 @@
 /**
- * 화각 부족 판정 — fit 프레임이 원본 밖으로 나간 비율 (ORDER_20261102 미국비자_화각부족판정)
+ * 화각 판정 — 규격 프레임 기하 하나로 전 규격 공통 (DESIGN_20261102 추천화각 §3)
  *
  * 계산 기준은 포털이 러프 크롭을 역산한 "원본 좌표" 프레임이다. crop-engine의 outside는 입력(러프 크롭)
  * 기준이라 러프 창 경계를 원본 경계로 오인할 수 있어 판정에 쓰지 않는다.
- * 위쪽 이탈은 배경과 같은 색으로 채워져 보이지 않으므로 판정에서 제외한다.
+ * 위쪽 이탈은 배경과 같은 색으로 채워져 보이지 않으므로 판정에서 제외한다(정수리는 hair-measure 실측).
  */
 
 // 임계 근거: COMPLETION_20261102 화각부족판정 임계 표 (dev 실측). 초안 warn 3%는 어깨가 가장자리에 닿지 않는 3.2~3.7%대를 오경보해 5%로 상향.
@@ -11,24 +11,21 @@
 export const FOV_WARN_RATIO = 0.05;
 export const FOV_BLOCK_RATIO = 0.08;
 
-// 노출 규격 정본 — 판정 코드는 공통, 고객 노출은 여기 등재된 슬러그만
-const FOV_EXPOSED_SLUGS = new Set(['us-visa']);
-
-export function fovExposed(slug) {
-  return FOV_EXPOSED_SLUGS.has(slug);
-}
-
-const ratio = (px, base) => +(Math.max(0, px) / base).toFixed(4);
+// 확대 배율 = 규격 출력 px ÷ 원본 안의 프레임 px. 해상도가 아니라 "얼마나 멀리서 찍었나"의 지표 (설계 §3)
+export const FOV_WIDE_WARN = 1.0;
+export const FOV_WIDE_BLOCK = 1.5;
 
 // 작은 쪽 좌우·아래가 모두 이 값 이하이면 거리 부족이 아니라 좌우 쏠림으로 본다 (2026-11-02 쌍아 결정). 문안만 가른다
 const FOV_ONE_SIDED_RATIO = 0.03;
 
-/** 이탈 원인 — 'off_center'(한쪽만 이탈) | 'narrow'. 판정(judgeFov)에는 영향 없음 */
+/** 이탈 원인 — 'off_center'(한쪽만 이탈) | 'narrow'. 판정에는 영향 없음 */
 export function fovCause(outside) {
   const oneSided = Math.min(outside.left, outside.right) <= FOV_ONE_SIDED_RATIO
     && outside.bottom <= FOV_ONE_SIDED_RATIO;
   return oneSided ? 'off_center' : 'narrow';
 }
+
+const ratio = (px, base) => +(Math.max(0, px) / base).toFixed(4);
 
 /** frame·imageSize(같은 좌표계) → 프레임 높이·너비 대비 원본 밖 비율 0~1 */
 export function frameOutside(frame, imageSize) {
@@ -46,4 +43,61 @@ export function judgeFov(outside) {
   if (worst > FOV_BLOCK_RATIO) return 'block';
   if (worst > FOV_WARN_RATIO) return 'warn';
   return 'ok';
+}
+
+/** 확대 배율 기준 ok / warn / block. 임계값 자체는 통과 */
+export function judgeWide(magnification) {
+  if (magnification > FOV_WIDE_BLOCK) return 'block';
+  if (magnification > FOV_WIDE_WARN) return 'warn';
+  return 'ok';
+}
+
+const RANK = { ok: 0, warn: 1, block: 2 };
+
+// 화각 반려 스위치 — 첫 배포는 warn만 (2026-11-02 쌍아 결정: 딱 맞춘 증명사진 재업로드 수용, 1~2주 로그 후 전환 판단).
+// false면 block 수준도 진행 가능한 경고로 내보내고 rawVerdict에 원 판정을 남긴다. 정수리 실측 반려는 이 스위치와 무관
+export const FOV_BLOCK_ENABLED = false;
+
+/**
+ * 종합 판정. 수준이 높은 쪽을 택하고, 같으면 이탈(몸이 잘리는 문제)을 먼저 말한다.
+ * @param frameW 규격 출력 폭 px
+ * @returns {{ frame, imageSize, outside, magnification, verdict, rawVerdict, cause }} cause: narrow | off_center | wide | null(ok)
+ */
+export function assessFov(frame, imageSize, frameW, blockEnabled = FOV_BLOCK_ENABLED) {
+  const outside = frameOutside(frame, imageSize);
+  const magnification = +(frameW / frame.w).toFixed(3);
+  const tight = judgeFov(outside);
+  const wide = judgeWide(magnification);
+  const rawVerdict = RANK[tight] >= RANK[wide] ? tight : wide;
+  let cause = null;
+  if (rawVerdict !== 'ok') cause = RANK[tight] >= RANK[wide] ? fovCause(outside) : 'wide';
+  const verdict = rawVerdict === 'block' && !blockEnabled ? 'warn' : rawVerdict;
+  // 몸이 프레임 밖으로 잘리는 사진(이탈 5% 초과)은 무료 매팅으로 규정 사진을 만들 수 없다 → 유료 AI 경로만 연다 (2026-11-02 작가님)
+  const aiOnly = cause === 'narrow' || cause === 'off_center';
+  return { frame, imageSize, outside, magnification, verdict, rawVerdict, cause, aiOnly };
+}
+
+const BLOCK_REASON = { narrow: 'fov_tight_side', off_center: 'fov_off_center', wide: 'fov_wide' };
+
+/** block 판정의 반려 코드 (rej_{코드} 문구) */
+export function fovRejectionReason(fov) {
+  return BLOCK_REASON[fov.cause] || null;
+}
+
+// precheck가 계산한 기하를 /fit이 재사용 — 같은 사진을 두 번 검출·피팅하지 않는다. 좌표만 담고 사진은 담지 않는다.
+// 인스턴스 메모리라 다른 인스턴스로 가면 미스 → 기존대로 재계산
+const FIT_CACHE_TTL_MS = 10 * 60 * 1000;
+const FIT_CACHE_MAX = 300;
+const fitCache = new Map();
+
+export function fitCacheGet(key, now = Date.now()) {
+  const hit = fitCache.get(key);
+  if (!hit) return null;
+  if (now - hit.at > FIT_CACHE_TTL_MS) { fitCache.delete(key); return null; }
+  return hit.geometry;
+}
+
+export function fitCacheSet(key, geometry, now = Date.now()) {
+  if (fitCache.size >= FIT_CACHE_MAX) fitCache.delete(fitCache.keys().next().value);
+  fitCache.set(key, { at: now, geometry });
 }
