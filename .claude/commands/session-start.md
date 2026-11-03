@@ -21,12 +21,21 @@ description: 세션 시작 시 역할 판별, git 동기화, 보고를 수행한
 
 ## 디바이스 판별
 
-| hostname 포함 문자열 | 디바이스 |
-|---------------------|---------|
-| `iMac` | iMac |
-| `MacBook` / `M1` | M1 |
-| `mac-mini` | M2 |
-| WSL / Linux | 4060 |
+> 정본은 SessionStart 훅(`scripts/hooks/session_start.sh`)의 `디바이스=` 값과 `판별` 출처다. 11-03 정본화(ORDER_20261103 막내8 — M1·4060이 `웹(원격)/민아`로 오판되던 결함 교정). 위에서부터 먼저 맞는 것이 이긴다.
+
+| 순위 | 신호 | 디바이스 |
+|------|------|---------|
+| 1 | 환경변수 `MONK_DEVICE` (`iMac`·`M1`·`M2`·`4060`·`웹`) | 그 값 |
+| 2 | 기기 로컬 파일 `~/.claude/monk-device` 1행 (같은 허용값, Windows=`%USERPROFILE%\.claude\monk-device`, BOM·CRLF 허용) | 그 값 |
+| 3 | hostname `iMac` | iMac |
+| 3 | hostname `Macminiui-Macmini` / `macmini-macmini` / `MacBook` / `M1` | M1 |
+| 3 | hostname `MONK-4060` / `monk-4060`, `uname -s`=`MINGW*`·`MSYS*`·`CYGWIN*`, WSL | 4060 |
+| 3 | hostname `mac-mini` / `Mac-mini` / `M2` | M2 |
+| 4 | `CLAUDE_CODE_REMOTE=true` (클라우드 세션 양성 신호, 공식 문서 env-vars) | 웹(원격) → 역할 웹 민아 |
+| 5 | 그 외 | **미확인** + `[HOOK-ERR] 기기 미확인` — 역할은 덮지 않는다. 해당 기기에 `~/.claude/monk-device`를 만든다 |
+
+- 허용값 밖 `MONK_DEVICE`·파일 값은 `[HOOK-ERR]`로 알리고 다음 순위로 넘어간다.
+- 훅이 `디바이스=미확인`을 내면 헤더에 기기를 추정해 쓰지 말고 첫 보고에 1줄로 알린다.
 
 ## 절차
 
