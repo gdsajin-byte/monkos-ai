@@ -939,9 +939,13 @@ const dlg = document.getElementById('newDlg');
 function dlgSync() {
   const handi = document.querySelector('input[name="dWay"]:checked').value === 'handi';
   document.getElementById('handicap').disabled = !handi;
-  document.getElementById('dColor').disabled = handi;
-  if (handi) document.getElementById('dColor').value = 'B';
-  document.getElementById('dKomi').textContent = handi ? '덤: 흑 반집 공제 (접바둑 — 작가님 흑, 백이 먼저 둠)' : '덤: 흑 6집반 공제';
+  // 접바둑도 흑·백을 고를 수 있다(11-04) — 돌 가림만 무의미해 막는다
+  const dc = document.getElementById('dColor');
+  dc.querySelector('option[value="auto"]').disabled = handi;
+  if (handi && dc.value === 'auto') dc.value = 'B';
+  document.getElementById('dKomi').textContent = handi
+    ? `덤: 흑 반집 공제 (접바둑 — 작가님 ${dc.value === 'W' ? '백, 작가님이 먼저 둠' : '흑, 백이 먼저 둠'})`
+    : '덤: 흑 6집반 공제';
   const unl = document.getElementById('tUnl').checked;
   for (const id of ['tMain', 'tByo', 'tPer']) document.getElementById(id).disabled = unl;
   const lv = document.getElementById('dLevel');
@@ -981,7 +985,7 @@ document.getElementById('dOk').onclick = async () => {
   notice('대국실을 여는 중…');
   try {
     const r = await fetch('/api/rooms', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                          body: JSON.stringify({ level, handicap: handi, time, color: handi ? 'B' : colorPick }) });
+                                          body: JSON.stringify({ level, handicap: handi, time, color: colorPick }) });
     const j = await r.json();
     if (j.error || !j.id) { notice(j.error || '대국실을 만들지 못했습니다'); return; }
     try { sessionStorage.setItem('goBoardStartVoice', j.id); } catch (e) { /* 시작 음성 생략 */ }

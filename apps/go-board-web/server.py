@@ -579,8 +579,8 @@ class Room:
         if handicap not in HANDICAPS:
             raise RuntimeError("치수는 호선 또는 2~9점입니다.")
         r.handicap = handicap
-        if handicap:
-            r.user = "B"  # 접바둑은 작가님이 하수(흑)로 시작 — 바꾸려면 '흑백 바꾸기'
+        if handicap:  # 11-04 작가님 — 접바둑 백(상수) 선택 허용, 돌 가림은 접바둑에 무의미해 흑
+            r.user = color if color in ("B", "W") else "B"
         elif color in ("B", "W"):
             r.user = color
         elif color == "auto":  # 돌 가림
