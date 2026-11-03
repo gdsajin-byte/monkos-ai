@@ -153,6 +153,44 @@ related:
 19. **저장은 확인 없이 프로필의 다운로드 폴더(=작가님 ~/Downloads)에 '미확인 NNN.crdownload'로 떨어진다** — 받은 뒤 연구 폴더로 옮길 것.
 20. 키보드: ←→만 동작, Home/End/↑ 무반응. ◀◀▶▶는 5수.
 
+## ⑥ 내 기보 목록·저장 요청 (2026-11-03 19:33~20:38 실측, 쌍아-막내9)
+
+**[2026-11-03 20:38 KST]** iMac/쌍아-막내9 → 전 에이전트(CDP 사용자)
+
+> 출처: ORDER_20261103 막내9 타이젬 내기보 전체다운로드 탐사(작가님 19:30·20:28 사람 턴). 쿠키·토큰·암호문 **값은 기록하지 않는다**(이름만).
+
+### 함정 추가
+
+21. **Chrome 156에서 web.tygem.com 진입 불가(무한 리다이렉트)** — 브라우저가 http를 https로 자동 승격(내부 307, `Non-Authoritative-Reason: HttpsUpgrades`)하고 서버는 https를 다시 http로 302 → 루프 → `ERR_BLOCKED_BY_CLIENT`. HSTS 아님(net-internals 조회 Not found). **우회: 9227 크롬을 아래 플래그로 띄운다**(cdp_setup.sh에는 아직 없음 — 직접 실행):
+    `--disable-features=HttpsUpgrades,HttpsFirstModeV2,HttpsFirstModeV2ForEngagedSites,HttpsFirstBalancedMode,HttpsFirstBalancedModeAutoEnable,HttpsFirstModeIncognito,HttpsFirstModeForTypicallySecureUsers --disable-extensions`
+22. **뷰포트가 1571×1294로 나올 수 있다**(이번 창). 가로 좌표는 그대로, **기보 불러오기 창은 위로 16px** 이동: 탭 줄 y 470(카드 486), 내 기보 (478,470), 찾기 (724,470), 창 닫기 x (1163,422), 첫 행 y ≈ 528. 기보열기 (1125,343)는 동일.
+23. **목록 스크롤은 휠·막대 몸통 끌기로 안 된다** — 막대 **손잡이**를 픽셀로 찾아(x 1149, y 512~935에서 밝기<225) 맨 아래로 끌어야 '끝 도달' 이벤트 → 다음 쪽 요청. 손잡이가 이미 바닥이면 살짝 올렸다 내린다.
+24. **목록 요청이 간헐적으로 응답 없이 끊긴다**(2회: page 32·344) — 이후 앱이 더 요청하지 않는다. 창 닫기 → 기보열기 → 내 기보로 재개하면 **쪽 번호는 이어서** 간다(앱이 m_nPage를 기억).
+25. **기보 1국을 열면 불러오기 창이 닫힌다** — 연속 열기는 매번 기보열기부터.
+26. **신형 GIB의 아이디 한글은 깨져 온다**(EUC-KR을 GBK로 읽은 모양, 예 `厕加楷牢`) — 대국자 이름은 목록 JSON(`WName`·`BName`)이 정상이다.
+
+### 요청 경로 (값 제외)
+
+| 용도 | 요청 | 본문·인자 | 응답 |
+|---|---|---|---|
+| 1회용 키 | `POST client.tygem.com/gibo/gibo_nonce.php` | — | JSON `nonce`(32자), `expiresIn` 60 |
+| 내 번호 | `POST …/gibo/gibo_load_user_new.php` | `enc_data`(평문 키: uid·upw·lang·tid·nonce·timestamp) | 회원 번호 6자리 |
+| **내 기보 목록** | `POST …/gibo/gibo_load_user_file_new.php?page=N&limitdate=0` | `enc_data`(평문 키: uid·upw·usernum·lang·nonce·timestamp) | JSON `{list:[50건]}` — 건마다 `id`(10자리 대국 ID)·`Date`·`WName/BName`·`WRank/BRank`·`GameResult`(코드)·`Susun`·`CateName` |
+| **기보 1국** | `POST …/gibo/gibo_load_data_new.php?mode=my` | `enc_data`(평문 키: uid·upw·gid·lang·nonce·timestamp) | **GIB 원문 텍스트**(`\HS … \GE`) |
+| 분류·프로 목록 | `gibo_load_category.php` · `gibo_load_list.php?type=1` | — | JSON |
+
+- `enc_data` = 앱이 서버 공개키로 RSA 암호화한 JSON(값 기록 금지). nonce는 요청마다 새로. → **서버에 직접 요청을 만들지 말고 앱 함수를 부른다.**
+- `limitdate`: 앱이 본인이면 0, 남의 기보면 1로 넣는다(본인 목록은 날짜 제한 없음 — 2015-10까지 실측).
+- 묶음·zip·다중 ID 요청은 클라이언트에 **없다**(기보 엔드포인트 6개가 전부).
+- 화면 '저장'(··· 메뉴)은 1국 SGF 내려받기뿐. 내 기보 탭에 체크박스·다중 선택·기간 저장 없음.
+
+### 앱 함수로 받기 (레시피)
+
+1. 기보 세션 객체 잡기: `JSON.stringify` 훅에 `debugger` 1회 → 기보열기·내 기보 클릭 → 정지 프레임 `RequestUserNumber`의 `this` = 세션(u5). 메서드: `RequestGiboList_ByUserNumber(page)` · `RequestGiboData(gid, true)` · 콜백 `Result_GiboList` · `Result_GiboData`. 도구 `~/.monkos/tygem/tools/kibo_dl/grab.py`(성공 시 `OK`). 새로고침하면 다시 잡아야 한다(회수기는 exit 3으로 알린다). 같은 폴더의 `netlog.py`는 네트워크 기록기(헤더 값 미기록, 본문 저장 경로는 파일 안 상수).
+2. 인스턴스의 두 콜백을 받아채면 화면을 건드리지 않고 목록 JSON·GIB 원문을 받는다(`page_helper.js`).
+3. 회수기 `~/.monkos/tygem/tools/kibo_dl/kibo_dl.py [시작쪽] [상한]` — 목록 1쪽 → 그 쪽 대국 1국씩, 간격 2.2초, 장부 `ledger.jsonl`로 이어받기·ID 중복 제거, 연속 실패 5회 → 10분 대기 ×3 → 중단.
+4. GIB→SGF `gib2sgf.py`: `STO 0 수번 색 x y`(x 열·y 행, 0부터 위·왼쪽) → SGF `a+x a+y`. 결과 `GRLT` 0 흑 집·1 백 집(`ZIPSU`/10)·3 흑 불계·4 백 불계·7 흑 시간·8 백 시간 — 11-03 화면 결과 10/10 대조.
+
 ## ⑤ 실측·검증
 
 - 실측: 2026-10-24 22:00~23:31 KST + 2026-10-25 00:15~00:28(기보감상), iMac, Chrome(9227), 로그인 계정 = 작가님 계정(아이디 미기재).
