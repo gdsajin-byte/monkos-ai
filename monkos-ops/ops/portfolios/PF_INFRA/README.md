@@ -214,6 +214,7 @@ secret env               # SM → .env 일괄 동기화
 | 11/03 | ?/? | **COMPLETION** 세션 시작 훅 기기 판별 정본화 — 식별 파일 우선·M1/4060 패턴·미확인 명시 + Windows 한글 JSON 교정 | [COMPLETION_20261103_iMac쌍아-막내8_INFRA_세션시작훅_기기판별](../../reports/2026-11/COMPLETION_20261103_iMac쌍아-막내8_INFRA_세션시작훅_기기판별.md) | ✅ |
 | 11/03 | iMac/쌍아-막내8 | 세션 시작 훅 기기 판별 정본화 — MONK_DEVICE>식별 파일>hostname(M1·4060·MINGW)>CLAUDE_CODE_REMOTE>미확인+[HOOK-ERR](역할 유지), 4060 한글 JSON 교정, 스모크 158→175/175, 식별 파일 iMac·M1·4060 배치. 브랜치, 병합 대기 | [COMPLETION_20261103_iMac쌍아-막내8_INFRA_세션시작훅_기기판별](../../reports/2026-11/COMPLETION_20261103_iMac쌍아-막내8_INFRA_세션시작훅_기기판별.md) | ✅ |
 | 11/03 | iMac/쌍아 | Gemini 2.5→3.5 텍스트 이전 prod 완료 — idphoto-kr 00212·jp 00132·studio 00029, 원장 187 해소 (작가님 배포 승인) | — | ✅ |
+| 11/03 | iMac/쌍아 | 포털 평문 시크릿 3종(AUTH_SECRET·GOOGLE_CLIENT_SECRET·GITHUB_TOKEN) SM 참조 전환 prod 00577-fl5 — 평문 의심 0, 원장 181 해소 | — | ✅ |
 
 ---
 | 08/13 | iMac/민아 | **2주 운영 감사 — 4060 매팅 불통 확정 + 폴백 체계 실전 검증** — matte.monkos.ai 전 경로 530(CF 터널 불통) + Tailscale 노드 소멸 + SSH 타임아웃 = 기계 자체 오프라인. 마지막 4060 정상 서빙 08-12 16:54 KST → 08-13 01:14 KST부터 전량 프리플라이트 불통. 14일 매팅 74건 중 RunPod 폴백 약 27건(36%), 최근 3일 사실상 전량 RunPod(종량 과금 중). 야간·새벽 간헐 이탈 포함 15일 중 8일 이탈 관측. **유저 실패 0건** — 07-25 조치(세마포어·줄서기·25s) 실전 합격: 최악 08-10 20:49 KST 4060 hang+RunPod 순간 동시실패에도 200/87.7s 납품, 504 재발 0. 물리 점검(전원/네트워크) 필요 | 세션 보고 (sessions/2026-08/2026-08-13_iMac_민아.md) | 🔴 4060 물리 확인 대기 |
