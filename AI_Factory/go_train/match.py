@@ -20,13 +20,15 @@ HUMAN_CFG = os.path.join(ROOT, "engine", "gtp_human5k_example.cfg")
 B18 = os.path.join(ROOT, "nets", "b18.bin.gz")
 HUMAN = os.path.join(ROOT, "nets", "humanv0.bin.gz")
 MAX_MOVES = 400
+NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)  # 작업 스케줄러 기동 시 콘솔 창 억제(공용 PC)
 
 
 class Gtp:
     def __init__(self, args, label):
         self.label = label
         self.p = subprocess.Popen([ENGINE, "gtp"] + args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                  stderr=subprocess.DEVNULL, text=True, cwd=os.path.dirname(ENGINE))
+                                  stderr=subprocess.DEVNULL, text=True, cwd=os.path.dirname(ENGINE),
+                                  creationflags=NO_WINDOW)
 
     def cmd(self, c):
         self.p.stdin.write(c + "\n")
