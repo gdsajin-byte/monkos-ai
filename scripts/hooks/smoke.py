@@ -257,6 +257,64 @@ def ss_ctx(entry, monk_role=None):
         return ""
 expect("sdk-cli + MONK_ROLE=민아 → 역할 후보 민아", "역할 후보 민아" in ss_ctx("sdk-cli", "민아"), True)
 expect("음성 sdk-cli MONK_ROLE 미설정 → 역할 없음", "역할 후보" in ss_ctx("sdk-cli"), False)
+
+
+# 기기 판별 (11-03 ORDER_20261103 막내8): MONK_DEVICE > ~/.claude/monk-device > hostname·uname > CLAUDE_CODE_REMOTE > 미확인.
+# hostname·uname은 PATH 앞 스텁으로, ~는 임시 HOME으로 격리한다 (호출 환경의 MONK_DEVICE·CLAUDE_CODE_REMOTE는 상속 안 함).
+def ss_dev(host, uname="Darwin", env_dev=None, file_dev=None, remote=None, entry="cli"):
+    d = tempfile.mkdtemp(prefix="ssdev-")
+    stub = Path(d) / "bin"
+    stub.mkdir()
+    for name, val in (("hostname", host), ("uname", uname)):
+        f = stub / name
+        f.write_text("#!/bin/sh\necho '%s'\n" % val)
+        f.chmod(0o755)
+    home = Path(d) / "home"
+    (home / ".claude").mkdir(parents=True)
+    if file_dev is not None:
+        (home / ".claude/monk-device").write_bytes(file_dev if isinstance(file_dev, bytes) else file_dev.encode())
+    env = dict(os.environ, CLAUDE_PROJECT_DIR=str(ROOT), CLAUDE_CODE_ENTRYPOINT=entry, HOME=str(home),
+               PATH=str(stub) + os.pathsep + os.environ.get("PATH", ""))
+    for k in ("MONK_ROLE", "MONK_DEVICE", "CLAUDE_CODE_REMOTE"):
+        env.pop(k, None)
+    if env_dev is not None:
+        env["MONK_DEVICE"] = env_dev
+    if remote is not None:
+        env["CLAUDE_CODE_REMOTE"] = remote
+    p = subprocess.run(["bash", str(HERE / "session_start.sh")], input=json.dumps({"source": "startup"}),
+                       capture_output=True, text=True, env=env, timeout=20)
+    try:
+        h = json.loads(p.stdout).get("hookSpecificOutput", {})
+    except json.JSONDecodeError:
+        return "", "", None
+    ctx = h.get("additionalContext", "")
+    m = re.search(r"디바이스=(\S+)", ctx)
+    return (m.group(1) if m else ""), ctx, h.get("sessionTitle")
+
+
+expect("기기 hostname M1 Macminiui-Macmini → M1",   ss_dev("Macminiui-Macmini.local")[0], "M1")
+expect("기기 hostname 테일넷 macmini-macmini → M1", ss_dev("macmini-macmini")[0], "M1")
+expect("기기 hostname MONK-4060 → 4060",            ss_dev("MONK-4060", uname="MINGW64_NT-10.0-26300")[0], "4060")
+expect("기기 uname MINGW(미지 hostname) → 4060",    ss_dev("DESKTOP-XYZ", uname="MINGW64_NT-10.0")[0], "4060")
+expect("기기 hostname M2 kku-Mac-mini → M2",        ss_dev("kku-Mac-mini.local")[0], "M2")
+expect("기기 hostname iMac → iMac",                 ss_dev("Jeong-Kyuui-iMac.local")[0], "iMac")
+expect("기기 식별 파일 > hostname",                 ss_dev("Jeong-Kyuui-iMac.local", file_dev="M1\n")[0], "M1")
+expect("기기 식별 파일 BOM·CRLF 허용 → 4060",       ss_dev("x", file_dev=b"\xef\xbb\xbf4060\r\n")[0], "4060")
+expect("기기 MONK_DEVICE > 파일 > hostname",        ss_dev("Jeong-Kyuui-iMac.local", env_dev="M2", file_dev="M1")[0], "M2")
+_d, _c, _t = ss_dev("Jeong-Kyuui-iMac.local", env_dev="화성")
+expect("음성 MONK_DEVICE 허용값 밖 → [HOOK-ERR]+hostname", (_d, "[HOOK-ERR] MONK_DEVICE 허용값 밖" in _c), ("iMac", True))
+_d, _c, _t = ss_dev("Macminiui-Macmini.local", file_dev="M7")
+expect("음성 식별 파일 허용값 밖 → [HOOK-ERR]+hostname", (_d, "monk-device 허용값 밖" in _c), ("M1", True))
+_d, _c, _t = ss_dev("unknown-box")
+expect("미확인 hostname → 미확인+[HOOK-ERR]",       (_d, "[HOOK-ERR] 기기 미확인(hostname=unknown-box)" in _c), ("미확인", True))
+expect("음성 미확인이면 역할 민아로 안 바뀜(막내 유지)", bool(_t and _t.startswith("미확인-막내-")), True)
+_d, _c, _t = ss_dev("unknown-box", entry="claude-vscode")
+expect("음성 미확인 vscode → 쌍아 유지",             bool(_t and _t.startswith("미확인-쌍아-")), True)
+_d, _c, _t = ss_dev("runsc", uname="Linux", remote="true")
+expect("웹 CLAUDE_CODE_REMOTE=true → 웹(원격)+민아", (_d, bool(_t and _t.startswith("웹-민아-"))), ("웹(원격)", True))
+expect("음성 CLAUDE_CODE_REMOTE≠true → 웹 아님",    ss_dev("runsc", uname="Linux", remote="false")[0], "미확인")
+_d, _c, _t = ss_dev("x", file_dev="웹")
+expect("식별 파일 웹 → 웹(원격)+민아",               (_d, bool(_t and _t.startswith("웹-민아-"))), ("웹(원격)", True))
 # ---------- notify_blocked (Notification — bg 승인 대기 텔레그램, 10-22) ----------
 # 발송은 tg_notify.sh에 TG_CHAT_ID_OVERRIDE=1(무효 chat)로만 — 실발송 없이 실패 경로를 탄다.
 NB = "notify_blocked.py"

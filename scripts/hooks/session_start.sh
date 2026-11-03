@@ -7,6 +7,9 @@
 # 출력: JSON(hookSpecificOutput.additionalContext + sessionTitle). JSON 생성 실패 시 평문 + [HOOK-ERR]로 강등(문맥 주입은 유지).
 # 실패 가시화: 어떤 단계가 실패해도 [HOOK-ERR] 접두로 출력하고 나머지는 계속.
 set -u
+# Windows(4060 Git Bash) 파이썬 표준 입출력 기본값은 cp949 → 한글 JSON 출력이 깨지거나 실패해 평문 강등됐다(11-03 실측).
+# 이 훅 프로세스 안에서만 UTF-8로 고정한다.
+export PYTHONIOENCODING=utf-8
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || { echo "[HOOK-ERR] session_start: 프로젝트 디렉터리 이동 실패"; exit 1; }
 
 now="$(date '+%Y-%m-%d %H:%M KST')"
@@ -14,12 +17,58 @@ today="$(date '+%Y-%m-%d')"
 month="$(date '+%Y-%m')"
 stamp="$(date '+%m%d-%H%M')"
 host="$(hostname 2>/dev/null || echo unknown)"
-case "$host" in
-  *iMac*)                 device="iMac" ;;
-  *MacBook*|*M1*)         device="M1" ;;
-  *mac-mini*|*Mac-mini*|*M2*) device="M2" ;;
-  *) if grep -qi microsoft /proc/version 2>/dev/null; then device="4060"; else device="웹(원격)"; fi ;;
-esac
+# 기기 판별 (11-03 ORDER_20261103 막내8 정본화 — M1·4060이 hostname 불일치로 "웹(원격)"→역할 민아로 오판된 결함 교정).
+# 우선순위: ① 환경변수 MONK_DEVICE ② 기기 로컬 파일 ~/.claude/monk-device 1행 ③ hostname 패턴·uname·WSL
+#           ④ 웹 컨테이너 양성 신호 CLAUDE_CODE_REMOTE=true ⑤ 그 외 = 미확인 + [HOOK-ERR] (역할은 덮지 않는다)
+# 허용값: iMac|M1|M2|4060|웹. 허용값 밖은 [HOOK-ERR]로 알리고 다음 단계로 넘어간다(무음 강등 금지).
+dev_err=""
+dev_src=""
+norm_dev() {   # 허용값이면 내부 표기로 출력, 아니면 빈 문자열
+  case "$1" in
+    iMac|M1|M2|4060) printf '%s' "$1" ;;
+    웹)              printf '%s' "웹(원격)" ;;
+  esac
+}
+device=""
+if [ -n "${MONK_DEVICE:-}" ]; then
+  device="$(norm_dev "$MONK_DEVICE")"
+  if [ -n "$device" ]; then dev_src="MONK_DEVICE"; else dev_err="${dev_err}[HOOK-ERR] MONK_DEVICE 허용값 밖(${MONK_DEVICE}) — 무시. "; fi
+fi
+dev_file="${HOME:-}/.claude/monk-device"
+if [ -z "$device" ] && [ -f "$dev_file" ]; then
+  # 1행만, BOM·CR·앞뒤 공백 제거 (Windows 저장분 대비)
+  fval="$(head -n 1 "$dev_file" 2>/dev/null | tr -d '\r' | sed -e $'s/^\xEF\xBB\xBF//' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+  device="$(norm_dev "$fval")"
+  if [ -n "$device" ]; then dev_src="~/.claude/monk-device"; else dev_err="${dev_err}[HOOK-ERR] ~/.claude/monk-device 허용값 밖(${fval:-빈 값}) — 무시. "; fi
+fi
+if [ -z "$device" ]; then
+  case "$host" in
+    *iMac*)                                  device="iMac" ;;
+    *Macminiui-Macmini*|*macmini-macmini*)   device="M1" ;;   # M1 로컬 hostname·테일넷 이름 (11-03 실측)
+    *MacBook*|*M1*)                          device="M1" ;;
+    *MONK-4060*|*monk-4060*)                 device="4060" ;; # 4060 Windows hostname·테일넷 이름 (11-03 실측)
+    *mac-mini*|*Mac-mini*|*M2*)              device="M2" ;;
+  esac
+  if [ -z "$device" ]; then
+    case "$(uname -s 2>/dev/null)" in
+      MINGW*|MSYS*|CYGWIN*) device="4060" ;;                 # Windows Git Bash = 4060 (Windows 기기는 4060뿐)
+      *) grep -qi microsoft /proc/version 2>/dev/null && device="4060" ;;
+    esac
+  fi
+  [ -n "$device" ] && dev_src="hostname"
+fi
+# 웹 컨테이너는 양성 신호로만 판정 — 클라우드 세션 VM은 CLAUDE_CODE_REMOTE=true를 싣고 로컬에선 true가 아니다.
+# 근거: https://code.claude.com/docs/en/env-vars (CLAUDE_CODE_REMOTE) · https://code.claude.com/docs/en/cloud-environments (11-03 확인)
+if [ -z "$device" ] && [ "${CLAUDE_CODE_REMOTE:-}" = "true" ]; then
+  device="웹(원격)"; dev_src="CLAUDE_CODE_REMOTE"
+fi
+if [ -z "$device" ]; then
+  device="미확인"
+  dev_err="${dev_err}[HOOK-ERR] 기기 미확인(hostname=${host}) — ~/.claude/monk-device 설정 필요 (허용값 iMac|M1|M2|4060|웹)"
+fi
+dev_line=""
+[ -n "$dev_err" ] && dev_line="- ${dev_err}
+"
 
 # 역할 (ch1 5조 판별표의 실행 표면 대응). 헤드리스·SDK·미지 표면은 이름을 붙이지 않는다.
 entry="${CLAUDE_CODE_ENTRYPOINT:-}"
@@ -81,8 +130,8 @@ logs="$(ls "monkos-ops/ops/sessions/${month}/" 2>/dev/null | grep "^${today}_" |
 [ -z "$logs" ] && logs="(오늘 세션 로그 없음 — session-start 스킬로 생성)"
 
 ctx="$(cat <<EOF
-[MONK SessionStart 훅] ${now} · 디바이스=${device} (hostname ${host}) · 실행 표면=${entry:-미상}${role:+ → 역할 후보 ${role}}
-- ${title_line}
+[MONK SessionStart 훅] ${now} · 디바이스=${device} (hostname ${host}${dev_src:+ · 판별 ${dev_src}}) · 실행 표면=${entry:-미상}${role:+ → 역할 후보 ${role}}
+${dev_line}- ${title_line}
 - git: ${sync} · 미푸시 ${unpushed} · behind ${behind} · 미커밋/미추적 ${dirty}건
 - 오늘 세션 로그: ${logs}
 - 역할은 작가님 첫 턴 선언 기준 (ch1 5조). 헤더: **[YYYY-MM-DD HH:MM KST]** ${device}/{에이전트} → {수신자}
