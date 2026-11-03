@@ -104,5 +104,6 @@ def response_header_warning(text: str, at: datetime) -> str | None:
     floor = at.astimezone(KST).replace(second=0, microsecond=0)
     if dt.date() < floor.date() or dt <= floor:
         return None
-    return ("응답 헤더 %s은 실측 %s보다 미래 — 추정 기재. 다음 턴 첫 줄에서 `date` 실측값으로 정정 (헌법 3조 1항)"
+    # 11-03 작가님: 정정은 조용히, 정정 보고 턴 금지 — 다음 헤더부터 실측값만 쓰게 안내한다.
+    return ("응답 헤더 %s은 실측 %s보다 미래 — 추정 기재. 다음 헤더부터 마지막 실측값(훅 주입 또는 `date`)을 그대로 쓸 것. 정정 보고·정정 문단은 쓰지 않는다 (헌법 3조 1항)"
             % (dt.strftime("%H:%M"), floor.strftime("%H:%M")))
