@@ -1,8 +1,8 @@
 """최신 익스포트 체크포인트 1개를 .bin.gz로 변환하고 대국 사다리를 돌려 학습 곡선 1행을 남긴다.
 
-사용: python eval_ckpt.py --run b10 [--set quick|full] [--games 40]
-  quick: 우리 visits 1 vs 사람 급수 흉내(18k·10k·5k·1k) + KataGo b18 visits 1
-  full : quick + 사람 3d + 우리 visits 32 vs (사람 1k·3d, b18 visits 1·8)
+사용: python eval_ckpt.py --run b10 [--set quick|full] [--games N]
+  quick: 우리 visits 1 vs 사람 급수 흉내(1k·3d·5d, 각 30판) + KataGo b18 visits 1(20판)
+  full : quick + 사람 7d + 우리 visits 32 vs (사람 1k·3d 30판, b18 visits 1·8 20판)
 산출: go_train/eval/<run>/<익스포트명>/*.jsonl (대국별) + go_train/eval/<run>/curve.jsonl (조건별 요약 1행씩)
 
 사람 급수 흉내 = KataGo 공식 b18c384nbt-humanv0 + humanSLProfile rank_X (예제 cfg 기본 40 visits, 사람 수 표본 추출).
@@ -16,12 +16,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 KATAGO_PY = os.path.join(ROOT, "KataGo", "python")
 NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)  # 작업 스케줄러 기동 시 콘솔 창 억제(공용 PC)
 SETS = {
-    # 사람 흉내 망 프로필은 rank_20k~rank_9d. 초기 체크포인트가 약할 수 있어 18급부터 깐다(작가님 11-03 지적).
-    "quick": [(1, "human:rank_18k"), (1, "human:rank_10k"), (1, "human:rank_5k"), (1, "human:rank_1k"),
-              (1, "b18:1")],
+    # 항목 = (우리 visits, 상대, 판 수). 사람 흉내 망 프로필은 rank_20k~rank_9d.
+    # 이력 — 11-03: 초기 체크포인트 대비 18급부터 깔았음 — 11-04 교체.
+    # 11-04 작가님: 00:41 첫 평가에서 1k 55%(18k·10k 전승·5k 93%) → 1급 기준점부터 위로.
+    # 어떤 단계 60% 초과 시 다음 측정부터 아래 단계를 빼고 한 단계 위(7d·9d)를 더한다 — 수동 갱신.
+    # 판 수 30(b18 20)은 06:41 평가가 10:41과 겹치지 않게.
+    "quick": [(1, "human:rank_1k", 30), (1, "human:rank_3d", 30), (1, "human:rank_5d", 30), (1, "b18:1", 20)],
 }
-SETS["full"] = SETS["quick"] + [(1, "human:rank_3d"), (32, "human:rank_1k"), (32, "human:rank_3d"),
-                                (32, "b18:1"), (32, "b18:8")]
+SETS["full"] = SETS["quick"] + [(1, "human:rank_7d", 30), (32, "human:rank_1k", 30), (32, "human:rank_3d", 30),
+                                (32, "b18:1", 20), (32, "b18:8", 20)]
 
 
 def latest_export(run):
@@ -73,7 +76,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--run", default="b10")
     ap.add_argument("--set", default="quick", choices=SETS)
-    ap.add_argument("--games", type=int, default=40)
+    ap.add_argument("--games", type=int, default=None, help="지정 시 모든 상대에 일괄 적용(기본: 세트별 판 수)")
     ap.add_argument("--parallel", type=int, default=4)
     a = ap.parse_args()
     ev = os.path.join(ROOT, "eval", a.run)
@@ -94,10 +97,10 @@ def main():
         with open(curve, "a", encoding="utf-8") as f:
             f.write(json.dumps({**base, "error": str(ex)}, ensure_ascii=False) + "\n")
         sys.exit(1)
-    for visits, opp in SETS[a.set]:
+    for visits, opp, games in SETS[a.set]:
         out = os.path.join(ev, name, f"v{visits}_{opp.replace(':', '_')}.jsonl")
         r = subprocess.run([sys.executable, os.path.join(HERE, "match.py"), "--ours", model, "--ours-visits", str(visits),
-                            "--opp", opp, "--games", str(a.games), "--parallel", str(a.parallel), "--out", out],
+                            "--opp", opp, "--games", str(a.games or games), "--parallel", str(a.parallel), "--out", out],
                            capture_output=True, text=True, encoding="utf-8", creationflags=NO_WINDOW)
         try:
             summ = json.loads(r.stdout.strip().splitlines()[-1])
