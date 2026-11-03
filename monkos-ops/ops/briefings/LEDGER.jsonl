@@ -156,3 +156,9 @@
 {"ts": "2026-11-03 06:33 KST", "id": 196, "event": "open", "axis": "infra", "severity": "ℹ️", "title": "secret-patrol 텔레그램 미배선 — launchd 로그에 MONKOS_PATROL_CHAT_ID 미설정 경고, 순찰 결과가 로그 기록만 됨. 배선 또는 의도 확정 필요", "owner": "미배정", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-11-03 14:50 KST", "id": 187, "event": "resolve", "evidence": "f7bd89e6 prod 3종 kr 00212-tl6·jp 00132-vb6·studio 00029-zl4 + 2회 히트 precheck 200, 로그 gemini-3.5-flash만(2.5 0건) 14:50", "by": "iMac/쌍아"}
 {"ts": "2026-11-03 15:52 KST", "id": 181, "event": "resolve", "evidence": "14895d9b prod monkos-portal-00577-fl5 의심 평문 0·SM 32(누락 0), 2회 히트 /auth/google·kakao 302, ERROR 0 15:52", "by": "iMac/쌍아"}
+{"ts": "2026-11-04 06:31 KST", "id": 174, "event": "resolve", "evidence": "06:30 SM GOOGLE_CLIENT_SECRET v1 enabled(11-03 06:14 생성) · portal 00577-fl5 평문 의심 이름에서 제외(valueFrom 32) · 대조군 BIZINFO_API_KEY 없음", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-04 06:31 KST", "id": 116, "event": "note", "text": "06:30 SM BIZINFO_API_KEY 여전히 없음(대조군 GOOGLE_CLIENT_SECRET·GITHUB_TOKEN 11-03 신규 존재)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-04 06:31 KST", "id": 194, "event": "note", "text": "06:30 3일+ 미추적 잔존: 2026-10-29_iMac_민아.md·2026-10-30_iMac_민아.md. 내일 3일 도달: 2026-11-01_iMac_쌍아.md(11-02 02:16)·2026-11-02_iMac_민아.md(11-03 00:06). 미커밋 RUNPOD_USAGE.jsonl·2026-10-30_iMac_소소.md(11-02 21:57)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-04 06:31 KST", "id": 195, "event": "note", "text": "06:30 여전히 blocked 2: iMac-소소-1028-1148(기동 후 약 163h)·쌍아-막내2(약 37h)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-04 06:31 KST", "id": 196, "event": "note", "text": "11-03 09:30 순찰 정상(누출 0)이나 MONKOS_PATROL_CHAT_ID 미설정 경고 지속", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-04 06:31 KST", "id": 183, "event": "note", "text": "06:30 Pages monk-kr 시크릿 6 변동 없음", "by": "iMac/민아-헤드리스"}
