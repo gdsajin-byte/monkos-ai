@@ -14,6 +14,7 @@ import argparse, glob, json, os, re, subprocess, sys, time
 ROOT = r"C:\Users\smuse73\go_train"
 HERE = os.path.dirname(os.path.abspath(__file__))
 KATAGO_PY = os.path.join(ROOT, "KataGo", "python")
+NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)  # 작업 스케줄러 기동 시 콘솔 창 억제(공용 PC)
 SETS = {
     # 사람 흉내 망 프로필은 rank_20k~rank_9d. 초기 체크포인트가 약할 수 있어 18급부터 깐다(작가님 11-03 지적).
     "quick": [(1, "human:rank_18k"), (1, "human:rank_10k"), (1, "human:rank_5k"), (1, "human:rank_1k"),
@@ -37,9 +38,9 @@ def to_bin(export_dir, out_dir):
     ck = os.path.join(export_dir, "model.ckpt")
     base = [sys.executable, "export_model_pytorch.py", "-checkpoint", ck, "-export-dir", out_dir,
             "-model-name", name, "-filename-prefix", "model"]
-    r = subprocess.run(base + ["-use-swa"], cwd=KATAGO_PY, capture_output=True, text=True)
+    r = subprocess.run(base + ["-use-swa"], cwd=KATAGO_PY, capture_output=True, text=True, creationflags=NO_WINDOW)
     if r.returncode != 0:  # SWA 없는 체크포인트
-        r = subprocess.run(base, cwd=KATAGO_PY, capture_output=True, text=True)
+        r = subprocess.run(base, cwd=KATAGO_PY, capture_output=True, text=True, creationflags=NO_WINDOW)
     if r.returncode != 0:
         raise RuntimeError("export 실패: " + (r.stderr or r.stdout)[-800:])
     import gzip, shutil
@@ -97,7 +98,7 @@ def main():
         out = os.path.join(ev, name, f"v{visits}_{opp.replace(':', '_')}.jsonl")
         r = subprocess.run([sys.executable, os.path.join(HERE, "match.py"), "--ours", model, "--ours-visits", str(visits),
                             "--opp", opp, "--games", str(a.games), "--parallel", str(a.parallel), "--out", out],
-                           capture_output=True, text=True, encoding="utf-8")
+                           capture_output=True, text=True, encoding="utf-8", creationflags=NO_WINDOW)
         try:
             summ = json.loads(r.stdout.strip().splitlines()[-1])
         except Exception:
