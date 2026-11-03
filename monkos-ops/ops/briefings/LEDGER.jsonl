@@ -154,3 +154,4 @@
 {"ts": "2026-11-03 06:33 KST", "id": 194, "event": "note", "text": "06:30 MEMORY_CHANGELOG_iMac.md는 미커밋 목록에서 빠짐. 3일+ 잔존: sessions/2026-10/2026-10-29_iMac_민아.md(미추적). 추가 3일+: 2026-10-30_iMac_민아.md(미추적). RUNPOD_USAGE.jsonl은 11-02 09:00 행까지 미커밋", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-11-03 06:33 KST", "id": 195, "event": "open", "axis": "session", "severity": "⏸️", "title": "bg 세션 blocked 2건: iMac-소소-1028-1148(기동 후 139시간)·쌍아-막내2(13시간, 결정 대기·메시지 미도달, 후속 막내7로 대체됨) — 종료 또는 attach 택1", "owner": "작가님", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-11-03 06:33 KST", "id": 196, "event": "open", "axis": "infra", "severity": "ℹ️", "title": "secret-patrol 텔레그램 미배선 — launchd 로그에 MONKOS_PATROL_CHAT_ID 미설정 경고, 순찰 결과가 로그 기록만 됨. 배선 또는 의도 확정 필요", "owner": "미배정", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-03 14:50 KST", "id": 187, "event": "resolve", "evidence": "f7bd89e6 prod 3종 kr 00212-tl6·jp 00132-vb6·studio 00029-zl4 + 2회 히트 precheck 200, 로그 gemini-3.5-flash만(2.5 0건) 14:50", "by": "iMac/쌍아"}
