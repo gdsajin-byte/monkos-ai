@@ -227,7 +227,9 @@ status: 현행
 | **LEMONSQUEEZY_VARIANT_SPECS_SINGLE** | Lemon Squeezy 글로벌 스토어 specs 단건 variant ID | portal (specs 글로벌 결제) | ⭐ **2026-07-05 신설** — USD $1.99 통일 |
 | **TOSS_CLIENT_KEY** | 토스페이먼츠 라이브 클라이언트 키 (결제위젯 SDK용) | portal (KR 결제) | ⭐ **2026-07-05 신설** — specs KR 결제 연동 |
 
-| **AUTH_SECRET** | NextAuth 세션 서명 키 | portal (CR 환경변수 직접 설정) | ⭐ **2026-06-12 SM 등록 확인** — 콘솔에서 직접 설정된 것도 있음 |
+| **AUTH_SECRET** | NextAuth 세션 서명 키 | portal (CR 환경변수 직접 설정) | ⭐ **2026-06-12 SM 등록 확인** — 콘솔에서 직접 설정된 것도 있음 · **2026-11-03 v2(끝 줄바꿈 없음, 작가님 secret.sh) = prod 값 해시 일치 → deploy.sh SM 참조 전환(원장 181)**. v1은 끝 줄바꿈 포함 — 참조 금지(trim 없는 서명 키) |
+| **GITHUB_TOKEN** | 포털 GitHub API 토큰 | portal | ⭐ **2026-11-03 신설** — prod 평문 env 값 이전(작가님 secret.sh, 해시 일치), deploy.sh SM 참조(원장 181) |
+| **GOOGLE_CLIENT_SECRET** | Google OAuth 클라이언트 시크릿 | portal | ⭐ **2026-11-03 SM 신설** — prod 평문 env 값 이전(작가님 secret.sh, 해시 일치), deploy.sh SM 참조(원장 181) |
 | **TOSS_SECRET_KEY_TEST** | 토스 테스트 시크릿 키 | portal-dev (개발 환경 결제 테스트) | ⭐ **2026-07-12 신설** — dev 환경 전용, prod TOSS_SECRET_KEY와 분리 |
 | **TOSS_CLIENT_KEY_TEST** | 토스 테스트 클라이언트 키 (결제위젯 SDK용) | portal-dev · studio-dev · idphoto-kr-dev (dev 결제위젯) | ⭐ **2026-07-25 신설** — dev 실결제 차단. deploy.sh 평문 하드코딩(`portal/deploy.sh:91`) → SM 참조 전환 대상. ORDER_20260725 토스클라이언트키_dev분리 |
 | **LEMONSQUEEZY_API_KEY_GLOBAL** | Lemon Squeezy 글로벌 스토어 API 키 | portal (글로벌 결제) | ⭐ **2026-06-23 신설** — Global store#415328 |
