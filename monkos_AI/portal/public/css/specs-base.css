@@ -52,10 +52,10 @@
   --sb-fg-5a3de6: #5a3de6;
   --sb-fg-666: #666;
   --sb-fg-6c4fff: #6c4fff;
-  --sb-fg-888: #888;
+  --sb-fg-888: #6e6a7d; /* 라이트 대비 상향(커밋3) — 원 #888 */
   --sb-fg-aaa: #aaa;
   --sb-fg-b4a0ff: #b4a0ff;
-  --sb-fg-bbb: #bbb;
+  --sb-fg-bbb: #6e6a7d; /* 라이트 대비 상향(커밋3) — 원 #bbb */
   --sb-fg-dc2626: #dc2626;
   --sb-fg-ef4444: #ef4444;
   --sb-fg-fff: #fff;

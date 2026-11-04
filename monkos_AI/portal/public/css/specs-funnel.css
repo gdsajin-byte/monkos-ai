@@ -84,21 +84,21 @@
   --sf-fg-666: #666;
   --sf-fg-6c4fff: #6c4fff;
   --sf-fg-6e62a8: #6e62a8;
-  --sf-fg-777: #777;
+  --sf-fg-777: #6e6a7d; /* 라이트 대비 상향(커밋3) — 원 #777 */
   --sf-fg-7c6cf0: #7c6cf0;
-  --sf-fg-888: #888;
+  --sf-fg-888: #6e6a7d; /* 라이트 대비 상향(커밋3) — 원 #888 */
   --sf-fg-8b879b: #8b879b;
-  --sf-fg-999: #999;
-  --sf-fg-9c93c4: #9c93c4;
+  --sf-fg-999: #6e6a7d; /* 라이트 대비 상향(커밋3) — 원 #999 */
+  --sf-fg-9c93c4: #6e62a8; /* 라이트 대비 상향(커밋3) — 원 #9c93c4 */
   --sf-fg-a32538: #a32538;
   --sf-fg-aaa: #aaa;
   --sf-fg-b4afc6: #b4afc6;
-  --sf-fg-bbb: #bbb;
+  --sf-fg-bbb: #6e6a7d; /* 라이트 대비 상향(커밋3) — 원 #bbb */
   --sf-fg-c9bbff: #c9bbff;
   --sf-fg-ccc: #ccc;
   --sf-fg-d97706: #d97706;
   --sf-fg-dc2626: #dc2626;
-  --sf-fg-ef4444: #ef4444;
+  --sf-fg-ef4444: #dc2626; /* 라이트 대비 상향(커밋3) — 원 #ef4444 */
   --sf-fg-efedf6: #efedf6;
   --sf-fg-fff: #fff;
   --sf-fg-rgba-255-255-255-0p8: rgba(255,255,255,0.8);
@@ -127,7 +127,7 @@ a:hover { color: var(--sf-fg-5a3de6); }
 .v2-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
 .v2-geo-summary { color: var(--sf-fg-5d5a6b); font-size: 15px; line-height: 1.6; margin: 0 0 20px; }
 .v2-tag {
-  background: var(--sf-bg-rgba-108-79-255-0p08); color: var(--sf-fg-6c4fff); padding: 5px 14px;
+  background: var(--sf-bg-rgba-108-79-255-0p08); color: var(--sf-fg-5a3de6); padding: 5px 14px;
   border-radius: 20px; font-size: 13px; font-weight: 600; text-decoration: none;
   border: 1px solid var(--sf-bd-rgba-108-79-255-0p15);
 }
@@ -180,7 +180,7 @@ a:hover { color: var(--sf-fg-5a3de6); }
   font-weight: 600; margin-left: 8px; vertical-align: middle;
 }
 .v2-badge-a { background: var(--sf-bg-rgba-108-79-255-0p1); color: var(--sf-fg-6c4fff); }
-.v2-badge-req { background: var(--sf-bg-rgba-239-68-68-0p1); color: var(--sf-fg-dc2626); }
+.v2-badge-req { background: var(--sf-bg-rgba-239-68-68-0p1); color: var(--sf-fg-a32538); }
 
 /* 3스텝 플로우 */
 .v2-steps-section {
