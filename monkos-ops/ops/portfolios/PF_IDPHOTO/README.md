@@ -103,6 +103,8 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 11/03 | iMac/쌍아-막내7 | **COMPLETION** COMPLETION_20261103_iMac쌍아-막내7_IDPHOTO_여권머리끝_눈48상한 | [COMPLETION_20261103_iMac쌍아-막내7_IDPHOTO_여권머리끝_눈48상한](../../reports/2026-11/COMPLETION_20261103_iMac쌍아-막내7_IDPHOTO_여권머리끝_눈48상한.md) | ✅ |
 | 11/03 | iMac/쌍아 | 여권 머리끝 눈 48% 상한·업로드 직후 판정 prod 배포 — portal 00576-7zf + edge bf22ea10 (작가님 배포 승인) | — | ✅ |
 | 11/03 | iMac/쌍아 | **DESIGN** 사진 판별 시스템 학습 로드맵 — 사진관 원본·출고본 아카이브를 정답지로, 규격·동일인·과보정·컷 선택을 판정하는 소형 모델(0.005~0.1B) + 코드 게이트 | [DESIGN_20261103_IDPHOTO_사진판별시스템_학습로드맵](../../../tech/designs/2026-11/DESIGN_20261103_IDPHOTO_사진판별시스템_학습로드맵.md) | ⏳ |
+| 11/04 | iMac/민아 | **REPORT** 여권 화각 "머리 여백 부족" 오판 — 레퍼런스 산식과 제품 산식의 두상 정의 분기 추적 | [REPORT_20261104_iMac민아_IDPHOTO_여권화각_두상정의_분기](../../reports/2026-11/REPORT_20261104_iMac민아_IDPHOTO_여권화각_두상정의_분기.md) | 📁 |
+| 11/04 | ?/? | **ORDER** kr·jp 여권 두상을 실측 머리끝(머리 덩어리 기준) 기준 33mm로 재배율 — 업로드 직후 판정, 레퍼런스 도안 33mm 통일, head_margin 문구 교정, dev까지 | [ORDER_20261104_iMac쌍아_막내1_IDPHOTO_여권두상_실측머리끝_33mm재배율](../../orders/2026-11/ORDER_20261104_iMac쌍아_막내1_IDPHOTO_여권두상_실측머리끝_33mm재배율.md) | ⏳ |
 
 ### Phase 1 — idphoto-kr/jp 웹 서비스 (01/16~02/14)
 
