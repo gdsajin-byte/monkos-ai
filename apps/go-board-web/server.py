@@ -570,6 +570,10 @@ CLAIM_FAIL = "인수 코드가 맞지 않습니다 — 서버의 인수 코드 �
 # 토큰은 포털 /api/auth/verify-cookie 로 서버 대 서버 확인(바둑 서버는 포털 시크릿을 갖지 않는다). 이메일은 저장·로그하지 않는다.
 PORTAL_URL = os.environ.get("GO_PORTAL_URL") or ("https://monkos-portal-dev-4jeplpqpua-uc.a.run.app" if TEST_MODE else "https://monkos.ai")
 APP_ORIGIN = os.environ.get("GO_APP_ORIGIN") or (f"http://127.0.0.1:{PORT}" if TEST_MODE else "https://go.monkos.ai")
+# 테스트 인스턴스는 localhost:{PORT} 로도 연다 — 쿠키가 호스트별이라 127.0.0.1:8765(실사용) 로그인과 섞이지 않는다
+TEST_ORIGINS = (f"http://127.0.0.1:{PORT}", f"http://localhost:{PORT}") if TEST_MODE else ()
+# GO_NO_LOCAL_ADMIN=1 — 로컬 무쿠키 요청을 '작가님'으로 보지 않는다(테스트 인스턴스에서 로그인 창·포털 연결을 직접 해 볼 때). 기본은 종전 그대로
+LOCAL_ADMIN = os.environ.get("GO_NO_LOCAL_ADMIN") != "1"
 # 언어권 버튼 순서(작가님 07:12 "일본 모델은 라인 오스, 한국 카톡 … 구글은 공통") — Apple·중국은 설계서 §6·§7
 PORTAL_PROVIDERS = {"ko": ["kakao", "google", "email"], "ja": ["line", "google", "email"], "en": ["google", "email"]}
 PORTAL_TICKET_TTL = 600  # 포털 확인 후 바둑 프로필(닉·급수)을 고르는 동안 유효
@@ -595,9 +599,9 @@ def portal_verify(token, opener=None):
     return {"id": pid, "provider": str(u.get("provider") or ""), "name": str(u.get("name") or "")}
 
 
-def portal_email_start(email, lang, opener=None):
+def portal_email_start(email, lang, opener=None, origin=None):
     """포털 매직 링크 발송 중계 → (HTTP 코드, 응답 dict). 주소는 로그에 남기지 않는다."""
-    body = json.dumps({"email": email, "redirectApp": APP_ORIGIN + "/", "lang": lang}).encode()
+    body = json.dumps({"email": email, "redirectApp": (origin or APP_ORIGIN) + "/", "lang": lang}).encode()
     req = urllib.request.Request(PORTAL_URL + "/api/auth/email/start", data=body, method="POST",
                                  headers={"Content-Type": "application/json", "User-Agent": "monk-go-board"})
     try:
@@ -2443,6 +2447,11 @@ class Handler(BaseHTTPRequestHandler):
             return None
         return c[COOKIE_NAME].value if COOKIE_NAME in c else None
 
+    def _app_origin(self):
+        """포털이 돌려보낼 이 앱 주소 — 테스트는 접속한 호스트(127.0.0.1·localhost), 운영은 go.monkos.ai 고정"""
+        o = "http://" + (self.headers.get("Host") or "")
+        return o if o in TEST_ORIGINS else APP_ORIGIN
+
     def _portal_cookie(self):
         """운영 도메인(go.monkos.ai)에선 포털 세션 쿠키(.monkos.ai)가 함께 온다 — 값은 로그에 내지 않는다"""
         try:
@@ -2456,7 +2465,7 @@ class Handler(BaseHTTPRequestHandler):
         u = AUTH.user_of(self._token())
         if u:
             return u
-        return {"uid": ADMIN_UID, "nick": ADMIN_NICK, "local": True} if self._is_local() else None
+        return {"uid": ADMIN_UID, "nick": ADMIN_NICK, "local": True} if self._is_local() and LOCAL_ADMIN else None
 
     def _cookie(self, tok):
         base = f"{COOKIE_NAME}={tok}; HttpOnly; SameSite=Lax; Path=/"
@@ -2529,7 +2538,7 @@ class Handler(BaseHTTPRequestHandler):
                 self._json({"error": "이메일 주소를 확인해 주세요"}, 400)
                 return True
             lang = body.get("lang") if body.get("lang") in ("ko", "ja", "en") else "ko"
-            code, j = portal_email_start(email, lang)
+            code, j = portal_email_start(email, lang, origin=self._app_origin())
             if code == 200:
                 self._json({"ok": True, "ttlMin": j.get("ttlMin", 15)})
             elif code == 429:
@@ -2597,7 +2606,7 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/api/version":  # 화면 판본 확인(대기실·대국실·감상 공통, 가벼움)
             self._json({"build": build_id()})
         elif path == "/api/auth/portal/config":  # 로그인 창의 포털 버튼(언어권 순서)·포털 주소
-            self._json({"portal": PORTAL_URL, "origin": APP_ORIGIN, "providers": PORTAL_PROVIDERS})
+            self._json({"portal": PORTAL_URL, "origin": self._app_origin(), "providers": PORTAL_PROVIDERS})
         elif path == "/api/auth/ranks":  # 가입 화면의 희망 급수 목록(로그인 전에도)
             self._json({"ranks": [{"v": r, "label": RANK_KO[r]} for r in SIGNUP_RANKS]})
         elif path == "/api/auth/check":  # 아이디 중복 확인 — 가입·입장과 합쳐 IP별 1분 30회
