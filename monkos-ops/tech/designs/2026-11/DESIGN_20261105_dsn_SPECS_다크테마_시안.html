@@ -1,0 +1,277 @@
+<title>specs 다크 테마 시안 — 라이트 | 다크</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">
+<style>
+/* 시안 페이지는 고정 색. prefers-color-scheme 미사용(비교가 깨지지 않게). 두 프레임은 변수 세트만 다르다. */
+body { background:#e9ebf1; }
+.dk-page { background:#e9ebf1; color:#1b1a22; font-family:'Noto Sans KR','Pretendard',-apple-system,BlinkMacSystemFont,sans-serif; padding:24px 16px 48px; box-sizing:border-box; max-width:860px; margin:0 auto; }
+.dk-page *, .dk-page *::before, .dk-page *::after { box-sizing:border-box; }
+.dk-page h1 { font-size:20px; font-weight:800; margin:0 0 6px; }
+.dk-page .lead { font-size:14px; line-height:1.65; color:#4a4756; margin:0 0 8px; }
+.dk-page .font-note { font-size:12.5px; color:#6e6a7d; margin:0 0 18px; line-height:1.55; }
+.pair { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; align-items:flex-start; }
+.frame { flex:1 1 300px; max-width:375px; min-width:0; border-radius:22px; overflow:hidden; border:1px solid #cfd2dc; background:var(--bg); color:var(--body); }
+.frame .cap { display:flex; justify-content:space-between; gap:8px; padding:9px 16px; font-size:12px; font-weight:700; background:#f7f7fa; color:#5d5a6b; border-bottom:1px solid #cfd2dc; }
+.frame .cap b { color:#6c4fff; }
+.scr { padding:20px 16px 24px; background:var(--bg); }
+.scr h2, .scr h3, .scr p { margin:0; }
+.sec + .sec { margin-top:28px; padding-top:24px; border-top:1px solid var(--line); }
+.tag { font-size:11px; font-weight:700; color:var(--muted); letter-spacing:.04em; margin-bottom:10px; }
+
+/* 라이트 = 현행 토큰(specs-funnel.css) + 가독성 개선 */
+.lt { --bg:#ffffff; --ink:#1a1a1a; --body:#45424f; --muted:#6e6a7d; --line:#e7e5f0; --surface:#ffffff; --tint:#f4f2fc; --accent:#6c4fff; --accent-ink:#6c4fff; --btn:#6c4fff; --btn-ink:#ffffff; --drop:rgba(108,79,255,.25); --chip:#f3f2f8; --chip-ink:#555; --ok:#0b7a53; --ok-bg:#f2faf6; --ok-line:#cfe8dc; --mat:#ffffff; --photo-ring:rgba(0,0,0,.08); --hint:#8a86a3; --pend:#b45309; --pend-bg:#fff4e0; }
+/* 다크 = 제안 */
+.dk { --bg:#14131a; --ink:#f1f0f6; --body:#d3d0de; --muted:#a9a5bd; --line:#34313f; --surface:#1d1c26; --tint:#2a2640; --accent:#9d8bff; --accent-ink:#b3a5ff; --btn:#9d8bff; --btn-ink:#1a1033; --drop:rgba(179,165,255,.45); --chip:#262432; --chip-ink:#c9c5d8; --ok:#6fd3a6; --ok-bg:#16281f; --ok-line:#2c5a44; --mat:#262432; --photo-ring:rgba(255,255,255,.28); --hint:#a9a5bd; --pend:#f0b866; --pend-bg:#33270f; }
+
+/* ① 규격 요약 */
+.crumb { font-size:13px; color:var(--muted); margin-bottom:10px; }
+.scr h1.t { font-size:24px; font-weight:800; color:var(--ink); line-height:1.3; margin:0 0 6px; word-break:keep-all; }
+.sub { font-size:15px; color:var(--muted); line-height:1.6; margin-bottom:16px; }
+.spec { border:1px solid var(--line); border-radius:16px; padding:6px 16px; background:var(--surface); }
+.spec table { width:100%; border-collapse:collapse; }
+.spec tr + tr { border-top:1px solid var(--line); }
+.spec th { text-align:left; width:92px; padding:11px 0; font-size:13.5px; color:var(--muted); font-weight:500; vertical-align:top; }
+.spec td { padding:11px 0; font-size:15px; font-weight:700; color:var(--ink); }
+.badge { display:inline-block; font-size:11px; font-weight:700; margin-left:6px; padding:2px 8px; border-radius:4px; background:var(--tint); color:var(--accent-ink); vertical-align:middle; }
+.src { margin-top:2px; padding:10px 0 8px; border-top:1px solid var(--line); font-size:13px; color:var(--muted); }
+.src a { color:var(--accent-ink); font-weight:600; text-decoration:none; }
+
+/* ② 업로드 + 신뢰 */
+.step-t { font-size:20px; font-weight:800; color:var(--ink); margin-bottom:6px; }
+.drop { margin-top:14px; border:2px dashed var(--drop); border-radius:12px; padding:28px 14px; text-align:center; display:flex; flex-direction:column; align-items:center; background:transparent; }
+.drop .ic { font-size:32px; line-height:1; color:var(--muted); margin-bottom:8px; }
+.drop .m { font-size:15px; color:var(--body); }
+.drop .b { margin-top:10px; padding:10px 22px; border:1.5px solid var(--accent-ink); border-radius:8px; color:var(--accent-ink); font-size:15px; font-weight:600; background:none; font-family:inherit; }
+.drop .h { font-size:12.5px; color:var(--hint); margin-top:8px; }
+.chips { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:12px; }
+.chips span { font-size:12px; color:var(--chip-ink); background:var(--chip); border-radius:999px; padding:4px 10px; }
+.trust { margin-top:14px; border:1px solid var(--line); border-radius:12px; background:var(--surface); padding:14px; }
+.trust h3 { font-size:14px; font-weight:700; color:var(--ink); margin-bottom:10px; }
+.trust h3 small { font-size:11.5px; font-weight:500; color:var(--muted); margin-left:6px; }
+.ti { display:flex; gap:10px; align-items:flex-start; min-width:0; }
+.ti + .ti { margin-top:12px; }
+.ti .ico { flex:0 0 28px; width:28px; height:28px; border-radius:8px; background:var(--tint); color:var(--accent-ink); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; }
+.ti .tt { font-size:14px; font-weight:700; color:var(--ink); margin-bottom:2px; }
+.ti .dd { font-size:13.5px; color:var(--body); line-height:1.55; }
+.ti a { color:var(--accent-ink); font-weight:600; text-decoration:none; }
+.pend { display:inline-block; font-size:10px; font-weight:700; color:var(--pend); background:var(--pend-bg); border-radius:4px; padding:1px 6px; margin-left:4px; vertical-align:middle; }
+
+/* ③ 결과 미리보기 */
+.res { display:flex; align-items:center; justify-content:center; gap:14px; }
+.res .lab { font-size:13px; font-weight:600; color:var(--muted); text-align:center; margin-bottom:8px; }
+.res .arrow { font-size:24px; color:var(--muted); }
+.mat { padding:10px; border-radius:12px; background:var(--mat); } /* 다크에서 흰 사진을 받치는 여백 */
+.photo { display:block; width:112px; aspect-ratio:1/1; background:#ffffff; border-radius:4px; outline:1px solid var(--photo-ring); outline-offset:0; }
+.photo.raw { background:#cfd3da; outline-color:var(--photo-ring); }
+.lt .mat { padding:0; background:transparent; }
+.res-note { margin-top:12px; font-size:13px; color:var(--muted); text-align:center; line-height:1.55; }
+
+/* ④ 유니크 콘텐츠(가독성 개선 적용) */
+.uc h2 { font-size:22px; font-weight:800; color:var(--ink); line-height:1.38; margin-bottom:14px; word-break:keep-all; text-wrap:balance; }
+.uc .ans { font-size:17px; font-weight:700; color:var(--ink); line-height:1.6; background:var(--tint); border-radius:10px; padding:14px 16px; margin-bottom:16px; word-break:keep-all; }
+.uc .p { font-size:16.5px; color:var(--body); line-height:1.72; margin-bottom:14px; word-break:keep-all; }
+.uc .srcs { display:flex; flex-wrap:wrap; gap:8px; padding-top:12px; border-top:1px dashed var(--line); }
+.uc .srcs span { font-size:12.5px; color:var(--body); border:1px solid var(--line); border-radius:999px; padding:4px 10px; }
+.uc .srcs .ok { color:var(--ok); background:var(--ok-bg); border-color:var(--ok-line); }
+.uc .srcs .ok::before { content:'✓ '; }
+
+/* ⑤ 결제 */
+.pay { width:100%; border:2px solid var(--accent); background:var(--surface); border-radius:14px; padding:16px 18px; text-align:left; font-family:inherit; }
+.pay .pt { display:block; font-size:17px; font-weight:700; color:var(--ink); margin-bottom:4px; }
+.pay .pp { display:block; font-size:22px; font-weight:800; color:var(--accent-ink); margin-bottom:4px; }
+.pay .pd { display:block; font-size:14px; color:var(--muted); }
+.cta { width:100%; margin-top:12px; padding:15px; border:0; border-radius:12px; background:var(--btn); color:var(--btn-ink); font-size:16.5px; font-weight:800; font-family:inherit; }
+.widget { margin-top:12px; border-radius:12px; background:#ffffff; color:#4a4756; font-size:13px; line-height:1.55; padding:14px; text-align:center; outline:1px solid var(--photo-ring); }
+.widget b { display:block; color:#1b1a22; }
+
+/* 하단 표 */
+.dk-page .card { margin-top:24px; background:#ffffff; border:1px solid #d8dae3; border-radius:14px; padding:16px; }
+.dk-page .card h2 { font-size:16px; margin:0 0 10px; font-weight:800; }
+.dk-page .tw { overflow-x:auto; }
+.dk-page table.tok { width:100%; border-collapse:collapse; font-size:13px; }
+.dk-page .tok th, .dk-page .tok td { text-align:left; padding:8px 8px; border-top:1px solid #e7e5f0; vertical-align:top; line-height:1.5; }
+.dk-page .tok th { color:#6e6a7d; font-weight:600; border-top:0; white-space:nowrap; }
+.dk-page .sw { display:inline-block; width:12px; height:12px; border-radius:3px; border:1px solid #bbb; vertical-align:-1px; margin-right:5px; }
+.dk-page .tok td.n { white-space:nowrap; font-variant-numeric:tabular-nums; }
+.dk-page .card p, .dk-page .card li { font-size:13.5px; line-height:1.65; color:#3a3746; }
+.dk-page .card ul { margin:0; padding-left:18px; }
+</style>
+
+<div class="dk-page">
+  <h1>specs 다크 테마 시안 — 라이트(현행+가독성) | 다크(제안)</h1>
+  <p class="lead">방문자 기기 설정(prefers-color-scheme)이 다크일 때만 다크를 보여 주고, 그 외에는 지금의 라이트를 그대로 둡니다. 두 프레임 모두 375px 고정 색이며, 모바일 가독성 확정안(카드 제거 · 좌우 16px · 본문 16.5px · 요약 17px)을 양쪽에 적용했습니다. 사진은 회색 실루엣 자리 표시입니다.</p>
+  <p class="font-note">글꼴: 현행은 Pretendard이나 이 시안은 외부 자원을 Google Fonts로 제한해 Noto Sans KR로 대체했습니다. 실제 화면에서는 Pretendard가 적용되므로 글자 폭이 미세하게 다릅니다.</p>
+
+  <div class="pair">
+    <!-- ================= 라이트 ================= -->
+    <div class="frame lt">
+      <div class="cap"><span>라이트 · 현행 색</span><span>375px</span></div>
+      <div class="scr">
+        <div class="sec">
+          <div class="tag">① 규격 요약</div>
+          <div class="crumb">홈 › 규격 › 미국 비자</div>
+          <h1 class="t">미국 비자 사진 규격</h1>
+          <p class="sub">공식 규격과 규정을 확인하고 바로 만들 수 있습니다.</p>
+          <div class="spec"><table>
+            <tr><th>인화 규격</th><td>51 × 51mm (2×2인치)</td></tr>
+            <tr><th>디지털</th><td>600×600 ~ 1200×1200px<span class="badge">정사각형</span></td></tr>
+            <tr><th>배경</th><td>흰색</td></tr>
+          </table></div>
+        </div>
+
+        <div class="sec">
+          <div class="tag">② 업로드 + 신뢰 블록</div>
+          <div class="step-t">미국 비자 사진 만들기</div>
+          <div class="sub" style="margin-bottom:0">셀카 한 장이면 규격 증명사진이 완성됩니다.</div>
+          <div class="drop">
+            <div class="ic">&#8615;</div>
+            <div class="m">사진을 끌어다 놓거나</div>
+            <button type="button" class="b">사진 선택</button>
+            <div class="h">JPG · PNG · WEBP / 최대 10MB</div>
+            <div class="chips"><span>정면 얼굴</span><span>1인</span><span>선명한 화질</span></div>
+          </div>
+          <section class="trust">
+            <h3>누가 만든 도구인가요?<small>MONKOS AI</small></h3>
+            <div class="ti"><div class="ico">M</div><div><p class="tt">한국에서 운영 중인 증명사진 스튜디오</p><p class="dd">경기 하남의 몽크사진관이 만들었습니다. <a href="#">사진관 보기 →</a></p></div></div>
+            <div class="ti"><div class="ico">&#128274;</div><div><p class="tt">사진 처리<span class="pend">PENDING</span></p><p class="dd">보관 기간 문구는 정책 확정 후 기입</p></div></div>
+            <div class="ti"><div class="ico">✓</div><div><p class="tt">공식 규정 출처</p><p class="dd"><a href="#">미국 국무부 공식 규정 ↗</a></p></div></div>
+          </section>
+        </div>
+
+        <div class="sec">
+          <div class="tag">③ 결과 미리보기</div>
+          <div class="res">
+            <div><div class="lab">원본</div><div class="mat"><svg class="photo raw" viewBox="0 0 100 100" aria-label="원본 자리 표시"><circle cx="50" cy="40" r="15" fill="#9aa0ab"/><path d="M18 100c2-24 16-34 32-34s30 10 32 34z" fill="#9aa0ab"/></svg></div></div>
+            <div class="arrow">&rarr;</div>
+            <div><div class="lab">결과</div><div class="mat"><svg class="photo" viewBox="0 0 100 100" aria-label="결과 자리 표시"><circle cx="50" cy="40" r="15" fill="#b8bcc5"/><path d="M18 100c2-24 16-34 32-34s30 10 32 34z" fill="#b8bcc5"/></svg></div></div>
+          </div>
+          <p class="res-note">흰 배경은 규격이므로 바꾸지 않습니다. 라이트에서는 현행의 얇은 테두리만 둡니다.</p>
+        </div>
+
+        <div class="sec uc">
+          <div class="tag">④ 유니크 콘텐츠</div>
+          <h2>비자 종류별 사진 규격 차이 — 정답은 '전부 동일'</h2>
+          <p class="ans">미국 비자 사진 규격은 B1/B2(관광·상용)·F-1(유학)·H-1B(취업)·J-1(교환) 등 비자 종류와 무관하게 동일하며, 인화본은 51×51mm(2×2인치), 디지털은 600×600~1200×1200픽셀 정사각형이다.</p>
+          <p class="p">미 국무부는 비자 카테고리별로 사진 규격을 따로 두지 않는다. 달라지는 것은 규격이 아니라 '제출 방식'이다. B1/B2·F-1·H-1B·J-1 같은 비이민비자는 DS-160 온라인 신청서에 디지털 사진 1장을 업로드하고, DS-260으로 진행하는 이민비자는 인터뷰장에 동일한 인화 사진 2매를 지참한다.</p>
+          <div class="srcs"><span class="ok">공식 출처</span></div>
+        </div>
+
+        <div class="sec">
+          <div class="tag">⑤ 결제 버튼</div>
+          <button type="button" class="pay"><span class="pt">규격 검증된 사진 다운로드</span><span class="pp">[가격: 정본 연동]</span><span class="pd">결제 후 바로 내려받기</span></button>
+          <button type="button" class="cta">결제하고 다운로드</button>
+          <div class="widget"><b>결제 위젯 영역 (외부 제공)</b>현행처럼 흰 상자 그대로</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 다크 ================= -->
+    <div class="frame dk">
+      <div class="cap"><span><b>다크 · 제안</b></span><span>375px</span></div>
+      <div class="scr">
+        <div class="sec">
+          <div class="tag">① 규격 요약</div>
+          <div class="crumb">홈 › 규격 › 미국 비자</div>
+          <h1 class="t">미국 비자 사진 규격</h1>
+          <p class="sub">공식 규격과 규정을 확인하고 바로 만들 수 있습니다.</p>
+          <div class="spec"><table>
+            <tr><th>인화 규격</th><td>51 × 51mm (2×2인치)</td></tr>
+            <tr><th>디지털</th><td>600×600 ~ 1200×1200px<span class="badge">정사각형</span></td></tr>
+            <tr><th>배경</th><td>흰색</td></tr>
+          </table></div>
+        </div>
+
+        <div class="sec">
+          <div class="tag">② 업로드 + 신뢰 블록</div>
+          <div class="step-t">미국 비자 사진 만들기</div>
+          <div class="sub" style="margin-bottom:0">셀카 한 장이면 규격 증명사진이 완성됩니다.</div>
+          <div class="drop">
+            <div class="ic">&#8615;</div>
+            <div class="m">사진을 끌어다 놓거나</div>
+            <button type="button" class="b">사진 선택</button>
+            <div class="h">JPG · PNG · WEBP / 최대 10MB</div>
+            <div class="chips"><span>정면 얼굴</span><span>1인</span><span>선명한 화질</span></div>
+          </div>
+          <section class="trust">
+            <h3>누가 만든 도구인가요?<small>MONKOS AI</small></h3>
+            <div class="ti"><div class="ico">M</div><div><p class="tt">한국에서 운영 중인 증명사진 스튜디오</p><p class="dd">경기 하남의 몽크사진관이 만들었습니다. <a href="#">사진관 보기 →</a></p></div></div>
+            <div class="ti"><div class="ico">&#128274;</div><div><p class="tt">사진 처리<span class="pend">PENDING</span></p><p class="dd">보관 기간 문구는 정책 확정 후 기입</p></div></div>
+            <div class="ti"><div class="ico">✓</div><div><p class="tt">공식 규정 출처</p><p class="dd"><a href="#">미국 국무부 공식 규정 ↗</a></p></div></div>
+          </section>
+        </div>
+
+        <div class="sec">
+          <div class="tag">③ 결과 미리보기</div>
+          <div class="res">
+            <div><div class="lab">원본</div><div class="mat"><svg class="photo raw" viewBox="0 0 100 100" aria-label="원본 자리 표시"><circle cx="50" cy="40" r="15" fill="#8d93a0"/><path d="M18 100c2-24 16-34 32-34s30 10 32 34z" fill="#8d93a0"/></svg></div></div>
+            <div class="arrow">&rarr;</div>
+            <div><div class="lab">결과</div><div class="mat"><svg class="photo" viewBox="0 0 100 100" aria-label="결과 자리 표시"><circle cx="50" cy="40" r="15" fill="#b8bcc5"/><path d="M18 100c2-24 16-34 32-34s30 10 32 34z" fill="#b8bcc5"/></svg></div></div>
+          </div>
+          <p class="res-note">흰 사진은 그대로 두고, 사진 둘레에 10px 받침(#262432)과 밝은 1px 테두리를 둬 어두운 화면에서 번쩍이지 않게 합니다.</p>
+        </div>
+
+        <div class="sec uc">
+          <div class="tag">④ 유니크 콘텐츠</div>
+          <h2>비자 종류별 사진 규격 차이 — 정답은 '전부 동일'</h2>
+          <p class="ans">미국 비자 사진 규격은 B1/B2(관광·상용)·F-1(유학)·H-1B(취업)·J-1(교환) 등 비자 종류와 무관하게 동일하며, 인화본은 51×51mm(2×2인치), 디지털은 600×600~1200×1200픽셀 정사각형이다.</p>
+          <p class="p">미 국무부는 비자 카테고리별로 사진 규격을 따로 두지 않는다. 달라지는 것은 규격이 아니라 '제출 방식'이다. B1/B2·F-1·H-1B·J-1 같은 비이민비자는 DS-160 온라인 신청서에 디지털 사진 1장을 업로드하고, DS-260으로 진행하는 이민비자는 인터뷰장에 동일한 인화 사진 2매를 지참한다.</p>
+          <div class="srcs"><span class="ok">공식 출처</span></div>
+        </div>
+
+        <div class="sec">
+          <div class="tag">⑤ 결제 버튼</div>
+          <button type="button" class="pay"><span class="pt">규격 검증된 사진 다운로드</span><span class="pp">[가격: 정본 연동]</span><span class="pd">결제 후 바로 내려받기</span></button>
+          <button type="button" class="cta">결제하고 다운로드</button>
+          <div class="widget"><b>결제 위젯 영역 (외부 제공)</b>다크 적용 불가 시 흰 상자 + 얇은 테두리로 둠</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>다크 색 토큰표</h2>
+    <div class="tw"><table class="tok">
+      <tr><th>용도</th><th>라이트(현행)</th><th>다크(제안)</th><th>대비(다크)</th></tr>
+      <tr><td>페이지 배경</td><td class="n"><span class="sw" style="background:#fff"></span>#ffffff</td><td class="n"><span class="sw" style="background:#14131a"></span>#14131a</td><td>기준면</td></tr>
+      <tr><td>카드·수치 박스·신뢰 블록 면</td><td class="n">#ffffff</td><td class="n"><span class="sw" style="background:#1d1c26"></span>#1d1c26</td><td>—</td></tr>
+      <tr><td>제목·강조 글자</td><td class="n">#1a1a1a</td><td class="n"><span class="sw" style="background:#f1f0f6"></span>#f1f0f6</td><td>16.3:1</td></tr>
+      <tr><td>본문 글자</td><td class="n">#45424f</td><td class="n"><span class="sw" style="background:#d3d0de"></span>#d3d0de</td><td>12.2:1 (면 #1d1c26 위 11.1:1)</td></tr>
+      <tr><td>보조 글자(라벨·힌트)</td><td class="n">#888 · #bbb · #6e6a7d</td><td class="n"><span class="sw" style="background:#a9a5bd"></span>#a9a5bd</td><td>7.7:1 (면 위 7.1:1)</td></tr>
+      <tr><td>링크·탭·강조 글자·가격 (#6c4fff 대체)</td><td class="n">#6c4fff</td><td class="n"><span class="sw" style="background:#b3a5ff"></span>#b3a5ff</td><td>8.6:1 (요약 박스 #2a2640 위 6.7:1)</td></tr>
+      <tr><td>채움 버튼·강조 테두리</td><td class="n">#6c4fff (글자 #fff)</td><td class="n"><span class="sw" style="background:#9d8bff"></span>#9d8bff (글자 #1a1033)</td><td>6.5:1</td></tr>
+      <tr><td>요약 박스·연보라 바탕</td><td class="n">#f4f2fc</td><td class="n"><span class="sw" style="background:#2a2640"></span>#2a2640</td><td>제목색 12.8:1</td></tr>
+      <tr><td>구분선·카드 테두리</td><td class="n">#e7e5f0</td><td class="n"><span class="sw" style="background:#34313f"></span>#34313f</td><td>장식(대비 비대상)</td></tr>
+      <tr><td>업로드 점선</td><td class="n">rgba(108,79,255,.25)</td><td class="n">rgba(179,165,255,.45)</td><td>장식</td></tr>
+      <tr><td>칩 면 / 글자</td><td class="n">#f3f2f8 / #555</td><td class="n">#262432 / #c9c5d8</td><td>—</td></tr>
+      <tr><td>공식 출처 칩</td><td class="n">#0b7a53 / #f2faf6</td><td class="n">#6fd3a6 / #16281f</td><td>8.5:1</td></tr>
+      <tr><td>사진 받침(다크 전용)</td><td class="n">없음</td><td class="n"><span class="sw" style="background:#262432"></span>#262432, 10px</td><td>흰 사진 둘레 완충</td></tr>
+      <tr><td>사진 테두리</td><td class="n">rgba(0,0,0,.08)</td><td class="n">rgba(255,255,255,.28)</td><td>장식</td></tr>
+      <tr><td>보류 배지</td><td class="n">#b45309 / #fff4e0</td><td class="n">#f0b866 / #33270f</td><td>—</td></tr>
+      <tr><td>브라우저 theme-color</td><td class="n">#f6f7fb</td><td class="n">#14131a</td><td>상단 막대 색</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h2>구현 전 확인 사항</h2>
+    <ul>
+      <li>다크 값은 <code>@media (prefers-color-scheme: dark)</code> 안에서 변수만 바꾸는 방식이 맞습니다. 현행 CSS는 색을 직접 쓰고 <code>body</code>에 <code>!important</code>가 걸려 있어, 변수화 작업이 먼저 필요합니다(신규 구현).</li>
+      <li>결제 위젯(토스)은 외부 위젯이라 다크 적용을 보장하지 못합니다. 흰 상자 + 얇은 테두리로 두는 안으로 그렸습니다.</li>
+      <li>현행 라이트에는 대비가 낮은 글자가 있습니다(업로드 힌트 #bbb 1.9:1, 보조 #888 3.5:1). 이 시안의 라이트 프레임은 현행 색 그대로이며, 다크 프레임은 모두 4.5:1 이상으로 잡았습니다.</li>
+      <li>결제 가격은 확정값이 없어 자리 표시로 두었습니다. 신뢰 블록의 보관 기간·사진 경력은 민아 시안과 같이 확정 전 상태입니다.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>근거표</h2>
+    <div class="tw"><table class="tok">
+      <tr><th>화면 요소</th><th>근거</th></tr>
+      <tr><td>두 프레임 · 다크 변수 세트</td><td>작가님 05:24 판단(폰에서 라이트 피로도·가독성), 기기 설정 추종</td></tr>
+      <tr><td>① 규격 요약 수치 박스</td><td>현행 .v2-spec-table / 미국 비자 규격(브리프 문안의 51×51mm, 600~1200px, 흰 배경)</td></tr>
+      <tr><td>② 업로드 점선 상자 · 신뢰 블록</td><td>현행 업로드 존 · 민아 신뢰 블록 시안</td></tr>
+      <tr><td>③ 결과 미리보기 · 받침과 테두리</td><td>현행 .v2-result-grid / 다크 전용 제안</td></tr>
+      <tr><td>④ 본문</td><td>쌍아 가독성 확정안(카드 제거 · 16px · 16.5px · 17px)</td></tr>
+      <tr><td>⑤ 결제 버튼</td><td>현행 .v2-pay-btn · 위젯 영역</td></tr>
+    </table></div>
+    <p style="margin-top:8px">받지 못한 항목: 탭(규격·상세 규정·반려 사유), 다국어 전환, 호버·포커스 상태, 로딩 상태.</p>
+  </div>
+</div>
