@@ -10,7 +10,12 @@ const OUTDIR = `${SP}/guides_v2`;
 fs.mkdirSync(OUTDIR, { recursive: true });
 
 const MASTER = process.env.MASTER || `${SP}/prof_master_white.png`;
-// crop-engine /api/fit-spec 정본 실측 (106점 랜드마크 + 매팅 헤어탑) — 2026-07-11 14:5x 호출값.
+// crop-engine /api/fit-spec 정본 실측 (106점 랜드마크) — 2026-07-11 14:5x 호출값.
+// ⚠️ hairTopY 98.2 = 거울상 정수리(눈 − (턱 − 눈) = 279.6 − 181.4)이지 매팅 머리끝이 아니다 (2026-11-04 실측 정정).
+// 마스터의 실제 머리 덩어리 끝은 y≈59(제품 hair-measure.js 정의, 약 3.5mm 위) — 머리카락은 위 여백(crownMm)으로 수용된다.
+// 그래서 "두상 32mm" = 거울상 32mm이며, 마스터 기준 턱~머리 덩어리 = 35.5mm·눈 47.7%·머리 위 여백 2.0mm.
+// 제품(lib/hair-measure.js resolveHeadPlacement, 11-04)은 실측 두상 33mm 재배율 + 얼굴 하한 가드(거울상 ≥32)라
+// 볼륨 있는 머리에서 배율이 이 도안(거울상 32)과 같아진다. 11-04 작가님 결정: 도안 32 거울상 유지(권장안 A).
 // 나이브 픽셀 스캔(y=56)은 매팅 소프트 헤일로를 오검출 → 정본 좌표 고정 사용.
 const FACE = { chinY: 461.0, hairTopY: 98.2, eyeY: 279.6, cx: 449.4 };
 

@@ -11,6 +11,8 @@ const OUT = `${SP}/guides_v5`;
 fs.mkdirSync(OUT, { recursive: true });
 
 const MASTER = process.env.MASTER || `${SP}/prof_master_white.png`;
+// hairTopY 98.2 = 거울상 정수리(눈 279.6 − (턱 461 − 눈))이지 매팅 머리끝이 아니다 — 머리 덩어리(y≈59)는 위 여백으로 수용.
+// 두상 mm 라벨·배율은 거울상 기준 (2026-11-04 실측 정정·작가님 결정 A, 상세 gen_reference_diagrams.mjs 머리 주석)
 const FACE = { chinY: 461.0, hairTopY: 98.2, cx: 449.4 }; // crop-engine 106점 정본
 const CANVAS = 1200, PHOTO_H = 890, PHOTO_TOP = 132;
 const C = {
