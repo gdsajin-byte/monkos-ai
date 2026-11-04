@@ -3,7 +3,7 @@
 set -uo pipefail
 TAG="${1:?b10|b18}"
 WAIT="${2:-240}"
-DEV=3AE3A741-9156-5734-A7CE-92D0A6A3DFEE
+DEV="${DEV:-3AE3A741-9156-5734-A7CE-92D0A6A3DFEE}"  # 다른 기기: DEV=<기기ID> monk_bench.sh ...
 BID=ai.monkos.go.bench
 R=~/developer/_ext/katago-ios
 OUT=$R/results/$TAG
