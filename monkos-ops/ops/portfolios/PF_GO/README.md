@@ -92,6 +92,7 @@ status: active
 | 11/05 | iMac/쌍아-막내2 | 바둑앱 사람 표기 닉+기력(Auth.display_name 1곳, 화면 4곳) — 8766 통과, 6단은 기력 상한(5단)으로 결정 대기 | [COMPLETION_20261105_iMac쌍아-막내2_GO_닉단수표기](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_닉단수표기.md) | ⏳ |
 | 11/05 | iMac/쌍아-막내2 | 작가님 계정 신작가 6단 관리자 지정(B안, users.json 백업 후 rank만 변경·launchctl 재기동) — 라이브 대기실 '신작가 6단' 확인, 절차 README | [COMPLETION_20261105_iMac쌍아-막내2_GO_닉단수표기](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_닉단수표기.md) | ✅ |
 | 11/05 | iMac/쌍아-막내2 | 소리 팩 v2 8개(monk-v2-…) — 초읽기 끊김 원인=v1 정렬 분할 첫소리 잘림(실측), 문맥 단독 생성으로 교체. 단음절 발음 문제는 STT 오인으로 정정. 재기동 없이 노출, 누적 ≈1,890크레딧 | [COMPLETION_20261105_iMac쌍아-막내2_GO_자체음성팩_후보](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_자체음성팩_후보.md) | ✅ |
+| 11/05 | iMac/쌍아-막내2 | 한국어 원어민 목소리 팩 8개(monk-ko-…: Jin Geon Song·Sola·Selly Han·Min-joon, rate 1.0·notice 730일) — 재기동 없이 노출, 크레딧 실측 1,335/90,000 | [COMPLETION_20261105_iMac쌍아-막내2_GO_자체음성팩_후보](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_자체음성팩_후보.md) | ✅ |
 
 ## 3. Phase 현황
 

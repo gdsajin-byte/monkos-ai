@@ -238,3 +238,47 @@ Daniel 기준으로 쟀습니다. 무음 판정은 조각 최대치 대비 −40
 
 ### ⏳ 남은 것
 - ② **부자연스러움(영어권 기본 목소리)**: 키에 `voices_read` 권한이 들어오면, 라이브러리의 한국어 원어민 목소리 4종으로 다시 생성합니다. 작가님 권한 추가 대기 중입니다.
+
+## 추가 3 — 한국어 원어민 목소리 팩 (08:07)
+
+**[2026-11-05 08:07 KST]** iMac/쌍아-막내2 → iMac/쌍아 — 쌍아 07:57·08:03 전달(작가님 08:03 키 권한 "저장했어", 같은 4월 3일 키. Starter·상업 이용 가능)
+
+- 권한 확인 경과:
+  - 07:57과 08:00에는 401이었습니다(저장 전). 응답은 "missing the permission user_read" / "voices_read"였습니다.
+  - 08:03 이후 `/v1/user/subscription`과 `/v1/shared-voices` 모두 200입니다.
+- 후보는 공유 라이브러리 `language=ko`에서 1년 사용량 순으로 40개를 조회해 4종을 골랐습니다. 기존 분산(차분한 남성·또렷한 여성·따뜻한 중년·젊은 중성)을 따랐고, 내 목소리에 추가했습니다(`/v1/voices/add`).
+
+| 유형 | 목소리 | voice_id | 억양·연령 | 사용료 배율 rate | fiat_rate | 공유 중단 통지 notice_period | 실시간 검열 | 무료 사용자 허용 |
+|---|---|---|---|---|---|---|---|---|
+| 차분한 남성 해설가형 | Jin Geon Song — Neutral, Calm and Steady | `BbsagRO6ohd8MKPS2Ob0` | 서울·중년 남 | 1.0 | 없음 | 730일 | 꺼짐 | 예 |
+| 또렷한 여성 아나운서형 | Sola — Warm, Clear and Rich | `KlstlYt9VVf3zgie2Oht` | 서울·젊은 여 | 1.0 | 없음 | 730일 | 꺼짐 | 예 |
+| 따뜻한 중년형 | Selly Han — Warm, Calm and Steady | `ETPP7D0aZVdEj12Aa7ho` | 표준·중년 여 | 1.0 | 없음 | 730일 | 꺼짐 | 예 |
+| 젊은 중성형 | Min-joon — Neutral, Measured and Clear | `nbrxrAz3eYm9NgojrmFK` | 표준·젊은 남 | 1.0 | 없음 | 730일 | 꺼짐 | 예 |
+
+- **상업 이용 조건 읽는 법**: 아래는 API 필드로 확인한 사실입니다.
+  - 요금제: Starter이고 상업 라이선스를 포함합니다(작가님 화면 + `subscription.tier="starter"`).
+  - `rate 1.0`: 이 목소리를 써도 크레딧이 추가로 붙지 않습니다.
+  - `notice_period 730`: 공유자가 목소리를 내려도 730일 동안 계속 쓸 수 있습니다.
+  - `live_moderation_enabled false`.
+  - 공유자별 별도 약관(표기 의무 등)은 API에 필드가 없어 **미확인**입니다. 출시 전에 라이브러리 페이지에서 확인해야 합니다.
+  - 일부러 뺀 후보: `live_moderation` 켜진 목소리(Kyle·Gale·Sam Hottman·Joon Park), notice 없는 목소리(Jennie·Joon Park).
+- **생성 방식**(v2와 동일):
+  - 숫자 1~10은 문맥 단독 생성(`previous_text`/`next_text`)입니다.
+  - count11·remain1~3·start·counting은 단독 생성입니다.
+  - 모두 앞 50ms·끝 100ms 여유입니다(4종 40개 실측 일치).
+  - 도구: `tools/sound_ko_voices.py`(add/gen), `sound_pack_build.py ko`.
+- **STT**:
+  - 숫자 10개를 이어 붙여 되읽으니 4/4 모두 "하나~열"이 정확했습니다.
+  - 문구 24개는 단독 STT로 확인했고 모두 일치했습니다. "계가"가 "개가"로 표기되는 것은 같은 발음 때문입니다.
+  - 확인 필요 2건:
+    - Jin Geon "열하나"가 "여라나"로 인식됐습니다. 실제 연음 발음이고, 앱은 이 파일을 재생하지 않습니다.
+    - Jin Geon "초읽기 마지막 회입니다"가 "…회의입니다"로 인식됐습니다. 군소리가 붙었을 수 있습니다.
+- **팩**: `monk-ko-{jingeon,sola,selly,minjoon}-{a,b}` 8개, 각 24파일입니다. v1·v2 팩은 유지했습니다.
+  - **8765 재기동은 필요 없습니다.** `/api/rooms`에 packs 25개, `/pack/monk-ko-sola-a/remain1.wav`는 200 audio/wav입니다.
+  - 선택 위치: 대국실 "⋯" → "소리".
+- **크레딧 실측**(`/v1/user/subscription` `character_count`, 이번 주기):
+  - 08:03 926 → 원어민 생성 직후 1,253 → 08:07 **1,335 / 90,000**
+  - 원어민 단계 생성분 +327자는 제 계산 340자와 근접합니다. 그 뒤 +82는 STT 되읽기분으로 추정합니다.
+  - 앞선 요금표 계산 누적(≈1,890)은 실측보다 많았습니다. 효과음이 생성당 200보다 적게 차감된 것으로 보입니다.
+  - 이번 단계 상한 1만 자 안입니다.
+- 워크스페이스 분석(사용 내역 API)은 따로 조회하지 않았습니다. 구독의 `character_count`가 같은 주기 누적값입니다.

@@ -16,6 +16,9 @@ SRC = Path.home() / ".monkos" / "go-board-sound-candidates"
 PACKS = Path.home() / ".monkos" / "go-board-sounds"
 SR = 22050
 VOICES = {"daniel": "Daniel(차분한 해설형)", "alice": "Alice(또렷한 아나운서형)", "george": "George(따뜻한 중년형)", "river": "River(젊은 중성형)"}
+# 한국어 원어민(공유 라이브러리) — sound_ko_voices.py KO와 같은 slug. 11-05 08:0x
+KO_VOICES = {"jingeon": "Jin Geon Song(차분한 남성 해설가형)", "sola": "Sola(또렷한 여성 아나운서형)",
+             "selly": "Selly Han(따뜻한 중년형)", "minjoon": "Min-joon(젊은 중성형)"}
 SFX = {"a": "A안 ElevenLabs 효과음", "b": "B안 합성"}
 SINGLE = ["count11", "remain1", "remain2", "remain3", "start", "counting"]
 
@@ -41,13 +44,17 @@ def trim_to_wav(mp3, dst):
 
 
 def main():
-    need = [SRC / f"voice_{v}_count{i}.wav" for v in VOICES for i in range(1, 11)]
+    mode = sys.argv[1] if len(sys.argv) > 1 else "v1"
+    if mode == "ko":
+        global VOICES
+        VOICES = KO_VOICES
+    need = [] if mode == "ko" else [SRC / f"voice_{v}_count{i}.wav" for v in VOICES for i in range(1, 11)]
     need += [SRC / f"voice_{v}_{t}.mp3" for v in VOICES for t in SINGLE]
     need += [SRC / f"{k}_{s}{i}.wav" for s in SFX for k, n in (("stone", 2), ("capture", 2)) for i in range(1, n + 1)]
     miss = [p.name for p in need if not p.exists()]
     if miss:
         sys.exit("❌ sound_pack_build: 원본 누락 " + ", ".join(miss))
-    v2 = len(sys.argv) > 1 and sys.argv[1] == "v2"
+    v2 = mode in ("v2", "ko")  # ko = 원어민 목소리 + v2 방식
     if v2:  # 11-05 07:47 작가님 "툭툭 끊겨" — v1 정렬 분할은 앞을 잘라먹음(첫 3ms −19~−31dB 실측). 숫자는 문맥 단독 생성본
         from sound_count_v2 import tidy
         from sound_count_split import decode, write as write_wav
@@ -56,7 +63,7 @@ def main():
             sys.exit("❌ sound_pack_build: v2 원본 누락 " + ", ".join(miss))
     for v, vlabel in VOICES.items():
         for s, slabel in SFX.items():
-            d = PACKS / (f"monk-v2-{v}-{s}" if v2 else f"monk-{v}-{s}")  # v2는 새 팩 — v1을 덮어쓰지 않는다(비교용)
+            d = PACKS / (f"monk-ko-{v}-{s}" if mode == "ko" else f"monk-v2-{v}-{s}" if v2 else f"monk-{v}-{s}")  # v2는 새 팩 — v1을 덮어쓰지 않는다(비교용)
             d.mkdir(parents=True, exist_ok=True)
             for i in range(1, 11):
                 src = SRC / "v2" / "ctx" / f"voice_{v}_count{i}.wav" if v2 else SRC / f"voice_{v}_count{i}.wav"
@@ -72,7 +79,7 @@ def main():
                 shutil.copyfile(SRC / f"capture_{s}1.wav", d / f"stone{k}.wav")
                 shutil.copyfile(SRC / f"capture_{s}2.wav", d / f"stone{k}s.wav")
             (d / "README.txt").write_text(
-                f"MONK 자체 후보{' v2(끊김 개선)' if v2 else ''} — 목소리 {vlabel} · 착수/따냄 {slabel} (11-05, ElevenLabs·합성)\n"
+                f"MONK 자체 후보{' 한국어 원어민' if mode == 'ko' else ' v2(끊김 개선)' if v2 else ''} — 목소리 {vlabel} · 착수/따냄 {slabel} (11-05, ElevenLabs·합성)\n"
                 "생성: apps/go-board-web/tools/sound_*.py · 후보 비교 ~/.monkos/go-board-sound-candidates/ · "
                 "count11은 규격 채움(앱 미재생), 따냄 1·2·3점은 같은 소리(2단계에서 분화)\n", encoding="utf-8")
             n = len(list(d.glob("*.wav")))
