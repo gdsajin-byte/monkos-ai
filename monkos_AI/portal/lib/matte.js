@@ -49,10 +49,31 @@ let lastBackupAlertAt = 0; // 백업 전환 알림 — '전 엔드포인트 실�
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-/** Retry-After(초 단위 정수) → ms. 값이 없거나 HTTP-date 형식이면 null. */
-function parseRetryAfterMs(headerValue) {
-  const sec = Number(headerValue);
-  return Number.isFinite(sec) && sec >= 0 ? sec * 1000 : null;
+/**
+ * Retry-After → ms. RFC 9110 두 형식 모두: 초(정수) · HTTP-date(과거면 0). 없거나 해석 불가면 null.
+ * HTTP-date는 2026-11-04 추가 (RunPod 429 백오프 ORDER).
+ */
+export function parseRetryAfterMs(headerValue, now = Date.now()) {
+  if (headerValue == null) return null;
+  const raw = String(headerValue).trim();
+  if (!raw) return null;
+  if (/^\d+$/.test(raw)) return Number(raw) * 1000;
+  // HTTP-date만 (요일·월 이름 포함) — V8 Date.parse는 '-1' 같은 숫자열도 연도로 받아들인다.
+  if (!/[A-Za-z]/.test(raw)) return null;
+  const at = Date.parse(raw);
+  return Number.isFinite(at) ? Math.max(0, at - now) : null;
+}
+
+/**
+ * 429 백오프 지연 — Retry-After가 있으면 그대로, 없으면 지수 백오프+지터.
+ * 시작 = MATTE_QUEUE_KNOCK_MS, 상한 = 큐 예산의 절반 (예산 20s → 2s·4s·8s·10s…).
+ * 지터는 equal jitter(절반 고정 + 절반 무작위) — 동시 요청이 같은 순간에 재노크하지 않게.
+ */
+export function rateLimitDelayMs(attempt, retryAfterMs, rand = Math.random) {
+  if (retryAfterMs != null) return retryAfterMs;
+  const cap = Math.max(MATTE_QUEUE_KNOCK_MS, Math.floor(MATTE_QUEUE_WAIT_MS / 2));
+  const exp = Math.min(cap, MATTE_QUEUE_KNOCK_MS * 2 ** Math.max(0, attempt - 1));
+  return Math.round(exp / 2 + rand() * (exp / 2));
 }
 
 /**
@@ -213,7 +234,10 @@ async function callMatteApi(url, imageB64, bgColor) {
       body: JSON.stringify(payload),
       signal: ctrl.signal,
     });
-    const data = await res.json();
+    // 429·게이트웨이 오류는 본문이 JSON이 아닐 수 있다 — 파싱 실패로 상태 코드를 잃지 않게.
+    const text = await res.text();
+    let data = {};
+    try { data = text ? JSON.parse(text) : {}; } catch { data = {}; }
     // RunPod 큐 규약: {status:'COMPLETED', output:{...}} 언랩
     const body = runpod ? (data.output || {}) : data;
     if (!res.ok || (runpod && data.status !== 'COMPLETED') || !body.success || !body.image) {
@@ -221,8 +245,8 @@ async function callMatteApi(url, imageB64, bgColor) {
       if (runpod && data.id && data.status !== 'COMPLETED') {
         fetch(`${url.replace(/\/$/, '')}/cancel/${data.id}`, { method: 'POST', headers: authHeaders(url), signal: AbortSignal.timeout(5000) }).catch(() => {});
       }
-      const err = new Error(body.error || data.error || (runpod ? `runpod status=${data.status}` : `HTTP ${res.status}`));
-      // 호출부가 "포화(503)"와 "고장(그 외)"을 구분할 수 있게 상태를 실어 보낸다.
+      const err = new Error(body.error || data.error || (runpod && res.ok ? `runpod status=${data.status}` : `HTTP ${res.status}`));
+      // 호출부가 "포화(503)·요청 과다(429)"와 "고장(그 외)"을 구분할 수 있게 상태를 실어 보낸다.
       err.status = res.status;
       err.retryAfterMs = parseRetryAfterMs(res.headers.get('retry-after'));
       throw err;
@@ -277,13 +301,22 @@ async function stampMatteResult(data, url) {
  * 상태를 셋으로 나눈다 (2026-07-25 작가님 설계):
  *   ① health 불통  = 진짜 장애 → 대기 없이 즉시 다음 엔드포인트
  *   ② 503 포화      = 바쁘지만 곧 빈다 → Retry-After만큼 자고 다시 노크 (≤ MATTE_QUEUE_WAIT_MS)
+ *   ②' 429 요청 과다 = 우리 계정 한도(RunPod) → 체인 끝이면 Retry-After/지수 백오프로 재노크,
+ *                     뒤에 엔드포인트가 남았으면 대기 없이 즉시 다음 (2026-11-04 ORDER RunPod429백오프)
  *   ③ 그 외 실패    = 고장 → 기존대로 1회 재시도 후 다음 엔드포인트
  * ②를 ③으로 뭉개면 살아있는 4060을 두고 RunPod 콜드(30초~3분)를 타게 된다.
+ *
+ * 429 체인 중간 즉시 이월 근거: 503 대기는 "곧 빈다 + 대안(RunPod 콜드)이 더 비싸다"에 기대지만,
+ * 429는 호출자 한도라 서버가 비어도 풀리지 않고 대안 엔드포인트는 그 한도와 무관하다.
+ * 429 대기는 체인 전체 누적 대기(503 노크 포함)와 합산해 MATTE_QUEUE_WAIT_MS를 넘지 않는다 —
+ * 넘을 차례면 기다리지 않고 "429 예산 소진"으로 명시 실패(호출부 기존 실패 동선, 강등 출고 없음).
  */
 export async function runMatteChain(cropB64, bgColor, slug) {
   let lastErr = 'no endpoint';
   let backupReason = null; // 자체 서버를 건너뛴 사유 — 백업 전환 로그·알림용 (체인 동작에는 무관)
-  for (const url of MATTE_API_URLS) {
+  let chainWaitMs = 0; // 체인 전체에서 실제로 잔 시간 (503 노크 + 429 백오프)
+  for (const [idx, url] of MATTE_API_URLS.entries()) {
+    const isLast = idx === MATTE_API_URLS.length - 1;
     if (!(await isAlive(url))) {
       log(`[Matte] ${slug}: ${url} 프리플라이트 불통 → 다음 엔드포인트`, 'WARNING');
       if (!isRunpod(url)) backupReason = backupReason || '프리플라이트 불통';
@@ -292,13 +325,14 @@ export async function runMatteChain(cropB64, bgColor, slug) {
 
     const queueStart = Date.now();
     let knocks = 0;
+    let rateLimitHits = 0;
     let toNextEndpoint = false;
 
     while (!toNextEndpoint) {
       try {
         const data = await callMatteApi(url, cropB64, bgColor);
-        if (knocks > 0) {
-          log(`[Matte] ${slug}: ${url} 줄서기 성공 — 노크 ${knocks}회, 누적 대기 ${Date.now() - queueStart}ms`, 'INFO');
+        if (knocks > 0 || rateLimitHits > 0) {
+          log(`[Matte] ${slug}: ${url} 줄서기 성공 — 노크 ${knocks}회·429 ${rateLimitHits}회, 누적 대기 ${Date.now() - queueStart}ms`, 'INFO');
         }
         noteBackup(url, slug, backupReason, queueStart);
         return await stampMatteResult(data, url);
@@ -317,6 +351,27 @@ export async function runMatteChain(cropB64, bgColor, slug) {
           knocks += 1;
           log(`[Matte] ${slug}: ${url} 포화(503) — ${knocks}번째 노크, ${delay}ms 대기 (누적 ${waited}ms)`, 'INFO');
           await sleep(delay);
+          chainWaitMs += delay;
+          continue;
+        }
+
+        // ②' 요청 과다(429) — 체인 중간이면 즉시 다음, 끝이면 예산 안에서 백오프 재노크.
+        if (err.status === 429) {
+          rateLimitHits += 1;
+          if (!isLast) {
+            log(`[Matte] ${slug}: ${url} 요청 과다(429) — 뒤 엔드포인트 있음 → 대기 없이 다음 엔드포인트`, 'WARNING');
+            if (!isRunpod(url)) backupReason = backupReason || '호출 실패';
+            break;
+          }
+          const delay = rateLimitDelayMs(rateLimitHits, err.retryAfterMs);
+          if (chainWaitMs + delay > MATTE_QUEUE_WAIT_MS) {
+            lastErr = `429 예산 소진 — 429 ${rateLimitHits}회, 누적 대기 ${chainWaitMs}ms + 다음 ${delay}ms > ${MATTE_QUEUE_WAIT_MS}ms (${err.message})`;
+            log(`[Matte] ${slug}: ${url} ${lastErr} → 명시 실패`, 'WARNING');
+            break;
+          }
+          log(`[Matte] ${slug}: ${url} 요청 과다(429) — ${rateLimitHits}번째, ${delay}ms 대기 (${err.retryAfterMs != null ? 'Retry-After' : '백오프'}, 체인 누적 ${chainWaitMs}ms)`, 'INFO');
+          await sleep(delay);
+          chainWaitMs += delay;
           continue;
         }
 
