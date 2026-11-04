@@ -590,13 +590,7 @@ function setupWidgets() {  // 첫 상태를 받은 뒤 1회 — 선택지 채우
   for (const n of [1, 3, 5]) document.getElementById('tPer').add(new Option(`${n}회`, n));
   const hs = document.getElementById('handicap');
   for (const h of S.handicaps) if (h) hs.add(new Option(`${h}점`, h));
-  {
-    const lv = document.getElementById('dLevel');
-    lv.add(new Option('KataGo 최강', 'strong'));
-    lv.add(new Option(S.monkLabel || 'MONK 봇', 'monk'));  // 11-05 우리 학습 모델 — 최강과 같은 1500수읽기
-    // 강한 쪽부터(최강 → 9단 … 20급) — 10-23 작가님 "저급부터 나오니 힘들어". 표기 'KataGo 9단'(10-24)
-    for (const r of [...S.ranks].reverse()) lv.add(new Option(`KataGo ${r.label}`, r.v));
-  }
+  fillLevels('all');
   const pk = document.getElementById('pack');
   pk.add(new Option('기본 (바둑돌 녹음 B)', 'builtin'));
   for (const n in S.packs || {}) pk.add(new Option(`${n}${S.packs[n].note.includes('내부') ? ' (내부 실험 — 출시 전 교체)' : ''}`, n));
@@ -693,9 +687,9 @@ function render() {
   // 대국자 카드 — 따낸 돌 배지·이름·급수(시계는 renderClocks)
   for (const col of ['B', 'W']) {
     const mine = col === S.user;
-    document.getElementById('name' + col).textContent = mine ? (S.ownerNick || '나') : (S.level === 'monk' ? 'MONK 봇' : 'KataGo');
+    document.getElementById('name' + col).textContent = mine ? (S.ownerNick || '나') : (S.oppShort || 'KataGo');
     document.getElementById('rank' + col).textContent = mine ? '' :
-      (S.level === 'strong' ? '최강' : S.level === 'monk' ? (S.monkLabel || '').replace(/^MONK 봇 /, '') : `${(S.ranks.find(r => r.v === S.level) || {}).label || S.level}`);
+      (S.level === 'strong' ? '최강' : (S.level === 'monkos' || S.level === 'monk') ? ((S.bot && S.bot.stage) || '') : `${(S.ranks.find(r => r.v === S.level) || {}).label || S.level}`);
     document.getElementById('cap' + col).textContent = S.captures[col];
   }
 
@@ -1182,13 +1176,34 @@ function dlgSync() {
   const lv = document.getElementById('dLevel');
   document.getElementById('dlgTitle').textContent = `${myNick()} VS ${lv.options[lv.selectedIndex].text}`;
 }
+// 11-05 07:07 작가님 "대기실엔 카타고 AI라고만, 급수 설정은 대국 설정에서" — 수준 선택 칸을 상대별로 채운다.
+// mode: 'kata' = KataGo 최강+급수 / 'monkos' = MONKOS Go 하나(고정) / 'all' = 대국실 안 [새 대국](기존대로 전체)
+function botName() { return (S && S.bot && S.bot.name) || 'MONKOS Go'; }
+function fillLevels(mode) {
+  const lv = document.getElementById('dLevel');
+  lv.length = 0;
+  if (mode !== 'monkos') lv.add(new Option('KataGo 최강', 'strong'));
+  if (mode !== 'kata') lv.add(new Option(botName(), 'monkos'));  // 우리 학습 모델 — 최강과 같은 1500수읽기
+  // 강한 쪽부터(최강 → 9단 … 20급) — 10-23 작가님 "저급부터 나오니 힘들어". 표기 'KataGo 9단'(10-24)
+  if (mode !== 'monkos') for (const r of [...S.ranks].reverse()) lv.add(new Option(`KataGo ${r.label}`, r.v));
+  lv.disabled = mode === 'monkos';
+  for (const o of lv.options) if (o.value === 'monkos') o.disabled = !S.monkOk; else if (o.value !== 'strong') o.disabled = !S.humanOk;
+}
+function lastKataLevel() {  // 마지막에 고른 KataGo 수준 → 없으면 기존 기본값(지난 판 수준, MONKOS 판이었으면 최강)
+  let v = null;
+  try { v = localStorage.getItem('goBoardKataLevel'); } catch (e) { /* 저장소 불가 */ }
+  const ok = x => x && (x === 'strong' || S.ranks.some(r => r.v === x));
+  return ok(v) ? v : ok(S.level) ? S.level : 'strong';
+}
 document.getElementById('bNew').onclick = () => {
   if (busy) { notice('상대가 생각 중입니다'); return; }
   if (!S) return;
   // 11-04 작가님 — 대기실/내 기보 분리: 참여자 행의 [대국 신청]이 수준을 미리 골라 둔다(1회용)
   const preLv = window.__preLevel; window.__preLevel = null;
-  document.getElementById('dLevel').value = preLv || S.level;
-  for (const o of document.getElementById('dLevel').options) if (o.value === 'monk') o.disabled = !S.monkOk; else if (o.value !== 'strong') o.disabled = !S.humanOk;
+  const mode = preLv === 'kata' ? 'kata' : preLv === 'monkos' ? 'monkos' : 'all';
+  fillLevels(mode);
+  document.getElementById('dLevel').value = mode === 'kata' ? lastKataLevel() : mode === 'monkos' ? 'monkos'
+    : (S.level === 'monk' ? 'monkos' : S.level);
   document.querySelector(`input[name="dWay"][value="${S.handicap ? 'handi' : 'even'}"]`).checked = true;
   document.getElementById('handicap').value = S.handicap || 2;
   // 흑백선택은 지난번 고른 값(자동 돌가림 포함)을 기억 — 지난 판 결과색으로 덮지 않는다(10-23 작가님 "돌가리기가 적용 안 되는 듯")
@@ -1215,6 +1230,7 @@ document.getElementById('dOk').onclick = async () => {
       periods: Number(document.getElementById('tPer').value) };
   const colorPick = document.getElementById('dColor').value;
   try { localStorage.setItem('goBoardColorPick', colorPick); } catch (e) { /* 이번 창에서만 */ }
+  if (level !== 'monkos') { try { localStorage.setItem('goBoardKataLevel', level); } catch (e) { /* 이번 창에서만 */ } }
   notice('대국실을 여는 중…');
   try {
     const r = await fetch('/api/rooms', { method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -1613,21 +1629,19 @@ setInterval(() => {
     } catch (e) { msg.textContent = '서버 연결 실패'; }
   };
   // 11-04 작가님 — 대기실/내 기보 분리: 참여자 = 접속 중 사람(최근 30초 신호) + AI 상대
-  const SHOWN = ['18k', '10k', '5k', '1k', '3d', '5d', '7d', '9d'];
-  let allRanks = false;
   function renderPeople(d) {
     const ok = !!d.humanOk, why = esc(d.humanReason || '사람 흉내 급수를 쓸 수 없습니다');
-    const aiRow = (v, name, off, offWhy) => `<div class="box lobby-row${off ? ' off' : ''}"><span class="dot ai"></span><div class="grow"><div class="t1">${esc(name)}</div>` +
-      `<div class="t2">${off ? (offWhy || why) : 'AI · 대국 가능'}</div></div><div class="btns"><button class="hl" data-pick="${v}"${off ? ' disabled' : ''}>대국 신청</button></div></div>`;
-    const ranks = [...d.ranks].reverse();  // 강한 쪽부터
+    const aiRow = (v, name, off, offWhy, sub) => `<div class="box lobby-row${off ? ' off' : ''}"><span class="dot ai"></span><div class="grow"><div class="t1">${esc(name)}</div>` +
+      `<div class="t2">${off ? (offWhy || why) : esc(sub || 'AI · 대국 가능')}</div></div><div class="btns"><button class="hl" data-pick="${v}"${off ? ' disabled' : ''}>대국 신청</button></div></div>`;
     // 11-04 작가님 — 테스트 아이디: 접속 중 사람(대기실·대국 중) 먼저, 내 행은 (나). 그 아래 AI 상대
     const humans = (d.people || []).map(p => `<div class="box lobby-row"><span class="dot me"></span><div class="grow"><div class="t1">${esc(p.nick)}${p.rank ? ' · ' + esc(p.rank) : ''}${p.me ? ' (나)' : ''}</div>` +
       `<div class="t2">${esc(p.state)}</div></div></div>`).join('');
-    const list = allRanks ? ranks : ranks.filter(r => SHOWN.includes(r.v));
+    // 11-05 07:07 작가님 — AI는 두 줄: KataGo AI(급수·최강은 대국 설정에서) + MONKOS Go(보조 표기 '몽코스 고'는 둘째 줄 — 행 문법: 첫 줄 이름·둘째 줄 설명)
+    const b = d.bot || {};
     document.getElementById('lobbyPeople').innerHTML =
-      humans + aiRow('strong', 'KataGo 최강', !d.strongOk) +
-      aiRow('monk', d.monkLabel || 'MONK 봇', !d.monkOk, esc(d.monkReason || 'MONK 봇을 쓸 수 없습니다')) + list.map(r => aiRow(r.v, `KataGo ${r.label}`, !ok)).join('') +
-      `<div class="btns" style="margin-top:6px"><button data-allranks="1">${allRanks ? '대표 급수만 보기' : '전체 급수 펼치기'}</button></div>`;
+      humans + aiRow('kata', 'KataGo AI', !d.strongOk, null, '최강·급수는 대국 설정에서 · AI · 대국 가능') +
+      aiRow('monkos', b.name || 'MONKOS Go', !d.monkOk, esc(d.monkReason || 'MONKOS Go를 쓸 수 없습니다'),
+            `${b.nameKo || '몽코스 고'} · 학습 모델 ${b.stage || ''} · AI · 대국 가능`);
   }
   // 11-04 작가님 — 대기실/내 기보 분리: 대기실 소식 = 최근 끝난 대국 결과 3건(시스템 소식만, 입력줄 없음)
   function renderNews(rooms) {
@@ -1660,7 +1674,6 @@ setInterval(() => {
   document.getElementById('lobby').addEventListener('click', async e => {
     const pk = e.target.closest('[data-pick]');
     if (pk) { if (!pk.disabled) { window.__preLevel = pk.dataset.pick; document.getElementById('bNew').onclick(); } return; }
-    if (e.target.closest('[data-allranks]')) { allRanks = !allRanks; renderPeople(S); return; }
     const rv = e.target.closest('[data-review]');
     if (rv) {
       e.stopPropagation();
