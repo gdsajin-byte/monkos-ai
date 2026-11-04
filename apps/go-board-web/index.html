@@ -278,6 +278,39 @@
   body.mobile-play, body.mobile-play * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
   body.mobile-play input, body.mobile-play textarea, body.mobile-play select { -webkit-user-select: auto; user-select: auto; }
   body.mobile-play button, body.mobile-play svg { touch-action: manipulation; }
+  /* 11-04 작가님 — 넓은 화면 타이젬식 배치: 판(정사각)+오른쪽 칸을 한 덩어리로 가운데, 오른쪽 칸 높이 = 판 높이, 넘치면 칸 안 스크롤.
+     오른쪽 순서: 시간 한 줄 → 대국자 카드 2장 → 탭+내용 → 버튼 줄 → 계가 칸 → 남는 높이는 실시간 분석 */
+  @media (min-width: 900px) {
+    body:not(.mobile-play):not(.lobby-mode) .wrap {
+      --bs: min(calc(100vh - 88px), 62vw, 900px);
+      --sw: clamp(340px, calc(var(--bs) * .48), 440px);
+      display: grid; grid-template-columns: var(--bs) var(--sw); column-gap: 20px; justify-content: center; align-items: start;
+      max-width: none; padding: 14px 16px;
+    }
+    body:not(.mobile-play) .wrap .board { grid-column: 1; grid-row: 1; width: var(--bs); max-width: none; flex: none; }
+    body:not(.mobile-play) .wrap .split, body:not(.mobile-play) .status .sz { display: none; }
+    body:not(.mobile-play) .wrap .side { grid-column: 2; grid-row: 1; width: var(--sw); height: var(--bs); max-height: none;
+      overflow-y: auto; overflow-x: hidden; padding-right: 0; gap: 8px; flex: none; }
+    .side > * { flex-shrink: 0; }
+    .side .top { order: 1; flex-direction: column; gap: 6px; }
+    .side .msg { order: 2; min-height: 0; }
+    .side #reviewBox { order: 3; }
+    .side .tabs { order: 4; }
+    .side .box.panel { order: 5; min-height: 120px; padding: 10px; }
+    .side .actions { order: 6; flex-wrap: wrap; }
+    .side .actions button { flex: 1 1 auto; padding: 10px 4px; font-size: 16px; }
+    .side #secScore { order: 7; }
+    .side #liveBox { order: 8; flex: 1 1 220px; min-height: 220px; display: flex; flex-direction: column; }
+    .side #liveBox.folded { flex: 0 0 auto; min-height: 0; }
+    .side #liveBox iframe { flex: 1 1 auto; height: auto; min-height: 160px; }
+    .clockbox { flex: none; flex-direction: row; justify-content: flex-start; padding: 4px 10px; gap: 8px; font-size: 14px; }
+    .clockbox .ico { font-size: 18px; }
+    .cards { flex-direction: row; gap: 8px; }
+    .card { flex: 1 1 0; min-width: 0; gap: 8px; padding: 8px 10px; }
+    .card .avatar { flex: 0 0 38px; height: 38px; }
+    .who .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 16px; }
+    #liveBox[hidden] { display: none !important; }
+  }
 </style>
 </head>
 <body>
@@ -1427,8 +1460,10 @@ if (ROOM) {
     try { localStorage.setItem('goBoardLiveFolded', f ? '1' : '0'); } catch (e) { /* 이번 창에서만 */ } };
   tg.onclick = () => setFold(!folded);
   setFold(folded);
-  fetch(LIVE + 'api/state', { mode: 'no-cors' })
-    .then(() => { fr.src = LIVE + `?embed=1&room=${ROOM}`; })  // ?room= — 분석판이 이 방을 따라가게(10-24)
+  // 11-04 작가님 — 작가님 계정이 아니면(서버 403 forbidden) JSON을 보이지 않게 칸 자체를 숨긴다
+  const local = LIVE.startsWith('http://127');
+  fetch(LIVE + 'api/state', local ? { mode: 'no-cors' } : {})
+    .then(r => { if (!local && !r.ok) { box.hidden = true; return; } fr.src = LIVE + `?embed=1&room=${ROOM}`; })  // ?room= — 분석판이 이 방을 따라가게(10-24)
     .catch(() => { fr.hidden = true; off.hidden = false; });
 })();
 
