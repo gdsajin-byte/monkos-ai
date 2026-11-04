@@ -3,6 +3,8 @@
 > 지시서: `monkos-ops/ops/orders/2026-11/ORDER_20261103_iMac쌍아_4060쌍아_GO_소형망학습_파일럿.md` · PF_GO
 > 코드·설정만 이 폴더에 둔다. 데이터·체크포인트·엔진 바이너리는 레포 밖 `C:\Users\smuse73\go_train\` (커밋 금지).
 
+> 평가 대국 기보: `match.py`는 모든 대국을 SGF로 저장한다 — `--out` JSONL과 같은 폴더의 `{jsonl stem}_sgf/game{NNN}.sgf` (JSONL 행의 `sgf` 필드, 실패 시 `sgf_error`).
+
 ## 환경 (실측 2026-11-03 17:53 KST, 4060)
 
 | 항목 | 값 |

@@ -82,7 +82,31 @@ def opp_args(spec):
     raise ValueError(spec)
 
 
-def play_one(ours_is_black, a_ours, a_opp, a_ref):
+def gtp_to_sgf(mv):
+    """GTP 좌표(q16, pass) → SGF 좌표(pd, 빈 문자열). 열 A~T(I 제외), 행은 아래서부터라 위에서 19-행."""
+    mv = mv.strip().lower()
+    if mv in ("pass", ""):
+        return ""
+    col = "abcdefghjklmnopqrst".index(mv[0])
+    row = int(mv[1:])
+    if not 1 <= row <= 19:
+        raise ValueError(f"좌표 범위 밖: {mv}")
+    return chr(97 + col) + chr(97 + 19 - row)
+
+
+def build_sgf(moves, ours_is_black, re, meta):
+    """moves = ["b q16", "w pass", ...]. meta = ours_name/opp/visits/game/how. 엔진 규칙 그대로라 RU는 생략."""
+    ours_n, opp_n = f"ours:{meta['ours_name']}", meta["opp"]
+    pb, pw = (ours_n, opp_n) if ours_is_black else (opp_n, ours_n)
+    c = f"ours={meta['ours_name']} visits={meta['visits']} opp={opp_n} game={meta['game']} how={meta['how']}"
+    c = c.replace("\\", "\\\\").replace("]", "\\]")
+    head = (f"(;GM[1]FF[4]CA[UTF-8]SZ[19]KM[7.5]DT[{time.strftime('%Y-%m-%d')}]"
+            f"PB[{pb}]PW[{pw}]RE[{re}]C[{c}]")
+    body = "".join(f";{m.split()[0].upper()}[{gtp_to_sgf(m.split()[1])}]" for m in moves)
+    return head + body + ")\n"
+
+
+def play_one(ours_is_black, a_ours, a_opp, a_ref, meta=None):
     ours = Gtp(a_ours, "ours")
     opp = Gtp(a_opp, "opp")
     try:
@@ -116,8 +140,18 @@ def play_one(ours_is_black, a_ours, a_opp, a_ref):
             winner = res[0].lower() if res and res[0] in "BW" else None
             how = f"score {res}" + (" (수 상한)" if len(moves) >= MAX_MOVES else "")
         ours_color = "b" if ours_is_black else "w"
-        return {"ours_black": ours_is_black, "moves": len(moves), "result": how,
-                "ours_win": None if winner is None else (winner == ours_color)}
+        r = {"ours_black": ours_is_black, "moves": len(moves), "result": how,
+             "ours_win": None if winner is None else (winner == ours_color)}
+        if meta is not None:  # 기보 문자열(저장은 호출자). 실패해도 대국 결과에는 영향 없음
+            try:
+                if how == "resign":
+                    re = f"{winner.upper()}+R"
+                else:
+                    re = res if winner is not None else (res if res == "0" else "?")
+                r["_sgf"] = build_sgf(moves, ours_is_black, re, {**meta, "how": how})
+            except Exception as ex:
+                r["sgf_error"] = str(ex)
+        return r
     finally:
         ours.close()
         opp.close()
@@ -143,12 +177,26 @@ def main():
                                                        "logFile": os.path.join(ROOT, "eval", "gtp_ref.log")})
     lock = threading.Lock()
     t0 = time.time()
+    # 기보 저장 폴더: JSONL과 같은 폴더의 {stem}_sgf/ (모든 평가 대국을 기보로 남긴다)
+    sgf_rel = os.path.splitext(os.path.basename(a.out))[0] + "_sgf"
+    sgf_dir = os.path.join(os.path.dirname(os.path.abspath(a.out)), sgf_rel)
+    ours_name = os.path.basename(os.path.dirname(os.path.abspath(a.ours))) or os.path.basename(a.ours)
 
     def job(i):
         try:
-            r = play_one(i % 2 == 0, a_ours, a_opp, a_ref)
+            r = play_one(i % 2 == 0, a_ours, a_opp, a_ref,
+                         {"ours_name": ours_name, "opp": a.opp, "visits": a.ours_visits, "game": i})
         except Exception as ex:  # 실패 가시화
             r = {"ours_black": i % 2 == 0, "error": str(ex)}
+        sgf = r.pop("_sgf", None)
+        if sgf is not None:
+            try:
+                os.makedirs(sgf_dir, exist_ok=True)
+                with open(os.path.join(sgf_dir, f"game{i:03d}.sgf"), "w", encoding="utf-8", newline="\n") as sf:
+                    sf.write(sgf)
+                r["sgf"] = f"{sgf_rel}/game{i:03d}.sgf"
+            except Exception as ex:
+                r["sgf_error"] = str(ex)
         r.update({"game": i, "ours": os.path.basename(a.ours), "ours_visits": a.ours_visits, "opp": a.opp,
                   "t": time.strftime("%Y-%m-%d %H:%M:%S")})
         with lock, open(a.out, "a", encoding="utf-8") as f:
