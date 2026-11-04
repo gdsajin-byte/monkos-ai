@@ -131,3 +131,16 @@ python3 AI_Factory/photo_judge/fov_summary.py
 - 산식 `no_room`은 판정 프레임이 원 프레임이라, 지표는 산식이 시도한 최선 틀(재배율 + 눈 48%)로 낸다.
 - "크게 다름"(실행 전 고정): |Δ두상| ≥ 1.5mm · |Δ눈| ≥ 3.0%p · |Δ머리 위 여백| ≥ 1.5mm.
 - `computeFitGeometry`는 server.js 비export 함수라 헬퍼에 이식했다 — server.js가 바뀌면 대조 후 갱신. kr-passport 규격 입력은 `specs-data.json`과 대조해 다르면 기동을 거부한다(spec-crop.js는 config.js의 PROJECT_ID 필수라 로컬 import 불가).
+
+### 실무 정합 재대조 (11-04, ORDER_20261104 막내8)
+
+> 결과: `monkos-ops/ops/reports/2026-11/COMPLETION_20261104_iMac쌍아-막내8_IDPHOTO_여권화각_실무정합.md`
+
+- 산식 규격 입력은 포털 정본 `headPlacementSpec(spec, slug)`을 import한다(사본 제거). no_room 지표는 `hp.attemptFrame`(eye_max = 눈 48% 틀, 충돌 = 규정 상한 36 틀)로 낸다.
+- v1부터 레코드에 수치 기하 `geom`(W·H·rowPx·frame0·lines·hairTopRatio·출고 상자 M2)을 담는다 — 앵커·가드 변형은 재현상 없이 오프라인 재계산 가능.
+- `fov_diff.py --before v0 --after v1`: 같은 id 전/후 표 + 유료 T1 근사(거울상 33·눈 43%) 대비.
+
+```bash
+python3 AI_Factory/photo_judge/fov_compare.py -n 200 --out ~/.monkos/photo_judge/fov_compare_v1.jsonl
+python3 AI_Factory/photo_judge/fov_diff.py
+```
