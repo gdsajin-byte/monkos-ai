@@ -164,45 +164,89 @@ export function resolveHairPlacement({ frame, lines, hairTopRatio, imageHeight, 
 // ── 두상 재배율 (ORDER_20261104 여권두상_33mm재배율, 작가님 11-04 13:43) ──
 // 두상 = 턱 ~ 실측 머리끝(덩어리). 11-03 "두상 33mm 불변(거울상 정수리)" 결정을 대체한다.
 // 레퍼런스 도안(gen_reference_diagrams·gen_brand_diagrams_v5)과 같은 정의 — 매팅 머리끝 포함 두상을 목표 mm에 배율.
-// 눈 앵커는 crop-engine resolvePlacement와 같은 규칙(프레임 60mm 이상 42%, 미만 43%).
+// 눈 앵커 기본값은 crop-engine resolvePlacement와 같은 규칙(프레임 60mm 이상 42%, 미만 43%) — 유료·비여권 경로.
 export const eyeAnchorFor = (frameHmm) => (frameHmm >= 60 ? 0.42 : 0.43);
+
+// ── 실무 정합 (ORDER_20261104 여권화각_실무정합, 작가님 11-04 19:35) ──
+// ① 여권 재배율 눈 앵커 45% — 사진관 출고본 200건 눈 중앙값 45.7%(p10 43.7·p90 47.9). 상한 48%는 그대로.
+// ② 두상 정의 분리: 규정 32~36mm는 실측 두상(턱~덩어리 머리끝)에 적용한다.
+//    거울상(머리카락 뺀 추정 정수리) 두상은 얼굴 크기 지표라 별개 하한 30mm만 둔다(머리 볼륨이 커도 얼굴이 이보다 작아지지 않게).
+export const HEAD_PLACEMENT_EYE_ANCHOR = Object.freeze({ 'kr-passport': 0.45, 'jp-passport': 0.45 });
+export const MIRROR_FACE_MIN_MM = 30;
+
+/** 두상 재배율 규격 입력 — 목표 = faceTargetMm(kr·jp 여권 33mm), 규정 범위 = 실측 두상, 거울상 하한 = 30mm 별도 */
+export function headPlacementSpec(spec, slug) {
+  return {
+    frameHmm: spec.frameHmm,
+    headTargetMm: spec.faceTargetMm,
+    headMinMm: spec.headHeightMinMm ?? spec.faceMinMm,
+    headMaxMm: spec.headHeightMaxMm,
+    mirrorFaceMinMm: MIRROR_FACE_MIN_MM,
+    eyeAnchor: HEAD_PLACEMENT_EYE_ANCHOR[slug] ?? eyeAnchorFor(spec.frameHmm),
+  };
+}
 
 /**
  * 실측 두상으로 프레임 크기를 다시 정하고, 그 프레임에서 머리끝 배치(resolveHairPlacement)를 판정한다.
- * 얼굴 하한 가드: 거울상 두상(눈~턱 반전 = 얼굴 크기 지표, judgeMetrics 차단 기준)이 규정 하한 밑으로 가면
- * 그 지점에서 축소를 멈춘다. 상한도 같은 방식으로 막는다(대머리 등 실측 두상 < 거울상 — 얼굴 과확대 방지).
+ * 크기 순서: ① 실측 두상 = 목표 ② 규정 범위(headMin~Max) 밖이면 경계로(head_reg_min/max)
+ *            ③ 거울상이 하한(mirrorFaceMinMm) 밑이면 그 지점까지 프레임을 줄인다(face_min_30)
+ * 충돌: ③을 지키면 실측 두상이 규정 상한을 넘는 경우 — 둘 다 지키는 틀이 없다 → no_room(conflict=true).
+ *       무료 경로는 닫고(규정 밖·얼굴 하한 밑 어느 쪽도 출고하지 않는다) AI 경로·다른 사진으로 보낸다.
+ * 거울상 상한 가드는 두지 않는다 — 대머리 등 실측 < 거울상이면 실측 머리끝이 실제 정수리라 규정 두상(실측)이 그대로 기준이다.
  * 위치·크기만 바꾼다(크롭 기하). 얼굴 픽셀 불변.
  * @param frame 거울상 기준 원 프레임(원본 좌표, fit-spec 역산) / lines 원본 좌표(crownY=거울상 정수리)
  * @returns null = 입력 무효(머리끝이 턱 아래 등) → 호출부가 원 프레임 유지 + WARNING
  */
-export function resolveHeadPlacement({ frame, lines, hairTopRatio, imageHeight, frameHmm, headTargetMm, headMinMm, headMaxMm, slackPx = 0 }) {
+export function resolveHeadPlacement({ frame, lines, hairTopRatio, imageHeight, frameHmm, headTargetMm, headMinMm, headMaxMm, mirrorFaceMinMm, eyeAnchor, slackPx = 0 }) {
   const hairTopY = hairTopRatio * imageHeight;
   const headPx = lines.chinY - hairTopY;
   const mirrorPx = lines.chinY - lines.crownY;
   if (!(headPx > 0) || !(mirrorPx > 0) || !(headTargetMm > 0)) return null;
 
-  let h = headPx * frameHmm / headTargetMm;
-  let headGuard = null;
-  const mirrorAt = (fh) => mirrorPx * frameHmm / fh;
-  if (Number.isFinite(headMinMm) && mirrorAt(h) < headMinMm) { h = mirrorPx * frameHmm / headMinMm; headGuard = 'face_min'; }
-  else if (Number.isFinite(headMaxMm) && mirrorAt(h) > headMaxMm) { h = mirrorPx * frameHmm / headMaxMm; headGuard = 'face_max'; }
+  const mmAt = (px, fh) => px * frameHmm / fh;   // 프레임 높이 fh에서 px 길이의 mm
+  const hFor = (px, mm) => px * frameHmm / mm;    // px 길이가 mm가 되는 프레임 높이
+  const guards = [];
+  let h = hFor(headPx, headTargetMm);
+  if (Number.isFinite(headMinMm) && mmAt(headPx, h) < headMinMm - EPS) { h = hFor(headPx, headMinMm); guards.push('head_reg_min'); }
+  else if (Number.isFinite(headMaxMm) && mmAt(headPx, h) > headMaxMm + EPS) { h = hFor(headPx, headMaxMm); guards.push('head_reg_max'); }
+  let conflict = false;
+  if (Number.isFinite(mirrorFaceMinMm) && mmAt(mirrorPx, h) < mirrorFaceMinMm - EPS) {
+    const hFace = hFor(mirrorPx, mirrorFaceMinMm);
+    if (Number.isFinite(headMaxMm) && mmAt(headPx, hFace) > headMaxMm + EPS) {
+      // 충돌 — 규정 상한에 맞춘 틀(얼굴 하한 미달)로 지표만 낸다
+      conflict = true;
+      h = Math.min(h, hFor(headPx, headMaxMm));
+      guards.push('face_min_30', 'head_reg_max');
+    } else { h = hFace; guards.push('face_min_30'); }
+  }
 
+  const anchor = Number.isFinite(eyeAnchor) ? eyeAnchor : eyeAnchorFor(frameHmm);
   const w = h * (frame.w / frame.h);
   const cx = Number.isFinite(lines.eyeCenterX) && lines.eyeCenterX > 0 ? lines.eyeCenterX : frame.x + frame.w / 2;
-  const base = { x: cx - w / 2, y: lines.eyeY - eyeAnchorFor(frameHmm) * h, w, h };
+  const base = { x: cx - w / 2, y: lines.eyeY - anchor * h, w, h };
 
-  const r = resolveHairPlacement({ frame: base, lines, hairTopRatio, imageHeight, frameHmm, slackPx });
+  const hr = resolveHairPlacement({ frame: base, lines, hairTopRatio, imageHeight, frameHmm, slackPx });
+  const r = conflict ? { ...hr, verdict: 'no_room' } : hr;
   // no_room이면 무료 경로가 닫히므로 프레임은 원 프레임 그대로 둔다(11-03 동작 유지 — 반려 화면 표시용)
   const placed = r.verdict === 'no_room' ? frame : r.frame;
   const round = (v) => +v.toFixed(2);
   const mm = frameHmm / placed.h;
+  const uniq = [...new Set(guards)];
   return {
     ...r,
     frame: placed,
     rescaled: r.verdict !== 'no_room',
-    headGuard,
-    headMeasuredMm: round(headPx * mm),          // 턱~덩어리 머리끝, 최종 프레임 기준
-    headMirrorMm: round(mirrorPx * mm),          // 턱~거울상 정수리, 최종 프레임 기준
+    eyeAnchorPct: round(anchor * 100),
+    headGuards: uniq,                            // head_reg_min | head_reg_max | face_min_30
+    headGuard: uniq.length ? uniq.join('+') : null,
+    conflict,                                    // 거울상 하한 30 vs 규정 상한 — 둘 다 지키는 틀 없음
+    noRoomCause: r.verdict === 'no_room' ? (conflict ? 'head_face_conflict' : 'eye_max') : null,
+    // 시도 틀(재배율 + 배치, no_room이면 판정에 쓰지 않은 틀 — eye_max는 눈 상한 48%까지 올린 틀) — 대조·로그용
+    attemptFrame: hr.verdict === 'no_room' ? { ...base, y: lines.eyeY - EYE_RATIO_MAX * h } : hr.frame,
+    attemptHeadMm: round(mmAt(headPx, hr.frame.h)),
+    attemptMirrorMm: round(mmAt(mirrorPx, hr.frame.h)),
+    headMeasuredMm: round(headPx * mm),          // 규정 두상: 턱~덩어리 머리끝, 최종 프레임 기준
+    headMirrorMm: round(mirrorPx * mm),          // 거울상 두상: 턱~거울상 정수리, 최종 프레임 기준
     headMeasuredOrigMm: round(headPx * frameHmm / frame.h), // 원(거울상) 프레임 기준 실측 두상 — 재배율 전
     marginOrigMm: round((hairTopY - frame.y) * frameHmm / frame.h),
     eyeOrigPct: round((lines.eyeY - frame.y) / frame.h * 100),

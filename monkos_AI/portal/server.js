@@ -45,10 +45,11 @@ import { cropToSpec, warmupCropEngine, getSpecCropParams } from './lib/spec-crop
 import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, getMatteEngineState, stripDataUri, getSpecBgColor, cropMetaWithinSpec, runMatteChain } from './lib/matte.js';
 import { judgeMetrics, metricsFromFit } from './lib/spec-judge.js';
 import { assessFov, fovRejectionReason, fitCacheGet, fitCacheSet } from './lib/fit-fov.js';
-import { checkCrownContact, resolveHeadPlacement, hairPlacementApplies, crownMatteRowPx, HAIR_MARGIN_SLACK_ROWS, HAIR_PLACEMENT_SLUGS } from './lib/hair-measure.js';
+import { checkCrownContact, resolveHeadPlacement, headPlacementSpec, hairPlacementApplies, crownMatteRowPx, HAIR_MARGIN_SLACK_ROWS, HAIR_PLACEMENT_SLUGS } from './lib/hair-measure.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
-import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
+import { handleAgentAuth, requireAdmin, getAdminUser } from './lib/cms/admin-auth.js';
+import { generationOrigin } from './lib/gen-origin.js';
 import { isDevService } from './lib/shared/env-tag.js';
 import { handleDashboardSummary, handleDashboardUsers, handleDashboardUsers360, handleDashboardCredits, handleDashboardTraffic, handleDashboardCitadel, handleDashboardUserDetail, handleDashboardChannels } from './lib/cms/dashboard.js';
 import { handleDashboardGsc, handleDashboardNaver, handleDashboardBing, handleDashboardPerformance } from './lib/cms/seo-dashboard.js';
@@ -132,14 +133,11 @@ async function computeFitGeometry({ buf, W, H, fbPx, spec, slug, cropEngineUrl, 
   return { frame, lines, gate };
 }
 
-/** 두상 재배율 규격 입력 — 목표 = faceTargetMm(kr·jp 여권 하한+1 = 33mm), 가드 = 규정 범위 */
-function headPlacementSpec(spec) {
-  return { frameHmm: spec.frameHmm, headTargetMm: spec.faceTargetMm, headMinMm: spec.headHeightMinMm ?? spec.faceMinMm, headMaxMm: spec.headHeightMaxMm };
-}
+// 두상 재배율 규격 입력은 lib/hair-measure.js headPlacementSpec(spec, slug) — 대조 도구(AI_Factory/photo_judge)와 같은 정본
 
-/** 두상 재배율 판정 숫자 로그 (ORDER_20261104 §3-7) */
+/** 두상 재배율 판정 숫자 로그 (ORDER_20261104 §3-7 · 실무정합 §1-3: 규정 두상·거울상·가드 종류 구분) */
 function headPlacementLog(p) {
-  return `두상 ${p.verdict}${p.headGuard ? `(${p.headGuard})` : ''} 실측두상 ${p.headMeasuredOrigMm}→${p.headMeasuredMm}mm 거울상 ${p.headMirrorMm}mm 배율x${p.scaleRatio} 눈 ${p.eyeOrigPct}→${p.eyeAfterPct}% 여백 ${p.marginOrigMm}→${p.marginAfterMm}mm(목표 ${p.marginTargetMm}=0.5+보정${p.slackMm}) 턱아래 ${p.chinBelowMm}mm`;
+  return `두상 ${p.verdict}${p.noRoomCause ? `[${p.noRoomCause}]` : ''}${p.headGuard ? `(${p.headGuard})` : ''} 규정두상(실측) ${p.headMeasuredOrigMm}→${p.headMeasuredMm}mm 거울상 ${p.headMirrorMm}mm 시도 ${p.attemptHeadMm}/${p.attemptMirrorMm}mm 배율x${p.scaleRatio} 눈앵커 ${p.eyeAnchorPct}% 눈 ${p.eyeOrigPct}→${p.eyeAfterPct}% 여백 ${p.marginOrigMm}→${p.marginAfterMm}mm(목표 ${p.marginTargetMm}=0.5+보정${p.slackMm}) 턱아래 ${p.chinBelowMm}mm`;
 }
 
 async function normalizeImage(rawBase64) {
@@ -556,7 +554,7 @@ const httpServer = createServer(async (req, res) => {
       let hairPlacement = null;
       let linesOut = lines;
       if (hairPlacementApplies(slug, body.hairTopRatio)) {
-        hairPlacement = resolveHeadPlacement({ frame, lines, hairTopRatio: body.hairTopRatio, imageHeight: H, ...headPlacementSpec(spec), slackPx: HAIR_MARGIN_SLACK_ROWS * crownMatteRowPx(W, H) });
+        hairPlacement = resolveHeadPlacement({ frame, lines, hairTopRatio: body.hairTopRatio, imageHeight: H, ...headPlacementSpec(spec, slug), slackPx: HAIR_MARGIN_SLACK_ROWS * crownMatteRowPx(W, H) });
         if (hairPlacement) {
           frame = hairPlacement.frame;
           // 화면의 머리끝 선 = 실측 덩어리 머리끝 (hairScan:false라 엔진 값은 거울상 정수리와 같다)
@@ -571,7 +569,11 @@ const httpServer = createServer(async (req, res) => {
 
       // ③ 코드 소견 — metrics 기반 (Gemini 비전 퇴출 2026-07-09)
       let vision = null;
-      const metrics = metricsFromFit(frame, lines, spec);
+      // 규정 두상 = 실측 두상(턱~덩어리 머리끝) — 재배율 틀이면 판정·표시를 그 값으로 (실무정합 11-04: 거울상 30~32는 차단 대상 아님)
+      const metricsMirror = metricsFromFit(frame, lines, spec);
+      const metrics = hairPlacement && hairPlacement.rescaled
+        ? { ...metricsMirror, faceMm: hairPlacement.headMeasuredMm, faceMirrorMm: hairPlacement.headMirrorMm, topMm: hairPlacement.marginAfterMm, bottomMm: hairPlacement.chinBelowMm }
+        : metricsMirror;
       const codedNote = (function() {
         if (!frame || !lines) return null;
         // 실측 머리끝이 있으면 그 여백으로 본다 (거울상 정수리 여백은 머리카락을 빼고 잰 값)
@@ -784,7 +786,7 @@ const httpServer = createServer(async (req, res) => {
             if (crownCheck.matteRows && Math.abs(crownCheck.matteRows * rowPx - norm.height) > rowPx) {
               log(`[IDPhoto][precheck] ${body.slug} 매팅 행 수 불일치 (실측 ${crownCheck.matteRows}행, 파생 ${(norm.height / rowPx).toFixed(0)}행) — fit 보정량 어긋날 수 있음`, 'WARNING');
             }
-            hairPlacement = resolveHeadPlacement({ frame: fitGeom.frame, lines: fitGeom.lines, hairTopRatio: crownCheck.hairTopRatio, imageHeight: norm.height, ...headPlacementSpec(fovSpec), slackPx: HAIR_MARGIN_SLACK_ROWS * rowPx });
+            hairPlacement = resolveHeadPlacement({ frame: fitGeom.frame, lines: fitGeom.lines, hairTopRatio: crownCheck.hairTopRatio, imageHeight: norm.height, ...headPlacementSpec(fovSpec, body.slug), slackPx: HAIR_MARGIN_SLACK_ROWS * rowPx });
             if (!hairPlacement) {
               log(`[IDPhoto][precheck] ${body.slug} 두상 재배율 입력 무효 (hairTopRatio=${crownCheck.hairTopRatio}) → 거울상 프레임 유지`, 'WARNING');
             } else {
@@ -1104,7 +1106,7 @@ const httpServer = createServer(async (req, res) => {
       try {
         // 크레딧 출처 스냅샷 — 생성 시점 기준 웰컴/구매 판정 (어드민 배지 분리, 2026-09-26)
         const creditSource = gateMode === 'credits' ? await resolveCreditSource(gateUserId) : null;
-        await saveImages('idphoto', gateUserId, slug || format || 'passport', norm.rawBase64, finalBase64, { ...(t1RawForSave && { t1Raw: t1RawForSave }), sessionId: req.sessionId, slug: slug || null, authUserId, gate: gateMode, creditSource });
+        await saveImages('idphoto', gateUserId, slug || format || 'passport', norm.rawBase64, finalBase64, { ...(t1RawForSave && { t1Raw: t1RawForSave }), sessionId: req.sessionId, slug: slug || null, authUserId, gate: gateMode, creditSource, origin: generationOrigin(req, { getAdmin: getAdminUser }) });
       } catch (e) {
         log(`[IDPhoto] GCS 저장 실패 (무시): ${e.message}`, 'WARNING');
       }

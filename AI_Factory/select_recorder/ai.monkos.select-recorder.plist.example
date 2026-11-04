@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 설치안 — 설치하지 않음(ch1 7조 승인 게이트). iMac launchd에서 매일 22:30 실행(매장 마감 뒤, 셀렉 폴더 이관 후).
+     설치(작가님 승인 후): cp 이 파일 ~/Library/LaunchAgents/ai.monkos.select-recorder.plist (확장자 .example 제거)
+       && launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.monkos.select-recorder.plist
+     실패 알림: run_collect.sh 종료 코드≠0이면 scripts/tools/tg_notify.sh 1줄(래퍼 sh -c 안에서). -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>ai.monkos.select-recorder</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-lc</string>
+    <string>cd /Users/jeong-kyushin/developer/monk_project &amp;&amp; AI_Factory/select_recorder/run_collect.sh || scripts/tools/tg_notify.sh --text "❌ 셀렉 기록기 실패 rc=$? — ~/.monkos/select-recorder/last.log"</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict><key>Hour</key><integer>22</integer><key>Minute</key><integer>30</integer></dict>
+  <key>StandardOutPath</key><string>/Users/jeong-kyushin/.monkos/select-recorder/last.log</string>
+  <key>StandardErrorPath</key><string>/Users/jeong-kyushin/.monkos/select-recorder/last.log</string>
+</dict>
+</plist>

@@ -76,6 +76,10 @@ h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); margin-bottom
 .pair-body .gate-paid { color: #22c55e; border-color: #22c55e55; }
 .pair-body .gate-welcome { color: #60a5fa; border-color: #60a5fa55; }
 .pair-body .gate-free { color: var(--muted); }
+/* 테스트 딱지 (ORDER_20261105) — dev 서비스·인증된 시험 표시 생성 기록 */
+.pair-body .test-tag { font-size: 10px; padding: 1px 6px; border-radius: 3px; border: 1px solid #ea580c66; background: #fff7ed; color: var(--warn); font-weight: 600; white-space: nowrap; }
+.pair.is-test { opacity: .7; border-style: dashed; }
+.test-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-dim); cursor: pointer; user-select: none; }
 .legend { font-size: 11px; color: var(--text-dim); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .legend .gate-tag { font-size: 10px; padding: 1px 6px; border-radius: 3px; border: 1px solid var(--border); background: var(--surface2); }
 .legend .gate-paid { color: #22c55e; border-color: #22c55e55; }
@@ -121,6 +125,7 @@ h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); margin-bottom
       <button class="tab" data-service="all">전체</button>
     </div>
     <button class="btn-reload" id="reloadBtn">↻ 새로고침</button>
+    <label class="test-toggle" title="dev 서비스·시험 표시 생성 기록 — 기본 숨김"><input type="checkbox" id="includeTest"> 테스트 포함</label>
     <span class="meta" id="meta"></span>
   </div>
 
@@ -142,6 +147,8 @@ h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); margin-bottom
 let currentService = 'kr';
 let lastCreated = null;
 let totalLoaded = 0;
+let hiddenTestTotal = 0;
+const includeTestEl = () => document.getElementById('includeTest').checked;
 
 async function apiFetch(url) {
   const r = await fetch(url, { credentials: 'include' });
@@ -220,7 +227,8 @@ function legendHtml() {
 function renderCard(p) {
   const slugDisplay = p.slug || p.style || '';
   const uidLabel = p.authenticated ? p.userId : p.userId + ' (비로그인)';
-  return `<div class="pair">
+  const testTag = p.isTest ? `<span class="test-tag" title="${esc(p.originService || '')}${p.testReason ? ' · ' + esc(p.testReason) : ''}">테스트</span>` : '';
+  return `<div class="pair${p.isTest ? ' is-test' : ''}">
     <div class="pair-imgs">
       ${imgCell(p.originalUrl, 'original', '원본')}
       ${imgCell(p.generatedUrl, 'generated', 'AI 결과')}
@@ -228,6 +236,7 @@ function renderCard(p) {
     <div class="pair-body">
       <span class="uid" title="${esc(uidLabel)}">${esc(uidLabel.length > 20 ? uidLabel.slice(0, 20) + '…' : uidLabel)}</span>
       ${slugDisplay ? `<span class="slug-tag">${esc(slugDisplay)}</span>` : ''}
+      ${testTag}
       ${gateBadge(p)}
       <span class="ts">${esc(kst(p.created))}</span>
     </div>
@@ -249,11 +258,12 @@ async function load(service, append) {
     metaEl.textContent = '';
     lastCreated = null;
     totalLoaded = 0;
+    hiddenTestTotal = 0;
     for (const k of Object.keys(gateCounts)) delete gateCounts[k];
   }
 
   try {
-    let fetchUrl = `/api/admin/idphoto/results?service=${service}&limit=40&_t=${Date.now()}`;
+    let fetchUrl = `/api/admin/idphoto/results?service=${service}&limit=40${includeTestEl() ? '&includeTest=1' : ''}&_t=${Date.now()}`;
     if (append && lastCreated) {
       fetchUrl += `&after=${encodeURIComponent(lastCreated)}`;
     }
@@ -274,7 +284,9 @@ async function load(service, append) {
     grid.insertAdjacentHTML('beforeend', d.results.map(renderCard).join(''));
     totalLoaded += d.results.length;
     countGates(d.results);
-    metaEl.innerHTML = `${totalLoaded}건 (최신순) — ${legendHtml()}`;
+    hiddenTestTotal += d.hiddenTest || 0;
+    const testNote = includeTestEl() ? ' · 테스트 포함' : (hiddenTestTotal ? ` · 테스트 ${hiddenTestTotal}건 숨김` : '');
+    metaEl.innerHTML = `${totalLoaded}건 (최신순)${testNote} — ${legendHtml()}`;
 
     if (d.results.length > 0) {
       lastCreated = d.results[d.results.length - 1].created;
@@ -306,6 +318,7 @@ document.getElementById('serviceTabs').addEventListener('click', e => {
   load(svc, false);
 });
 document.getElementById('reloadBtn').addEventListener('click', () => load(currentService, false));
+document.getElementById('includeTest').addEventListener('change', () => load(currentService, false));
 document.getElementById('loadMoreBtn').addEventListener('click', () => load(currentService, true));
 
 var _origUpdateAuthUI = updateAuthUI;

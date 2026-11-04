@@ -2,7 +2,7 @@
  * 정수리 실측 — 상단 접촉 판정 경계 (ORDER_20261102 정수리게이트_실측전환)
  */
 import sharp from 'sharp';
-import { measureTopContact, checkCrownContact, CROWN_CONTACT_RATIO, resolveHairPlacement, resolveHeadPlacement, hairPlacementApplies, crownMatteRowPx } from '../lib/hair-measure.js';
+import { measureTopContact, checkCrownContact, CROWN_CONTACT_RATIO, resolveHairPlacement, resolveHeadPlacement, headPlacementSpec, MIRROR_FACE_MIN_MM, eyeAnchorFor, hairPlacementApplies, crownMatteRowPx } from '../lib/hair-measure.js';
 
 const BG = '#00FF00';
 const W = 100, H = 100;
@@ -216,11 +216,12 @@ describe('머리 덩어리 머리끝 — 잔머리 제외 (ORDER_20261104)', () 
 
 describe('resolveHeadPlacement — 실측 두상 33mm 재배율 (ORDER_20261104)', () => {
   // 원 프레임: 450px = 45mm(0.1mm/px), 거울상 두상 33mm(330px), 눈 43%.
+  // 앵커 미지정 = 기본 43%(eyeAnchorFor) — 재배율·가드 기하만 본다
   const frame = { x: 0, y: 100, w: 350, h: 450 };
   const eyeY = 100 + 450 * 0.43;               // 293.5
   const lines = { eyeY, chinY: eyeY + 165, crownY: eyeY - 165, eyeCenterX: 175 };
-  const spec = { frameHmm: 45, headTargetMm: 33, headMinMm: 32, headMaxMm: 36 };
-  const place = (hairY) => resolveHeadPlacement({ frame, lines, hairTopRatio: hairY / 1000, imageHeight: 1000, ...spec });
+  const spec = { frameHmm: 45, headTargetMm: 33, headMinMm: 32, headMaxMm: 36, mirrorFaceMinMm: 30 };
+  const place = (hairY, extra = {}) => resolveHeadPlacement({ frame, lines, hairTopRatio: hairY / 1000, imageHeight: 1000, ...spec, ...extra });
 
   test('실측 머리끝 = 거울상 정수리 → 프레임 그대로 (재배율 0)', () => {
     const r = place(lines.crownY);
@@ -229,61 +230,133 @@ describe('resolveHeadPlacement — 실측 두상 33mm 재배율 (ORDER_20261104)
     expect(r.frame.y).toBeCloseTo(100);
     expect(r.headMeasuredMm).toBe(33);
     expect(r.scaleRatio).toBeCloseTo(1, 3);
+    expect(r.eyeAnchorPct).toBe(43);
   });
 
-  test('머리 볼륨 1mm → 실측 두상 33mm로 축소, 눈 43% 유지', () => {
+  test('머리 볼륨 1mm → 실측 두상 33mm로 축소, 거울상 32.03 (가드 없음)', () => {
     const r = place(lines.crownY - 10); // 실측 34mm
     expect(r.verdict).toBe('pass');
     expect(r.headMeasuredOrigMm).toBe(34);
     expect(r.headMeasuredMm).toBe(33);
     expect(r.headMirrorMm).toBeCloseTo(32.03, 1);
     expect(r.headGuard).toBe(null);
+    expect(r.headGuards).toEqual([]);
     expect(r.eyeAfterPct).toBeCloseTo(43, 1);
     expect(r.frame.w / r.frame.h).toBeCloseTo(350 / 450, 6);
     expect(r.frame.x + r.frame.w / 2).toBeCloseTo(175); // 눈 중심 = 수평 중앙
   });
 
-  test('얼굴 하한 가드 — 거울상 32mm 밑으로 안 줄이고 나머지는 위로 이동', () => {
-    const r = place(lines.crownY - 30); // 실측 36mm → 33mm면 거울상 30.25mm < 32
-    expect(r.headGuard).toBe('face_min');
-    expect(r.headMirrorMm).toBe(32);
-    expect(r.headMeasuredMm).toBeCloseTo(34.9, 1);
-    // 눈 43%(19.35mm)에서 머리끝 = 눈 위 34.9−16 = 18.9mm → 여백 0.45mm < 0.5 → 위로 이동
-    expect(r.verdict).toBe('moved');
-    expect(r.marginAfterMm).toBe(0.5);
-    expect(r.eyeAfterPct).toBeCloseTo(43.11, 1);
+  test('거울상 30~32는 가드 없음 — 규정 32는 실측 두상에만 적용 (실무정합 11-04)', () => {
+    const r = place(lines.crownY - 30); // 실측 36mm → 33mm면 거울상 30.25mm (≥30)
+    expect(r.headGuard).toBe(null);
+    expect(r.headMeasuredMm).toBe(33);
+    expect(r.headMirrorMm).toBeCloseTo(30.25, 1);
+    expect(r.conflict).toBe(false);
   });
 
-  test('재현(Jemison형): 원 프레임 기준 실측 37.7mm·여백 −1.9mm → no_room 아님', () => {
-    // 원 프레임에서 머리끝이 틀 위 1.89mm, 실측 두상 37.7mm
-    const r = place(100 - 18.9);
-    expect(r.marginOrigMm).toBeCloseTo(-1.89, 1);
-    expect(r.headMeasuredOrigMm).toBeCloseTo(37.7, 0);
-    expect(r.verdict).not.toBe('no_room');
-    expect(r.headGuard).toBe('face_min');
-    expect(r.marginAfterMm).toBeGreaterThanOrEqual(0.5);
-    expect(r.eyeAfterPct).toBeLessThanOrEqual(48);
+  test('거울상 하한 30 — 얼굴을 30mm 밑으로 안 줄인다(face_min_30), 실측 두상은 규정 안', () => {
+    const r = place(lines.crownY - 45); // 실측 37.5mm → 33mm면 거울상 29.04 < 30
+    expect(r.headGuards).toEqual(['face_min_30']);
+    expect(r.headGuard).toBe('face_min_30');
+    expect(r.headMirrorMm).toBe(30);
+    expect(r.headMeasuredMm).toBeCloseTo(34.09, 1); // 37.5 × 30/33
+    expect(r.conflict).toBe(false);
   });
 
-  test('볼륨이 극단이면 가드 후에도 no_room — 원 프레임 유지', () => {
-    const r = place(lines.crownY - 60); // 실측 39mm
+  test('충돌 — 거울상 30을 지키면 실측 두상 > 36 → no_room(head_face_conflict), 원 프레임 유지', () => {
+    const r = place(lines.crownY - 70); // 실측 40mm, 거울상 30이면 실측 36.36 > 36
+    expect(r.conflict).toBe(true);
     expect(r.verdict).toBe('no_room');
+    expect(r.noRoomCause).toBe('head_face_conflict');
+    expect(r.headGuards).toEqual(['face_min_30', 'head_reg_max']);
     expect(r.frame).toBe(frame);
     expect(r.rescaled).toBe(false);
+    expect(r.attemptHeadMm).toBe(36);              // 시도 틀 = 규정 상한
+    expect(r.attemptMirrorMm).toBeLessThan(30);
   });
 
-  test('대머리(실측 < 거울상) → 얼굴 확대, 상한 가드 36mm', () => {
+  test('경계 — 거울상 30에서 실측 정확히 36mm면 충돌 아님', () => {
+    // 실측/거울상 = 1.2 → 실측 39.6mm(원 프레임). 거울상 30이면 실측 36.0
+    const r = place(lines.chinY - 396);
+    expect(r.conflict).toBe(false);
+    expect(r.headGuards).toEqual(['face_min_30']);
+    expect(r.headMeasuredMm).toBeCloseTo(36, 1);
+  });
+
+  test('규정 범위 밖 목표 → 경계로 (head_reg_min / head_reg_max)', () => {
+    const lo = place(lines.crownY, { headTargetMm: 31 });
+    expect(lo.headGuards).toEqual(['head_reg_min']);
+    expect(lo.headMeasuredMm).toBe(32);
+    const hi = place(lines.crownY, { headTargetMm: 37 });
+    expect(hi.headGuards).toEqual(['head_reg_max']);
+    expect(hi.headMeasuredMm).toBe(36);
+  });
+
+  test('대머리(실측 < 거울상) → 규정 두상(실측) 33mm, 거울상 상한 가드 없음', () => {
     const r = place(lines.crownY + 20); // 실측 31mm → 33mm면 거울상 35.1mm
     expect(r.headGuard).toBe(null);
     expect(r.headMeasuredMm).toBe(33);
     expect(r.headMirrorMm).toBeCloseTo(35.13, 1);
-    const big = place(lines.crownY + 40); // 실측 29mm → 거울상 37.6 > 36
-    expect(big.headGuard).toBe('face_max');
-    expect(big.headMirrorMm).toBe(36);
+    const big = place(lines.crownY + 40); // 실측 29mm → 거울상 37.6 — 실측 머리끝이 실제 정수리
+    expect(big.headGuard).toBe(null);
+    expect(big.headMeasuredMm).toBe(33);
+    expect(big.headMirrorMm).toBeCloseTo(37.55, 1);
+  });
+
+  test('실측 39mm(거울상 33)는 이제 들어간다 — 거울상 30에서 실측 35.45', () => {
+    const r = place(lines.crownY - 60);
+    expect(r.verdict).not.toBe('no_room');
+    expect(r.headGuards).toEqual(['face_min_30']);
+    expect(r.headMeasuredMm).toBeCloseTo(35.45, 1);
+  });
+
+  test('눈 상한 no_room(eye_max) — 실측 36·거울상 30에서 여백 목표 1.5mm면 48%로도 안 들어옴, 원 프레임 유지', () => {
+    const r = place(lines.chinY - 396, { slackPx: 10 });
+    expect(r.conflict).toBe(false);
+    expect(r.verdict).toBe('no_room');
+    expect(r.noRoomCause).toBe('eye_max');
+    expect(r.frame).toBe(frame);
+    expect(r.rescaled).toBe(false);
   });
 
   test('입력 무효(머리끝이 턱 아래) → null', () => {
     expect(place(lines.chinY + 5)).toBe(null);
+  });
+});
+
+describe('여권 눈 앵커 45% (실무정합 11-04 19:35)', () => {
+  const frame = { x: 0, y: 100, w: 350, h: 450 };
+  const eyeY = 100 + 450 * 0.43;
+  const lines = { eyeY, chinY: eyeY + 165, crownY: eyeY - 165, eyeCenterX: 175 };
+  const kr = { frameHmm: 45, faceTargetMm: 33, headHeightMinMm: 32, headHeightMaxMm: 36, faceMinMm: 32 };
+
+  test('규격 입력 — kr·jp 여권은 45%·거울상 하한 30, 그 밖은 crop-engine 규칙', () => {
+    expect(headPlacementSpec(kr, 'kr-passport')).toEqual({ frameHmm: 45, headTargetMm: 33, headMinMm: 32, headMaxMm: 36, mirrorFaceMinMm: MIRROR_FACE_MIN_MM, eyeAnchor: 0.45 });
+    expect(headPlacementSpec(kr, 'jp-passport').eyeAnchor).toBe(0.45);
+    expect(headPlacementSpec(kr, 'us-passport').eyeAnchor).toBe(0.43);
+    expect(headPlacementSpec({ ...kr, frameHmm: 60 }, 'cn-visa').eyeAnchor).toBe(0.42);
+    expect(eyeAnchorFor(45)).toBe(0.43); // 기본값(유료 crop-engine과 같은 규칙) 불변
+    expect(MIRROR_FACE_MIN_MM).toBe(30);
+  });
+
+  test('앵커 45% → 눈 45%, 머리 위 여백이 43%보다 0.9mm 넓다', () => {
+    const at = (anchor) => resolveHeadPlacement({ frame, lines, hairTopRatio: (lines.crownY - 10) / 1000, imageHeight: 1000, ...headPlacementSpec(kr, 'kr-passport'), eyeAnchor: anchor });
+    const r45 = at(0.45), r43 = at(0.43);
+    expect(r45.verdict).toBe('pass');
+    expect(r45.eyeAfterPct).toBeCloseTo(45, 1);
+    expect(r45.eyeAnchorPct).toBe(45);
+    expect(r45.marginAfterMm - r43.marginAfterMm).toBeCloseTo(0.9, 1);
+    expect(r45.headMeasuredMm).toBe(r43.headMeasuredMm); // 크기는 앵커와 무관
+  });
+
+  test('여백 부족이면 45%에서 48% 상한까지 올린다(기존 규칙)', () => {
+    // 실측 37.5 → 거울상 하한으로 실측 34.09mm, 눈~머리끝 = 34.09 − 눈~턱
+    const r = resolveHeadPlacement({ frame, lines, hairTopRatio: (lines.crownY - 45) / 1000, imageHeight: 1000, ...headPlacementSpec(kr, 'kr-passport') });
+    expect(r.headGuard).toBe('face_min_30');
+    expect(['pass', 'moved']).toContain(r.verdict);
+    expect(r.eyeAfterPct).toBeGreaterThanOrEqual(45 - 1e-6);
+    expect(r.eyeAfterPct).toBeLessThanOrEqual(48);
+    expect(r.marginAfterMm).toBeGreaterThanOrEqual(0.5);
   });
 });
 

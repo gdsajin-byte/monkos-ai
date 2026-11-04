@@ -40,6 +40,9 @@ KATA_DIR = Path.home() / ".monkos" / "katago"
 KATAGO = KATA_DIR / "katago-ocl"
 MAIN_MODEL = KATA_DIR / "kata1-b18c384nbt-s9996604416-d4316597426.bin.gz"
 HUMAN_MODEL = KATA_DIR / "b18c384nbt-humanv0.bin.gz"
+# 우리 학습 모델(PF_GO, 4060 b10 학습분) — 교체는 이 세 줄만(파일·기보 태그·화면 표기). 11-05 작가님 "대국 테스트할 수 있게"
+MONK_MODEL = KATA_DIR / "monk_b10_s41M.bin.gz"  # 4060 eval b10-s41211392-d12492409 (sha256 2ba167f4…)
+MONK_TAG, MONK_LABEL = "MONK-b10-s41M", "MONK 봇 (b10·4,154만)"
 PLAY_CFG = KATA_DIR / "gtp_play.cfg"
 HUMAN_CFG = KATA_DIR / "configs" / "gtp_human5k_example.cfg"
 HERE = Path(__file__).resolve().parent
@@ -86,6 +89,8 @@ COLS = "ABCDEFGHJKLMNOPQRST"  # GTP 좌표 — I 없음
 COMMON_OVR = f"rules=korean,reportAnalysisWinratesAs=BLACK,logDir={KATA_DIR / 'gtp_logs'}"
 STRONG_VISITS, STRONG_TIME = 1500, 17
 STRONG_OVR = COMMON_OVR + f",maxVisits={STRONG_VISITS},maxTime={STRONG_TIME}"
+MONK_OVR = STRONG_OVR  # MONK 봇 = 최강과 같은 수읽기(11-05 작가님 "1500수읽기로 동일하게") — 사본 숫자 금지
+MONK_SGF = f"{MONK_TAG}({STRONG_VISITS}v)"  # 기보 PB/PW·파일명 — 학습 단계별 비교용
 # 승률 그래프(기보 감상) — 국면당 짧은 분석. 10-24 실측: 200방문 0.2~1.1초/국면
 GRAPH_VISITS, GRAPH_MAX_TIME = 200, 0.8  # 한 걸음 상한 0.8초 = 대국 요청이 기다리는 최대치(양보 +1초 이내)
 GRAPH_YIELD_GAP = 0.5  # 대국 요청 뒤 그래프가 비켜 있는 초 — 착수 1번의 검사·응수 사이에 끼지 않게
@@ -245,7 +250,19 @@ def build_engines():
         human = Engine("급수", [str(KATAGO), "gtp", "-config", str(HUMAN_CFG),
                                "-model", str(MAIN_MODEL), "-human-model", str(HUMAN_MODEL),
                                "-override-config", HUMAN_OVR])
-    return strong, human, human_reason
+    monk, monk_reason = None, None
+    if not MONK_MODEL.exists():
+        monk_reason = f"MONK 모델 없음 — {MONK_MODEL.name}을 {KATA_DIR}에 둬야 함"
+    elif not KATAGO.exists():
+        monk_reason = f"엔진 실행 파일 없음: {KATAGO}"
+    else:
+        monk = Engine("MONK", [str(KATAGO), "gtp", "-config", str(PLAY_CFG),
+                              "-model", str(MONK_MODEL), "-override-config", MONK_OVR])
+    return strong, human, human_reason, monk, monk_reason
+
+
+def level_ok(level):
+    return level in ("strong", "monk") or level in RANKS
 
 
 class EngineHub:
@@ -254,8 +271,9 @@ class EngineHub:
     job 잠금으로 줄 세운다(다른 방 상태 조회는 잠금 밖). 엔진 주소 교체(RunPod·4060)는 이 클래스만 바꾼다.
     position = {"moves": [(색, 수)…], "setup": [치석…], "komi": 덤}"""
 
-    def __init__(self, strong, human, human_reason):
+    def __init__(self, strong, human, human_reason, monk=None, monk_reason=None):
         self.strong, self.human, self.human_reason = strong, human, human_reason
+        self.monk, self.monk_reason = monk, monk_reason  # MONK 봇 — 착수·착수 검사만. 판정·힌트·그래프는 최강
         self.wait_lock = threading.Lock()
         self.waits = []  # 대국 요청이 엔진 줄에서 기다린 초(최근 50) — 그래프 계산 양보 실측용
 
@@ -301,10 +319,19 @@ class EngineHub:
         return (c[0]["winrate"], c[0]["score"]) if c else (None, None)
 
     def _pick(self, level):
-        e = self.strong if level == "strong" else self.human
+        if level == "monk":
+            e, why, name = self.monk, self.monk_reason, "MONK 봇"
+        else:
+            e = self.strong if level == "strong" else self.human
+            why, name = self.human_reason, ("최강" if level == "strong" else "급수")
         if e is None or not e.ok:
-            raise RuntimeError((e.error if e else self.human_reason) or f"{'최강' if level == 'strong' else '급수'} 엔진이 꺼져 있음")
+            raise RuntimeError((e.error if e else why) or f"{name} 엔진이 꺼져 있음")
         return e
+
+    @staticmethod
+    def _judge(level):
+        """판정·계가 엔진 — MONK 봇 판은 최강이 맡는다(상대 엔진이 해설까지 하면 시험이 섞인다)."""
+        return "strong" if level == "monk" else level
 
     @staticmethod
     def _key(pos):
@@ -320,7 +347,7 @@ class EngineHub:
         return key
 
     def _profile(self, e, level):
-        if level != "strong" and e.profile != level:
+        if level not in ("strong", "monk") and e.profile != level:
             e.cmd(f"kata-set-param humanSLProfile rank_{level}")
             e.profile = level
 
@@ -368,14 +395,14 @@ class EngineHub:
             return e.search(color, top)
 
     def final_score(self, pos, level):
-        e = self._pick(level)
+        e = self._pick(self._judge(level))
         with self._job(e):
             self._sync(e, pos)
             return e.cmd("final_score")
 
     def scoring(self, pos, level):
         """계가 재료 — 사석·KataGo 판정(11-04: 소유권 추정 폐지)."""
-        e = self._pick(level)
+        e = self._pick(self._judge(level))
         with self._job(e):
             self._sync(e, pos)
             dead = {to_xy(mv) for mv in e.cmd("final_status_list dead").split()}
@@ -387,6 +414,13 @@ class EngineHub:
 
     def human_why(self):
         return None if self.human_ok else ((self.human.error if self.human else self.human_reason) or "급수 엔진이 꺼져 있음")
+
+    @property
+    def monk_ok(self):
+        return self.monk is not None and self.monk.ok
+
+    def monk_why(self):
+        return None if self.monk_ok else ((self.monk.error if self.monk else self.monk_reason) or "MONK 봇 엔진이 꺼져 있음")
 
 
 # ---------------------------------------------------------------- 판 규칙(따낸 돌·표시용)
@@ -807,8 +841,8 @@ class Room:
         rid = f"{datetime.now():%Y%m%d-%H%M%S}-{secrets.token_hex(2)}"
         r = cls(rid)
         r.owner = owner
-        r.sgf_path = GAMES_DIR / f"{r.started:%Y%m%d_%H%M%S}_{r.owner_nick}_vs_KataGo.sgf"
-        if level != "strong" and level not in RANKS:
+        r.sgf_path = GAMES_DIR / f"{r.started:%Y%m%d_%H%M%S}_{r.owner_nick}_vs_{MONK_TAG if level == 'monk' else 'KataGo'}.sgf"
+        if not level_ok(level):
             raise RuntimeError("알 수 없는 수준")
         if level != "strong":
             ENGINES.check_level(level)
@@ -908,11 +942,17 @@ class Room:
     def position(self):
         return {"moves": self.moves, "setup": self.setup, "komi": self.komi}
 
+    def opp_name(self):
+        """기보·대국자 표기의 상대 이름 — MONK 봇은 모델 태그+수읽기(학습 단계별 비교용)."""
+        return MONK_SGF if self.level == "monk" else f"KataGo({self.level_label()})"
+
     def level_label(self):
         if self.source == "upload":
             p = self.players or {}
             rk = lambda c: f"({p.get(c + 'R')})" if p.get(c + "R") else ""
             return f"흑 {p.get('B', '흑')}{rk('B')} vs 백 {p.get('W', '백')}{rk('W')}"
+        if self.level == "monk":
+            return MONK_LABEL
         return "KataGo 최강" if self.level == "strong" else f"KataGo {RANK_KO[self.level]}"  # 10-24 표기 단순화(옛 '사람형 N단')
 
     # ---- 시계: 차례가 바뀔 때마다 둔 쪽을 깎고, 초읽기면 그 회를 처음부터
@@ -1019,7 +1059,7 @@ class Room:
             self.scores.append((len(self.moves) + 1, round(score, 1)))
         if mv.lower() == "resign":
             self.result = f"{'W' if c == 'B' else 'B'}+R"
-            self.message = "KataGo가 돌을 던졌습니다. 이기셨어요!"
+            self.message = f"{'MONK 봇' if self.level == 'monk' else 'KataGo'}가 돌을 던졌습니다. 이기셨어요!"
         else:
             self.moves.append((c, mv))
             self._check_end()
@@ -1217,7 +1257,7 @@ class Room:
         self.save_sgf()
 
     def set_level(self, level):
-        if level != "strong" and level not in RANKS:
+        if not level_ok(level):
             raise RuntimeError("알 수 없는 수준")
         if level != "strong":
             ENGINES.check_level(level)
@@ -1234,7 +1274,7 @@ class Room:
     def sgf_text(self):
         if self.imported and self.sgf_path.exists():
             return self.sgf_path.read_text(encoding="utf-8")
-        me, eng = self.owner_nick, f"KataGo({self.level_label()})"
+        me, eng = self.owner_nick, self.opp_name()
         pb, pw = (me, eng) if self.user == "B" else (eng, me)
         extra = ""
         if self.source == "upload":  # 불러온 기보 → 보기용 SGF(대국자·급단·날짜·규칙 그대로)
@@ -1293,8 +1333,8 @@ class Room:
             "scores": self.scores, "result": self.result,
             # 기보 감상(10-24): 화면이 수순을 직접 재생한다 — 국면 계산은 화면 쪽 1벌
             "moveList": [list(m) for m in self.moves], "setup": self.setup, "source": self.source,
-            "players": self.players or ({"B": self.owner_nick, "W": f"KataGo({self.level_label()})"} if self.user == "B"
-                                        else {"B": f"KataGo({self.level_label()})", "W": self.owner_nick}),
+            "players": self.players or ({"B": self.owner_nick, "W": self.opp_name()} if self.user == "B"
+                                        else {"B": self.opp_name(), "W": self.owner_nick}),
             "record": {"date": self.record_date or f"{self.started:%Y-%m-%d}", "rules": self.rules,
                        "origName": self.orig_name},
             "resultKo": result_ko(self.result) if self.result else None,
@@ -1331,6 +1371,7 @@ def common_state():
     """방과 무관한 화면 재료(엔진 상태·수준 목록·소리·스킨) — 대기실도 같은 값을 쓴다."""
     return {"strongOk": ENGINES.strong.ok, "strongError": ENGINES.strong.error,
             "humanOk": ENGINES.human_ok, "humanReason": ENGINES.human_why(),
+            "monkOk": ENGINES.monk_ok, "monkReason": ENGINES.monk_why(), "monkLabel": MONK_LABEL,
             "ranks": [{"v": r, "label": RANK_KO[r]} for r in RANKS], "handicaps": HANDICAPS,
             "sounds": custom_sounds(), "packs": sound_packs(), "skins": skin_packs(), "testMode": TEST_MODE,
             "build": build_id()}
@@ -1422,7 +1463,7 @@ def parse_sgf_room(path):
     r.user = "W" if prop("PW") == "작가님" else "B"
     opp = prop("PW" if r.user == "B" else "PB") or ""
     mr = re.search(r"KataGo (?:사람형 )?(\d+[급단])\)?$", opp)  # 옛 표기 '사람형 5급' · 새 표기 '5급' 둘 다
-    r.level = next((k for k, v in RANK_KO.items() if mr and v == mr.group(1)), "strong")
+    r.level = "monk" if opp.startswith("MONK-") else next((k for k, v in RANK_KO.items() if mr and v == mr.group(1)), "strong")
     tm, ot = prop("TM"), re.match(r"(\d+)x(\d+)", prop("OT") or "")
     r.time = {"main": int(float(tm)) // 60, "byo": int(ot.group(2)), "periods": int(ot.group(1))} if tm and ot else None
     r.result = prop("RE")
@@ -2460,7 +2501,7 @@ class Handler(BaseHTTPRequestHandler):
             except (urllib.error.URLError, OSError) as e:
                 self._send(502, f"분석판(8770) 응답 없음 — {e}", "text/plain; charset=utf-8")
         elif path == "/health":
-            self._send(200, json.dumps({"ok": True, "strong": ENGINES.strong.ok, "human": ENGINES.human_ok,
+            self._send(200, json.dumps({"ok": True, "strong": ENGINES.strong.ok, "human": ENGINES.human_ok, "monk": ENGINES.monk_ok,
                                         "rooms": len(ROOMS.rooms),
                                         "engineWaits": ENGINES.waits[-10:], "graph": ANALYSES.current}))
         else:
@@ -2660,13 +2701,13 @@ def main():
     global ENGINES, ROOMS
     if TEST_MODE and PORT == LIVE_PORT:
         sys.exit(f"❌ go-board: 테스트 모드는 실사용 포트 {LIVE_PORT}를 쓸 수 없음")
-    strong, human, human_reason = build_engines()
-    ths = [threading.Thread(target=e.start) for e in (strong, human) if e and not e.error]
+    strong, human, human_reason, monk, monk_reason = build_engines()
+    ths = [threading.Thread(target=e.start) for e in (strong, human, monk) if e and not e.error]
     for t in ths:
         t.start()
     for t in ths:
         t.join()
-    ENGINES = EngineHub(strong, human, human_reason)
+    ENGINES = EngineHub(strong, human, human_reason, monk, monk_reason)
     ROOMS = Rooms(LocalRoomStore(ROOMS_DIR))
     global AUTH, EVENTS
     AUTH = Auth()  # 11-04 작가님 — 테스트 아이디 개방(단계 ②-1)
@@ -2681,7 +2722,8 @@ def main():
     live = sum(1 for r in ROOMS.rooms.values() if r.status != "ended")
     srv = ThreadingHTTPServer((HOST, PORT), Handler)
     print(f"✅ go-board: http://{HOST}:{PORT}/  (최강 {'OK' if strong.ok else '실패'}, "
-          f"급수 {'OK' if ENGINES.human_ok else '비활성: ' + str(ENGINES.human_why())}) · "
+          f"급수 {'OK' if ENGINES.human_ok else '비활성: ' + str(ENGINES.human_why())}, "
+          f"MONK {'OK' if ENGINES.monk_ok else '비활성: ' + str(ENGINES.monk_why())}) · "
           f"방 {len(ROOMS.rooms)}개 복원(진행 중 {live}, 이전 기보 가져옴 {imported}) · 저장소 {ROOMS_DIR}",
           flush=True)
     for line in migrated:  # 기동 줄 뒤에(run.sh 는 첫 줄만 보인다)
@@ -2691,7 +2733,7 @@ def main():
     except KeyboardInterrupt:
         pass
     finally:
-        for e in (strong, human):
+        for e in (strong, human, monk):
             if e and e.ok:
                 try:
                     e.cmd("quit")

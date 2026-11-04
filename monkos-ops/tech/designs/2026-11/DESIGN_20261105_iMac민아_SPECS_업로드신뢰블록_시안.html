@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>specs 업로드 신뢰 블록 시안 — 2026-11-05 iMac/민아</title>
+<style>
+  /* 시안 외곽(프레임·스위치)은 회색, 블록 자체는 specs 페이지 토큰(specs-base.css: 흰 배경·Pretendard·#6c4fff) */
+  body { margin:0; background:#eceef3; font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif; color:#1a1a1a; }
+  .bar { position:sticky; top:0; z-index:9; background:#fff; border-bottom:1px solid #ddd; padding:10px 16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; font-size:13px; }
+  .bar b { font-weight:700; }
+  .bar button { border:1px solid #ccc; background:#fff; border-radius:6px; padding:4px 10px; cursor:pointer; font-size:13px; }
+  .bar button.on { border-color:#6c4fff; color:#6c4fff; font-weight:600; }
+  .bar .note { color:#777; margin-left:auto; }
+  .frames { display:flex; gap:28px; padding:24px; align-items:flex-start; justify-content:center; flex-wrap:wrap; }
+  .frame { background:#fff; border:1px solid #d6d6de; border-radius:14px; box-shadow:0 6px 24px rgba(0,0,0,.08); overflow:hidden; }
+  .frame .cap { font-size:11px; color:#888; padding:6px 12px; border-bottom:1px solid #eee; background:#fafafa; }
+  .frame.desktop { width:760px; }
+  .frame.mobile { width:375px; }
+  .page { padding:28px 24px; }
+  .frame.mobile .page { padding:20px 14px; }
+
+  /* ── 현행 업로드 단계 재현 (spec-funnel-markup.js + specs-funnel.css 발췌) ── */
+  .v2-steps-title { font-size:22px; font-weight:800; margin:0 0 6px; }
+  .v2-steps-sub { color:#5d5a6b; font-size:15px; margin:0 0 18px; }
+  .v2-upload-zone { border:2px dashed rgba(108,79,255,.25); border-radius:12px; padding:32px 16px; display:flex; flex-direction:column; align-items:center; text-align:center; }
+  .v2-upload-icon { font-size:32px; color:#bbb; margin-bottom:8px; line-height:1; }
+  .v2-upload-main-text { font-size:14px; color:#444; }
+  .v2-upload-btn { padding:8px 20px; border:1.5px solid #6c4fff; border-radius:8px; color:#6c4fff; font-size:13px; font-weight:600; background:none; margin-top:8px; }
+  .v2-upload-hint { font-size:11px; color:#bbb; margin-top:6px; }
+  .v2-guide-items { display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin-top:12px; }
+  .v2-guide-items span { font-size:11px; color:#666; background:#f3f2f8; border-radius:999px; padding:3px 9px; }
+
+  /* ── 신설: 신뢰 블록 (.v2-trust) — 업로드 존 바로 아래 ── */
+  .v2-trust { margin-top:14px; border:1px solid #e6e4f0; border-radius:12px; background:#fbfaff; padding:14px 16px; }
+  .v2-trust-head { display:flex; align-items:baseline; gap:8px; margin-bottom:10px; }
+  .v2-trust-head h3 { margin:0; font-size:13px; font-weight:700; color:#3f3a5c; letter-spacing:.2px; }
+  .v2-trust-head .brand { font-size:11px; color:#8a86a3; }
+  .v2-trust-grid { display:grid; grid-template-columns:1.25fr 1fr 1fr; gap:14px; }
+  .frame.mobile .v2-trust-grid { grid-template-columns:1fr; gap:10px; }
+  .v2-trust-item { display:flex; gap:10px; align-items:flex-start; min-width:0; }
+  .v2-trust-item .thumb { flex:0 0 56px; width:56px; height:56px; border-radius:8px; object-fit:cover; background:#ddd; border:1px solid #e3e1ee; }
+  .v2-trust-item .thumb.result { width:44px; height:56px; flex-basis:44px; object-fit:cover; }
+  .v2-trust-item .ico { flex:0 0 28px; width:28px; height:28px; border-radius:8px; background:#efecff; color:#6c4fff; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; }
+  .v2-trust-item .t { font-size:12.5px; font-weight:700; color:#2b2740; margin:0 0 3px; }
+  .v2-trust-item .d { font-size:12px; color:#5d5a6b; line-height:1.5; margin:0; }
+  .v2-trust-item a { color:#6c4fff; text-decoration:none; font-weight:600; }
+  .v2-trust-item a:hover { text-decoration:underline; }
+  .v2-trust-item .src { display:block; font-size:12px; margin-top:3px; word-break:break-word; }
+  .v2-trust-item .cap { font-size:11px; color:#8a86a3; margin-top:3px; }
+  .pending { display:inline-block; font-size:10px; font-weight:700; color:#b45309; background:#fff4e0; border:1px solid #f5d79a; border-radius:4px; padding:1px 6px; margin-left:4px; vertical-align:middle; }
+  .pending-text { color:#9a7b3f; font-style:italic; }
+  .legend { max-width:1180px; margin:0 auto 32px; padding:0 24px; font-size:12.5px; color:#555; line-height:1.6; }
+  .legend code { background:#fff; border:1px solid #ddd; border-radius:4px; padding:0 4px; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <b>specs 업로드 신뢰 블록 시안</b>
+  <span>언어:</span>
+  <button data-lang="ko" class="on">ko</button><button data-lang="en">en</button><button data-lang="ja">ja</button><button data-lang="es">es</button>
+  <span class="note">2026-11-05 iMac/민아 · 서비스 코드 변경 없음 · 사진 처리(②)는 문구 확정 전 자리 표시</span>
+</div>
+
+<div class="frames">
+  <div class="frame desktop"><div class="cap">데스크톱 760px — 업로드 존 아래 3열</div><div class="page" id="desk"></div></div>
+  <div class="frame mobile"><div class="cap">모바일 375px — 세로 적층</div><div class="page" id="mob"></div></div>
+</div>
+
+<div class="legend">
+  <b>읽는 법</b> · 점선 상자까지는 현행 화면(<code>spec-funnel-markup.js</code> 업로드 단계) 재현, 그 아래 <code>.v2-trust</code>가 신설 블록입니다.
+  ① 사진관 실사진은 monk.kr에 이미 공개된 <code>/monk_studio/images/storefront.jpg</code>(라이브 200). ③ 결과 예시는 monkos.ai 홈에 이미 쓰는 <code>/assets/idphoto-after.jpg</code> — 피사체 동의 여부는 작가님 확인 항목.
+  공식 출처는 항목별 <code>officialSource</code>(403/429건 보유)를 그대로 받으며, 없는 항목은 ③ 줄을 숨깁니다(예시는 lk-passport).
+  "20년" 표기는 현행 허브 배지(<code>ctaBadge</code> "20 Years of Photography Expertise")를 그대로 받은 것으로, 근거 확인 전까지 괄호 표시.
+</div>
+
+<script>
+const COPY = {
+  ko: {
+    title:'여권 사진 만들기', sub:'셀카 한 장이면 3.5 × 4.5cm 규격 증명사진이 완성됩니다.',
+    drop:'사진을 끌어다 놓거나', btn:'사진 선택', hint:'JPG · PNG · WEBP / 최대 10MB', chips:['정면 얼굴','1인','선명한 화질','입 다물기 (치아 노출 금지)'],
+    head:'누가 만든 도구인가요?', brand:'MONKOS AI',
+    i1t:'한국에서 운영 중인 증명사진 스튜디오', i1d:'경기 하남의 <b>몽크사진관</b>이 만들었습니다. 매장에서 매일 쓰는 규격 재단 기준을 이 도구에 그대로 적용합니다. <span class="pending-text">(사진 경력 20년 — 확인 전)</span>', i1a:'사진관 보기 →',
+    i2t:'사진 처리', i2d:'<span class="pending-text">[보관 기간 N일 후 자동 삭제 — 정책·실제 정합 후 확정]</span>',
+    i3t:'공식 규정 출처', i3s:'스리랑카 이민국 (immigration.gov.lk) ↗', i3c:'결과 예시 · 3.5 × 4.5cm',
+  },
+  en: {
+    title:'Create Your Passport Photo', sub:'One selfie is all it takes — a 3.5 × 4.5cm compliant ID photo in minutes.',
+    drop:'Drag & drop a photo, or', btn:'Choose Photo', hint:'JPG · PNG · WEBP / max 10MB', chips:['Front-facing','One person','Sharp focus','Mouth closed (no teeth)'],
+    head:'Who is behind this tool?', brand:'MONKOS AI',
+    i1t:'A real ID-photo studio in Korea', i1d:'Built by <b>MONK STUDIO</b>, a walk-in ID-photo studio in Hanam, Korea. The same framing rules we use for customers in the studio run this tool. <span class="pending-text">(20 years behind the camera — pending confirmation)</span>', i1a:'See the studio →',
+    i2t:'Your photo', i2d:'<span class="pending-text">[Kept for N days, then deleted automatically — wording pending]</span>',
+    i3t:'Official requirements', i3s:'Department of Immigration & Emigration, Sri Lanka ↗', i3c:'Sample result · 3.5 × 4.5 cm',
+  },
+  ja: {
+    title:'パスポート写真を作る', sub:'セルフィー1枚で3.5 × 4.5cm規格の証明写真が完成します。',
+    drop:'写真をドラッグ＆ドロップ、または', btn:'写真を選択', hint:'JPG · PNG · WEBP / 最大10MB', chips:['正面の顔','1人','鮮明な画質','口を閉じる（歯を見せない）'],
+    head:'このツールは誰が作っているの？', brand:'MONKOS AI',
+    i1t:'韓国で営業中の証明写真スタジオ', i1d:'韓国・河南（ハナム）の<b>MONK STUDIO</b>が作りました。店舗で毎日使っている規格の切り抜き基準を、そのままこのツールに適用しています。<span class="pending-text">（撮影歴20年 — 確認前）</span>', i1a:'スタジオを見る →',
+    i2t:'写真の取り扱い', i2d:'<span class="pending-text">[N日間保管後に自動削除 — 文言確定待ち]</span>',
+    i3t:'公式規定の出典', i3s:'スリランカ移民局 (immigration.gov.lk) ↗', i3c:'仕上がり例 · 3.5 × 4.5cm',
+  },
+  es: {
+    title:'Cree su foto de Pasaporte', sub:'Solo necesita una selfie — foto de identificación de 3.5 × 4.5cm lista en minutos.',
+    drop:'Arrastre y suelte una foto, o', btn:'Elegir foto', hint:'JPG · PNG · WEBP / máx. 10MB', chips:['Rostro de frente','Una persona','Enfoque nítido','Boca cerrada (sin mostrar dientes)'],
+    head:'¿Quién está detrás de esta herramienta?', brand:'MONKOS AI',
+    i1t:'Un estudio real de fotos de identificación, en Corea', i1d:'Creado por <b>MONK STUDIO</b>, un estudio de fotografía de identificación en Hanam, Corea. Aplicamos aquí las mismas reglas de encuadre que usamos a diario con nuestros clientes. <span class="pending-text">(20 años tras la cámara — pendiente de confirmar)</span>', i1a:'Ver el estudio →',
+    i2t:'Su foto', i2d:'<span class="pending-text">[Se conserva N días y luego se elimina automáticamente — texto pendiente]</span>',
+    i3t:'Requisitos oficiales', i3s:'Departamento de Inmigración y Emigración de Sri Lanka ↗', i3c:'Ejemplo de resultado · 3.5 × 4.5 cm',
+  }
+};
+function render(lang){
+  const c = COPY[lang];
+  const html = `
+    <div class="v2-steps-title">${c.title}</div>
+    <div class="v2-steps-sub">${c.sub}</div>
+    <div class="v2-upload-zone">
+      <div class="v2-upload-icon">&#8615;</div>
+      <div class="v2-upload-main-text">${c.drop}</div>
+      <button type="button" class="v2-upload-btn">${c.btn}</button>
+      <div class="v2-upload-hint">${c.hint}</div>
+      <div class="v2-guide-items">${c.chips.map(x=>`<span>${x}</span>`).join('')}</div>
+    </div>
+
+    <section class="v2-trust" aria-label="trust">
+      <div class="v2-trust-head"><h3>${c.head}</h3><span class="brand">${c.brand}</span></div>
+      <div class="v2-trust-grid">
+        <div class="v2-trust-item">
+          <img class="thumb" src="https://monk.kr/monk_studio/images/storefront.jpg" alt="MONK STUDIO storefront">
+          <div><p class="t">${c.i1t}</p><p class="d">${c.i1d} <a href="https://monk.kr/monk_studio/" target="_blank" rel="noopener">${c.i1a}</a></p></div>
+        </div>
+        <div class="v2-trust-item">
+          <div class="ico">&#128274;</div>
+          <div><p class="t">${c.i2t} <span class="pending">PENDING</span></p><p class="d">${c.i2d}</p></div>
+        </div>
+        <div class="v2-trust-item">
+          <img class="thumb result" src="https://monkos.ai/assets/idphoto-after.jpg" alt="sample result">
+          <div><p class="t">${c.i3t}</p><a class="src" href="https://www.immigration.gov.lk/pages_e.php?id=7" target="_blank" rel="noopener">${c.i3s}</a><div class="cap">${c.i3c}</div></div>
+        </div>
+      </div>
+    </section>`;
+  document.getElementById('desk').innerHTML = html;
+  document.getElementById('mob').innerHTML = html;
+  document.documentElement.lang = lang;
+  document.querySelectorAll('.bar button').forEach(b=>b.classList.toggle('on', b.dataset.lang===lang));
+}
+document.querySelectorAll('.bar button').forEach(b=>b.addEventListener('click',()=>render(b.dataset.lang)));
+render('ko');
+</script>
+</body>
+</html>

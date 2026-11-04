@@ -216,6 +216,8 @@ secret env               # SM → .env 일괄 동기화
 | 11/03 | iMac/쌍아 | Gemini 2.5→3.5 텍스트 이전 prod 완료 — idphoto-kr 00212·jp 00132·studio 00029, 원장 187 해소 (작가님 배포 승인) | — | ✅ |
 | 11/03 | iMac/쌍아 | 포털 평문 시크릿 3종(AUTH_SECRET·GOOGLE_CLIENT_SECRET·GITHUB_TOKEN) SM 참조 전환 prod 00577-fl5 — 평문 의심 0, 원장 181 해소 | — | ✅ |
 | 11/03 | ?/? | **ORDER** 4060 BiRefNet 매팅 서버 재구축 — ① 로컬 서버 기동 + 기본 테스트 이미지 결과(애플 비전 비교 기준점) ② NSSM 상주·시크릿·터널 복구(matte.monkos.ai 530 해소). 포털 매팅 체인 순서 변경은 범위 밖 | [ORDER_20261103_iMac쌍아_4060쌍아_INFRA_BiRefNet매팅서버_재구축](../../orders/2026-11/ORDER_20261103_iMac쌍아_4060쌍아_INFRA_BiRefNet매팅서버_재구축.md) | ⏳ |
+| 11/04 | ?/? | **ORDER** 포털 매팅 체인 RunPod 429(요청 과다) 백오프 구현 — Retry-After 존중·예산 안 재시도·초과 시 명시 실패, 브리핑 원장 (146) 해소, dev까지 | [ORDER_20261104_iMac쌍아_막내6_INFRA_RunPod429백오프](../../orders/2026-11/ORDER_20261104_iMac쌍아_막내6_INFRA_RunPod429백오프.md) | ⏳ |
+| 11/04 | iMac/쌍아-막내6 | 매팅 체인 RunPod 429 백오프 — Retry-After(초·HTTP-date)·지수 백오프+지터·체인 누적 큐 예산·초과 시 명시 실패, 체인 중간 429 즉시 이월. 단위 11·포털 266/266, dev rev 00237-wjg 실호출 정상, 원장 146 resolve. prod 승인 대기 (2242ae7c) | [COMPLETION_20261104_iMac쌍아-막내6_INFRA_RunPod429백오프](../../reports/2026-11/COMPLETION_20261104_iMac쌍아-막내6_INFRA_RunPod429백오프.md) | ✅ |
 
 ---
 | 08/13 | iMac/민아 | **2주 운영 감사 — 4060 매팅 불통 확정 + 폴백 체계 실전 검증** — matte.monkos.ai 전 경로 530(CF 터널 불통) + Tailscale 노드 소멸 + SSH 타임아웃 = 기계 자체 오프라인. 마지막 4060 정상 서빙 08-12 16:54 KST → 08-13 01:14 KST부터 전량 프리플라이트 불통. 14일 매팅 74건 중 RunPod 폴백 약 27건(36%), 최근 3일 사실상 전량 RunPod(종량 과금 중). 야간·새벽 간헐 이탈 포함 15일 중 8일 이탈 관측. **유저 실패 0건** — 07-25 조치(세마포어·줄서기·25s) 실전 합격: 최악 08-10 20:49 KST 4060 hang+RunPod 순간 동시실패에도 200/87.7s 납품, 504 재발 0. 물리 점검(전원/네트워크) 필요 | 세션 보고 (sessions/2026-08/2026-08-13_iMac_민아.md) | 🔴 4060 물리 확인 대기 |

@@ -21,15 +21,26 @@ const HAIR_MARGIN_RATIO = 0.044;   // 프레임 높이의 4.4%
 const BOTTOM_MIN_RATIO = 0.12;     // 프레임 높이의 12% (턱 아래 최소 여백)
 const FACE_MIN_RATIO = 0.93;       // spec.faceMinMm 부재 시 최소 얼굴 = faceTargetMm × 0.93
 const HAIR_VOLUME_MAX = 0.15;      // hairTop 새니티: crown 위 fullFaceH × 15% 초과 시 오검출
+// 눈 앵커 주입 (ORDER_20261104 유료크롭_눈45정합): 호출부가 spec.eyeAnchor를 실으면 그 값, 없거나 범위 밖이면 기본 규칙.
+// 값의 정본은 포털 lib/hair-measure.js HEAD_PLACEMENT_EYE_ANCHOR(kr·jp 여권 0.45) — 엔진은 숫자를 갖지 않는다.
+export const EYE_ANCHOR_MIN = 0.38;
+export const EYE_ANCHOR_MAX = 0.50;
+
+/** 눈 앵커 결정 — { ratio, source: 'spec' | 'default' } */
+export function resolveEyeAnchor(spec) {
+  const v = spec?.eyeAnchor;
+  if (typeof v === 'number' && Number.isFinite(v) && v >= EYE_ANCHOR_MIN && v <= EYE_ANCHOR_MAX) return { ratio: v, source: 'spec' };
+  return { ratio: spec.frameHmm >= 60 ? 0.42 : 0.43, source: 'default' };
+}
 
 /**
  * 공용 배치 산식 — 스케일과 extractTop/extractLeft를 결정한다.
  * 경계 클램프는 호출부 정책: 렌더는 하드 클램프+패딩, 기하는 프레임의 이미지 밖 돌출 허용.
  *
  * @param {object} landmarks - detectFace() 반환값 (chin, leftEye, rightEye, imageWidth, imageHeight[, hairTop, pose])
- * @param {object} spec - { frameW, frameH(px), frameHmm, faceTargetMm, faceMinMm?, hairMarginMm? }
+ * @param {object} spec - { frameW, frameH(px), frameHmm, faceTargetMm, faceMinMm?, hairMarginMm?, eyeAnchor? }
  */
-function resolvePlacement(landmarks, spec) {
+export function resolvePlacement(landmarks, spec) {
   const { frameW, frameH, frameHmm, faceTargetMm } = spec;
   if (!frameW || !frameH || !frameHmm || !faceTargetMm) {
     throw new Error('[Crop] spec 필수 필드 누락 (frameW/frameH/frameHmm/faceTargetMm)');
@@ -64,7 +75,7 @@ function resolvePlacement(landmarks, spec) {
 
   // IDPASS CropEngine.swift L263-294 정본 순서 이식
   // ① 눈 앵커 배치
-  const eyePositionRatio = frameHmm >= 60 ? 0.42 : 0.43;
+  const { ratio: eyePositionRatio, source: eyeAnchorSource } = resolveEyeAnchor(spec);
   const targetEyeY = frameH * eyePositionRatio;
   let extractTop = Math.round(eyeY * scale - targetEyeY);
 
@@ -114,7 +125,7 @@ function resolvePlacement(landmarks, spec) {
 
   return {
     scale, extractTop, extractLeft, scaledW, scaledH,
-    mmPx, facePx, eyeAnchor, mirrorRatio, pitchDeg,
+    mmPx, facePx, eyeAnchor, eyeAnchorTarget: eyePositionRatio, eyeAnchorSource, mirrorRatio, pitchDeg,
     lines: { crownY, eyeY, chinY: chin.y, hairTopY, eyeCenterX },
     imageSize: { width: imageWidth, height: imageHeight },
   };
@@ -128,6 +139,8 @@ function placementMeta(p, extractTop) {
     hairMarginMM: ((p.lines.hairTopY * p.scale - extractTop) / p.mmPx).toFixed(1),
     eyePositionPercent: (p.eyeAnchor * 100).toFixed(1),
     eyeAnchor: +p.eyeAnchor.toFixed(3),
+    eyeAnchorTarget: p.eyeAnchorTarget,   // 적용한 앵커 목표(헤어 가드 전)
+    eyeAnchorSource: p.eyeAnchorSource,   // 'spec'(호출부 주입) | 'default'(0.43/0.42)
     mirrorRatio: +p.mirrorRatio.toFixed(2),
     pitchDeg: p.pitchDeg,
   };

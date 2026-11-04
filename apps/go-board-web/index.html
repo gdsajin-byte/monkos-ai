@@ -593,6 +593,7 @@ function setupWidgets() {  // 첫 상태를 받은 뒤 1회 — 선택지 채우
   {
     const lv = document.getElementById('dLevel');
     lv.add(new Option('KataGo 최강', 'strong'));
+    lv.add(new Option(S.monkLabel || 'MONK 봇', 'monk'));  // 11-05 우리 학습 모델 — 최강과 같은 1500수읽기
     // 강한 쪽부터(최강 → 9단 … 20급) — 10-23 작가님 "저급부터 나오니 힘들어". 표기 'KataGo 9단'(10-24)
     for (const r of [...S.ranks].reverse()) lv.add(new Option(`KataGo ${r.label}`, r.v));
   }
@@ -692,9 +693,9 @@ function render() {
   // 대국자 카드 — 따낸 돌 배지·이름·급수(시계는 renderClocks)
   for (const col of ['B', 'W']) {
     const mine = col === S.user;
-    document.getElementById('name' + col).textContent = mine ? (S.ownerNick || '나') : 'KataGo';
+    document.getElementById('name' + col).textContent = mine ? (S.ownerNick || '나') : (S.level === 'monk' ? 'MONK 봇' : 'KataGo');
     document.getElementById('rank' + col).textContent = mine ? '' :
-      (S.level === 'strong' ? '최강' : `${(S.ranks.find(r => r.v === S.level) || {}).label || S.level}`);
+      (S.level === 'strong' ? '최강' : S.level === 'monk' ? (S.monkLabel || '').replace(/^MONK 봇 /, '') : `${(S.ranks.find(r => r.v === S.level) || {}).label || S.level}`);
     document.getElementById('cap' + col).textContent = S.captures[col];
   }
 
@@ -1127,7 +1128,7 @@ document.getElementById('bNew').onclick = () => {
   // 11-04 작가님 — 대기실/내 기보 분리: 참여자 행의 [대국 신청]이 수준을 미리 골라 둔다(1회용)
   const preLv = window.__preLevel; window.__preLevel = null;
   document.getElementById('dLevel').value = preLv || S.level;
-  for (const o of document.getElementById('dLevel').options) if (o.value !== 'strong') o.disabled = !S.humanOk;
+  for (const o of document.getElementById('dLevel').options) if (o.value === 'monk') o.disabled = !S.monkOk; else if (o.value !== 'strong') o.disabled = !S.humanOk;
   document.querySelector(`input[name="dWay"][value="${S.handicap ? 'handi' : 'even'}"]`).checked = true;
   document.getElementById('handicap').value = S.handicap || 2;
   // 흑백선택은 지난번 고른 값(자동 돌가림 포함)을 기억 — 지난 판 결과색으로 덮지 않는다(10-23 작가님 "돌가리기가 적용 안 되는 듯")
@@ -1555,15 +1556,16 @@ setInterval(() => {
   let allRanks = false;
   function renderPeople(d) {
     const ok = !!d.humanOk, why = esc(d.humanReason || '사람 흉내 급수를 쓸 수 없습니다');
-    const aiRow = (v, name, off) => `<div class="box lobby-row${off ? ' off' : ''}"><span class="dot ai"></span><div class="grow"><div class="t1">${esc(name)}</div>` +
-      `<div class="t2">${off ? why : 'AI · 대국 가능'}</div></div><div class="btns"><button class="hl" data-pick="${v}"${off ? ' disabled' : ''}>대국 신청</button></div></div>`;
+    const aiRow = (v, name, off, offWhy) => `<div class="box lobby-row${off ? ' off' : ''}"><span class="dot ai"></span><div class="grow"><div class="t1">${esc(name)}</div>` +
+      `<div class="t2">${off ? (offWhy || why) : 'AI · 대국 가능'}</div></div><div class="btns"><button class="hl" data-pick="${v}"${off ? ' disabled' : ''}>대국 신청</button></div></div>`;
     const ranks = [...d.ranks].reverse();  // 강한 쪽부터
     // 11-04 작가님 — 테스트 아이디: 접속 중 사람(대기실·대국 중) 먼저, 내 행은 (나). 그 아래 AI 상대
     const humans = (d.people || []).map(p => `<div class="box lobby-row"><span class="dot me"></span><div class="grow"><div class="t1">${esc(p.nick)}${p.rank ? ' · ' + esc(p.rank) : ''}${p.me ? ' (나)' : ''}</div>` +
       `<div class="t2">${esc(p.state)}</div></div></div>`).join('');
     const list = allRanks ? ranks : ranks.filter(r => SHOWN.includes(r.v));
     document.getElementById('lobbyPeople').innerHTML =
-      humans + aiRow('strong', 'KataGo 최강', !d.strongOk) + list.map(r => aiRow(r.v, `KataGo ${r.label}`, !ok)).join('') +
+      humans + aiRow('strong', 'KataGo 최강', !d.strongOk) +
+      aiRow('monk', d.monkLabel || 'MONK 봇', !d.monkOk, esc(d.monkReason || 'MONK 봇을 쓸 수 없습니다')) + list.map(r => aiRow(r.v, `KataGo ${r.label}`, !ok)).join('') +
       `<div class="btns" style="margin-top:6px"><button data-allranks="1">${allRanks ? '대표 급수만 보기' : '전체 급수 펼치기'}</button></div>`;
   }
   // 11-04 작가님 — 대기실/내 기보 분리: 대기실 소식 = 최근 끝난 대국 결과 3건(시스템 소식만, 입력줄 없음)
