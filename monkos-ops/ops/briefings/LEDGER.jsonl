@@ -162,3 +162,4 @@
 {"ts": "2026-11-04 06:31 KST", "id": 195, "event": "note", "text": "06:30 여전히 blocked 2: iMac-소소-1028-1148(기동 후 약 163h)·쌍아-막내2(약 37h)", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-11-04 06:31 KST", "id": 196, "event": "note", "text": "11-03 09:30 순찰 정상(누출 0)이나 MONKOS_PATROL_CHAT_ID 미설정 경고 지속", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-11-04 06:31 KST", "id": 183, "event": "note", "text": "06:30 Pages monk-kr 시크릿 6 변동 없음", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-04 19:16 KST", "id": 146, "event": "resolve", "evidence": "19:16 origin/worktree-makne6-runpod429 2242ae7c matte.js 429 분류(Retry-After 초·HTTP-date, 무헤더 지수 백오프+지터, 체인 누적 MATTE_QUEUE_WAIT_MS 예산, 초과 시 '429 예산 소진' 명시 실패) + 단위 11건, 포털 266/266. dev rev monkos-portal-dev-00237-wjg precheck 실호출 매팅 measured 1156ms. prod는 작가님 배포 승인 대기", "by": "iMac/쌍아-막내6"}
