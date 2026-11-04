@@ -271,7 +271,7 @@
 </div>
 <div class="wrap">
   <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg><div id="boardToast" role="status"></div><div id="judgeBand" role="status" hidden><span></span><button aria-label="판정 닫기">✕</button></div></div>
-  <div id="playBar"><button id="bPick0" disabled>취소</button><button id="bPlace" disabled>착수</button><span class="pick" id="pickTxt">판을 눌러 자리를 고르세요</span></div>
+  <div id="playBar"><button id="bPick0" disabled>취소</button><button id="bPlace" disabled>착수</button><span class="pick" id="pickTxt"></span></div>
   <div class="split" id="split" title="끌어서 판 크기 조정"></div>
   <div class="side">
     <div class="top">
@@ -540,13 +540,8 @@ function render() {
   const dead = new Set(sc ? sc.dead.map(([x, y]) => x + ',' + y) : []);
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
     const c = g[y][x]; if (!c) continue;
-    const isDead = dead.has(x + ',' + y);
-    drawStone(x, y, c, isDead ? .35 : 1);
-    if (isDead) {
-      const d = STEP * .22, col = '#c0392b';
-      el('line', { x1: P(x) - d, y1: P(y) - d, x2: P(x) + d, y2: P(y) + d, stroke: col, 'stroke-width': 1.6 });
-      el('line', { x1: P(x) - d, y1: P(y) + d, x2: P(x) + d, y2: P(y) - d, stroke: col, 'stroke-width': 1.6 });
-    }
+    if (dead.has(x + ',' + y)) continue;  // 사석은 돌을 그리지 않는다 — 잡은 쪽 집 표시(아래 terr)로 대신(11-04)
+    drawStone(x, y, c, 1);
   }
   if (sc) for (const [x, y, o] of sc.terr) {
     const d = STEP * .18;
@@ -615,6 +610,7 @@ function render() {
     // 결과는 우리 계산 하나 — KataGo 판정과 다를 때만 사석 확인 안내(10-25 B3, 두 값 나란히 표기 폐지)
     document.getElementById('scoreDetail').textContent =
       `흑 = 집 ${sc.terrB} + 따낸 돌·사석 ${sc.prisB} / 백 = 집 ${sc.terrW} + 따낸 돌·사석 ${sc.prisW} + 덤 ${sc.komi}` +
+      (sc.dame && sc.dame.length ? ` · 경계가 열린 곳 ${sc.dame.length}점은 공배로 셉니다 — 메울 곳이 남았다면 계가 취소 후 메우고 다시 신청` : '') +
       (sc.result !== sc.kata ? ` · KataGo 판정(${sc.kataKo})과 다릅니다 — 사석 표시를 확인해 주세요(돌을 누르면 바뀝니다)` : '');
   }
 
@@ -894,7 +890,7 @@ function setPick(p) {
   pickAt = p;
   const ok = !!p;
   document.getElementById('bPlace').disabled = !ok; document.getElementById('bPick0').disabled = !ok;
-  document.getElementById('pickTxt').textContent = ok ? `선택: ${'ABCDEFGHJKLMNOPQRST'[p[0]]}${19 - p[1]} — 착수를 누르세요` : '판을 눌러 자리를 고르세요';
+  document.getElementById('pickTxt').textContent = ok ? `선택: ${'ABCDEFGHJKLMNOPQRST'[p[0]]}${19 - p[1]} — 착수를 누르세요` : '';
 }
 svg.addEventListener('pointerdown', ev => {
   const [x, y] = boardXY(ev);

@@ -73,7 +73,6 @@ SKIN_DEFAULT = {"grid": "#3a2c18", "gridWidth": 0.7, "white": [0, 112, 128, 128]
                 "stoneScale": 1.0, "shadow": {"dx": 0.8, "dy": 1.2, "blur": 0.8, "opacity": 0.35}}
 # 시간 설정 기본값 — 타이젬 표기 '20초 3회'(기본시간 0분)
 DEFAULT_TIME = {"main": 0, "byo": 20, "periods": 3}
-OWN_THRESHOLD = 0.5  # 계가: 열린 빈 점을 집으로 셀 소유권 기준
 HANDICAP_KOMI = 0.5  # 한국 규칙 관행 — 접바둑은 덤 0.5
 HANDICAPS = [0] + list(range(2, 10))  # 0 = 호선
 # KataGo fixed_handicap 대신 쓰는 배치 — 3점은 한국·일본 관행(우상·좌하·우하, 빈 귀=좌상). 쌍아 결정 10-23
@@ -170,18 +169,6 @@ class Engine:
         with self.lock:
             self._cmd("clear_board")
             return self._cmd(f"fixed_handicap {handicap}").split()
-
-    def ownership(self):
-        """신경망 소유권(8대칭 평균) — [y][x], 백 기준 -1~1. 계가에서 경계가 열린 빈 점 판정에 쓴다.
-        'kata-raw-nn all'은 대칭 블록을 빈 줄로 나눠 GTP 응답 경계가 깨지므로 대칭마다 따로 묻는다."""
-        acc = [[0.0] * SIZE for _ in range(SIZE)]
-        for sym in range(8):
-            out = self.cmd(f"kata-raw-nn {sym}").splitlines()
-            i = next(k for k, ln in enumerate(out) if ln.strip() == "whiteOwnership")
-            for r in range(SIZE):
-                for c, v in enumerate(out[i + 1 + r].split()):
-                    acc[r][c] += float(v) / 8
-        return acc
 
     def search(self, color, top=3):
         """kata-search_analyze — 두지 않고 후보 상위 N(수·흑 승률·흑 기준 점수·탐색 수)."""
@@ -383,12 +370,12 @@ class EngineHub:
             return e.cmd("final_score")
 
     def scoring(self, pos, level):
-        """계가 재료 — 사석·KataGo 판정·소유권."""
+        """계가 재료 — 사석·KataGo 판정(11-04: 소유권 추정 폐지)."""
         e = self._pick(level)
         with self._job(e):
             self._sync(e, pos)
             dead = {to_xy(mv) for mv in e.cmd("final_status_list dead").split()}
-            return {"dead": dead, "kata": e.cmd("final_score"), "own": e.ownership()}
+            return {"dead": dead, "kata": e.cmd("final_score")}
 
     @property
     def human_ok(self):
@@ -539,7 +526,7 @@ class Room:
         self.winrate = None
         self.result = None
         self.final_count = None
-        self.scoring = None  # 계가 중이면 {"dead": set((x, y)), "kata": KataGo final_score, "own": 소유권}
+        self.scoring = None  # 계가 중이면 {"dead": set((x, y)), "kata": KataGo final_score}
         self.message = ""
         self.started = datetime.now()
         self.updated = time.time()
@@ -595,7 +582,7 @@ class Room:
     def to_dict(self):
         sc = None
         if self.scoring:
-            sc = {"dead": sorted(self.scoring["dead"]), "kata": self.scoring["kata"], "own": self.scoring["own"]}
+            sc = {"dead": sorted(self.scoring["dead"]), "kata": self.scoring["kata"]}
         return {"v": 1, "id": self.id, "kind": self.kind, "user": self.user, "level": self.level,
                 "handicap": self.handicap, "time": self.time, "setup": self.setup,
                 "moves": [list(m) for m in self.moves], "scores": [list(s) for s in self.scores],
@@ -619,7 +606,7 @@ class Room:
         r.score, r.winrate, r.result = d.get("score"), d.get("winrate"), d.get("result")
         r.final_count = d.get("finalCount")
         sc = d.get("scoring")
-        r.scoring = {"dead": {tuple(p) for p in sc["dead"]}, "kata": sc["kata"], "own": sc["own"]} if sc else None
+        r.scoring = {"dead": {tuple(p) for p in sc["dead"]}, "kata": sc["kata"]} if sc else None
         r.message = d.get("message", "")
         r.started = datetime.fromisoformat(d["started"])
         r.updated = d.get("updated", time.time())
@@ -798,7 +785,7 @@ class Room:
         sc = ENGINES.scoring(self.position(), self.level)
         self._charge(reset=False)
         self.scoring = sc
-        self.message = "계가 중 — KataGo가 고른 사석이 흐리게 보입니다. 돌을 누르면 사석/산 돌이 바뀝니다."
+        self.message = "계가 중 — 사석은 잡은 쪽 집 표시로 바뀝니다. 돌을 누르면 사석/산 돌이 바뀝니다."
 
     def toggle_dead(self, x, y):
         if not self.scoring:
@@ -828,6 +815,7 @@ class Room:
                 prisoners["W" if c == "B" else "B"] += 1
                 g[y][x] = None
         terr = {"B": [], "W": []}
+        dame = []
         seen = set()
         for y0 in range(SIZE):
             for x0 in range(SIZE):
@@ -846,15 +834,11 @@ class Room:
                             elif (nx, ny) not in seen:
                                 seen.add((nx, ny))
                                 st.append((nx, ny))
-                if len(border) == 1:  # 한 색에만 둘러싸인 빈 곳 = 집
+                # 11-04 작가님 "계가가 정확해야" — 소유권 추정 폐지, 닫힌 집만(한국 규칙). 양색에 닿은 빈 점은 전부 공배
+                if len(border) == 1:
                     terr[border.pop()].extend(region)
-                else:  # 경계가 아직 안 닫힌 곳 — KataGo 소유권이 확실한 점만 집으로(±0.5 미만은 공배)
-                    own = self.scoring["own"]
-                    for x, y in region:
-                        if own[y][x] >= OWN_THRESHOLD:
-                            terr["W"].append((x, y))
-                        elif own[y][x] <= -OWN_THRESHOLD:
-                            terr["B"].append((x, y))
+                else:
+                    dame.extend(region)
         b = len(terr["B"]) + prisoners["B"]
         w = len(terr["W"]) + prisoners["W"] + self.komi
         diff = b - w
@@ -862,7 +846,7 @@ class Room:
         return {"terrB": len(terr["B"]), "terrW": len(terr["W"]), "prisB": prisoners["B"], "prisW": prisoners["W"],
                 "komi": self.komi, "black": b, "white": w, "result": res, "resultKo": result_ko(res),
                 "kata": self.scoring["kata"], "kataKo": result_ko(self.scoring["kata"]),
-                "dead": sorted(self.scoring["dead"]),
+                "dead": sorted(self.scoring["dead"]), "dame": [list(p) for p in sorted(dame)],
                 "terr": [[x, y, "B"] for x, y in terr["B"]] + [[x, y, "W"] for x, y in terr["W"]]}
 
     def confirm_score(self):
