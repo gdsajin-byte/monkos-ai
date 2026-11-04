@@ -245,6 +245,19 @@
   .lobby-foot button#bImport { flex: 0 1 140px; font-size: 16px; background: #fff; border: 1px solid var(--line-ui); box-shadow: none; }
   body.lobby-mode.drag .lobby-body { outline: 3px dashed var(--blue); outline-offset: -6px; }
   #lobbyMsg { white-space: pre-line; }
+  /* 11-04 작가님 — 대기실/내 기보 분리: 상단 탭 2개·참여자 행·소식 칸. 기존 토큰만 사용 */
+  .lobby-tabs { flex: 0 0 auto; display: flex; gap: 6px; padding: 8px 14px 0; max-width: 760px; width: 100%; margin: 0 auto; }
+  .lobby-tabs button { flex: 1; font-size: 16px; font-weight: 700; padding: 10px 0; border: 1px solid var(--line-ui); border-radius: 8px; background: #fff; color: var(--muted); }
+  .lobby-tabs button.on { border-color: var(--blue); color: var(--blue); }
+  #lobby .tab-pane { display: none; flex-direction: column; gap: 10px; }
+  #lobby[data-tab="wait"] #paneWait, #lobby[data-tab="mine"] #paneMine { display: flex; }
+  #lobby[data-tab="wait"] #footMine, #lobby[data-tab="mine"] #footWait { display: none; }
+  #footMine button#bImport { flex: 0 1 360px; font-size: 19px; padding: 14px 0; }
+  .lobby-row.off { opacity: .55; }
+  .lobby-row .dot.me { background: var(--blue); }
+  .lobby-row .dot.ai { background: var(--line-ui); }
+  .lobby-note { font-size: 13px; color: var(--muted); }
+  .lobby-news { padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; font-size: 15px; }
   /* 길게 눌러도 아이폰 글쓰기 도구·텍스트 선택·확대 메뉴가 뜨지 않게(10-24 작가님 "착수 버튼 길게 누르면 글쓰기 도구") */
   body.mobile-play, body.mobile-play * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
   body.mobile-play input, body.mobile-play textarea, body.mobile-play select { -webkit-user-select: auto; user-select: auto; }
@@ -262,12 +275,23 @@
 </div>
 <div id="lobby">
   <div class="status"><span><b>MONK 바둑</b> 대기실</span><span class="grow"></span><span class="small" id="lobbyEng" style="color:#cfd6e0"></span></div>
+  <!-- 11-04 작가님 — 대기실/내 기보 분리: 대기실 = 진행 중 대국·참여자·방 만들기·소식 / 내 기보 = 지난 대국·기보 불러오기 -->
+  <div class="lobby-tabs"><button id="tabWait" data-tab="wait">대기실</button><button id="tabMine" data-tab="mine">내 기보</button></div>
   <div class="lobby-body">
     <div class="msg" id="lobbyMsg"></div>
-    <h3>내 진행 중 대국</h3><div id="lobbyLive"><div class="lobby-empty">불러오는 중…</div></div>
-    <h3>지난 대국</h3><div id="lobbyPast"></div>
+    <div class="tab-pane" id="paneWait">
+      <h3>내 진행 중 대국</h3><div id="lobbyLive"><div class="lobby-empty">불러오는 중…</div></div>
+      <h3>참여자</h3><div id="lobbyPeople"></div>
+      <h3>대기실 소식</h3>
+      <div class="lobby-note">채팅·초청은 사용자 구분(단계 ②) 뒤 열립니다</div>
+      <div class="box lobby-news" id="lobbyNews"><div class="lobby-empty">불러오는 중…</div></div>
+    </div>
+    <div class="tab-pane" id="paneMine">
+      <h3>지난 대국</h3><div id="lobbyPast"></div>
+    </div>
   </div>
-  <div class="lobby-foot"><button id="bImport">기보 불러오기</button><button id="bNewL">새 대국</button><input type="file" id="importFile" accept=".sgf,.gib" multiple hidden></div>
+  <div class="lobby-foot" id="footWait"><button id="bNewL">방 만들기</button></div>
+  <div class="lobby-foot" id="footMine"><button id="bImport">기보 불러오기</button><input type="file" id="importFile" accept=".sgf,.gib" multiple hidden></div>
 </div>
 <div class="wrap">
   <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg><div id="boardToast" role="status"></div><div id="judgeBand" role="status" hidden><span></span><button aria-label="판정 닫기">✕</button></div></div>
@@ -953,7 +977,9 @@ function dlgSync() {
 document.getElementById('bNew').onclick = () => {
   if (busy) { notice('상대가 생각 중입니다'); return; }
   if (!S) return;
-  document.getElementById('dLevel').value = S.level;
+  // 11-04 작가님 — 대기실/내 기보 분리: 참여자 행의 [대국 신청]이 수준을 미리 골라 둔다(1회용)
+  const preLv = window.__preLevel; window.__preLevel = null;
+  document.getElementById('dLevel').value = preLv || S.level;
   for (const o of document.getElementById('dLevel').options) if (o.value !== 'strong') o.disabled = !S.humanOk;
   document.querySelector(`input[name="dWay"][value="${S.handicap ? 'handi' : 'even'}"]`).checked = true;
   document.getElementById('handicap').value = S.handicap || 2;
@@ -1327,6 +1353,38 @@ setInterval(() => {
       `<div class="grow"><div class="t1">${res}${dcTxt}</div><div class="t2">${t2}</div></div>` +
       `<div class="btns">${btns}</div></div>`;
   }
+  // 11-04 작가님 — 대기실/내 기보 분리: 탭 전환(선택 기억)
+  const lbEl = document.getElementById('lobby');
+  const setTab = t => {
+    lbEl.dataset.tab = t;
+    document.querySelectorAll('.lobby-tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+    try { localStorage.setItem('goLobbyTab', t); } catch (e) { /* 저장소 불가 — 이번 화면만 */ }
+    const body = document.querySelector('.lobby-body'); if (body) body.scrollTop = 0;
+  };
+  document.querySelectorAll('.lobby-tabs button').forEach(b => { b.onclick = () => setTab(b.dataset.tab); });
+  setTab('wait');  // 대기실 진입 기본 탭은 [대기실] — 기억값은 탭을 눌러 바꾼 뒤 저장만(작가님 지시 4)
+  // 11-04 작가님 — 대기실/내 기보 분리: 참여자 = 지금 실제로 상대할 수 있는 상대(사람은 작가님 본인뿐)
+  const SHOWN = ['18k', '10k', '5k', '1k', '3d', '5d', '7d', '9d'];
+  let allRanks = false;
+  function renderPeople(d) {
+    const ok = !!d.humanOk, why = esc(d.humanReason || '사람 흉내 급수를 쓸 수 없습니다');
+    const aiRow = (v, name, off) => `<div class="box lobby-row${off ? ' off' : ''}"><span class="dot ai"></span><div class="grow"><div class="t1">${esc(name)}</div>` +
+      `<div class="t2">${off ? why : 'AI · 대국 가능'}</div></div><div class="btns"><button class="hl" data-pick="${v}"${off ? ' disabled' : ''}>대국 신청</button></div></div>`;
+    const ranks = [...d.ranks].reverse();  // 강한 쪽부터
+    const list = allRanks ? ranks : ranks.filter(r => SHOWN.includes(r.v));
+    document.getElementById('lobbyPeople').innerHTML =
+      `<div class="box lobby-row"><span class="dot me"></span><div class="grow"><div class="t1">작가님 (나)</div><div class="t2">접속 중</div></div></div>` +
+      aiRow('strong', 'KataGo 최강', !d.strongOk) + list.map(r => aiRow(r.v, `KataGo ${r.label}`, !ok)).join('') +
+      `<div class="btns" style="margin-top:6px"><button data-allranks="1">${allRanks ? '대표 급수만 보기' : '전체 급수 펼치기'}</button></div>`;
+  }
+  // 11-04 작가님 — 대기실/내 기보 분리: 대기실 소식 = 최근 끝난 대국 결과 3건(시스템 소식만, 입력줄 없음)
+  function renderNews(rooms) {
+    const news = rooms.filter(r => r.status === 'ended' && r.result && r.source !== 'upload')
+      .sort((a, b) => String(b.started).localeCompare(String(a.started))).slice(0, 3);
+    document.getElementById('lobbyNews').innerHTML = news.length
+      ? news.map(r => `<div>${esc(String(r.started).slice(11, 16))} 작가님 vs ${esc(r.levelLabel)} · ${esc(r.resultKo)}</div>`).join('')
+      : '<div class="lobby-empty">아직 소식이 없습니다.</div>';
+  }
   async function load() {
     try {
       const d = await (await fetch('/api/rooms')).json();
@@ -1335,13 +1393,17 @@ setInterval(() => {
       S = { ...d, level: df.level || 'strong', handicap: df.handicap || 0, time: df.time === undefined ? { main: 0, byo: 20, periods: 3 } : df.time, user: df.user || 'B' };
       if (!widgetsReady) { setupWidgets(); widgetsReady = true; }
       const live = d.rooms.filter(r => r.status !== 'ended'), past = d.rooms.filter(r => r.status === 'ended');
-      document.getElementById('lobbyLive').innerHTML = live.length ? live.map(row).join('') : '<div class="lobby-empty">진행 중인 대국이 없습니다 — 아래 \'새 대국\'으로 시작하세요.</div>';
+      document.getElementById('lobbyLive').innerHTML = live.length ? live.map(row).join('') : '<div class="lobby-empty">진행 중인 대국이 없습니다 — 아래 \'방 만들기\'나 참여자의 \'대국 신청\'으로 시작하세요.</div>';
+      renderPeople(d); renderNews(d.rooms);
       document.getElementById('lobbyPast').innerHTML = past.length ? past.map(row).join('') : '<div class="lobby-empty">아직 지난 대국이 없습니다.</div>';
       document.getElementById('lobbyEng').textContent = d.strongOk ? '' : (d.strongError || '엔진 기동 실패');
       if (d.testMode) document.title = 'MONK 바둑 대기실 (테스트)';
     } catch (e) { notice('서버 연결 실패 — run.sh가 켜져 있는지 확인해 주세요'); }
   }
   document.getElementById('lobby').addEventListener('click', async e => {
+    const pk = e.target.closest('[data-pick]');
+    if (pk) { if (!pk.disabled) { window.__preLevel = pk.dataset.pick; document.getElementById('bNew').onclick(); } return; }
+    if (e.target.closest('[data-allranks]')) { allRanks = !allRanks; renderPeople(S); return; }
     const rv = e.target.closest('[data-review]');
     if (rv) {
       e.stopPropagation();
@@ -1377,9 +1439,9 @@ setInterval(() => {
   document.getElementById('bImport').onclick = () => fileIn.click();
   fileIn.onchange = () => { if (fileIn.files.length) importFiles([...fileIn.files]); fileIn.value = ''; };
   const lb = document.getElementById('lobby');
-  lb.addEventListener('dragover', e => { e.preventDefault(); document.body.classList.add('drag'); });
+  lb.addEventListener('dragover', e => { e.preventDefault(); if (lb.dataset.tab === 'mine') document.body.classList.add('drag'); });  // 다른 탭에선 브라우저가 파일을 열지 않게 막기만
   lb.addEventListener('dragleave', e => { if (!lb.contains(e.relatedTarget)) document.body.classList.remove('drag'); });
-  lb.addEventListener('drop', e => { e.preventDefault(); document.body.classList.remove('drag'); if (e.dataTransfer.files.length) importFiles([...e.dataTransfer.files]); });
+  lb.addEventListener('drop', e => { e.preventDefault(); if (lb.dataset.tab !== 'mine') return; document.body.classList.remove('drag'); if (e.dataTransfer.files.length) importFiles([...e.dataTransfer.files]); });
   load();
   document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });  // 앱으로 돌아오면 목록 새로
 })();
