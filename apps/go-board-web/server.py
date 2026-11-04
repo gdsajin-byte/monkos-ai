@@ -9,7 +9,7 @@
   /room/{id}   대국실 (지금 화면)
   /api/rooms   방 목록·생성,  /api/rooms/{id}/state|play|…  방 범위 API
 단계 ②-1(11-04, 작가님 "테스트로 누구든 아이디 만들고 입장"): 계정·세션(users.json·sessions.json, 로컬 파일) — 방은 만든 사람 것.
-  /api/auth/signup|login|logout|me · /api/presence. 로컬호스트 직접 요청은 쿠키 없이 '작가님'(live_view 호환).
+  /api/auth/signup|enter|check|ranks|logout|me · /api/me · /api/presence. 로컬호스트 직접 요청은 쿠키 없이 '작가님'(live_view 호환).
 방 상태는 수마다 ~/.monkos/go-board/rooms/{id}.json 에 원자적으로 저장되고 서버 기동 시 전부 복원된다.
 엔진은 EngineHub(무상태 경계) 뒤에 있다 — 방이 국면을 넘기면 수·분석만 돌려준다.
 """
@@ -506,22 +506,37 @@ class RoomLock:
 
 
 # ---------------------------------------------------------------- 계정·세션 (11-04 작가님 — 테스트 아이디 개방, 단계 ②-1)
-# 사람은 없어도 누구든 아이디를 만들어 들어올 수 있게 연다(채팅·초청을 위한 사용자 구분 선행). 저장은 로컬 파일 —
-# 단계 ⑤에서 Firestore, 로그인은 단계 ③ 이후 Access/정식 인증으로 바뀐다. 비밀번호·해시·세션 토큰은 로그·응답에 내지 않는다.
-ADMIN_NICK = "작가님"  # 예약 닉네임 — 기존 사용자(방 전부의 주인). 인수 코드 없이는 가입 못 한다
+# 11-04 작가님 — 아이디+희망 급수 가입, 인증 차후: 비밀번호는 없다(테스트 기간엔 아이디만으로 입장). 사람은 없어도 누구든 아이디를
+# 만들어 들어올 수 있게 연다(채팅·초청을 위한 사용자 구분 선행). 저장은 로컬 파일 — 단계 ⑤에서 Firestore, 인증은 단계 ③ 이후
+# Access/정식 인증으로 바뀐다. 세션 토큰·인수 코드 값은 로그·응답에 내지 않는다.
+ADMIN_NICK = "작가님"  # 예약 닉네임 — 기존 사용자(방 전부의 주인). 입장·가입 때 인수 코드가 필요하다
 ADMIN_UID = "admin"  # 작가님 계정의 고정 uid — owner 없는 옛 방은 읽을 때 이 uid 소유로 본다(파일은 다시 쓰지 않음)
 NICK_RE = re.compile(r"[가-힣A-Za-z0-9_]{2,12}")
-PW_MIN = 4
-PBKDF_ITER = 200000
-SESSION_TTL = 30 * 24 * 3600
+SIGNUP_RANKS = RANKS[RANKS.index("18k"):RANKS.index("5d") + 1]  # 희망 급수: 18급~5단(설계서 '초기 설정 최대 5단')
+SESSION_TTL = 365 * 24 * 3600  # 쿠키·세션 1년
 COOKIE_NAME = "gb_s"
 PRESENCE_TTL = 30  # 대기실·대국실에서 이 초 안에 신호가 있으면 접속 중
-RATE_MAX, RATE_WINDOW = 10, 60  # 가입·로그인: IP별 1분 10회
+RATE_MAX, RATE_WINDOW = 30, 60  # 가입·입장·중복 확인: IP별 1분 30회
 USERS_FILE = ROOMS_DIR.parent / "users.json"
 SESSIONS_FILE = ROOMS_DIR.parent / "sessions.json"
 CLAIM_FILE = ROOMS_DIR.parent / "admin_claim.txt"
-SIGNUP_FAIL = "가입할 수 없습니다 — 닉네임을 바꾸거나 인수 코드를 확인해 주세요"
-LOGIN_FAIL = "닉네임 또는 비밀번호가 맞지 않습니다"
+NICK_RULE = "아이디는 2~12자의 한글·영문·숫자·_ 만 쓸 수 있습니다"
+CLAIM_FAIL = "인수 코드가 맞지 않습니다 — 서버의 인수 코드 파일 값을 확인해 주세요"
+
+
+def write_json_atomic_text(path, text):
+    """텍스트 파일 원자적 저장, 권한 600 — 인수 코드 파일용."""
+    tmp = path.with_name("." + path.name + ".tmp")
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as fh:
+        fh.write(text)
+        fh.flush()
+        os.fsync(fh.fileno())
+    os.replace(tmp, path)
+
+
+def rank_ko(r):
+    return RANK_KO.get(r) if r else None
 
 
 def write_json_atomic(path, obj):
@@ -544,30 +559,38 @@ def read_json(path, default):
         return default
 
 
-def pw_hash(pw, salt):
-    return hashlib.pbkdf2_hmac("sha256", pw.encode("utf-8"), salt, PBKDF_ITER).hex()
-
-
 class Auth:
-    """계정(users.json)·세션(sessions.json, 토큰의 sha256만)·접속 신호(메모리)·가입/로그인 횟수 제한(메모리)."""
+    """계정(users.json)·세션(sessions.json, 토큰의 sha256만)·접속 신호(메모리)·가입/입장/확인 횟수 제한(메모리)."""
 
     def __init__(self):
         self.lock = threading.Lock()
         self.users = read_json(USERS_FILE, {}).get("users", [])
         self.sessions = read_json(SESSIONS_FILE, {})
         self.seen = {}  # uid → (마지막 신호 시각, 'lobby' | 'room')
-        self.hits = {}  # ip → 가입·로그인 시각들
+        self.hits = {}  # ip → 요청 시각들
+        if any("pw" in u for u in self.users):  # 비밀번호 폐지 — 단계 ②-1 초판의 해시 필드를 떨군다
+            for u in self.users:
+                u.pop("pw", None)
+            self._save_users()
 
-    # ---- 관리자 인수 코드: '작가님' 계정이 아직 없으면 1회용 코드를 파일에만 쓴다(값은 로그에 내지 않음)
+    # ---- 관리자 인수 코드: 입장·가입 때마다 1회용. 쓰고 나면 새 코드를 파일에 다시 쓴다(값은 로그에 내지 않음, 경로만)
+    def write_claim(self):
+        CLAIM_FILE.parent.mkdir(parents=True, exist_ok=True)
+        write_json_atomic_text(CLAIM_FILE, secrets.token_hex(4) + "\n")
+        print(f"✅ go-board: 인수 코드 파일 갱신: {CLAIM_FILE}", flush=True)
+
     def ensure_claim(self):
-        if any(u["uid"] == ADMIN_UID for u in self.users):
-            return
         if not CLAIM_FILE.exists():
-            CLAIM_FILE.parent.mkdir(parents=True, exist_ok=True)
-            fd = os.open(CLAIM_FILE, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-            with os.fdopen(fd, "w", encoding="utf-8") as fh:
-                fh.write(secrets.token_hex(4) + "\n")
-        print(f"✅ go-board: 인수 코드 파일 생성: {CLAIM_FILE}", flush=True)
+            self.write_claim()
+        else:
+            print(f"✅ go-board: 인수 코드 파일: {CLAIM_FILE}", flush=True)
+
+    def _claim_ok(self, claim):
+        try:
+            code = CLAIM_FILE.read_text(encoding="utf-8").strip()
+        except OSError:
+            code = ""
+        return bool(code) and hmac.compare_digest(str(claim or "").strip().encode(), code.encode())
 
     def _save_users(self):
         write_json_atomic(USERS_FILE, {"users": self.users})
@@ -575,9 +598,19 @@ class Auth:
     def _save_sessions(self):
         write_json_atomic(SESSIONS_FILE, self.sessions)
 
+    def _find(self, nick):
+        return next((u for u in self.users if u["nick"].casefold() == nick.casefold()), None)
+
+    def get(self, uid):
+        return next((u for u in self.users if u["uid"] == uid), None)
+
     def nick(self, uid):
-        u = next((u for u in self.users if u["uid"] == uid), None)
+        u = self.get(uid)
         return u["nick"] if u else (ADMIN_NICK if uid == ADMIN_UID else "알 수 없음")
+
+    def rank(self, uid):
+        u = self.get(uid)
+        return u.get("rank") if u else None
 
     def rate_ok(self, ip):
         now = time.time()
@@ -591,44 +624,62 @@ class Auth:
                 self.hits = {k: v for k, v in self.hits.items() if v and now - v[-1] < RATE_WINDOW}
             return ok
 
-    def signup(self, nick, pw, claim):
-        """(사용자, 오류문구). 형식 오류만 구체적으로, 중복·예약·코드 불일치는 한 문구."""
-        nick, pw = str(nick or "").strip(), str(pw or "")
+    def check(self, nick):
+        """아이디 중복 확인 → (상태, 문구). 상태: ok | taken | bad. 작가님은 계정이 없어도 인수 코드로 가입(화면이 claim 표시를 본다)."""
+        nick = str(nick or "").strip()
         if not NICK_RE.fullmatch(nick):
-            return None, "닉네임은 2~12자의 한글·영문·숫자·_ 만 쓸 수 있습니다"
-        if len(pw) < PW_MIN:
-            return None, f"비밀번호는 {PW_MIN}자 이상이어야 합니다"
+            return "bad", NICK_RULE
         with self.lock:
-            if any(u["nick"].casefold() == nick.casefold() for u in self.users):
-                return None, SIGNUP_FAIL
+            if self._find(nick):
+                return "taken", "이미 있는 아이디입니다"
+        return "ok", "사용할 수 있는 아이디입니다"
+
+    def signup(self, nick, rank, claim):
+        """(사용자, 오류문구). 희망 급수는 필수(18급~5단)."""
+        nick = str(nick or "").strip()
+        if not NICK_RE.fullmatch(nick):
+            return None, NICK_RULE
+        if rank not in SIGNUP_RANKS:
+            return None, "희망 급수를 골라 주세요 (18급~5단)"
+        with self.lock:
+            if self._find(nick):
+                return None, "이미 있는 아이디입니다"
             uid = "u-" + secrets.token_hex(6)
-            if nick.casefold() == ADMIN_NICK.casefold():
-                try:
-                    code = CLAIM_FILE.read_text(encoding="utf-8").strip()
-                except OSError:
-                    code = ""
-                if not code or not hmac.compare_digest(str(claim or "").strip().encode(), code.encode()):
-                    return None, SIGNUP_FAIL
-                uid = ADMIN_UID
-            salt = secrets.token_bytes(16)
-            u = {"uid": uid, "nick": nick, "created": datetime.now().isoformat(timespec="seconds"),
-                 "pw": {"algo": "pbkdf2_sha256", "iter": PBKDF_ITER, "salt": salt.hex(), "hash": pw_hash(pw, salt)}}
+            admin = nick.casefold() == ADMIN_NICK.casefold()
+            if admin:
+                if not self._claim_ok(claim):
+                    return None, CLAIM_FAIL
+                uid, nick = ADMIN_UID, ADMIN_NICK
+            u = {"uid": uid, "nick": nick, "rank": rank, "created": datetime.now().isoformat(timespec="seconds")}
             self.users.append(u)
             self._save_users()
-            if uid == ADMIN_UID:  # 인수 완료 — 코드 파일 삭제
-                with contextlib.suppress(OSError):
-                    CLAIM_FILE.unlink()
+            if admin:
+                self.write_claim()  # 쓴 코드는 버리고 새 코드 — 다른 기기에서 다시 입장하려면 새 코드가 필요
         return {"uid": u["uid"], "nick": u["nick"]}, None
 
-    def login(self, nick, pw):
-        nick, pw = str(nick or "").strip(), str(pw or "")
+    def enter(self, nick, claim):
+        """(사용자, 오류문구). 테스트 기간엔 아이디만으로 입장 — 작가님만 인수 코드."""
+        nick = str(nick or "").strip()
         with self.lock:
-            u = next((u for u in self.users if u["nick"].casefold() == nick.casefold()), None)
-        salt = bytes.fromhex(u["pw"]["salt"]) if u else b"\0" * 16  # 없는 닉네임도 같은 계산·같은 문구
-        h = pw_hash(pw, salt)
-        if not u or not hmac.compare_digest(h, u["pw"]["hash"]):
-            return None, LOGIN_FAIL
+            u = self._find(nick) if NICK_RE.fullmatch(nick) else None
+            if not u:
+                return None, "없는 아이디입니다 — 먼저 아이디를 만들어 주세요"
+            if u["uid"] == ADMIN_UID:
+                if not self._claim_ok(claim):
+                    return None, CLAIM_FAIL
+                self.write_claim()
         return {"uid": u["uid"], "nick": u["nick"]}, None
+
+    def set_rank(self, uid, rank):
+        if rank not in SIGNUP_RANKS:
+            return "희망 급수를 골라 주세요 (18급~5단)"
+        with self.lock:
+            u = self.get(uid)
+            if not u:
+                return "계정이 없습니다"
+            u["rank"] = rank
+            self._save_users()
+        return None
 
     def new_session(self, uid):
         tok = secrets.token_urlsafe(32)
@@ -656,18 +707,42 @@ class Auth:
             if self.sessions.pop(hashlib.sha256(tok.encode()).hexdigest(), None):
                 self._save_sessions()
 
+    def is_admin_nick(self, nick):
+        return str(nick or "").strip().casefold() == ADMIN_NICK.casefold()
+
     def touch(self, uid, where):
         self.seen[uid] = (time.time(), where)
 
     def people(self, me_uid):
         """접속 중(최근 30초 신호) 사람 — 닉네임 + 대기실/대국 중. uid 는 내보내지 않는다."""
         now = time.time()
-        out = [{"nick": self.nick(uid), "state": "대국 중" if w == "room" else "대기실", "me": uid == me_uid}
+        out = [{"nick": self.nick(uid), "rank": rank_ko(self.rank(uid)), "state": "대국 중" if w == "room" else "대기실", "me": uid == me_uid}
                for uid, (t, w) in list(self.seen.items()) if now - t <= PRESENCE_TTL]
         return sorted(out, key=lambda p: (not p["me"], p["nick"].casefold()))
 
 
 AUTH = None  # Auth
+
+
+def my_stats(uid):
+    """마이페이지 AI 대국 전적 — 내 방 중 대국(불러온 SGF 기보 제외, 단계 ① 이전 대국은 포함)의 결과 집계. 끝나지 않은 판은 세지 않는다."""
+    total = {"win": 0, "loss": 0, "void": 0}
+    by = {}
+    for r in ROOMS.listing(uid):
+        if r.source == "upload" or not r.result:
+            continue
+        if r.result == VOID:
+            k = "void"
+        elif r.result[0] in "BW":
+            k = "win" if r.result[0] == r.user else "loss"
+        else:
+            continue
+        total[k] += 1
+        if k != "void":
+            row = by.setdefault(r.level, {"level": r.level, "label": r.level_label(), "win": 0, "loss": 0})
+            row[k] += 1
+    rows = sorted(by.values(), key=lambda x: (x["level"] != "strong", RANKS.index(x["level"]) if x["level"] in RANKS else 99))
+    return {"total": total, "byLevel": rows}
 
 
 # ---------------------------------------------------------------- 방(대국 상태)
@@ -2215,20 +2290,32 @@ class Handler(BaseHTTPRequestHandler):
             return None
         return u
 
+    def _me(self, rec, u=None):
+        """내 정보(응답용) — uid·세션은 내지 않는다. 계정 레코드가 없으면(로컬 호환 '작가님') 닉네임만."""
+        if not rec:
+            return {"nick": u["nick"] if u else ADMIN_NICK, "rank": None, "rankKo": None, "created": None}
+        return {"nick": rec["nick"], "rank": rec.get("rank"), "rankKo": rank_ko(rec.get("rank")), "created": rec.get("created")}
+
     def _auth_post(self, path, body):
         """/api/auth/* · /api/presence — 처리했으면 True."""
-        if path in ("/api/auth/signup", "/api/auth/login"):
+        if path in ("/api/auth/signup", "/api/auth/enter"):
             if not AUTH.rate_ok(self._ip()):
                 self._json({"error": "요청이 너무 많습니다 — 잠시 뒤에 다시 해 주세요"}, 429)
                 return True
             if path.endswith("signup"):
-                u, err = AUTH.signup(body.get("nick"), body.get("pw"), body.get("claim"))
+                u, err = AUTH.signup(body.get("nick"), body.get("rank"), body.get("claim"))
             else:
-                u, err = AUTH.login(body.get("nick"), body.get("pw"))
+                u, err = AUTH.enter(body.get("nick"), body.get("claim"))
             if err:
-                self._json({"error": err}, 400 if path.endswith("signup") else 401)
+                self._json({"error": err}, 400)
             else:
-                self._json({"ok": True, "me": {"nick": u["nick"]}}, headers=self._cookie(AUTH.new_session(u["uid"])))
+                self._json({"ok": True, "me": self._me(AUTH.get(u["uid"]))}, headers=self._cookie(AUTH.new_session(u["uid"])))
+            return True
+        if path == "/api/me":  # 마이페이지 — 희망 급수 변경
+            u = self._need()
+            if u:
+                err = AUTH.set_rank(u["uid"], body.get("rank"))
+                self._json({"error": err} if err else {"ok": True, "me": self._me(AUTH.get(u["uid"]))}, 400 if err else 200)
             return True
         if path == "/api/auth/logout":
             AUTH.end_session(self._token())
@@ -2270,15 +2357,28 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, page, "text/html; charset=utf-8")
         elif path == "/api/version":  # 화면 판본 확인(대기실·대국실·감상 공통, 가벼움)
             self._json({"build": build_id()})
-        elif path == "/api/auth/me":
+        elif path == "/api/auth/ranks":  # 가입 화면의 희망 급수 목록(로그인 전에도)
+            self._json({"ranks": [{"v": r, "label": RANK_KO[r]} for r in SIGNUP_RANKS]})
+        elif path == "/api/auth/check":  # 아이디 중복 확인 — 가입·입장과 합쳐 IP별 1분 30회
+            if not AUTH.rate_ok(self._ip()):
+                return self._json({"error": "요청이 너무 많습니다 — 잠시 뒤에 다시 해 주세요"}, 429)
+            nick_q = urllib.parse.parse_qs(query).get("nick", [""])[0]
+            st, msg = AUTH.check(nick_q)
+            self._json({"status": st, "message": msg, "claim": st != "bad" and AUTH.is_admin_nick(nick_q)})
+        elif path in ("/api/auth/me", "/api/me"):
             u = self._need()
             if u:
-                self._json({"me": {"nick": u["nick"], "admin": u["uid"] == ADMIN_UID, "local": bool(u.get("local"))}})
+                me = self._me(AUTH.get(u["uid"]), u)
+                me.update({"admin": u["uid"] == ADMIN_UID, "local": bool(u.get("local"))})
+                out = {"me": me, "ranks": [{"v": r, "label": RANK_KO[r]} for r in SIGNUP_RANKS]}
+                if path == "/api/me":
+                    out["stats"] = my_stats(u["uid"])
+                self._json(out)
         elif path == "/api/rooms":
             u = self._need()
             if u:  # 내 방만 — 남의 방은 목록에 없다
                 self._json({"rooms": [r.summary() for r in ROOMS.listing(u["uid"])], "defaults": ROOMS.defaults(u["uid"]),
-                            "me": {"nick": u["nick"]}, "people": AUTH.people(u["uid"]), **common_state()})
+                            "me": {"nick": u["nick"], "rankKo": rank_ko(AUTH.rank(u["uid"]))}, "people": AUTH.people(u["uid"]), **common_state()})
         elif m := re.fullmatch(rf"/api/rooms/({ROOM_ID_RE})/analysis", path):
             room = ROOMS.get(m.group(1))
             if not room:

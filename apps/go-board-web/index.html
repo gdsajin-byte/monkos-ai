@@ -259,8 +259,19 @@
   /* 11-04 작가님 — 테스트 아이디: 대기실 상단 내 닉네임·로그아웃, 로그인/가입 창(신청 창 스타일 재사용) */
   .lobby-me { font-size: 14px; color: #cfd6e0; display: flex; align-items: center; gap: 8px; }
   .lobby-me button { font-size: 13px; padding: 3px 10px; }
-  #authDlg input[type=text], #authDlg input[type=password] { flex: 1 1 160px; font-size: 17px; padding: 8px; border: 1px solid var(--line-ui); border-radius: 6px; }
+  #authDlg input[type=text] { flex: 1 1 160px; font-size: 17px; padding: 8px; border: 1px solid var(--line-ui); border-radius: 6px; }
   #authMsg { color: #b4462b; min-height: 1.2em; font-size: 15px; }
+  #authMsg.ok { color: #2f7d3c; }
+  #authDlg select { font-size: 17px; padding: 8px; }
+  #authDlg .linkbtn, .lobby-me .nickbtn { background: none; border: 0; box-shadow: none; color: var(--blue); text-decoration: underline; padding: 2px; font-size: 14px; }
+  .lobby-me .nickbtn { color: #cfd6e0; font-size: 14px; }
+  /* 마이페이지(11-04 작가님): 세 번째 면 — 닉네임을 누르면 열린다 */
+  #lobby[data-tab="my"] #paneMy { display: flex; }
+  #lobby[data-tab="my"] #footWait, #lobby[data-tab="my"] #footMine { display: none; }
+  #paneMy .my-box { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  #paneMy table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  #paneMy th, #paneMy td { border-bottom: 1px solid var(--line-ui); padding: 6px 8px; text-align: center; }
+  #paneMy th:first-child, #paneMy td:first-child { text-align: left; }
   .lobby-note { font-size: 13px; color: var(--muted); }
   .lobby-news { padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; font-size: 15px; }
   /* 길게 눌러도 아이폰 글쓰기 도구·텍스트 선택·확대 메뉴가 뜨지 않게(10-24 작가님 "착수 버튼 길게 누르면 글쓰기 도구") */
@@ -279,9 +290,9 @@
   <span id="topBtns"><button id="bLobby" title="대기실로">대기실</button><button id="bNew">대국 신청</button></span>
 </div>
 <div id="lobby">
-  <div class="status"><span><b>MONK 바둑</b> 대기실</span><span class="grow"></span><span class="small" id="lobbyEng" style="color:#cfd6e0"></span><span class="lobby-me" id="lobbyMe" hidden><span id="lobbyMeNick"></span><button id="bLogout">로그아웃</button></span></div>
+  <div class="status"><span><b>MONK 바둑</b> 대기실</span><span class="grow"></span><span class="small" id="lobbyEng" style="color:#cfd6e0"></span><span class="lobby-me" id="lobbyMe" hidden><button class="nickbtn" id="lobbyMeNick" title="마이페이지"></button><button id="bLogout">로그아웃</button></span></div>
   <!-- 11-04 작가님 — 대기실/내 기보 분리: 대기실 = 참여자·방 만들기·소식(11-04 이어두기 폐지: 진행 중 판은 표시하지 않음) / 내 기보 = 지난 대국·기보 불러오기 -->
-  <div class="lobby-tabs"><button id="tabWait" data-tab="wait">대기실</button><button id="tabMine" data-tab="mine">내 기보</button></div>
+  <div class="lobby-tabs"><button id="tabWait" data-tab="wait">대기실</button><button id="tabMine" data-tab="mine">내 기보</button><button id="tabMy" data-tab="my" hidden>마이페이지</button></div>
   <div class="lobby-body">
     <div class="msg" id="lobbyMsg"></div>
     <div class="tab-pane" id="paneWait">
@@ -292,6 +303,18 @@
     </div>
     <div class="tab-pane" id="paneMine">
       <h3>지난 대국</h3><div id="lobbyPast"></div>
+    </div>
+    <!-- 11-04 작가님 — 마이페이지: 아이디·희망 급수(변경)·가입일·AI 전적·로그아웃. 단수 승강·인증·사진은 차후 -->
+    <div class="tab-pane" id="paneMy">
+      <h3>마이페이지</h3>
+      <div class="box my-box">
+        <div>아이디 <b id="myNick"></b></div>
+        <label>희망 급수 <select id="myRank"></select> <button id="myRankSave">저장</button> <span class="small" id="myRankMsg"></span></label>
+        <div>가입일 <span id="myCreated"></span></div>
+      </div>
+      <h3>AI 대국 전적</h3>
+      <div class="box my-box" id="myStats"></div>
+      <div class="btns"><button id="myLogout">로그아웃</button></div>
     </div>
   </div>
   <div class="lobby-foot" id="footWait"><button id="bNewL">방 만들기</button></div>
@@ -390,17 +413,20 @@
   </div>
 </div>
 
-<!-- 11-04 작가님 — 테스트 아이디 개방: 로그인 안 하면 대기실 대신 이 창. '작가님' 가입 때만 인수 코드 칸 -->
+<!-- 11-04 작가님 — 아이디+희망 급수 가입, 인증 차후: 로그인 안 하면 이 창. 처음엔 '아이디 만들기', 아래 링크로 '입장'.
+     '작가님' 아이디만 1회용 인수 코드 칸이 나타난다 -->
 <dialog id="authDlg">
-  <div class="dlg-head">MONK 바둑 — 로그인 / 가입</div>
+  <div class="dlg-head" id="aTitle">MONK 바둑 — 아이디 만들기</div>
   <div class="dlg-body">
-    <label>닉네임 <input type="text" id="aNick" maxlength="12" autocomplete="username" autocapitalize="off" placeholder="2~12자 한글·영문·숫자·_"></label>
-    <label>비밀번호 <input type="password" id="aPw" autocomplete="current-password" placeholder="4자 이상"></label>
+    <label>아이디 <input type="text" id="aNick" maxlength="12" autocomplete="username" autocapitalize="off" placeholder="2~12자 한글·영문·숫자·_"> <button id="aCheck">중복 확인</button></label>
+    <label id="aRankRow">희망 급수 <select id="aRank"></select></label>
     <label id="aClaimRow" hidden>인수 코드 <input type="text" id="aClaim" autocomplete="off" autocapitalize="off" placeholder="서버 인수 코드 파일의 값"></label>
     <div id="authMsg" role="status"></div>
-    <div class="small">테스트 중입니다. 누구든 아이디를 만들어 들어올 수 있고, 방은 만든 사람만 봅니다.</div>
+    <div class="small" id="aNote">테스트 중입니다. 누구든 아이디를 만들어 들어올 수 있고, 방은 만든 사람만 봅니다.</div>
+    <div class="small" id="aEnterNote" hidden>테스트 기간에는 아이디만으로 입장합니다.</div>
+    <button class="linkbtn" id="aSwitch">이미 아이디가 있어요</button>
   </div>
-  <div class="dlg-foot"><button id="aSignup">가입</button><button id="aLogin" class="hl">로그인</button></div>
+  <div class="dlg-foot"><button id="aSignup" class="hl" disabled>가입하고 입장</button><button id="aEnter" class="hl" hidden>입장</button></div>
 </dialog>
 <dialog id="newDlg">
   <div class="dlg-head" id="dlgTitle" tabindex="-1" autofocus>나 VS KataGo</div>
@@ -976,33 +1002,72 @@ document.getElementById('tabs').onclick = e => {
 // ---- 로그인/가입(11-04 작가님 — 테스트 아이디 개방): 서버가 401 을 주면 이 창을 연다. 성공하면 화면을 다시 읽는다
 const authDlg = document.getElementById('authDlg');
 const myNick = () => (S && ((S.me && S.me.nick) || S.ownerNick)) || '나';
+const $a = id => document.getElementById(id);
+let authMode = 'signup', nickOk = null, ranksLoaded = false;  // nickOk = 중복 확인을 통과한 아이디(바꾸면 null)
+function authMsg(t, ok) { $a('authMsg').textContent = t || ''; $a('authMsg').classList.toggle('ok', !!ok); }
+function authSync() {  // 모드·확인 상태에 맞춰 버튼·칸을 맞춘다
+  const su = authMode === 'signup', nick = $a('aNick').value.trim();
+  $a('aTitle').textContent = su ? 'MONK 바둑 — 아이디 만들기' : 'MONK 바둑 — 입장';
+  $a('aCheck').hidden = !su; $a('aRankRow').hidden = !su; $a('aNote').hidden = !su; $a('aEnterNote').hidden = su;
+  $a('aSignup').hidden = !su; $a('aEnter').hidden = su;
+  $a('aSwitch').textContent = su ? '이미 아이디가 있어요' : '새 아이디 만들기';
+  $a('aSignup').disabled = !(nickOk && nickOk === nick && $a('aRank').value);
+  $a('aClaimRow').hidden = nick !== '작가님';  // 인수 코드 칸은 '작가님' 입장·가입 때만
+}
+async function loadRanks() {
+  if (ranksLoaded) return;
+  try {
+    const j = await (await fetch('/api/auth/ranks')).json();
+    $a('aRank').innerHTML = '<option value="">선택하세요</option>' + j.ranks.map(r => `<option value="${r.v}">${r.label}</option>`).join('');
+    ranksLoaded = true;
+  } catch (e) { /* 다음에 다시 */ }
+}
 function openAuth(msg) {
-  document.getElementById('authMsg').textContent = msg || '';
+  authMsg(msg); loadRanks(); authSync();
   if (!authDlg.open) authDlg.showModal();
 }
 authDlg.addEventListener('cancel', e => e.preventDefault());  // 로그인 없이 닫을 수 없다(Esc 포함)
-document.getElementById('aNick').addEventListener('input', e => {  // 인수 코드 칸은 '작가님' 가입 때만
-  document.getElementById('aClaimRow').hidden = e.target.value.trim() !== '작가님';
-});
+$a('aNick').addEventListener('input', () => { nickOk = null; authMsg(''); authSync(); });  // 아이디를 바꾸면 다시 확인
+$a('aRank').addEventListener('change', authSync);
+$a('aSwitch').onclick = () => { authMode = authMode === 'signup' ? 'enter' : 'signup'; nickOk = null; authMsg(''); authSync(); };
+async function authCheck() {
+  const nick = $a('aNick').value.trim();
+  if (!nick) { authMsg('아이디를 입력해 주세요'); return; }
+  try {
+    const r = await fetch('/api/auth/check?nick=' + encodeURIComponent(nick));
+    const j = await r.json();
+    if (!r.ok || j.error) { authMsg(j.error || '확인 실패'); return; }
+    // '작가님'은 기존 관리자 계정 — 계정이 없든 있든 인수 코드로만 쓸 수 있다
+    nickOk = j.status === 'ok' ? nick : null;
+    authMsg(j.message + (j.claim ? ' — 인수 코드가 필요합니다' : ''), j.status === 'ok');
+    authSync();
+  } catch (e) { authMsg('서버 연결 실패'); }
+}
+$a('aCheck').onclick = authCheck;
 async function authGo(kind) {
-  const nick = document.getElementById('aNick').value.trim(), pw = document.getElementById('aPw').value;
-  const claim = document.getElementById('aClaim').value.trim();
-  document.getElementById('authMsg').textContent = '';
+  const nick = $a('aNick').value.trim(), claim = $a('aClaim').value.trim();
+  authMsg('');
   try {
     const r = await fetch('/api/auth/' + kind, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                                 body: JSON.stringify({ nick, pw, claim }) });
+                                                 body: JSON.stringify(kind === 'signup' ? { nick, rank: $a('aRank').value, claim } : { nick, claim }) });
     const j = await r.json();
-    if (!r.ok || j.error) { document.getElementById('authMsg').textContent = j.error || '실패했습니다'; return; }
+    if (!r.ok || j.error) { authMsg(j.error || '실패했습니다'); return; }
     location.reload();
-  } catch (e) { document.getElementById('authMsg').textContent = '서버 연결 실패'; }
+  } catch (e) { authMsg('서버 연결 실패'); }
 }
-document.getElementById('aLogin').onclick = () => authGo('login');
-document.getElementById('aSignup').onclick = () => authGo('signup');
-authDlg.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); authGo('login'); } });
-document.getElementById('bLogout').onclick = async () => {
+$a('aSignup').onclick = () => authGo('signup');
+$a('aEnter').onclick = () => authGo('enter');
+authDlg.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  e.preventDefault();
+  if (authMode === 'enter') authGo('enter'); else if (!$a('aSignup').disabled) authGo('signup'); else authCheck();
+});
+const doLogout = async () => {
   try { await fetch('/api/auth/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }); } catch (e) { /* 다시 시도 */ }
   location.href = '/';
 };
+document.getElementById('bLogout').onclick = doLogout;
+document.getElementById('myLogout').onclick = doLogout;
 
 // ---- 대국 신청 창(타이젬 형식): 상대 수준·대국방법·치수·덤·흑백·시간을 한 창에서
 const dlg = document.getElementById('newDlg');
@@ -1425,6 +1490,31 @@ setInterval(() => {
   };
   document.querySelectorAll('.lobby-tabs button').forEach(b => { b.onclick = () => setTab(b.dataset.tab); });
   setTab('wait');  // 대기실 진입 기본 탭은 [대기실] — 기억값은 탭을 눌러 바꾼 뒤 저장만(작가님 지시 4)
+  // 11-04 작가님 — 마이페이지: 닉네임을 누르면 열린다. 아이디·희망 급수(변경)·가입일·AI 전적(승/패/무효, 상대 수준별)
+  async function loadMy() {
+    try {
+      const j = await (await fetch('/api/me')).json();
+      if (j.auth) { openAuth(); return; }
+      const m = j.me, st = j.stats, t = st.total;
+      document.getElementById('myNick').textContent = m.nick;
+      document.getElementById('myRank').innerHTML = (m.rank ? '' : '<option value="">선택하세요</option>') + j.ranks.map(r => `<option value="${r.v}"${r.v === m.rank ? ' selected' : ''}>${r.label}</option>`).join('');
+      document.getElementById('myCreated').textContent = m.created ? m.created.slice(0, 10) : '-';
+      document.getElementById('myRankMsg').textContent = '';
+      document.getElementById('myStats').innerHTML = `<div>전체 <b>${t.win}승 ${t.loss}패</b> · 무효 ${t.void}</div>` + (st.byLevel.length
+        ? `<table><tr><th>상대 수준</th><th>승</th><th>패</th></tr>${st.byLevel.map(r => `<tr><td>${esc(r.label)}</td><td>${r.win}</td><td>${r.loss}</td></tr>`).join('')}</table>`
+        : '<div class="lobby-empty">아직 끝난 AI 대국이 없습니다.</div>');
+    } catch (e) { notice('서버 연결 실패'); }
+  }
+  document.getElementById('lobbyMeNick').onclick = () => { setTab('my'); loadMy(); };
+  document.getElementById('myRankSave').onclick = async () => {
+    const rank = document.getElementById('myRank').value, msg = document.getElementById('myRankMsg');
+    if (!rank) { msg.textContent = '급수를 골라 주세요'; return; }
+    try {
+      const j = await (await fetch('/api/me', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rank }) })).json();
+      msg.textContent = j.error || '저장했습니다';
+      if (!j.error) load();
+    } catch (e) { msg.textContent = '서버 연결 실패'; }
+  };
   // 11-04 작가님 — 대기실/내 기보 분리: 참여자 = 접속 중 사람(최근 30초 신호) + AI 상대
   const SHOWN = ['18k', '10k', '5k', '1k', '3d', '5d', '7d', '9d'];
   let allRanks = false;
@@ -1434,7 +1524,7 @@ setInterval(() => {
       `<div class="t2">${off ? why : 'AI · 대국 가능'}</div></div><div class="btns"><button class="hl" data-pick="${v}"${off ? ' disabled' : ''}>대국 신청</button></div></div>`;
     const ranks = [...d.ranks].reverse();  // 강한 쪽부터
     // 11-04 작가님 — 테스트 아이디: 접속 중 사람(대기실·대국 중) 먼저, 내 행은 (나). 그 아래 AI 상대
-    const humans = (d.people || []).map(p => `<div class="box lobby-row"><span class="dot me"></span><div class="grow"><div class="t1">${esc(p.nick)}${p.me ? ' (나)' : ''}</div>` +
+    const humans = (d.people || []).map(p => `<div class="box lobby-row"><span class="dot me"></span><div class="grow"><div class="t1">${esc(p.nick)}${p.rank ? ' · ' + esc(p.rank) : ''}${p.me ? ' (나)' : ''}</div>` +
       `<div class="t2">${esc(p.state)}</div></div></div>`).join('');
     const list = allRanks ? ranks : ranks.filter(r => SHOWN.includes(r.v));
     document.getElementById('lobbyPeople').innerHTML =
@@ -1455,7 +1545,8 @@ setInterval(() => {
     try {
       const d = await (await fetch('/api/rooms')).json();
       if (d.auth) { openAuth(); return; }
-      document.getElementById('lobbyMeNick').textContent = d.me ? d.me.nick : '';
+      document.getElementById('lobbyMeNick').textContent = d.me ? d.me.nick + (d.me.rankKo ? ' · ' + d.me.rankKo : '') : '';
+      document.getElementById('tabMy').hidden = true;  // 마이페이지는 닉네임으로만 연다(탭 줄엔 두지 않음)
       document.getElementById('lobbyMe').hidden = !d.me;
       const df = d.defaults || {};
       // 신청 창은 대국실과 같은 것을 쓴다 — 기본값은 가장 최근 방의 설정
