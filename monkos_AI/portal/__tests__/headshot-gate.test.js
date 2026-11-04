@@ -62,6 +62,10 @@ jest.unstable_mockModule('../lib/shared/config.js', () => ({
   parseRawBody: jest.fn(async (req) => req.rawBody),
   parseCookies: parseCookiesMock,
   verifyAuthToken: verifyAuthTokenMock,
+  // 생성 기록 테스트 딱지(ORDER_20261105) — headshot-route가 admin-auth(getAdminUser)를 import한다. 관리자·에이전트 없음
+  ADMIN_UIDS: [],
+  AGENT_API_KEYS: [],
+  generateAuthToken: jest.fn(),
   createHmac,
   randomBytes,
   sendTelegramMessage: jest.fn(),

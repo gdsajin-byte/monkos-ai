@@ -1,5 +1,6 @@
 import { Storage } from '@google-cloud/storage';
 import { firestore, log, CUSTOMER_GCS_BUCKET } from './shared/config.js';
+import { isDevService } from './gen-origin.js';
 
 const storage = new Storage();
 const bucket = storage.bucket(CUSTOMER_GCS_BUCKET);
@@ -52,6 +53,11 @@ export async function saveImages(service, userId, style, originalImage, generate
     gcsGenerated: generatedPath,
     gcsT1Raw: t1RawPath || null,
     status: 'active',
+    // 출처·시험 딱지 (ORDER_20261105) — 호출부가 generationOrigin(req)로 계산해 extras.origin에 싣는다.
+    // 호출부 누락 시에도 실행 서비스는 남긴다(dev면 isTest). 필드가 없는 과거 문서는 손대지 않는다.
+    originService: extras?.origin?.originService ?? (process.env.K_SERVICE || null),
+    isTest: extras?.origin ? extras.origin.isTest === true : isDevService(process.env.K_SERVICE),
+    testReason: extras?.origin ? (extras.origin.testReason || null) : (isDevService(process.env.K_SERVICE) ? 'dev_service' : null),
     createdAt: new Date().toISOString(),
   };
 
@@ -61,6 +67,7 @@ export async function saveImages(service, userId, style, originalImage, generate
     log(`[GCS] generations 기록 실패 (무시): ${e.message}`, 'WARNING');
   }
 
-  log(`[GCS] 병렬 저장 완료: ${basePath}/ (원본+생성${t1RawPath ? '+나노원본' : ''})`);
+  // 딱지 값도 로그에 — Firestore 직접 조회 없이(ch4 10조) 저장 내용을 확인할 수 있게
+  log(`[GCS] 병렬 저장 완료: ${basePath}/ (원본+생성${t1RawPath ? '+나노원본' : ''}) origin=${genDoc.originService || '-'} isTest=${genDoc.isTest}${genDoc.testReason ? `(${genDoc.testReason})` : ''}`);
   return { originalPath, generatedPath, t1RawPath };
 }

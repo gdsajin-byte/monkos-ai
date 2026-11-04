@@ -12,6 +12,8 @@ import { PORT, log, parseJsonBody, parseCookies, verifyAuthToken } from './share
 import { consumeGenerateQuota, refundGenerateQuota } from './payments.js';
 import { generateHeadshot } from './headshot-generate.js';
 import { saveImages } from './gcs-save.js';
+import { generationOrigin } from './gen-origin.js';
+import { getAdminUser } from './cms/admin-auth.js';
 import { resolveCreditSource } from './credit-source.js';
 import { trackEvent } from './tracking.js';
 
@@ -94,7 +96,7 @@ export async function handleHeadshotGenerate(req, res) {
 
     try {
       const creditSource = gateMode === 'credits' ? await resolveCreditSource(gateUserId) : null;
-      await saveImages('headshot', gateUserId, purpose || 'linkedin_pro', image, generatedBase64, { gate: gateMode, creditSource, sessionId: req.sessionId });
+      await saveImages('headshot', gateUserId, purpose || 'linkedin_pro', image, generatedBase64, { gate: gateMode, creditSource, sessionId: req.sessionId, origin: generationOrigin(req, { getAdmin: getAdminUser }) });
       log(`[Headshot] GCS 저장 완료: ${gateUserId}`);
     } catch (e) {
       log(`[Headshot] GCS 저장 실패 (무시): ${e.message}`, 'WARNING');

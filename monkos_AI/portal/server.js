@@ -48,7 +48,8 @@ import { assessFov, fovRejectionReason, fitCacheGet, fitCacheSet } from './lib/f
 import { checkCrownContact, resolveHeadPlacement, headPlacementSpec, hairPlacementApplies, crownMatteRowPx, HAIR_MARGIN_SLACK_ROWS, HAIR_PLACEMENT_SLUGS } from './lib/hair-measure.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
-import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
+import { handleAgentAuth, requireAdmin, getAdminUser } from './lib/cms/admin-auth.js';
+import { generationOrigin } from './lib/gen-origin.js';
 import { isDevService } from './lib/shared/env-tag.js';
 import { handleDashboardSummary, handleDashboardUsers, handleDashboardUsers360, handleDashboardCredits, handleDashboardTraffic, handleDashboardCitadel, handleDashboardUserDetail, handleDashboardChannels } from './lib/cms/dashboard.js';
 import { handleDashboardGsc, handleDashboardNaver, handleDashboardBing, handleDashboardPerformance } from './lib/cms/seo-dashboard.js';
@@ -1105,7 +1106,7 @@ const httpServer = createServer(async (req, res) => {
       try {
         // 크레딧 출처 스냅샷 — 생성 시점 기준 웰컴/구매 판정 (어드민 배지 분리, 2026-09-26)
         const creditSource = gateMode === 'credits' ? await resolveCreditSource(gateUserId) : null;
-        await saveImages('idphoto', gateUserId, slug || format || 'passport', norm.rawBase64, finalBase64, { ...(t1RawForSave && { t1Raw: t1RawForSave }), sessionId: req.sessionId, slug: slug || null, authUserId, gate: gateMode, creditSource });
+        await saveImages('idphoto', gateUserId, slug || format || 'passport', norm.rawBase64, finalBase64, { ...(t1RawForSave && { t1Raw: t1RawForSave }), sessionId: req.sessionId, slug: slug || null, authUserId, gate: gateMode, creditSource, origin: generationOrigin(req, { getAdmin: getAdminUser }) });
       } catch (e) {
         log(`[IDPhoto] GCS 저장 실패 (무시): ${e.message}`, 'WARNING');
       }
