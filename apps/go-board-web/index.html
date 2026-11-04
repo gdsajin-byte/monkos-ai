@@ -790,29 +790,86 @@ try {
   packName = localStorage.getItem('goBoardPack') || DEFAULT_PACK;  // 고른 적 없으면 참조 팩 — 없으면 buildSounds가 builtin으로 되돌림
 } catch (e) { /* 저장소 불가 — 기본값 */ }
 
+// 오디오 상태 진단(11-05 작가님 "전화·다른 소리로 이탈 후 복귀하면 묵음") — 화면 무변경, 방 이벤트 로그(rooms/events)에만 남긴다.
+// 남기는 것: 상태 전이·복귀·resume() 결과(성공/거부/2초 무응답)·실행 중이 아닐 때의 재생 시도·마지막 누름 뒤 경과 ms. 식별자 없음.
+const AD = { q: [], ctxN: 0, last: '', lastTap: 0, backAt: 0, timer: null, booted: false };
+function adLog(ev, extra) {
+  const now = performance.now();
+  const e = { ev, ct: new Date().toISOString(), state: actx ? actx.state : 'none', ctx: AD.ctxN, vis: document.visibilityState,
+              sinceTapMs: AD.lastTap ? Math.round(now - AD.lastTap) : null, sinceBackMs: AD.backAt ? Math.round(now - AD.backAt) : null,
+              ...extra };
+  if (!AD.booted) {  // 첫 기록에 환경 1회 — 홈 화면 앱(standalone) 여부·브라우저 판본
+    AD.booted = true;
+    const standalone = !!(navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches));
+    AD.q.push({ ev: 'boot', ct: e.ct, standalone, ua: navigator.userAgent.slice(0, 160),
+                session: navigator.audioSession ? navigator.audioSession.type : null });
+  }
+  // 같은 기록이 1초 안에 되풀이되면(연속 재생 등) 한 줄로 접고 횟수만 센다
+  const key = [ev, e.state, e.ctx, e.where, e.result].join('|');
+  const tail = AD.q[AD.q.length - 1];
+  if (tail && tail._k === key && now - tail._at < 1000) { tail.n = (tail.n || 1) + 1; return; }
+  Object.defineProperties(e, { _k: { value: key }, _at: { value: now } });  // 전송 안 됨(열거 불가)
+  AD.q.push(e);
+  if (AD.q.length > 200) AD.q.splice(0, AD.q.length - 200);
+  clearTimeout(AD.timer);
+  AD.timer = setTimeout(adFlush, 1500);
+}
+function adFlush(beacon) {
+  if (!ROOM || !AD.q.length) return;
+  const url = `/api/rooms/${ROOM}/audio`, body = JSON.stringify({ evs: AD.q.splice(0, 50) });
+  try {
+    if (beacon === true && navigator.sendBeacon) navigator.sendBeacon(url, body);
+    else fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true }).catch(() => {});
+  } catch (e) { /* 진단 실패가 대국을 막지 않게 */ }
+  if (AD.q.length) setTimeout(() => adFlush(beacon), 200);
+}
+function adResume(a, where) {  // resume()을 그대로 부르고 결과만 기록 — 동작 무변경
+  const t0 = performance.now(), from = a.state, id = AD.ctxN;
+  let done = false;
+  const p = a.resume();
+  setTimeout(() => { if (!done) adLog('resume', { where, from, ctx: id, result: 'timeout2s' }); }, 2000);
+  p.then(() => { done = true; adLog('resume', { where, from, ctx: id, result: 'ok', ms: Math.round(performance.now() - t0), state: a.state }); },
+         err => { done = true; adLog('resume', { where, from, ctx: id, result: 'rejected', err: String((err && err.name) || err), ms: Math.round(performance.now() - t0) }); });
+  return p;
+}
+
 function audio() {
   if (!actx) {
     const AC = window.AudioContext || window.webkitAudioContext;
-    actx = new AC({ latencyHint: 'interactive' });
+    const c = new AC({ latencyHint: 'interactive' }), id = ++AD.ctxN;
+    let prev = c.state;
+    c.onstatechange = () => {  // 진단: 상태 전이(running·suspended·interrupted·closed)
+      AD.last = `${prev}→${c.state}`;
+      adLog('statechange', { ctx: id, from: prev, state: c.state });
+      prev = c.state;
+    };
+    actx = c;
+    adLog('ctxNew', { ctx: id, rate: c.sampleRate });
   }
   return actx;
 }
 
 function unlockAudio() {  // 브라우저는 첫 사용자 동작 전에는 소리를 막는다 — 첫 누름에서 연다
   const a = audio();
-  if (a.state === 'suspended') a.resume();
+  if (a.state === 'suspended') adResume(a, 'unlock');
 }
 // 아이폰은 앱을 벗어나면 오디오를 멈추고(suspended/interrupted) 돌아와도 스스로 다시 켜지 않는다(10-24 작가님 "벗어났다 돌아오면 소리가 안 남")
 // → 복귀 때와 이후 모든 누름에서 다시 연다(once 아님). 그래도 막히면 오디오 컨텍스트를 새로 만든다
-function reviveAudio() {
+function reviveAudio(ev) {
   if (!actx) return;
-  if (actx.state === 'closed') { actx = null; return; }
-  if (actx.state !== 'running') actx.resume().catch(() => { actx = null; });
+  if (actx.state === 'closed') { adLog('ctxDrop', { why: 'closed', where: ev && ev.type }); actx = null; return; }
+  if (actx.state !== 'running') adResume(actx, (ev && ev.type) || 'revive').catch(() => { adLog('ctxDrop', { why: 'resumeRejected' }); actx = null; });
 }
-document.addEventListener('visibilitychange', () => { if (!document.hidden) reviveAudio(); });
-window.addEventListener('pageshow', reviveAudio);
+document.addEventListener('visibilitychange', ev => {
+  if (document.hidden) { adLog('hidden'); adFlush(true); return; }
+  AD.backAt = performance.now();
+  adLog('visible');
+  reviveAudio(ev);
+});
+window.addEventListener('pageshow', ev => { adLog('pageshow', { persisted: ev.persisted }); reviveAudio(ev); });
+window.addEventListener('pagehide', ev => { adLog('pagehide', { persisted: ev.persisted }); adFlush(true); });
 window.addEventListener('focus', reviveAudio);
-document.addEventListener('pointerdown', reviveAudio, true);
+document.addEventListener('pointerdown', ev => { AD.lastTap = performance.now(); reviveAudio(ev); }, true);
 
 function buildSounds(state) {
   const pack = state.packs && state.packs[packName];
@@ -850,7 +907,10 @@ function playNow(url, delay, gain, rate) {
   const buf = url && decoded[url];
   if (!buf) return false;
   const a = audio();
-  if (a.state === 'suspended') a.resume();
+  if (a.state !== 'running' || (AD.backAt && performance.now() - AD.backAt < 60000)) {  // 진단: 실행 중이 아니거나 복귀 1분 안의 재생
+    adLog('play', { ctxTime: +a.currentTime.toFixed(3) });
+  }
+  if (a.state === 'suspended') adResume(a, 'play');
   const src = a.createBufferSource(), g = a.createGain();
   src.buffer = buf; src.playbackRate.value = rate || 1; g.gain.value = gain;
   src.connect(g); g.connect(a.destination);
@@ -1347,6 +1407,7 @@ async function selftest() {
   const c = makeClock({ main: 0, byo: 2, periods: 2 }), ev = [];
   for (let t = 0; t < 50; t++) tickClock(c, 0.1, e => ev.push(e));
   out.push(`clock_events=${ev.join(',')} flagged=${c.flagged}`);
+  out.push(`audio_last=${AD.last || '-'} audio_ctx=${AD.ctxN}`);
   out.push(`ctx=${actx.state} baseLatency=${(actx.baseLatency * 1000).toFixed(1)}ms outputLatency=${((actx.outputLatency || 0) * 1000).toFixed(1)}ms`);
   if (!S.result && S.moveNo) {  // 추천수 탭: 버튼 → 목록 3줄 + 판 위 파란 번호
     tab = 'hint';

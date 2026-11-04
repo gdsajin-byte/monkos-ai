@@ -59,6 +59,22 @@ AI_Factory/go_kibo/run_4060.sh full 64
 - **최선 수와의 거리**: 체비셰프 거리 `max(|dx|,|dy|)`. 패스가 끼면 없음.
 - **큰 실수**: 손해 3집 이상.
 
+## 본 실행 (무인, 4060 작업 스케줄러) — ORDER_20261105
+
+| 파일 | 역할 |
+|---|---|
+| `mistakes_runner.py` | 4060에서 도는 러너(go-train venv, 표준 라이브러리). 창 판정(23:00~07:30) · 단일 실행 잠금 · b10 종료 대기(오늘 밤 실행 시작 시각으로 판정, 창 시작 +15분까지 흔적 없으면 GO-train-resume 1회 실행) · 1단계 visits 64 → 2단계 손해 3집+ 착수의 직전·직후 국면 visits 400 · 대국 단위 체크포인트(`out1/`, `out2/`의 `{id}.jsonl`, .tmp→rename) · 07:30 엔진 중단 후 다음 밤 이어서 · 상태 `runner_status.json`, 로그 `runner.log` |
+| `deploy_full.sh` | iMac → 4060 러너·설정·질의 배치 (`C:\Users\smuse73\go_kibo\`, `...\full\`) |
+| `make_task_xml.py` · `schedule_full.sh` | 기존 GO-train-resume XML을 내보내 principal·설정을 물려받아 ① b10 트리거·`--until`만 변경 ② `\MONK\GO-mistakes-run` 신설(매일 23:05, StartWhenAvailable, 한도 9시간) |
+| `pull_full.sh` | 결과 회수 → `analyze_mistakes.py full --dir1 --dir2` → `reports/MISTAKES_v1.md` (2단계 유지율 포함) |
+
+```bash
+AI_Factory/go_kibo/deploy_full.sh
+AI_Factory/go_kibo/schedule_full.sh 2026-11-05T23:00:00 2026-11-06_07:30
+AI_Factory/go_kibo/pull_full.sh            # 아침 회수·집계
+```
+GO-mistakes-run은 매일 트리거다 — 완료 뒤에는 GPU를 쓰지 않고 바로 끝나지만, 전체 완료 확인 후 사용 중지를 쌍아에게 요청한다.
+
 ## 4060 시간 규칙
 - 아이들 게임 PC 공용 — 저녁(~23시)은 GPU 금지. b10 학습 예약(`GO-train-resume` 23:00 ~ 다음날 14:50) 중 동시 실행은 b10 저하율 30% 이하일 때만 쌍아 확인 후.
 - `katago.exe`는 cmd(ssh 기본 셸)에서 바로 실행된다(Git Bash 직접 실행은 로더 오류 — go_train README).

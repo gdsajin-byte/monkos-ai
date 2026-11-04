@@ -2548,6 +2548,26 @@ class Handler(BaseHTTPRequestHandler):
             except (RuntimeError, ValueError) as e:
                 return self._json({"error": str(e)})
             return self._json({"winrate": wr, "score": score, "moveNo": len(mv)})
+        if m := re.fullmatch(rf"/api/rooms/({ROOM_ID_RE})/audio", path):
+            # 오디오 상태 진단(11-05 복귀 묵음 추적) — 방 이벤트 로그에만 남긴다. 방 상태·파일 무변경, 잠금 없음
+            room = ROOMS.get(m.group(1))
+            if not room:
+                return self._json({"error": "없는 방입니다", "noRoom": True}, 404)
+            if not self._need(room):
+                return
+            evs = body.get("evs") if isinstance(body.get("evs"), list) else []
+            n = 0
+            for e in evs[:50]:
+                if not isinstance(e, dict):
+                    continue
+                clean = {}
+                for k, v in list(e.items())[:20]:
+                    if not isinstance(k, str) or len(k) > 24 or k in ("t", "action"):
+                        continue
+                    clean[k] = v if (v is None or isinstance(v, (bool, int, float))) else str(v)[:200]
+                EVENTS.add(room.id, action="audio", **clean)
+                n += 1
+            return self._json({"ok": True, "n": n})
         if path == "/api/rooms":
             u = self._need()
             if not u:
