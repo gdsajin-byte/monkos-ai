@@ -2,7 +2,7 @@
 type: order
 date: 2026-11-05
 from: iMac/쌍아
-to: iMac/쌍아-막내1
+to: iMac/쌍아-막내8
 subject: 생성 기록(generations)에 테스트 딱지 — 저장 시 originService·isTest 필드를 남기고, 어드민 생성 검토 화면에 '테스트' 배지와 기본 숨김 필터를 둔다. dev까지
 status: 대기
 portfolio: PF_IDPHOTO
@@ -10,7 +10,7 @@ portfolio: PF_IDPHOTO
 
 # ORDER — 생성 기록 테스트 딱지
 
-**[2026-11-05 04:34 KST]** iMac/쌍아 → iMac/쌍아-막내1
+**[2026-11-05 04:34 KST]** iMac/쌍아 → iMac/쌍아-막내8
 
 출처: 작가님 2026-11-05 iMac 쌍아 세션 사람 턴.
 - 04:31 어드민 생성 기록 캡처를 보시고 "이 사람들 뭐지 미국 공무원들같은데"라고 물으셨다. 확인해 보니 11-04 14:19 막내1의 Wikimedia 공개 사진 dev 시험(kr-passport 무료, 익명)이 prod 어드민에 섞여 보인 것이다.
@@ -60,7 +60,7 @@ portfolio: PF_IDPHOTO
 - [ ] 어드민 배지·기본 숨김 토글
 - [ ] 과거 시험 기록 목록(수정 없음) + 집계 소비처 표
 - [ ] dev rev + 실호출 1회 + 어드민 확인
-- [ ] COMPLETION `monkos-ops/ops/reports/2026-11/COMPLETION_20261105_iMac쌍아-막내1_IDPHOTO_생성기록_테스트딱지.md`, 브랜치 푸시·origin SHA 대조
+- [ ] COMPLETION `monkos-ops/ops/reports/2026-11/COMPLETION_20261105_iMac쌍아-막내8_IDPHOTO_생성기록_테스트딱지.md`, 브랜치 푸시·origin SHA 대조
 
 ## 5. 커밋 메시지
 - `[feat] 생성 기록 테스트 딱지 — originService·isTest·어드민 기본 숨김 (PF_IDPHOTO)`
