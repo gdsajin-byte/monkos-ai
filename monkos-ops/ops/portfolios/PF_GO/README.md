@@ -102,6 +102,7 @@ status: active
 | 11/05 | iMac/쌍아-막내2 | 소리 팩 v2 8개(monk-v2-…) — 초읽기 끊김 원인=v1 정렬 분할 첫소리 잘림(실측), 문맥 단독 생성으로 교체. 단음절 발음 문제는 STT 오인으로 정정. 재기동 없이 노출, 누적 ≈1,890크레딧 | [COMPLETION_20261105_iMac쌍아-막내2_GO_자체음성팩_후보](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_자체음성팩_후보.md) | ✅ |
 | 11/05 | iMac/쌍아-막내2 | 한국어 원어민 목소리 팩 8개(monk-ko-…: Jin Geon Song·Sola·Selly Han·Min-joon, rate 1.0·notice 730일) — 재기동 없이 노출, 크레딧 실측 1,335/90,000 | [COMPLETION_20261105_iMac쌍아-막내2_GO_자체음성팩_후보](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_자체음성팩_후보.md) | ✅ |
 | 11/05 | iMac/쌍아-막내2 | 초읽기 끊김 원인 확정 — 5초 ping syncClocks가 화면 시계 교체로 초 경계 음성 누락, 10초 초읽기 판정식(before>k) 하나 누락·안내 겹침, 팩 RMS 6~7dB 큼. 고침안 4건 승인·구현 중 | [REPORT_20261105_iMac쌍아-막내2_GO_초읽기끊김_원인](../../reports/2026-11/REPORT_20261105_iMac쌍아-막내2_GO_초읽기끊김_원인.md) | 🔀 |
+| 11/05 | iMac/쌍아-막내2 | 초읽기 음성 끊김 고침 8765 반영 — syncClocks 보정·10초 '하나'·안내 우선 대기열·음성 RMS −18dBFS·Min-joon 열 단축, 10초·20초 누락 0·중복 0 실측 | [COMPLETION_20261105_iMac쌍아-막내2_GO_초읽기끊김_고침](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_초읽기끊김_고침.md) | ✅ |
 
 ## 3. Phase 현황
 
