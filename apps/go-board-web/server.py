@@ -8,12 +8,16 @@
   /            대기실 (새 대국 · 내 진행 중 대국 · 지난 대국)
   /room/{id}   대국실 (지금 화면)
   /api/rooms   방 목록·생성,  /api/rooms/{id}/state|play|…  방 범위 API
+단계 ②-1(11-04, 작가님 "테스트로 누구든 아이디 만들고 입장"): 계정·세션(users.json·sessions.json, 로컬 파일) — 방은 만든 사람 것.
+  /api/auth/signup|login|logout|me · /api/presence. 로컬호스트 직접 요청은 쿠키 없이 '작가님'(live_view 호환).
 방 상태는 수마다 ~/.monkos/go-board/rooms/{id}.json 에 원자적으로 저장되고 서버 기동 시 전부 복원된다.
 엔진은 EngineHub(무상태 경계) 뒤에 있다 — 방이 국면을 넘기면 수·분석만 돌려준다.
 """
 import base64
 import contextlib
 import hashlib
+import hmac
+import http.cookies
 import json
 import os
 import random
@@ -501,6 +505,171 @@ class RoomLock:
             self.release()
 
 
+# ---------------------------------------------------------------- 계정·세션 (11-04 작가님 — 테스트 아이디 개방, 단계 ②-1)
+# 사람은 없어도 누구든 아이디를 만들어 들어올 수 있게 연다(채팅·초청을 위한 사용자 구분 선행). 저장은 로컬 파일 —
+# 단계 ⑤에서 Firestore, 로그인은 단계 ③ 이후 Access/정식 인증으로 바뀐다. 비밀번호·해시·세션 토큰은 로그·응답에 내지 않는다.
+ADMIN_NICK = "작가님"  # 예약 닉네임 — 기존 사용자(방 전부의 주인). 인수 코드 없이는 가입 못 한다
+ADMIN_UID = "admin"  # 작가님 계정의 고정 uid — owner 없는 옛 방은 읽을 때 이 uid 소유로 본다(파일은 다시 쓰지 않음)
+NICK_RE = re.compile(r"[가-힣A-Za-z0-9_]{2,12}")
+PW_MIN = 4
+PBKDF_ITER = 200000
+SESSION_TTL = 30 * 24 * 3600
+COOKIE_NAME = "gb_s"
+PRESENCE_TTL = 30  # 대기실·대국실에서 이 초 안에 신호가 있으면 접속 중
+RATE_MAX, RATE_WINDOW = 10, 60  # 가입·로그인: IP별 1분 10회
+USERS_FILE = ROOMS_DIR.parent / "users.json"
+SESSIONS_FILE = ROOMS_DIR.parent / "sessions.json"
+CLAIM_FILE = ROOMS_DIR.parent / "admin_claim.txt"
+SIGNUP_FAIL = "가입할 수 없습니다 — 닉네임을 바꾸거나 인수 코드를 확인해 주세요"
+LOGIN_FAIL = "닉네임 또는 비밀번호가 맞지 않습니다"
+
+
+def write_json_atomic(path, obj):
+    """임시 파일 → rename(원자적), 권한 600 — 계정·세션 파일용."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name("." + path.name + ".tmp")
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as fh:
+        json.dump(obj, fh, ensure_ascii=False)
+        fh.flush()
+        os.fsync(fh.fileno())
+    os.replace(tmp, path)
+
+
+def read_json(path, default):
+    try:
+        return json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
+    except (OSError, ValueError) as e:
+        print(f"❌ go-board: {path.name} 읽기 실패 — {e}", file=sys.stderr, flush=True)
+        return default
+
+
+def pw_hash(pw, salt):
+    return hashlib.pbkdf2_hmac("sha256", pw.encode("utf-8"), salt, PBKDF_ITER).hex()
+
+
+class Auth:
+    """계정(users.json)·세션(sessions.json, 토큰의 sha256만)·접속 신호(메모리)·가입/로그인 횟수 제한(메모리)."""
+
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.users = read_json(USERS_FILE, {}).get("users", [])
+        self.sessions = read_json(SESSIONS_FILE, {})
+        self.seen = {}  # uid → (마지막 신호 시각, 'lobby' | 'room')
+        self.hits = {}  # ip → 가입·로그인 시각들
+
+    # ---- 관리자 인수 코드: '작가님' 계정이 아직 없으면 1회용 코드를 파일에만 쓴다(값은 로그에 내지 않음)
+    def ensure_claim(self):
+        if any(u["uid"] == ADMIN_UID for u in self.users):
+            return
+        if not CLAIM_FILE.exists():
+            CLAIM_FILE.parent.mkdir(parents=True, exist_ok=True)
+            fd = os.open(CLAIM_FILE, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            with os.fdopen(fd, "w", encoding="utf-8") as fh:
+                fh.write(secrets.token_hex(4) + "\n")
+        print(f"✅ go-board: 인수 코드 파일 생성: {CLAIM_FILE}", flush=True)
+
+    def _save_users(self):
+        write_json_atomic(USERS_FILE, {"users": self.users})
+
+    def _save_sessions(self):
+        write_json_atomic(SESSIONS_FILE, self.sessions)
+
+    def nick(self, uid):
+        u = next((u for u in self.users if u["uid"] == uid), None)
+        return u["nick"] if u else (ADMIN_NICK if uid == ADMIN_UID else "알 수 없음")
+
+    def rate_ok(self, ip):
+        now = time.time()
+        with self.lock:
+            h = [t for t in self.hits.get(ip, []) if now - t < RATE_WINDOW]
+            ok = len(h) < RATE_MAX
+            if ok:
+                h.append(now)
+            self.hits[ip] = h
+            if len(self.hits) > 2000:  # 오래된 IP 정리
+                self.hits = {k: v for k, v in self.hits.items() if v and now - v[-1] < RATE_WINDOW}
+            return ok
+
+    def signup(self, nick, pw, claim):
+        """(사용자, 오류문구). 형식 오류만 구체적으로, 중복·예약·코드 불일치는 한 문구."""
+        nick, pw = str(nick or "").strip(), str(pw or "")
+        if not NICK_RE.fullmatch(nick):
+            return None, "닉네임은 2~12자의 한글·영문·숫자·_ 만 쓸 수 있습니다"
+        if len(pw) < PW_MIN:
+            return None, f"비밀번호는 {PW_MIN}자 이상이어야 합니다"
+        with self.lock:
+            if any(u["nick"].casefold() == nick.casefold() for u in self.users):
+                return None, SIGNUP_FAIL
+            uid = "u-" + secrets.token_hex(6)
+            if nick.casefold() == ADMIN_NICK.casefold():
+                try:
+                    code = CLAIM_FILE.read_text(encoding="utf-8").strip()
+                except OSError:
+                    code = ""
+                if not code or not hmac.compare_digest(str(claim or "").strip().encode(), code.encode()):
+                    return None, SIGNUP_FAIL
+                uid = ADMIN_UID
+            salt = secrets.token_bytes(16)
+            u = {"uid": uid, "nick": nick, "created": datetime.now().isoformat(timespec="seconds"),
+                 "pw": {"algo": "pbkdf2_sha256", "iter": PBKDF_ITER, "salt": salt.hex(), "hash": pw_hash(pw, salt)}}
+            self.users.append(u)
+            self._save_users()
+            if uid == ADMIN_UID:  # 인수 완료 — 코드 파일 삭제
+                with contextlib.suppress(OSError):
+                    CLAIM_FILE.unlink()
+        return {"uid": u["uid"], "nick": u["nick"]}, None
+
+    def login(self, nick, pw):
+        nick, pw = str(nick or "").strip(), str(pw or "")
+        with self.lock:
+            u = next((u for u in self.users if u["nick"].casefold() == nick.casefold()), None)
+        salt = bytes.fromhex(u["pw"]["salt"]) if u else b"\0" * 16  # 없는 닉네임도 같은 계산·같은 문구
+        h = pw_hash(pw, salt)
+        if not u or not hmac.compare_digest(h, u["pw"]["hash"]):
+            return None, LOGIN_FAIL
+        return {"uid": u["uid"], "nick": u["nick"]}, None
+
+    def new_session(self, uid):
+        tok = secrets.token_urlsafe(32)
+        now = time.time()
+        with self.lock:
+            self.sessions = {k: v for k, v in self.sessions.items() if v["exp"] > now}
+            self.sessions[hashlib.sha256(tok.encode()).hexdigest()] = {"uid": uid, "exp": now + SESSION_TTL}
+            self._save_sessions()
+        return tok
+
+    def user_of(self, tok):
+        if not tok:
+            return None
+        with self.lock:
+            s = self.sessions.get(hashlib.sha256(tok.encode()).hexdigest())
+            if not s or s["exp"] <= time.time():
+                return None
+            u = next((u for u in self.users if u["uid"] == s["uid"]), None)
+        return {"uid": u["uid"], "nick": u["nick"]} if u else None
+
+    def end_session(self, tok):
+        if not tok:
+            return
+        with self.lock:
+            if self.sessions.pop(hashlib.sha256(tok.encode()).hexdigest(), None):
+                self._save_sessions()
+
+    def touch(self, uid, where):
+        self.seen[uid] = (time.time(), where)
+
+    def people(self, me_uid):
+        """접속 중(최근 30초 신호) 사람 — 닉네임 + 대기실/대국 중. uid 는 내보내지 않는다."""
+        now = time.time()
+        out = [{"nick": self.nick(uid), "state": "대국 중" if w == "room" else "대기실", "me": uid == me_uid}
+               for uid, (t, w) in list(self.seen.items()) if now - t <= PRESENCE_TTL]
+        return sorted(out, key=lambda p: (not p["me"], p["nick"].casefold()))
+
+
+AUTH = None  # Auth
+
+
 # ---------------------------------------------------------------- 방(대국 상태)
 
 STATUS_KO = {"waiting": "대기", "playing": "대국", "ended": "종료"}
@@ -550,13 +719,20 @@ class Room:
         self.rules = "korean"
         self.record_date = None
         self.komi_value = None
+        self.owner = ADMIN_UID  # 11-04 작가님 — 방 주인(uid). 필드 없는 옛 방은 '작가님' 계정 소유(읽을 때 기본값)
+
+    @property
+    def owner_nick(self):
+        return AUTH.nick(self.owner) if AUTH else ADMIN_NICK
 
     # ---- 만들기·저장
 
     @classmethod
-    def create(cls, level, handicap, time_ctl, color):
+    def create(cls, level, handicap, time_ctl, color, owner=ADMIN_UID):
         rid = f"{datetime.now():%Y%m%d-%H%M%S}-{secrets.token_hex(2)}"
         r = cls(rid)
+        r.owner = owner
+        r.sgf_path = GAMES_DIR / f"{r.started:%Y%m%d_%H%M%S}_{r.owner_nick}_vs_KataGo.sgf"
         if level != "strong" and level not in RANKS:
             raise RuntimeError("알 수 없는 수준")
         if level != "strong":
@@ -572,7 +748,7 @@ class Room:
             r.user = color
         elif color == "auto":  # 돌 가림
             r.user = random.choice("BW")
-            r.message = f"돌 가림 결과 — 작가님 {'흑(먼저 둠)' if r.user == 'B' else '백'}"
+            r.message = f"돌 가림 결과 — {r.owner_nick} {'흑(먼저 둠)' if r.user == 'B' else '백'}"
         r.setup = ENGINES.setup(handicap)
         if r.sgf_path.exists():  # 같은 초에 두 방 — 기보 이름 겹침 방지
             r.sgf_path = r.sgf_path.with_name(f"{r.sgf_path.stem}_{rid[-4:]}.sgf")
@@ -583,7 +759,7 @@ class Room:
         sc = None
         if self.scoring:
             sc = {"dead": sorted(self.scoring["dead"]), "kata": self.scoring["kata"]}
-        return {"v": 1, "id": self.id, "kind": self.kind, "user": self.user, "level": self.level,
+        return {"v": 1, "id": self.id, "owner": self.owner, "kind": self.kind, "user": self.user, "level": self.level,
                 "handicap": self.handicap, "time": self.time, "setup": self.setup,
                 "moves": [list(m) for m in self.moves], "scores": [list(s) for s in self.scores],
                 "score": self.score, "winrate": self.winrate, "result": self.result, "finalCount": self.final_count,
@@ -599,6 +775,7 @@ class Room:
     def from_dict(cls, d):
         r = cls(d["id"])
         r.kind = d.get("kind", "ai")
+        r.owner = d.get("owner") or ADMIN_UID  # 11-04 owner 없는 옛 방 = 작가님 계정 소유
         r.user, r.level, r.handicap, r.time = d["user"], d["level"], d["handicap"], d["time"]
         r.setup = list(d.get("setup") or [])
         r.moves = [tuple(m) for m in d.get("moves") or []]
@@ -982,7 +1159,7 @@ class Room:
     def sgf_text(self):
         if self.imported and self.sgf_path.exists():
             return self.sgf_path.read_text(encoding="utf-8")
-        me, eng = "작가님", f"KataGo({self.level_label()})"
+        me, eng = self.owner_nick, f"KataGo({self.level_label()})"
         pb, pw = (me, eng) if self.user == "B" else (eng, me)
         extra = ""
         if self.source == "upload":  # 불러온 기보 → 보기용 SGF(대국자·급단·날짜·규칙 그대로)
@@ -1003,7 +1180,7 @@ class Room:
                 + (f"TM[{self.time['main'] * 60}]OT[{self.time['periods']}x{self.time['byo']} byo-yomi]" if self.time else "")
                 + (extra if self.source == "upload" else f"DT[{self.started:%Y-%m-%d}]") + f"PB[{pb}]PW[{pw}]"
                 f"AP[MONK go-board-web]" + (f"RE[{self.result}]" if self.result and self.result != VOID else "")
-                + (f"C[접속 장애패 — 작가님 접속이 끊긴 채 {fmt_dur(self.dc_limit)} 초과]" if self.result_reason == "disconnect" else "")
+                + (f"C[접속 장애패 — {self.owner_nick} 접속이 끊긴 채 {fmt_dur(self.dc_limit)} 초과]" if self.result_reason == "disconnect" else "")
                 + (f"C[{self.message}]" if self.result_reason in ("rule-cleanup", "void") else ""))
         return head + "".join(nodes) + ")\n"
 
@@ -1022,7 +1199,7 @@ class Room:
                 "review": REVIEWS.status(self),
                 "lastReview": {"id": last["id"], "state": last["state"]} if last else None,
                 "dc": self.dc_state(), "resultReason": self.result_reason, "source": self.source,
-                "players": self.players, "origName": self.orig_name}
+                "players": self.players, "origName": self.orig_name, "ownerNick": self.owner_nick}
 
     def state(self):
         g, caps = replay(self.moves, self.setup)
@@ -1031,7 +1208,7 @@ class Room:
             last = list(to_xy(self.moves[-1][1]))
         return {
             "room": self.id, "kind": self.kind, "status": self.status, "statusKo": STATUS_KO[self.status],
-            "imported": self.imported,
+            "imported": self.imported, "ownerNick": self.owner_nick,
             "board": g, "captures": caps, "last": last, "moveNo": len(self.moves),
             "lastPass": bool(self.moves) and self.moves[-1][1].lower() == "pass",
             "lastColor": self.moves[-1][0] if self.moves else None,
@@ -1041,8 +1218,8 @@ class Room:
             "scores": self.scores, "result": self.result,
             # 기보 감상(10-24): 화면이 수순을 직접 재생한다 — 국면 계산은 화면 쪽 1벌
             "moveList": [list(m) for m in self.moves], "setup": self.setup, "source": self.source,
-            "players": self.players or ({"B": "작가님", "W": f"KataGo({self.level_label()})"} if self.user == "B"
-                                        else {"B": f"KataGo({self.level_label()})", "W": "작가님"}),
+            "players": self.players or ({"B": self.owner_nick, "W": f"KataGo({self.level_label()})"} if self.user == "B"
+                                        else {"B": f"KataGo({self.level_label()})", "W": self.owner_nick}),
             "record": {"date": self.record_date or f"{self.started:%Y-%m-%d}", "rules": self.rules,
                        "origName": self.orig_name},
             "resultKo": result_ko(self.result) if self.result else None,
@@ -1190,7 +1367,7 @@ class Rooms:
         self.store = store
         self.rooms = {}
         self.lock = threading.Lock()
-        self.focus = None  # 실시간 분석판(live_view --goboard)이 따라갈 방 — 마지막으로 열거나 둔 방
+        self.focus = {}  # 소유자 uid → 그 사람의 초점 방. 실시간 분석판(live_view --goboard)은 작가님 계정 것을 따라간다 — 마지막으로 열거나 둔 방
 
     def load(self):
         """저장된 방 전부 복원 + 아직 방이 없는 이전 기보(SGF)를 지난 대국으로 1회 가져온다. 가져온 수를 돌려준다."""
@@ -1237,23 +1414,29 @@ class Rooms:
                     finally:
                         r.lock.release()
             self.rooms[room.id] = room
-            self.focus = room.id
+            self.focus[room.owner] = room.id
         self.save(room)
 
-    def listing(self):
-        return sorted(list(self.rooms.values()), key=lambda r: r.updated, reverse=True)  # 복사본 — 생성과 겹쳐도 안전
+    def listing(self, owner=None):
+        """최근 순. owner(uid)를 주면 그 사람 방만 — 11-04 내 방만 보인다."""
+        return sorted([r for r in list(self.rooms.values()) if owner is None or r.owner == owner],  # 복사본 — 생성과 겹쳐도 안전
+                      key=lambda r: r.updated, reverse=True)
 
-    def focus_room(self):
-        """호환 API(/api/state 등)가 가리킬 방 — 초점 방, 없으면 가장 최근 진행 중 방, 없으면 가장 최근 방."""
-        r = self.rooms.get(self.focus)
-        if r:
+    def set_focus(self, room):
+        if room:
+            self.focus[room.owner] = room.id
+
+    def focus_room(self, owner=ADMIN_UID):
+        """호환 API(/api/state 등)가 가리킬 방 — 그 사람의 초점 방, 없으면 가장 최근 진행 중 방, 없으면 가장 최근 방."""
+        r = self.rooms.get(self.focus.get(owner))
+        if r and r.owner == owner:
             return r
-        rs = self.listing()
+        rs = self.listing(owner)
         return next((r for r in rs if r.status != "ended"), rs[0] if rs else None)
 
-    def defaults(self):
-        """새 대국 창 기본값 — 가장 최근에 만든 방의 설정을 기억한다."""
-        last = max((r for r in list(self.rooms.values()) if not r.imported), key=lambda r: r.started, default=None)
+    def defaults(self, owner=ADMIN_UID):
+        """새 대국 창 기본값 — 그 사람이 가장 최근에 만든 방의 설정을 기억한다."""
+        last = max((r for r in list(self.rooms.values()) if not r.imported and r.owner == owner), key=lambda r: r.started, default=None)
         return {"level": last.level if last else "strong", "handicap": last.handicap if last else 0,
                 "time": last.time if last else dict(DEFAULT_TIME), "user": last.user if last else "B",
                 "dcLimit": DC_LIMIT}
@@ -1300,7 +1483,7 @@ class Reviews:
         if self.running:
             return dict(base, ok=False, reason="리뷰 만드는 중 — 새 탭에서 진행 상황을 볼 수 있어요")
         if n < MIN_USER_MOVES:
-            return dict(base, ok=False, reason=f"작가님 수가 {MIN_USER_MOVES}수 이상이면 리뷰할 수 있어요")
+            return dict(base, ok=False, reason=f"{game.owner_nick} 수가 {MIN_USER_MOVES}수 이상이면 리뷰할 수 있어요")
         return dict(base, ok=True, reason="")
 
     def start(self, game, wr_filter):
@@ -1725,20 +1908,22 @@ def parse_gib_upload(raw):
             "event": hdr.get("GAMENAME", "")}
 
 
-def import_record(name, raw):
+def import_record(name, raw, owner=ADMIN_UID):
     """불러온 파일 → 보기 전용 방(같은 내용이면 기존 방). (방, 새로 만들었는지)."""
     if len(raw) > UPLOAD_MAX:
         raise ImportError_(f"파일이 1MB를 넘습니다({len(raw) // 1024}KB)")
     if not raw.strip():
         raise ImportError_("빈 파일입니다")
     digest = hashlib.sha1(raw).hexdigest()
-    rid = f"up-{digest[:12]}"
+    tag = "" if owner == ADMIN_UID else "-" + owner[-6:]  # 11-04 같은 파일도 사람마다 자기 방(남의 방과 겹치지 않게)
+    rid = f"up-{digest[:12]}{tag}"
     old = ROOMS.get(rid)
     if old:
         return old, False
     is_gib = name.lower().endswith(".gib") or raw.lstrip()[:3] == b"\\HS"
     d = parse_gib_upload(raw) if is_gib else parse_sgf_upload(raw)
     r = Room(rid)
+    r.owner = owner
     r.imported, r.source, r.orig_name = True, "upload", name
     r.moves, r.setup, r.handicap = d["moves"], d["setup"], d["handicap"]
     r.komi_value, r.result, r.rules, r.record_date = d["komi"], d["result"], d["rules"], d["dt"]
@@ -1749,7 +1934,7 @@ def import_record(name, raw):
                  + (" · 변화도는 버리고 메인 수순만 읽었습니다" if d["variations"] else ""))
     UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
     (UPLOADS_DIR / f"{digest[:12]}{'.gib' if is_gib else '.sgf'}").write_bytes(raw)  # 원본 보관
-    r.sgf_path = UPLOADS_DIR / f"{digest[:12]}.view.sgf"
+    r.sgf_path = UPLOADS_DIR / f"{digest[:12]}{tag}.view.sgf"
     r.sgf_path.write_text(r.sgf_text(), encoding="utf-8")
     ROOMS.rooms[rid] = r
     ROOMS.save(r)
@@ -1949,16 +2134,16 @@ def ev_move(body):
         return {}
 
 
-def new_room(body, base=None):
+def new_room(body, base=None, owner=ADMIN_UID):
     """대국 신청 → 방 생성. 첫 수가 엔진이면 대국실이 'engine'으로 부른다(화면은 빈 판부터)."""
-    d = ROOMS.defaults()
+    d = ROOMS.defaults(owner)
     level = str(body.get("level") or (base.level if base else d["level"]))
     handicap = int(body["handicap"]) if "handicap" in body else (base.handicap if base else d["handicap"])
     t = body.get("time", "keep")
     if t == "keep":
         t = base.time if base else d["time"]
         t = t or {"unlimited": True}
-    room = Room.create(level, handicap, t, body.get("color") or (base.user if base else d["user"]))  # 장애 한도는 고정 5분
+    room = Room.create(level, handicap, t, body.get("color") or (base.user if base else d["user"]), owner)  # 장애 한도는 고정 5분
     room.cache = json.dumps(room.state(), ensure_ascii=False)  # 첫 조회가 엔진 생각과 겹쳐도 빈 판을 준다
     ROOMS.add(room)
     EVENTS.add(room.id, action="create", user=room.user, level=room.level, handicap=room.handicap,
@@ -1981,8 +2166,81 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
-    def _json(self, obj, code=200):
-        self._send(code, json.dumps(obj, ensure_ascii=False))
+    def _json(self, obj, code=200, headers=None):
+        self._send(code, json.dumps(obj, ensure_ascii=False), headers=headers)
+
+    # ---- 11-04 작가님 — 테스트 아이디: 누가 보낸 요청인가
+    def _remote_hdr(self):
+        return bool(self.headers.get("CF-Connecting-IP") or self.headers.get("X-Forwarded-For"))
+
+    def _ip(self):
+        return (self.headers.get("CF-Connecting-IP") or (self.headers.get("X-Forwarded-For") or "").split(",")[0].strip()
+                or self.client_address[0])
+
+    def _is_local(self):
+        """로컬호스트 직접 요청 — 터널(cloudflared)을 거치면 CF-Connecting-IP/X-Forwarded-For 가 붙으므로 로컬이 아니다."""
+        return self.client_address[0] in ("127.0.0.1", "::1") and not self._remote_hdr()
+
+    def _https(self):
+        return (self.headers.get("X-Forwarded-Proto") or "").lower() == "https" or '"https"' in (self.headers.get("CF-Visitor") or "")
+
+    def _token(self):
+        try:
+            c = http.cookies.SimpleCookie(self.headers.get("Cookie") or "")
+        except http.cookies.CookieError:
+            return None
+        return c[COOKIE_NAME].value if COOKIE_NAME in c else None
+
+    def _who(self):
+        """쿠키 세션의 사용자. 쿠키가 없으면 로컬호스트 요청은 '작가님'(live_view·내부 도구 호환), 그 밖엔 None."""
+        u = AUTH.user_of(self._token())
+        if u:
+            return u
+        return {"uid": ADMIN_UID, "nick": ADMIN_NICK, "local": True} if self._is_local() else None
+
+    def _cookie(self, tok):
+        base = f"{COOKIE_NAME}={tok}; HttpOnly; SameSite=Lax; Path=/"
+        if self._https():
+            base += "; Secure"
+        return {"Set-Cookie": base + (f"; Max-Age={SESSION_TTL}" if tok else "; Max-Age=0")}
+
+    def _need(self, room=None):
+        """로그인(+방 소유) 확인 — 통과하면 사용자, 아니면 401/403 을 이미 보내고 None. 남의 방은 관전도 다음 단계."""
+        u = self._user
+        if not u:
+            self._json({"error": "로그인이 필요합니다", "auth": True}, 401)
+            return None
+        if room is not None and room.owner != u["uid"]:
+            self._json({"error": "다른 사람의 방입니다 — 관전은 다음 단계에서 열립니다.", "forbidden": True}, 403)
+            return None
+        return u
+
+    def _auth_post(self, path, body):
+        """/api/auth/* · /api/presence — 처리했으면 True."""
+        if path in ("/api/auth/signup", "/api/auth/login"):
+            if not AUTH.rate_ok(self._ip()):
+                self._json({"error": "요청이 너무 많습니다 — 잠시 뒤에 다시 해 주세요"}, 429)
+                return True
+            if path.endswith("signup"):
+                u, err = AUTH.signup(body.get("nick"), body.get("pw"), body.get("claim"))
+            else:
+                u, err = AUTH.login(body.get("nick"), body.get("pw"))
+            if err:
+                self._json({"error": err}, 400 if path.endswith("signup") else 401)
+            else:
+                self._json({"ok": True, "me": {"nick": u["nick"]}}, headers=self._cookie(AUTH.new_session(u["uid"])))
+            return True
+        if path == "/api/auth/logout":
+            AUTH.end_session(self._token())
+            self._json({"ok": True}, headers=self._cookie(""))
+            return True
+        if path == "/api/presence":  # 대기실이 15초마다 — 접속 중 목록에 오른다
+            u = self._need()
+            if u:
+                AUTH.touch(u["uid"], "lobby")
+                self._json({"people": AUTH.people(u["uid"])})
+            return True
+        return False
 
     def _state(self, room):
         """방 상태 — 엔진이 그 방에서 생각하는 동안(최대 17초)은 잠금을 기다리지 않고 직전 상태를 준다(10-23)."""
@@ -1997,6 +2255,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path, _, query = self.path.partition("?")
+        self._user = self._who()
         if path in ("/sw.js", "/pwa/sw.js"):  # PWA(10-23) — 서비스 워커는 범위를 위해 루트에서도 내보낸다
             self._send(200, (HERE / "pwa" / "sw.js").read_bytes(), "text/javascript; charset=utf-8")
             return
@@ -2011,19 +2270,30 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, page, "text/html; charset=utf-8")
         elif path == "/api/version":  # 화면 판본 확인(대기실·대국실·감상 공통, 가벼움)
             self._json({"build": build_id()})
+        elif path == "/api/auth/me":
+            u = self._need()
+            if u:
+                self._json({"me": {"nick": u["nick"], "admin": u["uid"] == ADMIN_UID, "local": bool(u.get("local"))}})
         elif path == "/api/rooms":
-            self._json({"rooms": [r.summary() for r in ROOMS.listing()], "defaults": ROOMS.defaults(), **common_state()})
+            u = self._need()
+            if u:  # 내 방만 — 남의 방은 목록에 없다
+                self._json({"rooms": [r.summary() for r in ROOMS.listing(u["uid"])], "defaults": ROOMS.defaults(u["uid"]),
+                            "me": {"nick": u["nick"]}, "people": AUTH.people(u["uid"]), **common_state()})
         elif m := re.fullmatch(rf"/api/rooms/({ROOM_ID_RE})/analysis", path):
             room = ROOMS.get(m.group(1))
             if not room:
                 return self._json({"error": "없는 방입니다", "noRoom": True}, 404)
+            if not self._need(room):
+                return
             self._json(ANALYSES.status(room))  # 덜 끝났으면 계산 줄에 세운다 — 방 파일은 건드리지 않음
         elif m := re.fullmatch(rf"/api/rooms/({ROOM_ID_RE})/(state|sgf)", path):
             room = ROOMS.get(m.group(1))
             if not room:
                 return self._json({"error": "없는 방입니다 — 대기실로 돌아가 주세요.", "noRoom": True}, 404)
+            if not self._need(room):  # 11-04 남의 방 state·SGF 는 403(관전은 다음 단계)
+                return
             if m.group(2) == "state":
-                ROOMS.focus = room.id  # 실시간 분석판이 지금 보는 방을 따라가게
+                ROOMS.set_focus(room)  # 실시간 분석판이 지금 보는 방을 따라가게
                 self._send(200, self._state(room))
             else:
                 if not room.moves:
@@ -2033,7 +2303,10 @@ class Handler(BaseHTTPRequestHandler):
                            {"Content-Disposition": f"attachment; filename=\"{room.id}.sgf\"; "
                                                    f"filename*=UTF-8''{urllib.parse.quote(name)}"})
         elif path == "/api/state":  # 호환(초점 방) — live_view --goboard 가 이 주소를 읽는다
-            room = ROOMS.focus_room()
+            u = self._need()
+            if not u:
+                return
+            room = ROOMS.focus_room(u["uid"])
             self._send(200, self._state(room) if room else json.dumps(EMPTY_STATE, ensure_ascii=False))
         elif re.fullmatch(r"/sounds/(custom/)?[A-Za-z0-9_-]+\.wav", path):
             f = HERE / path.lstrip("/")
@@ -2057,6 +2330,11 @@ class Handler(BaseHTTPRequestHandler):
             else:
                 self._send(404, '{"error":"없음"}')
         elif path.startswith("/review/"):
+            if not self._need():
+                return
+            job = REVIEWS.jobs.get(path.split("/")[2])
+            if job and not self._need(ROOMS.get(job.get("room"))):  # 리뷰는 방 주인만
+                return
             body = REVIEWS.page(path.split("/")[2])
             if body is None:
                 self._send(404, "리뷰 없음", "text/plain; charset=utf-8")
@@ -2065,9 +2343,17 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/live" or path.startswith("/live/"):
             # 실시간 분석판(live_view, 127.0.0.1:8770) 중계 — 외부(터널·Access)에서 주소 하나로 쓰게(10-23)
             # ?room= 이 붙으면 그 방을 초점으로 — live_view 는 /api/state(초점 방)를 읽는다(10-24)
+            # 11-04 분석판은 작가님 계정 방(live_view 가 읽는 /api/state)만 따라간다 — 다른 계정은 소유자 전용 규칙으로 막는다
+            u = self._need()
+            if not u:
+                return
+            if u["uid"] != ADMIN_UID:
+                return self._json({"error": "실시간 분석판은 아직 작가님 계정 전용입니다.", "forbidden": True}, 403)
             rid = urllib.parse.parse_qs(query).get("room", [None])[0]
             if rid and ROOMS.get(rid):
-                ROOMS.focus = rid
+                if not self._need(ROOMS.get(rid)):
+                    return
+                ROOMS.set_focus(ROOMS.get(rid))
             try:
                 with urllib.request.urlopen("http://127.0.0.1:8770" + (self.path[5:] or "/"), timeout=15) as r:
                     self._send(r.status, r.read(), r.headers.get("Content-Type", "application/octet-stream"))
@@ -2087,11 +2373,17 @@ class Handler(BaseHTTPRequestHandler):
         except json.JSONDecodeError:
             body = {}
         path = self.path.partition("?")[0]
+        self._user = self._who()
+        if self._auth_post(path, body):
+            return
         if path == "/api/import":  # 기보 불러오기(SGF·GIB) — 본문 {name, b64}
+            u = self._need()
+            if not u:
+                return
             name = str(body.get("name") or "기보")[:120]
             try:
                 raw = base64.b64decode(body.get("b64") or "", validate=True)
-                room, fresh = import_record(name, raw)
+                room, fresh = import_record(name, raw, u["uid"])
             except ImportError_ as e:
                 return self._json({"error": f"❌ 불러오기 실패: {name} — {e}"})
             except (ValueError, TypeError) as e:
@@ -2103,6 +2395,8 @@ class Handler(BaseHTTPRequestHandler):
             room = ROOMS.get(m.group(1))
             if not room:
                 return self._json({"error": "없는 방입니다", "noRoom": True}, 404)
+            if not self._need(room):
+                return
             try:
                 mv = [(str(c), str(v)) for c, v in body.get("moves", [])][:SIZE * SIZE * 2]
                 for c, v in mv:
@@ -2114,8 +2408,11 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json({"error": str(e)})
             return self._json({"winrate": wr, "score": score, "moveNo": len(mv)})
         if path == "/api/rooms":
+            u = self._need()
+            if not u:
+                return
             try:
-                room = new_room(body)
+                room = new_room(body, owner=u["uid"])
             except (RuntimeError, KeyError, ValueError) as e:
                 return self._json({"error": str(e)})
             return self._json({"id": room.id, "url": f"/room/{room.id}"})
@@ -2125,11 +2422,17 @@ class Handler(BaseHTTPRequestHandler):
             room, action = ROOMS.get(m.group(1)), m.group(2)
             if not room:
                 return self._json({"error": "없는 방입니다 — 대기실로 돌아가 주세요.", "noRoom": True}, 404)
-        elif lm and lm.group(1) in LEGACY_ACTIONS:  # 호환(초점 방)
-            room, action = ROOMS.focus_room(), lm.group(1)
+            u = self._need(room)
+            if not u:
+                return
+        elif lm and lm.group(1) in LEGACY_ACTIONS:  # 호환(초점 방) — 로그인한 사람(로컬호스트=작가님)의 초점 방
+            u = self._need()
+            if not u:
+                return
+            room, action = ROOMS.focus_room(u["uid"]), lm.group(1)
             if action == "new":
                 try:
-                    room = new_room(body, room)
+                    room = new_room(body, room, u["uid"])
                 except (RuntimeError, KeyError, ValueError) as e:
                     return self._json({"error": str(e)})
                 action = "engine"
@@ -2140,6 +2443,7 @@ class Handler(BaseHTTPRequestHandler):
         if room.imported and action not in ("review",):
             EVENTS.add(room.id, action=action, result="rejected", error="보기 전용 기보", **ev_move(body))
             return self._json({"error": "지난 대국(가져온 기보)은 볼 수만 있습니다 — 새 대국을 시작해 주세요."})
+        AUTH.touch(u["uid"], "room")  # 대국실 ping·동작 = 대국 중(참여자 목록)
         t0 = time.time()
         # 엔진이 이 방에서 생각 중이면 줄 세우지 않고 버린다 — 대기 클릭이 나중에 착수로 바뀌는 경합 차단(10-23).
         # 그 밖의 보유자(상태 조회·ping·감시 저장 등)는 거부 사유가 아니다 — LOCK_WAIT 까지 기다렸다 처리(10-24 첫 수 busy)
@@ -2155,7 +2459,7 @@ class Handler(BaseHTTPRequestHandler):
             if info.get("holder"):  # 기다렸다 처리한 경우도 남긴다(누가 막고 있었는지)
                 EVENTS.add(room.id, action=action, result="waited", waitedMs=round((time.time() - t0) * 1000), **info)
         try:
-            ROOMS.focus = room.id
+            ROOMS.set_focus(room)
             if room.heartbeat() and action == "ping":  # 대국자 동작·ping = 접속해 있음. 재접속은 ping 만으로도 저장
                 ROOMS.save(room)
             n0 = len(room.moves)
@@ -2264,7 +2568,9 @@ def main():
         t.join()
     ENGINES = EngineHub(strong, human, human_reason)
     ROOMS = Rooms(LocalRoomStore(ROOMS_DIR))
-    global EVENTS
+    global AUTH, EVENTS
+    AUTH = Auth()  # 11-04 작가님 — 테스트 아이디 개방(단계 ②-1)
+    AUTH.ensure_claim()
     EVENTS = EventLog(ROOMS_DIR)
     imported = ROOMS.load()
     migrated = run_migrations()

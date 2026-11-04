@@ -256,6 +256,11 @@
   .lobby-row.off { opacity: .55; }
   .lobby-row .dot.me { background: var(--blue); }
   .lobby-row .dot.ai { background: var(--line-ui); }
+  /* 11-04 작가님 — 테스트 아이디: 대기실 상단 내 닉네임·로그아웃, 로그인/가입 창(신청 창 스타일 재사용) */
+  .lobby-me { font-size: 14px; color: #cfd6e0; display: flex; align-items: center; gap: 8px; }
+  .lobby-me button { font-size: 13px; padding: 3px 10px; }
+  #authDlg input[type=text], #authDlg input[type=password] { flex: 1 1 160px; font-size: 17px; padding: 8px; border: 1px solid var(--line-ui); border-radius: 6px; }
+  #authMsg { color: #b4462b; min-height: 1.2em; font-size: 15px; }
   .lobby-note { font-size: 13px; color: var(--muted); }
   .lobby-news { padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; font-size: 15px; }
   /* 길게 눌러도 아이폰 글쓰기 도구·텍스트 선택·확대 메뉴가 뜨지 않게(10-24 작가님 "착수 버튼 길게 누르면 글쓰기 도구") */
@@ -274,7 +279,7 @@
   <span id="topBtns"><button id="bLobby" title="대기실로">대기실</button><button id="bNew">대국 신청</button></span>
 </div>
 <div id="lobby">
-  <div class="status"><span><b>MONK 바둑</b> 대기실</span><span class="grow"></span><span class="small" id="lobbyEng" style="color:#cfd6e0"></span></div>
+  <div class="status"><span><b>MONK 바둑</b> 대기실</span><span class="grow"></span><span class="small" id="lobbyEng" style="color:#cfd6e0"></span><span class="lobby-me" id="lobbyMe" hidden><span id="lobbyMeNick"></span><button id="bLogout">로그아웃</button></span></div>
   <!-- 11-04 작가님 — 대기실/내 기보 분리: 대기실 = 참여자·방 만들기·소식(11-04 이어두기 폐지: 진행 중 판은 표시하지 않음) / 내 기보 = 지난 대국·기보 불러오기 -->
   <div class="lobby-tabs"><button id="tabWait" data-tab="wait">대기실</button><button id="tabMine" data-tab="mine">내 기보</button></div>
   <div class="lobby-body">
@@ -282,7 +287,7 @@
     <div class="tab-pane" id="paneWait">
       <h3>참여자</h3><div id="lobbyPeople"></div>
       <h3>대기실 소식</h3>
-      <div class="lobby-note">채팅·초청은 사용자 구분(단계 ②) 뒤 열립니다</div>
+      <div class="lobby-note">채팅·초청은 다음 단계에서 열립니다</div>
       <div class="box lobby-news" id="lobbyNews"><div class="lobby-empty">불러오는 중…</div></div>
     </div>
     <div class="tab-pane" id="paneMine">
@@ -385,8 +390,20 @@
   </div>
 </div>
 
+<!-- 11-04 작가님 — 테스트 아이디 개방: 로그인 안 하면 대기실 대신 이 창. '작가님' 가입 때만 인수 코드 칸 -->
+<dialog id="authDlg">
+  <div class="dlg-head">MONK 바둑 — 로그인 / 가입</div>
+  <div class="dlg-body">
+    <label>닉네임 <input type="text" id="aNick" maxlength="12" autocomplete="username" autocapitalize="off" placeholder="2~12자 한글·영문·숫자·_"></label>
+    <label>비밀번호 <input type="password" id="aPw" autocomplete="current-password" placeholder="4자 이상"></label>
+    <label id="aClaimRow" hidden>인수 코드 <input type="text" id="aClaim" autocomplete="off" autocapitalize="off" placeholder="서버 인수 코드 파일의 값"></label>
+    <div id="authMsg" role="status"></div>
+    <div class="small">테스트 중입니다. 누구든 아이디를 만들어 들어올 수 있고, 방은 만든 사람만 봅니다.</div>
+  </div>
+  <div class="dlg-foot"><button id="aSignup">가입</button><button id="aLogin" class="hl">로그인</button></div>
+</dialog>
 <dialog id="newDlg">
-  <div class="dlg-head" id="dlgTitle" tabindex="-1" autofocus>작가님 VS KataGo</div>
+  <div class="dlg-head" id="dlgTitle" tabindex="-1" autofocus>나 VS KataGo</div>
   <div class="dlg-body">
     <h4>● 인공지능 설정</h4>
     <label>컴퓨터 수준 <select id="dLevel"></select></label>
@@ -397,7 +414,7 @@
       <select id="handicap"></select></label>
     <div class="small" id="dKomi"></div>
     <label>흑백선택 <select id="dColor">
-      <option value="B">작가님 흑</option><option value="W">작가님 백</option><option value="auto">자동 돌가림</option>
+      <option value="B">나 흑</option><option value="W">나 백</option><option value="auto">자동 돌가림</option>
     </select></label>
     <label>대국시간 <label><input type="checkbox" id="tUnl"> 무제한</label>
       <select id="tMain"></select> <select id="tByo"></select> <select id="tPer"></select></label>
@@ -602,7 +619,7 @@ function render() {
   if (S.result) turn = '';
   else if (S.scoring) turn = '사석을 확인하세요';
   else if (busy) turn = busyPath === '/api/score' ? '집 계산 중' : 'KataGo 생각 중';
-  else if (S.toMove === S.user) turn = `작가님(${me}) 차례`;
+  else if (S.toMove === S.user) turn = `${S.ownerNick || '나'}(${me}) 차례`;
   else turn = 'KataGo 차례';
   const turnEl = document.getElementById('turn');
   turnEl.textContent = turn;
@@ -616,7 +633,7 @@ function render() {
   // 대국자 카드 — 따낸 돌 배지·이름·급수(시계는 renderClocks)
   for (const col of ['B', 'W']) {
     const mine = col === S.user;
-    document.getElementById('name' + col).textContent = mine ? '작가님' : 'KataGo';
+    document.getElementById('name' + col).textContent = mine ? (S.ownerNick || '나') : 'KataGo';
     document.getElementById('rank' + col).textContent = mine ? '' :
       (S.level === 'strong' ? '최강' : `${(S.ranks.find(r => r.v === S.level) || {}).label || S.level}`);
     document.getElementById('cap' + col).textContent = S.captures[col];
@@ -663,7 +680,7 @@ function render() {
   const t = S.time;
   const fc = S.finalCount;
   document.getElementById('gameInfo').innerHTML =
-    `<div>${S.moveNo}수 · ${ha} · 덤 ${S.komi} · 작가님 ${me} · 상대 ${S.levelLabel}</div>` +
+    `<div>${S.moveNo}수 · ${ha} · 덤 ${S.komi} · ${S.ownerNick || '나'} ${me} · 상대 ${S.levelLabel}</div>` +
     `<div class="small">시간 ${t ? `${t.main ? t.main + '분 + ' : ''}${t.byo}초 ${t.periods}회` : '무제한'}</div>` +
     (S.result ? `<div><b>결과: ${S.resultKo}</b>${fc ? ` — 흑 ${fc.black} · 백 ${fc.white}(KataGo ${fc.kataKo})` : ''}</div>` : '') +
     (reviewJob ? `<div><a href="/review/${reviewJob}" target="_blank">이 판 해설 열기</a></div>` : '') +
@@ -956,6 +973,37 @@ document.getElementById('tabs').onclick = e => {
   if (b) { tab = b.dataset.tab; render(); }
 };
 
+// ---- 로그인/가입(11-04 작가님 — 테스트 아이디 개방): 서버가 401 을 주면 이 창을 연다. 성공하면 화면을 다시 읽는다
+const authDlg = document.getElementById('authDlg');
+const myNick = () => (S && ((S.me && S.me.nick) || S.ownerNick)) || '나';
+function openAuth(msg) {
+  document.getElementById('authMsg').textContent = msg || '';
+  if (!authDlg.open) authDlg.showModal();
+}
+authDlg.addEventListener('cancel', e => e.preventDefault());  // 로그인 없이 닫을 수 없다(Esc 포함)
+document.getElementById('aNick').addEventListener('input', e => {  // 인수 코드 칸은 '작가님' 가입 때만
+  document.getElementById('aClaimRow').hidden = e.target.value.trim() !== '작가님';
+});
+async function authGo(kind) {
+  const nick = document.getElementById('aNick').value.trim(), pw = document.getElementById('aPw').value;
+  const claim = document.getElementById('aClaim').value.trim();
+  document.getElementById('authMsg').textContent = '';
+  try {
+    const r = await fetch('/api/auth/' + kind, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                                 body: JSON.stringify({ nick, pw, claim }) });
+    const j = await r.json();
+    if (!r.ok || j.error) { document.getElementById('authMsg').textContent = j.error || '실패했습니다'; return; }
+    location.reload();
+  } catch (e) { document.getElementById('authMsg').textContent = '서버 연결 실패'; }
+}
+document.getElementById('aLogin').onclick = () => authGo('login');
+document.getElementById('aSignup').onclick = () => authGo('signup');
+authDlg.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); authGo('login'); } });
+document.getElementById('bLogout').onclick = async () => {
+  try { await fetch('/api/auth/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }); } catch (e) { /* 다시 시도 */ }
+  location.href = '/';
+};
+
 // ---- 대국 신청 창(타이젬 형식): 상대 수준·대국방법·치수·덤·흑백·시간을 한 창에서
 const dlg = document.getElementById('newDlg');
 function dlgSync() {
@@ -966,12 +1014,14 @@ function dlgSync() {
   dc.querySelector('option[value="auto"]').disabled = handi;
   if (handi && dc.value === 'auto') dc.value = 'B';
   document.getElementById('dKomi').textContent = handi
-    ? `덤: 흑 반집 공제 (접바둑 — 작가님 ${dc.value === 'W' ? '백, 작가님이 먼저 둠' : '흑, 백이 먼저 둠'})`
+    ? `덤: 흑 반집 공제 (접바둑 — ${myNick()} ${dc.value === 'W' ? '백, ' + myNick() + '이(가) 먼저 둠' : '흑, 백이 먼저 둠'})`
     : '덤: 흑 6집반 공제';
+  dc.querySelector('option[value="B"]').textContent = `${myNick()} 흑`;
+  dc.querySelector('option[value="W"]').textContent = `${myNick()} 백`;
   const unl = document.getElementById('tUnl').checked;
   for (const id of ['tMain', 'tByo', 'tPer']) document.getElementById(id).disabled = unl;
   const lv = document.getElementById('dLevel');
-  document.getElementById('dlgTitle').textContent = `작가님 VS ${lv.options[lv.selectedIndex].text}`;
+  document.getElementById('dlgTitle').textContent = `${myNick()} VS ${lv.options[lv.selectedIndex].text}`;
 }
 document.getElementById('bNew').onclick = () => {
   if (busy) { notice('상대가 생각 중입니다'); return; }
@@ -1227,6 +1277,8 @@ if (ROOM) {
   }, 2000);
   const bootGen = stateGen;
   const boot = () => fetch(api('/api/state')).then(r => r.json()).then(s => {
+    if (s.auth) { openAuth(); return; }  // 11-04 로그인 전 — 로그인/가입 창
+    if (s.forbidden) { document.getElementById('turn').textContent = s.error; document.getElementById('status').textContent = '남의 방'; notice(s.error); return; }
     if (!s.board && !s.noRoom) { setTimeout(boot, 1000); return; }  // 엔진 생각 중이라 판을 아직 못 받음 — 1초 뒤 다시
     if (s.noRoom) { document.getElementById('turn').textContent = s.error; document.getElementById('status').textContent = '없는 방'; notice(s.error); return; }
     if (stateGen !== bootGen && S && !S.stale) return;  // 그사이 대국 신청·착수가 있었다 — 늦은 시작 응답은 버린다(10-24 '첫 수 뒤 빈 판' 회귀)
@@ -1344,7 +1396,7 @@ setInterval(() => {
   if (ROOM) return;
   const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const when = iso => { const d = new Date(iso); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
-  const rule = r => `${r.handicap ? r.handicap + '점' : '호선'} · 작가님 ${r.user === 'B' ? '흑' : '백'}`;
+  const rule = r => `${r.handicap ? r.handicap + '점' : '호선'} · ${esc(r.ownerNick || '나')} ${r.user === 'B' ? '흑' : '백'}`;
   const dur = sec => { sec = Math.max(0, Math.floor(sec)); const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), x = sec % 60;
     return h ? `${h}:${String(m).padStart(2, '0')}:${String(x).padStart(2, '0')}` : `${m}:${String(x).padStart(2, '0')}`; };
   function row(r) {
@@ -1373,7 +1425,7 @@ setInterval(() => {
   };
   document.querySelectorAll('.lobby-tabs button').forEach(b => { b.onclick = () => setTab(b.dataset.tab); });
   setTab('wait');  // 대기실 진입 기본 탭은 [대기실] — 기억값은 탭을 눌러 바꾼 뒤 저장만(작가님 지시 4)
-  // 11-04 작가님 — 대기실/내 기보 분리: 참여자 = 지금 실제로 상대할 수 있는 상대(사람은 작가님 본인뿐)
+  // 11-04 작가님 — 대기실/내 기보 분리: 참여자 = 접속 중 사람(최근 30초 신호) + AI 상대
   const SHOWN = ['18k', '10k', '5k', '1k', '3d', '5d', '7d', '9d'];
   let allRanks = false;
   function renderPeople(d) {
@@ -1381,10 +1433,12 @@ setInterval(() => {
     const aiRow = (v, name, off) => `<div class="box lobby-row${off ? ' off' : ''}"><span class="dot ai"></span><div class="grow"><div class="t1">${esc(name)}</div>` +
       `<div class="t2">${off ? why : 'AI · 대국 가능'}</div></div><div class="btns"><button class="hl" data-pick="${v}"${off ? ' disabled' : ''}>대국 신청</button></div></div>`;
     const ranks = [...d.ranks].reverse();  // 강한 쪽부터
+    // 11-04 작가님 — 테스트 아이디: 접속 중 사람(대기실·대국 중) 먼저, 내 행은 (나). 그 아래 AI 상대
+    const humans = (d.people || []).map(p => `<div class="box lobby-row"><span class="dot me"></span><div class="grow"><div class="t1">${esc(p.nick)}${p.me ? ' (나)' : ''}</div>` +
+      `<div class="t2">${esc(p.state)}</div></div></div>`).join('');
     const list = allRanks ? ranks : ranks.filter(r => SHOWN.includes(r.v));
     document.getElementById('lobbyPeople').innerHTML =
-      `<div class="box lobby-row"><span class="dot me"></span><div class="grow"><div class="t1">작가님 (나)</div><div class="t2">접속 중</div></div></div>` +
-      aiRow('strong', 'KataGo 최강', !d.strongOk) + list.map(r => aiRow(r.v, `KataGo ${r.label}`, !ok)).join('') +
+      humans + aiRow('strong', 'KataGo 최강', !d.strongOk) + list.map(r => aiRow(r.v, `KataGo ${r.label}`, !ok)).join('') +
       `<div class="btns" style="margin-top:6px"><button data-allranks="1">${allRanks ? '대표 급수만 보기' : '전체 급수 펼치기'}</button></div>`;
   }
   // 11-04 작가님 — 대기실/내 기보 분리: 대기실 소식 = 최근 끝난 대국 결과 3건(시스템 소식만, 입력줄 없음)
@@ -1394,12 +1448,15 @@ setInterval(() => {
       .sort((a, b) => String(b.started).localeCompare(String(a.started))).slice(0, 3);
     const warn = ongoing ? `<div class="lose">진행 중 ${ongoing}판 — 5분 안에 돌아오지 않으면 접속 장애패로 종결</div>` : '';
     document.getElementById('lobbyNews').innerHTML = warn + (news.length
-      ? news.map(r => `<div>${esc(String(r.started).slice(11, 16))} 작가님 vs ${esc(r.levelLabel)} · ${esc(r.resultKo)}</div>`).join('')
+      ? news.map(r => `<div>${esc(String(r.started).slice(11, 16))} ${esc(r.ownerNick || '나')} vs ${esc(r.levelLabel)} · ${esc(r.resultKo)}</div>`).join('')
       : (warn ? '' : '<div class="lobby-empty">아직 소식이 없습니다.</div>'));
   }
   async function load() {
     try {
       const d = await (await fetch('/api/rooms')).json();
+      if (d.auth) { openAuth(); return; }
+      document.getElementById('lobbyMeNick').textContent = d.me ? d.me.nick : '';
+      document.getElementById('lobbyMe').hidden = !d.me;
       const df = d.defaults || {};
       // 신청 창은 대국실과 같은 것을 쓴다 — 기본값은 가장 최근 방의 설정
       S = { ...d, level: df.level || 'strong', handicap: df.handicap || 0, time: df.time === undefined ? { main: 0, byo: 20, periods: 3 } : df.time, user: df.user || 'B' };
@@ -1453,8 +1510,19 @@ setInterval(() => {
   lb.addEventListener('dragover', e => { e.preventDefault(); if (lb.dataset.tab === 'mine') document.body.classList.add('drag'); });  // 다른 탭에선 브라우저가 파일을 열지 않게 막기만
   lb.addEventListener('dragleave', e => { if (!lb.contains(e.relatedTarget)) document.body.classList.remove('drag'); });
   lb.addEventListener('drop', e => { e.preventDefault(); if (lb.dataset.tab !== 'mine') return; document.body.classList.remove('drag'); if (e.dataTransfer.files.length) importFiles([...e.dataTransfer.files]); });
-  load();
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });  // 앱으로 돌아오면 목록 새로
+  // 11-04 작가님 — 접속 신호: 대기실이 보이는 동안 15초마다 서버에 알리고 참여자 목록을 새로 받는다(서버는 30초 안 신호를 접속 중으로 봄)
+  const beat = async () => {
+    if (document.hidden) return;
+    try {
+      const j = await (await fetch('/api/presence', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })).json();
+      if (j.auth) { openAuth(); return; }
+      if (j.people && S) { S.people = j.people; renderPeople(S); }
+    } catch (e) { /* 연결 끊김 — 다음 주기에 */ }
+  };
+  const refresh = async () => { await beat(); await load(); };
+  refresh();
+  setInterval(beat, 15000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });  // 앱으로 돌아오면 목록 새로
 })();
 
 // ---- 기보 감상(10-24 타이젬 방식): 끝난 판·이전 기보·불러온 기보를 이 바둑판에서 — 수순 이동·자동 재생·시험수·승률 그래프
