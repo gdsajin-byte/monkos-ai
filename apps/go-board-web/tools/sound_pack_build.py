@@ -47,21 +47,32 @@ def main():
     miss = [p.name for p in need if not p.exists()]
     if miss:
         sys.exit("❌ sound_pack_build: 원본 누락 " + ", ".join(miss))
+    v2 = len(sys.argv) > 1 and sys.argv[1] == "v2"
+    if v2:  # 11-05 07:47 작가님 "툭툭 끊겨" — v1 정렬 분할은 앞을 잘라먹음(첫 3ms −19~−31dB 실측). 숫자는 문맥 단독 생성본
+        from sound_count_v2 import tidy
+        from sound_count_split import decode, write as write_wav
+        miss = [p.name for p in (SRC / "v2" / "ctx" / f"voice_{v}_count{i}.wav" for v in VOICES for i in range(1, 11)) if not p.exists()]
+        if miss:
+            sys.exit("❌ sound_pack_build: v2 원본 누락 " + ", ".join(miss))
     for v, vlabel in VOICES.items():
         for s, slabel in SFX.items():
-            d = PACKS / f"monk-{v}-{s}"
+            d = PACKS / (f"monk-v2-{v}-{s}" if v2 else f"monk-{v}-{s}")  # v2는 새 팩 — v1을 덮어쓰지 않는다(비교용)
             d.mkdir(parents=True, exist_ok=True)
             for i in range(1, 11):
-                shutil.copyfile(SRC / f"voice_{v}_count{i}.wav", d / f"count{i}.wav")
+                src = SRC / "v2" / "ctx" / f"voice_{v}_count{i}.wav" if v2 else SRC / f"voice_{v}_count{i}.wav"
+                shutil.copyfile(src, d / f"count{i}.wav")
             for t in SINGLE:
-                trim_to_wav(SRC / f"voice_{v}_{t}.mp3", d / f"{t}.wav")
+                if v2:  # 앞 50ms·끝 100ms 여유(−40dB 기준) — v1 trim_to_wav(문턱 3%·앞 8ms)는 약한 첫소리를 깎을 수 있음
+                    write_wav(d / f"{t}.wav", tidy(decode(SRC / f"voice_{v}_{t}.mp3")))
+                else:
+                    trim_to_wav(SRC / f"voice_{v}_{t}.mp3", d / f"{t}.wav")
             shutil.copyfile(SRC / f"stone_{s}1.wav", d / "stone0.wav")
             shutil.copyfile(SRC / f"stone_{s}2.wav", d / "stone0s.wav")
             for k in (1, 2, 3):
                 shutil.copyfile(SRC / f"capture_{s}1.wav", d / f"stone{k}.wav")
                 shutil.copyfile(SRC / f"capture_{s}2.wav", d / f"stone{k}s.wav")
             (d / "README.txt").write_text(
-                f"MONK 자체 후보 — 목소리 {vlabel} · 착수/따냄 {slabel} (11-05, ElevenLabs·합성)\n"
+                f"MONK 자체 후보{' v2(끊김 개선)' if v2 else ''} — 목소리 {vlabel} · 착수/따냄 {slabel} (11-05, ElevenLabs·합성)\n"
                 "생성: apps/go-board-web/tools/sound_*.py · 후보 비교 ~/.monkos/go-board-sound-candidates/ · "
                 "count11은 규격 채움(앱 미재생), 따냄 1·2·3점은 같은 소리(2단계에서 분화)\n", encoding="utf-8")
             n = len(list(d.glob("*.wav")))
