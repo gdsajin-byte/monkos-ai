@@ -117,6 +117,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 11/04 | iMac/쌍아-막내8 | 여권 화각 실무 정합 — 눈 45%·규정 두상=실측 32~36·거울상 하한 30 분리, 200건 재대조 세로 위치 차 1.17→0.34mm·no_room 5→2(충돌), dev 00238-mjc | [COMPLETION_20261104_iMac쌍아-막내8_IDPHOTO_여권화각_실무정합](../../reports/2026-11/COMPLETION_20261104_iMac쌍아-막내8_IDPHOTO_여권화각_실무정합.md) | ✅ |
 | 11/04 | ?/? | **ORDER** 유료 T1 출고 크롭 눈 위치를 무료(45%)와 정합 — 포털이 crop-spec 요청 spec에 eyeAnchor를 싣고, crop-engine은 선택 파라미터로 수용(기본 0.43/0.42 불변). kr·jp 여권만. dev까지 | [ORDER_20261104_iMac쌍아_막내8_IDPHOTO_유료크롭_눈45정합](../../orders/2026-11/ORDER_20261104_iMac쌍아_막내8_IDPHOTO_유료크롭_눈45정합.md) | ⏳ |
 | 11/04 | iMac/쌍아-막내8 | 유료 크롭 눈 45% 정합(A′) — 포털 eyeAnchor 합성·crop-engine 선택 파라미터, 200건 시뮬 유료−무료 세로 차 0.82→0.07mm, dev 부재로 로컬 종단 대체 | [COMPLETION_20261104_iMac쌍아-막내8_IDPHOTO_유료크롭_눈45정합](../../reports/2026-11/COMPLETION_20261104_iMac쌍아-막내8_IDPHOTO_유료크롭_눈45정합.md) | ✅ |
+| 11/05 | ?/? | **ORDER** 생성 기록(generations)에 테스트 딱지 — 저장 시 originService·isTest 필드를 남기고, 어드민 생성 검토 화면에 '테스트' 배지와 기본 숨김 필터를 둔다. dev까지 | [ORDER_20261105_iMac쌍아_막내1_IDPHOTO_생성기록_테스트딱지](../../orders/2026-11/ORDER_20261105_iMac쌍아_막내1_IDPHOTO_생성기록_테스트딱지.md) | ⏳ |
 
 ### Phase 1 — idphoto-kr/jp 웹 서비스 (01/16~02/14)
 
