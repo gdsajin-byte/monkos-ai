@@ -381,6 +381,13 @@ a:hover { color: #5a3de6; }
   .v2-uc-answer { font-size: 17px; border-left: 0; border-radius: 10px; padding: 14px 16px; }
   .v2-uc-p { font-size: 16.5px; line-height: 1.72; word-break: keep-all; }
 }
+/* 모바일 좌우 여백 합계 16px (같은 지시서 — 실측: 전역 .container 24px + .v2-wrap 16px = 40px였다).
+   specs 상세(.container 바로 아래 .v2-wrap)에서만 바깥 컨테이너 여백을 걷는다. 다른 페이지·데스크톱 불변.
+   375·390폭 3페이지 가로 넘침 0 실측(11-05). 이 블록만 되돌리면 40px로 복귀 — 롤백 단위 분리 */
+@media (max-width: 640px) {
+  .container:has(> .v2-wrap) { padding-left: 0; padding-right: 0; }
+  .v2-wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+}
 .v2-faq-item {
   background: #ffffff; border: 1px solid rgba(0,0,0,0.06); border-radius: 12px;
   margin-bottom: 8px; overflow: hidden;
