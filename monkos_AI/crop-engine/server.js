@@ -177,7 +177,7 @@ async function detectBest(imageB64, imageBuffer) {
 
 /**
  * POST /api/crop-spec — 규격 파라미터 주입형 안착 크롭 v2 (스펙스 파이프라인, 2026-07-06)
- * body: { image: base64, spec: { frameW, frameH(px), frameHmm, faceTargetMm, topMarginMm? } }
+ * body: { image: base64, spec: { frameW, frameH(px), frameHmm, faceTargetMm, topMarginMm?, eyeAnchor?(0.38~0.50) } }
  * 순백 배경 입력 전제. 얼굴 감지 실패 시 프레임 비율 상단 커버 크롭 폴백.
  * 검출: InsightFace 우선(detectBest) + hairTop 실측 스캔(순백 전제 엔드포인트라 상시).
  */

@@ -10,6 +10,7 @@
 import sharp from 'sharp';
 import { createRequire } from 'module';
 import { log, sendTelegramMessage, TELEGRAM_TEAM_API, TEAM_CHAT_ID } from './shared/config.js';
+import { HEAD_PLACEMENT_EYE_ANCHOR } from './hair-measure.js';
 
 const SPECS_DATA = createRequire(import.meta.url)('./cms/specs-data.json');
 
@@ -104,6 +105,16 @@ export function warmupCropEngine() {
 }
 
 /**
+ * crop-spec 요청 spec — kr·jp 여권만 eyeAnchor를 합성한다 (ORDER_20261104 유료크롭_눈45정합).
+ * getSpecCropParams 반환값은 불변(fit-spec·무료 가이드 원 프레임이 같은 spec을 쓴다). 값의 정본은 HEAD_PLACEMENT_EYE_ANCHOR.
+ * 의도된 동승: matteSpecPipeline 무료 폴백도 cropToSpec을 타므로 45%가 함께 적용된다(무료·유료 정합 취지).
+ */
+export function cropSpecRequest(spec, slug) {
+  const eyeAnchor = HEAD_PLACEMENT_EYE_ANCHOR[slug];
+  return Number.isFinite(eyeAnchor) ? { ...spec, eyeAnchor } : spec;
+}
+
+/**
  * 생성 결과(순백 배경 base64)를 slug 규격으로 안착 크롭.
  * @returns {{ image: string|null, cropped: boolean, engine: 'insight'|'none', error?: string, meta?: object }}
  */
@@ -119,14 +130,14 @@ export async function cropToSpec(imageB64, slug) {
         const res = await fetch(`${CROP_ENGINE_URL}/api/crop-spec`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: imageB64, spec }),
+          body: JSON.stringify({ image: imageB64, spec: cropSpecRequest(spec, slug) }),
           signal: ctrl.signal,
         });
         clearTimeout(timer);
         const data = await res.json();
         if (res.ok && data.success && data.cropped) {
           if (!data.fallback) {
-            log(`[SpecCrop] ${slug}: 안착 face=${data.meta?.faceMM}mm crown=${data.meta?.crownMarginMM}mm eye=${data.meta?.eyePositionPercent}%`);
+            log(`[SpecCrop] ${slug}: 안착 face=${data.meta?.faceMM}mm crown=${data.meta?.crownMarginMM}mm eye=${data.meta?.eyePositionPercent}% 앵커=${data.meta?.eyeAnchorTarget ?? '-'}(${data.meta?.eyeAnchorSource ?? '구엔진'})`);
             return { image: data.cropped, cropped: true, engine: 'insight', meta: data.meta };
           }
           if (attempt === 1) { log(`[SpecCrop] ${slug}: 감지 실패 → 재시도 1회`, 'WARNING'); continue; }
