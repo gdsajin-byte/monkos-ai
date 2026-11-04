@@ -57,6 +57,25 @@ order: monkos-ops/ops/orders/2026-11/ORDER_20261105_iMac쌍아_막내3_GO_기기
   - (나) M1에 Android 도구를 설치해 직접 빌드한다(승인 게이트).
   - (다) web-katrain을 b10으로 띄워 폰 브라우저로 잰다(설치 0, 우리 서버나 정적 호스팅 필요).
 
+## 3-1. 기기 대여형 테스트 서비스 비교 (조사만 — 계정·결제 없음, 쌍아 07:34 추가)
+
+| 항목 | Firebase Test Lab | AWS Device Farm |
+|---|---|---|
+| iOS 실기기 | 있음. 공개 페이지에는 중단 예정 표만 있다(iPhone 14 Pro·11 Pro·8·iPad 10, iOS 16.6, **2026-11-23 제거**). 현재 목록은 로그인 후 `gcloud firebase test ios models list` | 있음. 목록은 콘솔에서만 보임(공개 페이지 없음) |
+| 아이폰 13·14 Pro·15~17 | 미확인(로그인 필요). 14 Pro(iOS 16.6)는 11-23에 빠진다 | 미확인(로그인 필요) |
+| 갤럭시 A 저가형 | 미확인. 공개 표에 A 계열이 보이지 않음 | 미확인(콘솔 전용) |
+| 무료·가격 | Spark: 실기기 **하루 5회**(분이 아니라 횟수) · Blaze: 실기기 **하루 30분**·가상 60분 무료, 초과 실기기 $5/시간 | 1회성 무료 **1,000분은 한시 프로모션**(표준 250분), 이후 **$0.17/분**, 무제한 슬롯 $250/월 |
+| XCTest 없이 실행 → 결과 회수 | **가능 — iOS Game Loop**: IPA만 올림, 앱이 `firebase-game-loop` 스킴으로 실행됨, 앱이 `Documents/GameLoopResults/`에 쓴 파일을 버킷으로 회수 | iOS는 Appium·XCTest·XCTest UI만. built-in fuzz는 IPA만으로 되지만 앱 파일 회수 방법은 미확인. 원격 액세스는 기기·네트워크·활동 로그만(앱 Documents 미확인) |
+| 서명 | Test Lab이 자체 프로필로 재서명(UDID 등록 불요로 보임 — 명시 없음) | 공용 기기는 와일드카드 프로필로 재서명, **엔타이틀먼트 전부 제거** |
+| 우리 시험 앱 적합도 | **높음**. autobench가 실행 즉시 결과를 Documents에 쓰므로, 작은 패치만 필요: ① `firebase-game-loop` URL 스킴 등록 ② 결과를 `GameLoopResults/`에도 복사 ③ 끝나면 완료 신호 | 낮음~중간. 결과를 회수하려면 Appium 스크립트나 로그 출력 방식으로 바꿔야 함 |
+
+- 출처:
+  - firebase.google.com/docs/test-lab/{usage-quotas-pricing, ios/available-testing-devices, android/available-testing-devices, ios/firebase-console, ios/run-game-loop-test}
+  - aws.amazon.com/device-farm/{pricing, device-list}
+  - docs.aws.amazon.com/devicefarm/latest/developerguide/{devices, test-types, test-types-built-in-fuzz, remote-access, skip-app-re-signing-on-private-devices}
+  - 공개 페이지 기준이고 날짜 표기는 없음(서브에이전트 reader 수집).
+- 제안: 기종 목록은 계정을 만들어야 보인다(작가님 결정). 쓴다면 Firebase Blaze 무료 30분/일 + Game Loop가 우리 방식에 맞는다. Game Loop 패치는 UI 무관이다.
+
 ## 4. 최저 지원 사양 (iOS) — ⏳ 14 Pro·13 실측 뒤 확정
 
 ## 출처 (안드로이드)
