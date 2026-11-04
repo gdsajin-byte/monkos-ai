@@ -21,6 +21,11 @@ MODEL = "eleven_multilingual_v2"
 # 문구 — 타사 원문을 옮기지 않고 뜻만 맞춘 우리 문안(지시서 §1-1)
 PHRASES = [("count1", "하나"), ("count10", "열"), ("remain1", "초읽기 마지막 회입니다"),
            ("start", "대국을 시작합니다"), ("counting", "계가를 시작합니다")]
+# 팩 전체 규격(tygem-ref와 같은 파일명) — 11-05 06:15 작가님 "앱에 몇가지 선택버전으로". 앱은 count1~10(10초 남음=하나)·remain1~3(남은 회)만 재생,
+# count11은 규격 채움용(앱 미재생)
+PHRASES_FULL = PHRASES + [("count2", "둘"), ("count3", "셋"), ("count4", "넷"), ("count5", "다섯"), ("count6", "여섯"),
+                          ("count7", "일곱"), ("count8", "여덟"), ("count9", "아홉"), ("count11", "열하나"),
+                          ("remain2", "초읽기 두 번 남았습니다"), ("remain3", "초읽기 세 번 남았습니다")]
 
 
 def key():
@@ -74,10 +79,13 @@ def add(owner, vid, name):
     print(json.dumps(r, ensure_ascii=False))
 
 
-def tts(vid, slug):
+def tts(vid, slug, full=""):
+    """후보 문구 생성. full='full'이면 팩 전체 문구 — 이미 있는 파일은 건너뛴다(크레딧 중복 방지)."""
     OUT.mkdir(parents=True, exist_ok=True)
     n = 0
-    for tag, text in PHRASES:
+    for tag, text in (PHRASES_FULL if full == "full" else PHRASES):
+        if (OUT / f"voice_{slug}_{tag}.mp3").exists():
+            continue
         b = call("POST", f"/v1/text-to-speech/{vid}?output_format=mp3_44100_128",
                  {"text": text, "model_id": MODEL, "voice_settings": {"stability": 0.6, "similarity_boost": 0.8}}, raw=True)
         (OUT / f"voice_{slug}_{tag}.mp3").write_bytes(b)
@@ -97,9 +105,11 @@ def sfx(name, seconds, prompt):
     print(f"ok sfx_raw/{name}.mp3 {len(b)}B")
 
 
-def stt():
-    """우리 생성 목소리만 되읽기(발음 확인용) — 타사 참조 음원은 보내지 않는다."""
-    for p in sorted(OUT.glob("voice_*.mp3")):
+def stt(pattern="voice_*.mp3"):
+    """우리 생성 목소리만 되읽기(발음 확인용) — 타사 참조 음원은 보내지 않는다. pattern은 OUT 안 glob(voice_*만 허용)."""
+    if not pattern.startswith("voice_"):
+        sys.exit("❌ sound_candidates: stt 는 우리 생성물(voice_*)만")
+    for p in sorted(OUT.glob(pattern)):
         cfg = [f"url = {_q(API + '/v1/speech-to-text')}", 'request = "POST"', f"header = {_q('xi-api-key: ' + key())}",
                'form = "model_id=scribe_v1"', 'form = "language_code=kor"', f"form = {_q('file=@' + str(p))}",
                'write-out = "\\n%{http_code}"', "silent", "show-error", "max-time = 120"]
@@ -115,4 +125,4 @@ if __name__ == "__main__":
     if not a:
         sys.exit(__doc__)
     {"sub": lambda: sub(), "voices": lambda: voices(*(a[1:3] or [])),
-     "add": lambda: add(*a[1:4]), "stt": lambda: stt(), "tts": lambda: tts(*a[1:3]), "sfx": lambda: sfx(*a[1:4])}[a[0]]()
+     "add": lambda: add(*a[1:4]), "stt": lambda: stt(*a[1:2]), "tts": lambda: tts(*a[1:4]), "sfx": lambda: sfx(*a[1:4])}[a[0]]()
