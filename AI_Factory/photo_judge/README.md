@@ -103,3 +103,31 @@ RAW 현상에 `sips`를 쓴 근거: macOS 13 RAW 엔진이 CR3(EOS R8)·CR2를 �
 ## 다음 (P1)
 
 - 매니페스트 `raw.w/h`·`spec_final.wh`·`crop_in_raw`는 v0에서 비어 있다 — P1 파이프라인(현상·정합)에서 채운다.
+
+## 여권 화각 산식 vs 출고본 대조 (11-04, ORDER_20261104 막내7)
+
+> 지시서: `monkos-ops/ops/orders/2026-11/ORDER_20261104_iMac쌍아_막내7_IDPHOTO_여권화각_출고본대조.md` · 결과: `monkos-ops/ops/reports/2026-11/COMPLETION_20261104_iMac쌍아-막내7_IDPHOTO_여권화각_출고본대조.md`
+
+| 파일 | 역할 |
+|---|---|
+| `fov_compare.py` | 표본 선정(하남·named 여권·35:45·월 층 순환·시드 1104) → RAW 현상(긴 변 2048) → 정합 A → 90° 단위로 세움 → 산식 측정 → 출고·산식 지표 → `fov_compare_v0.jsonl` |
+| `fov_formula.mjs` | 포털 정본 `hair-measure.js`·`fit-fov.js`를 import해 precheck 여권 경로(검출 → `computeFitGeometry` → 512 매팅 머리끝 → `resolveHeadPlacement`)를 재현. stdin/stdout JSON 1줄 |
+| `fov_summary.py` | 집계 표(지표 분포·판정·오판 후보·반대 사례·연도별) |
+
+로컬 전제(고객 픽셀은 이 기기 밖으로 나가지 않는다 — 헬퍼가 127.0.0.1 외 주소를 거부):
+
+```bash
+# 워크트리면 node_modules·onnx는 본 체크아웃으로 심볼릭 링크(커밋 금지)
+# 1) crop-engine 로컬 (SCRFD + 106점, 설치 0 — onnxruntime·cv2·numpy 기존)
+(cd monkos_AI/crop-engine && PORT=8093 SCRFD_PORT=5093 node server.js) &
+# 2) 매팅 — prod 1순위(matte-imac)와 같은 vision-matte 바이너리를 측정 전용 포트로. 시크릿 미주입 = 인증 생략, 루프백만
+PORT=8097 MATTE_HOST=127.0.0.1 ~/.monkos/vision-matte/vision-matte &
+# 3) 실행 (~10초/건)
+python3 AI_Factory/photo_judge/fov_compare.py -n 200        # CROP_URL·MATTE_URL 환경변수로 포트 변경
+python3 AI_Factory/photo_judge/fov_summary.py
+```
+
+- 측정 원칙: 랜드마크(눈·턱·거울상 정수리)와 머리끝(512 매팅 덩어리 끝)은 원본에서 1회 재고, 출고 틀·산식 틀 양쪽에 같은 값을 쓴다. 출고 틀 지표는 정합 A의 역변환으로 점을 규격 JPG 좌표에 옮겨 잰다(기울기 반영).
+- 산식 `no_room`은 판정 프레임이 원 프레임이라, 지표는 산식이 시도한 최선 틀(재배율 + 눈 48%)로 낸다.
+- "크게 다름"(실행 전 고정): |Δ두상| ≥ 1.5mm · |Δ눈| ≥ 3.0%p · |Δ머리 위 여백| ≥ 1.5mm.
+- `computeFitGeometry`는 server.js 비export 함수라 헬퍼에 이식했다 — server.js가 바뀌면 대조 후 갱신. kr-passport 규격 입력은 `specs-data.json`과 대조해 다르면 기동을 거부한다(spec-crop.js는 config.js의 PROJECT_ID 필수라 로컬 import 불가).
