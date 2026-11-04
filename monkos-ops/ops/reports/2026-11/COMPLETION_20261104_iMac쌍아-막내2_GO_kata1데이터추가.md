@@ -3,7 +3,7 @@ type: completion
 date: 2026-11-04
 device: iMac
 agent: 쌍아-막내2
-status: 진행
+status: 마감
 portfolio: PF_GO
 order: monkos-ops/ops/orders/2026-11/ORDER_20261104_iMac쌍아_막내2_GO_kata1데이터추가_23시재개전.md
 ---
@@ -16,7 +16,7 @@ order: monkos-ops/ops/orders/2026-11/ORDER_20261104_iMac쌍아_막내2_GO_kata1�
 
 ## 결론
 
-9일치를 받아 셔플을 마쳤고, 17:51에 `shuffled`를 새 데이터로 교체했습니다. 이로써 데이터 창이 1,249만 행에서 4,472만 행으로 3.6배 늘었습니다. 남은 학습량 약 27M 샘플은 새 창의 0.61에폭에 해당합니다. 23:00 재개 확인 결과는 아래 §5에 덧붙입니다.
+9일치를 받아 셔플을 마쳤고, 17:51에 `shuffled`를 새 데이터로 교체했습니다. 이로써 데이터 창이 1,249만 행에서 4,472만 행으로 3.6배 늘었습니다. 남은 학습량 약 27M 샘플은 새 창의 0.61에폭에 해당합니다. 23:00 재개는 4060이 22:40경 오프라인이 되어 확인하지 못했습니다(§5).
 
 ## 1. 일자별 수신 (4060, `fetch_data.sh` PARTS 8)
 
@@ -63,7 +63,23 @@ order: monkos-ops/ops/orders/2026-11/ORDER_20261104_iMac쌍아_막내2_GO_kata1�
 
 ## 5. 23:00 재개 확인
 
-(23:06 실측 후 덧붙임)
+**[2026-11-04 23:43 KST]** iMac/쌍아-막내2 → iMac/쌍아 — ❌ **확인하지 못했습니다. 4060이 오프라인입니다.**
+
+- 23:06 ssh 타임아웃. Tailscale에서 `monk-4060 100.118.31.62 offline, last seen 26m ago`(23:07 기준, 약 22:40부터 끊김), ping 3회 무응답. 23:07~23:43에 5분 간격으로 재접속을 시도했으나 모두 실패했습니다(23:43 기준 "last seen 1h ago").
+- 판단: 22:40경 PC 전원 종료 또는 절전으로 보입니다. 그렇다면 23:00 GO-train-resume은 실행되지 않았을 가능성이 큽니다. 켜진 뒤 자동 재개 여부는 예약 작업의 "예약 시간을 놓친 경우 가능한 빨리 실행"(StartWhenAvailable) 설정에 달려 있는데, 이 값은 미확인입니다.
+- 데이터 쪽은 17:51 교체로 이미 끝났습니다. 다음 기동은 수동이든 예약이든 새 셔플(`shuffled`, 44.28M)을 읽습니다.
+- 18:03 쌍아 통지: 작가님 승인으로 `--max-samples`가 81.2M에서 95M으로 바뀌었습니다. 이 값이 반영됐는지도 아직 확인하지 못했습니다.
+
+**4060이 켜진 뒤 확인 명령** (iMac에서):
+```bash
+ssh 4060 'C:\Users\smuse73\AppData\Local\Programs\Git\bin\bash.exe -s' <<'EOF'
+R=/c/Users/smuse73/go_train/run/b10
+grep -oE '"state": "[a-z_]*"|"start": "[^"]*"|"nsamp": [0-9]*|"max_samples": [0-9]*' $R/status.json   # max_samples 95000000 기대
+grep -nE "Updated training data|Deferring|Beginning C:" $R/stdout.txt | tail -5   # Deferring N/633 + 새 shuffled\train\dataXXX_0.npz 기대
+powershell.exe -NoProfile -Command 'Get-ScheduledTaskInfo -TaskPath "\MONK\" -TaskName GO-train-resume | Format-List LastRunTime,LastTaskResult,NextRunTime'
+EOF
+```
+- 판정 기준: `Deferring N/633`(633 = 새 셔플 파일 수)이면 새 데이터를 읽은 것입니다. 177이면 구본입니다. `state`가 running이고 `max_samples`가 95000000이어야 합니다. LastRunTime이 23:00 이전이면 재개가 실행되지 않은 것이므로 쌍아가 재기동을 판단합니다.
 
 ## 💡 train.py 파일 추적과 같은 경로 교체
 
@@ -75,7 +91,8 @@ KataGo `train.py`(TrainingDataGenerator)는 현재 에폭에서 쓴 파일을 **
 
 - ✅ 수신 9/9일(15.04GB), 해제, 셔플(train 44.28M·val 0.44M), 17:51 교체
 - ✅ 기존 raw·npz·shuffled 삭제 0건(이름 변경만), GPU 미사용, 예약 작업 무수정
-- ⏳ 23:00 재개가 새 데이터를 읽는지(§5) — 23:06 실측 예정
+- ❌ 23:00 재개 확인 못 함 — 4060이 22:40경부터 오프라인(23:43까지 재접속 실패). 켜진 뒤 쓸 확인 명령과 판정 기준은 §5
+- ⏳ 4060 전원 확인(작가님) → 쌍아가 §5 명령으로 재개·95M 반영 확인
 - 💡 같은 경로 교체 때문에 현재 에폭에서 쓴 파일명은 다음 에폭으로 밀림(위 절)
 - 📁 이 문서, 세션 로그 `monkos-ops/ops/sessions/2026-11/2026-11-04_iMac_쌍아-막내2.md`
 - 🔀 작업 브랜치 `worktree-makne2-go-kata1-data`. main 병합은 쌍아가 합니다(백그라운드 막내는 main에 푸시하지 않음).
