@@ -16,12 +16,7 @@
   --note-bg: #fff4dc;
   --font: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
 }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --ground: #121117; --page: #1b1a22; --ink: #f1eff8; --body: #d6d3e2; --muted: #a29db5;
-  --line: #34313f; --tint: #26233a; --accent: #a796ff; --note: #ffcf7a; --note-bg: #3a2d10; color-scheme: dark } }
-:root[data-theme="dark"] {
-  --ground: #121117; --page: #1b1a22; --ink: #f1eff8; --body: #d6d3e2; --muted: #a29db5;
-  --line: #34313f; --tint: #26233a; --accent: #a796ff; --note: #ffcf7a; --note-bg: #3a2d10; color-scheme: dark }
+/* 실제 specs 페이지가 흰 바탕 단일 테마라, 시안도 휴대폰 다크 모드와 무관하게 흰 바탕으로 고정 */
 
 body { background: var(--ground); color: var(--ink); font-family: var(--font); }
 .wrap { max-width: 900px; margin: 0 auto; padding-block: 24px 40px;
