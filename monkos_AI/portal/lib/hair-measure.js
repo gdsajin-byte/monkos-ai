@@ -73,12 +73,19 @@ export async function measureTopContact(imageBuf, bgColor, colFromRatio = 0, col
     contactRatio: +contactRatio.toFixed(4),
     rowContacts,
     touched: contactRatio >= CROWN_CONTACT_RATIO,
+    matteRows: H,
   };
 }
 
 const CROWN_MATTE_LONG_SIDE = 512;
 const CROWN_MATTE_BG = '#00FF00'; // 측정 전용 — 흰머리·검은 머리 모두 배경과 갈리는 색
 const CROWN_MATTE_TIMEOUT_MS = 5000;
+
+/** precheck 매팅 1행 = 원본 몇 px인가 — 매팅 입력 축소(긴 변 512, 확대 없음)에서 파생. fit은 재매팅 없이 이 값으로 같은 보정을 한다 */
+export function crownMatteRowPx(width, height) {
+  const k = Math.min(1, CROWN_MATTE_LONG_SIDE / Math.max(width, height));
+  return height / Math.round(height * k);
+}
 
 /**
  * precheck 정수리 실측 — 축소본 매팅 1회 → 머리 폭 열에서 맨 위 행 접촉 판정.
@@ -117,6 +124,9 @@ export async function checkCrownContact({ imageBuf, faceBox, slug, engineState, 
 export const HAIR_PLACEMENT_SLUGS = new Set(['kr-passport', 'jp-passport']);
 export const HAIR_MARGIN_MIN_MM = 0.5; // 머리 위 최소 여백 (2026-11-03 작가님)
 export const EYE_RATIO_MAX = 0.48;     // 이보다 내리면 얼굴이 너무 내려간다 (2026-11-03 작가님 — 경고 상한 유지)
+// 측정 정밀도 보정 (2026-11-04 쌍아 판단, 작가님 결정 '최소 여백 0.5mm' 안의 보정): 머리끝은 512px 매팅에서 재므로
+// 1행이 약 0.28mm. 무료 재단 실측이 예정보다 평균 −0.3·최대 −0.5mm 좁았다(dev 00235, jemison 0.5→0.0) → 배치 목표에 매팅 2행을 더한다
+export const HAIR_MARGIN_SLACK_ROWS = 2;
 const EPS = 1e-9;
 
 /**
@@ -124,15 +134,16 @@ const EPS = 1e-9;
  * @param frame 눈 앵커 프레임 (원본 좌표) / lines.eyeY·chinY 원본 좌표 / hairTopRatio 머리끝 행 ÷ 원본 높이
  * @returns verdict: 'pass'(그대로) | 'moved'(틀을 올림) | 'no_room'(눈 상한 안에서 안 들어옴 — 프레임 유지)
  */
-export function resolveHairPlacement({ frame, lines, hairTopRatio, imageHeight, frameHmm }) {
+export function resolveHairPlacement({ frame, lines, hairTopRatio, imageHeight, frameHmm, slackPx = 0 }) {
   const mmPerPx = frameHmm / frame.h;
   const hairTopY = hairTopRatio * imageHeight;
   const marginBeforeMm = (hairTopY - frame.y) * mmPerPx;
+  const targetMm = HAIR_MARGIN_MIN_MM + slackPx * mmPerPx; // 규정 하한 + 측정 정밀도 보정
   const eyeRatio = (y) => (lines.eyeY - y) / frame.h;
 
   let verdict = 'pass', y = frame.y;
-  if (marginBeforeMm < HAIR_MARGIN_MIN_MM - EPS) {
-    const wanted = hairTopY - HAIR_MARGIN_MIN_MM / mmPerPx;
+  if (marginBeforeMm < targetMm - EPS) {
+    const wanted = hairTopY - targetMm / mmPerPx;
     if (eyeRatio(wanted) <= EYE_RATIO_MAX + EPS) { verdict = 'moved'; y = wanted; }
     else verdict = 'no_room';
   }
@@ -140,6 +151,8 @@ export function resolveHairPlacement({ frame, lines, hairTopRatio, imageHeight, 
   const round = (v) => +v.toFixed(2);
   return {
     verdict, frame: placed,
+    marginTargetMm: round(targetMm),
+    slackMm: round(slackPx * mmPerPx),
     marginBeforeMm: round(marginBeforeMm),
     marginAfterMm: round((hairTopY - y) * mmPerPx),
     eyeBeforePct: round(eyeRatio(frame.y) * 100),
@@ -162,7 +175,7 @@ export const eyeAnchorFor = (frameHmm) => (frameHmm >= 60 ? 0.42 : 0.43);
  * @param frame 거울상 기준 원 프레임(원본 좌표, fit-spec 역산) / lines 원본 좌표(crownY=거울상 정수리)
  * @returns null = 입력 무효(머리끝이 턱 아래 등) → 호출부가 원 프레임 유지 + WARNING
  */
-export function resolveHeadPlacement({ frame, lines, hairTopRatio, imageHeight, frameHmm, headTargetMm, headMinMm, headMaxMm }) {
+export function resolveHeadPlacement({ frame, lines, hairTopRatio, imageHeight, frameHmm, headTargetMm, headMinMm, headMaxMm, slackPx = 0 }) {
   const hairTopY = hairTopRatio * imageHeight;
   const headPx = lines.chinY - hairTopY;
   const mirrorPx = lines.chinY - lines.crownY;
@@ -178,7 +191,7 @@ export function resolveHeadPlacement({ frame, lines, hairTopRatio, imageHeight, 
   const cx = Number.isFinite(lines.eyeCenterX) && lines.eyeCenterX > 0 ? lines.eyeCenterX : frame.x + frame.w / 2;
   const base = { x: cx - w / 2, y: lines.eyeY - eyeAnchorFor(frameHmm) * h, w, h };
 
-  const r = resolveHairPlacement({ frame: base, lines, hairTopRatio, imageHeight, frameHmm });
+  const r = resolveHairPlacement({ frame: base, lines, hairTopRatio, imageHeight, frameHmm, slackPx });
   // no_room이면 무료 경로가 닫히므로 프레임은 원 프레임 그대로 둔다(11-03 동작 유지 — 반려 화면 표시용)
   const placed = r.verdict === 'no_room' ? frame : r.frame;
   const round = (v) => +v.toFixed(2);

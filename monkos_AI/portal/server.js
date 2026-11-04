@@ -45,7 +45,7 @@ import { cropToSpec, warmupCropEngine, getSpecCropParams } from './lib/spec-crop
 import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, getMatteEngineState, stripDataUri, getSpecBgColor, cropMetaWithinSpec, runMatteChain } from './lib/matte.js';
 import { judgeMetrics, metricsFromFit } from './lib/spec-judge.js';
 import { assessFov, fovRejectionReason, fitCacheGet, fitCacheSet } from './lib/fit-fov.js';
-import { checkCrownContact, resolveHeadPlacement, hairPlacementApplies, HAIR_PLACEMENT_SLUGS } from './lib/hair-measure.js';
+import { checkCrownContact, resolveHeadPlacement, hairPlacementApplies, crownMatteRowPx, HAIR_MARGIN_SLACK_ROWS, HAIR_PLACEMENT_SLUGS } from './lib/hair-measure.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
@@ -139,7 +139,7 @@ function headPlacementSpec(spec) {
 
 /** 두상 재배율 판정 숫자 로그 (ORDER_20261104 §3-7) */
 function headPlacementLog(p) {
-  return `두상 ${p.verdict}${p.headGuard ? `(${p.headGuard})` : ''} 실측두상 ${p.headMeasuredOrigMm}→${p.headMeasuredMm}mm 거울상 ${p.headMirrorMm}mm 배율x${p.scaleRatio} 눈 ${p.eyeOrigPct}→${p.eyeAfterPct}% 여백 ${p.marginOrigMm}→${p.marginAfterMm}mm 턱아래 ${p.chinBelowMm}mm`;
+  return `두상 ${p.verdict}${p.headGuard ? `(${p.headGuard})` : ''} 실측두상 ${p.headMeasuredOrigMm}→${p.headMeasuredMm}mm 거울상 ${p.headMirrorMm}mm 배율x${p.scaleRatio} 눈 ${p.eyeOrigPct}→${p.eyeAfterPct}% 여백 ${p.marginOrigMm}→${p.marginAfterMm}mm(목표 ${p.marginTargetMm}=0.5+보정${p.slackMm}) 턱아래 ${p.chinBelowMm}mm`;
 }
 
 async function normalizeImage(rawBase64) {
@@ -556,7 +556,7 @@ const httpServer = createServer(async (req, res) => {
       let hairPlacement = null;
       let linesOut = lines;
       if (hairPlacementApplies(slug, body.hairTopRatio)) {
-        hairPlacement = resolveHeadPlacement({ frame, lines, hairTopRatio: body.hairTopRatio, imageHeight: H, ...headPlacementSpec(spec) });
+        hairPlacement = resolveHeadPlacement({ frame, lines, hairTopRatio: body.hairTopRatio, imageHeight: H, ...headPlacementSpec(spec), slackPx: HAIR_MARGIN_SLACK_ROWS * crownMatteRowPx(W, H) });
         if (hairPlacement) {
           frame = hairPlacement.frame;
           // 화면의 머리끝 선 = 실측 덩어리 머리끝 (hairScan:false라 엔진 값은 거울상 정수리와 같다)
@@ -779,7 +779,12 @@ const httpServer = createServer(async (req, res) => {
         if (measurable && fov && fitGeom && crownCheck?.status === 'measured') {
           if (hairPlacementApplies(body.slug, crownCheck.hairTopRatio)) {
             const fovSpec = getSpecCropParams(body.slug);
-            hairPlacement = resolveHeadPlacement({ frame: fitGeom.frame, lines: fitGeom.lines, hairTopRatio: crownCheck.hairTopRatio, imageHeight: norm.height, ...headPlacementSpec(fovSpec) });
+            const rowPx = crownMatteRowPx(norm.width, norm.height);
+            // fit은 매팅 없이 rowPx를 원본 크기에서 다시 파생한다 — 실제 매팅 높이와 어긋나면 미리보기≠결과 위험이라 경고
+            if (crownCheck.matteRows && Math.abs(crownCheck.matteRows * rowPx - norm.height) > rowPx) {
+              log(`[IDPhoto][precheck] ${body.slug} 매팅 행 수 불일치 (실측 ${crownCheck.matteRows}행, 파생 ${(norm.height / rowPx).toFixed(0)}행) — fit 보정량 어긋날 수 있음`, 'WARNING');
+            }
+            hairPlacement = resolveHeadPlacement({ frame: fitGeom.frame, lines: fitGeom.lines, hairTopRatio: crownCheck.hairTopRatio, imageHeight: norm.height, ...headPlacementSpec(fovSpec), slackPx: HAIR_MARGIN_SLACK_ROWS * rowPx });
             if (!hairPlacement) {
               log(`[IDPhoto][precheck] ${body.slug} 두상 재배율 입력 무효 (hairTopRatio=${crownCheck.hairTopRatio}) → 거울상 프레임 유지`, 'WARNING');
             } else {

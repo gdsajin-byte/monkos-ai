@@ -2,7 +2,7 @@
  * 정수리 실측 — 상단 접촉 판정 경계 (ORDER_20261102 정수리게이트_실측전환)
  */
 import sharp from 'sharp';
-import { measureTopContact, checkCrownContact, CROWN_CONTACT_RATIO, resolveHairPlacement, resolveHeadPlacement, hairPlacementApplies } from '../lib/hair-measure.js';
+import { measureTopContact, checkCrownContact, CROWN_CONTACT_RATIO, resolveHairPlacement, resolveHeadPlacement, hairPlacementApplies, crownMatteRowPx } from '../lib/hair-measure.js';
 
 const BG = '#00FF00';
 const W = 100, H = 100;
@@ -49,7 +49,7 @@ describe('measureTopContact', () => {
 
   test('전경 없음 → hairTopRatio null', async () => {
     const r = await measureTopContact(await img(0, 0, 0, 0), BG);
-    expect(r).toEqual({ hairTopRatio: null, hairTopRawRatio: null, contactRatio: 0, rowContacts: [0, 0, 0, 0, 0], touched: false });
+    expect(r).toEqual({ hairTopRatio: null, hairTopRawRatio: null, contactRatio: 0, rowContacts: [0, 0, 0, 0, 0], touched: false, matteRows: 100 });
   });
 });
 
@@ -284,5 +284,31 @@ describe('resolveHeadPlacement — 실측 두상 33mm 재배율 (ORDER_20261104)
 
   test('입력 무효(머리끝이 턱 아래) → null', () => {
     expect(place(lines.chinY + 5)).toBe(null);
+  });
+});
+
+describe('측정 정밀도 보정 — 배치 목표 = 0.5mm + 매팅 2행 (쌍아 11-04)', () => {
+  const frame = { x: 0, y: 100, w: 350, h: 450 }; // 0.1mm/px
+  const lines = { eyeY: 100 + 450 * 0.43, chinY: 100 + 450 * 0.86 };
+  const place = (hairY, slackPx) => resolveHairPlacement({ frame, lines, hairTopRatio: hairY / 1000, imageHeight: 1000, frameHmm: 45, slackPx });
+
+  test('보정 3px(0.3mm) → 목표 0.8mm: 0.8 통과 / 0.7 이동', () => {
+    expect(place(108, 3).verdict).toBe('pass');
+    const r = place(107, 3);
+    expect(r.verdict).toBe('moved');
+    expect(r.marginAfterMm).toBe(0.8);
+    expect(r.marginTargetMm).toBe(0.8);
+    expect(r.slackMm).toBe(0.3);
+  });
+
+  test('보정 0이면 11-03 동작 그대로', () => {
+    expect(place(105, 0).verdict).toBe('pass');
+    expect(place(105).marginTargetMm).toBe(0.5);
+  });
+
+  test('매팅 행 높이 — 긴 변 512 축소 기준, 확대 없음', () => {
+    expect(crownMatteRowPx(1280, 1600)).toBeCloseTo(1600 / 512);
+    expect(crownMatteRowPx(1600, 1280)).toBeCloseTo(1280 / 410);
+    expect(crownMatteRowPx(400, 300)).toBe(1);
   });
 });
