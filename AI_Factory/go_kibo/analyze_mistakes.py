@@ -54,6 +54,10 @@ def main():
     ap.add_argument("--report", action="store_true")
     ap.add_argument("--elapsed", type=float, default=None, help="엔진 실행 초 (처리량 계산)")
     ap.add_argument("--visits", type=int, default=64)
+    ap.add_argument("--dir1", default=None, help="1단계 대국별 응답 폴더(out1) — 있으면 responses_{name}.jsonl 대신")
+    ap.add_argument("--dir2", default=None, help="2단계 재평가 응답 폴더(out2)")
+    ap.add_argument("--visits2", type=int, default=400)
+    ap.add_argument("--report-name", default="MISTAKES_v0")
     a = ap.parse_args()
 
     meta = {m["id"]: m for m in (json.loads(x) for x in open(os.path.join(OUT, f"queries_{a.name}.meta.jsonl"), encoding="utf-8"))}
@@ -61,22 +65,34 @@ def main():
     for x in open(os.path.join(OUT, f"queries_{a.name}.jsonl"), encoding="utf-8"):
         d = json.loads(x)
         q[d["id"]] = d["moves"]
-    resp = defaultdict(dict)
-    errors, warnings = [], 0
-    for line in open(os.path.join(OUT, f"responses_{a.name}.jsonl"), encoding="utf-8", errors="replace"):
-        line = line.strip()
-        if not line.startswith("{"):
-            continue
-        d = json.loads(line)
-        if "error" in d:
-            errors.append({"id": d.get("id"), "error": d["error"], "field": d.get("field")})
-            continue
-        if "warning" in d:
-            warnings += 1
-            continue
-        if d.get("isDuringSearch"):
-            continue
-        resp[d["id"]][d["turnNumber"]] = d
+    def lines_of(path_or_dir, single):
+        if path_or_dir:
+            for fn in sorted(os.listdir(path_or_dir)):
+                if fn.endswith(".jsonl"):
+                    yield from open(os.path.join(path_or_dir, fn), encoding="utf-8", errors="replace")
+        else:
+            yield from open(single, encoding="utf-8", errors="replace")
+
+    def read_resp(it):
+        resp, errs, warns = defaultdict(dict), [], 0
+        for line in it:
+            line = line.strip()
+            if not line.startswith("{"):
+                continue
+            d = json.loads(line)
+            if "error" in d:
+                errs.append({"id": d.get("id"), "error": d["error"], "field": d.get("field")})
+                continue
+            if "warning" in d:
+                warns += 1
+                continue
+            if d.get("isDuringSearch"):
+                continue
+            resp[d["id"]][d["turnNumber"]] = d
+        return resp, errs, warns
+
+    resp, errors, warnings = read_resp(lines_of(a.dir1, os.path.join(OUT, f"responses_{a.name}.jsonl")))
+    resp2 = read_resp(lines_of(a.dir2, None))[0] if a.dir2 else {}
 
     rows = []
     missing_turns = 0
@@ -106,6 +122,18 @@ def main():
                 "mine_visits": mine["visits"] if mine else 0,
                 "mine_loss_same_search": round(sgn * (best["scoreLead"] - mine["scoreLead"]), 2) if (best and mine) else None,
             })
+            r2 = resp2.get(gid, {})
+            if t in r2 and t + 1 in r2:  # 2단계 재평가가 있으면 그 값으로 손해를 바꾼다(1단계 값은 loss64로 보존)
+                b0, b1 = r2[t], r2[t + 1]
+                m0, m1 = sgn * b0["rootInfo"]["scoreLead"], sgn * b1["rootInfo"]["scoreLead"]
+                v0 = b0["rootInfo"]["winrate"] if me == "B" else 1 - b0["rootInfo"]["winrate"]
+                v1 = b1["rootInfo"]["winrate"] if me == "B" else 1 - b1["rootInfo"]["winrate"]
+                bb = min(b0["moveInfos"], key=lambda mi: mi["order"]) if b0.get("moveInfos") else None
+                x = rows[-1]
+                x.update(stage2=True, loss64=x["loss"], wr_loss64=x["wr_loss"], best64=x["best"],
+                         loss=round(m0 - m1, 2), wr_loss=round(v0 - v1, 4), lead_before=round(m0, 2), lead_after=round(m1, 2),
+                         best=bb["move"] if bb else x["best"], is_best=bool(bb and bb["move"] == mv),
+                         dist_best=cheb(mv, bb["move"]) if bb else x["dist_best"])
     with open(os.path.join(OUT, f"moves_{a.name}.jsonl"), "w", encoding="utf-8") as f:
         for x in rows:
             f.write(json.dumps(x, ensure_ascii=False) + "\n")
@@ -125,6 +153,13 @@ def main():
             "overall": agg(rows), "by_phase": {p: agg([x for x in rows if x["phase"] == p]) for p in ("포석", "중반", "끝내기")},
             "by_result": {r: agg([x for x in rows if x["result"] == r]) for r in ("W", "L")},
             "by_era": {e: agg([x for x in rows if x["era"] == e]) for e in sorted({x["era"] for x in rows})}}
+    if a.dir2:
+        cand = [x for x in rows if x.get("stage2")]
+        cand64 = sum(1 for x in rows if (x.get("loss64", x["loss"]) >= BIG))
+        kept = sum(1 for x in cand if x["loss"] >= BIG)
+        summ["stage2"] = {"visits": a.visits2, "candidates_64": cand64, "reevaluated": len(cand), "kept_big": kept,
+                          "kept_rate": round(kept / len(cand) * 100, 1) if cand else None,
+                          "games_with_resp2": len(resp2)}
     if a.elapsed:
         pos = summ["positions_resp"]
         summ["elapsed_s"] = a.elapsed
@@ -143,8 +178,10 @@ def write_report(a, summ, rows, meta):
     L = []
     now = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
     L.append(f"---\ntype: research\ndate: {now[:10]}\nportfolio: PF_GO\nsource: AI_Factory/go_kibo/analyze_mistakes.py\n---\n")
-    L.append(f"# 실수 사전 v0 — 스모크 {summ['games']}국\n")
-    L.append(f"> 생성 {now} KST · 엔진 KataGo v1.18.2 + b18(kata1-b18c384nbt) · visits {a.visits} · 4060\n"
+    ver = a.report_name.split("_")[-1]
+    L.append(f"# 실수 사전 {ver} — {summ['games']}국\n")
+    s2 = f" → 큰 실수 후보 visits {a.visits2} 재평가" if a.dir2 else ""
+    L.append(f"> 생성 {now} KST · 엔진 KataGo v1.18.2 + b18(kata1-b18c384nbt) · visits {a.visits}{s2} · 4060\n"
              f"> 대국은 G01~ 번호로만 표기(아이디·기보 원문 없음). 원자료 `~/.monkos/go-board/analysis/mistakes_v0/moves_{a.name}.jsonl`.\n"
              f"> 손해 = 착수 직전 국면 평가 − 착수 직후 국면 평가 (작가님 기준 집, KaTrain 방식). 큰 실수 = {BIG:g}집 이상.\n")
     L.append("## 1. 실행 상태\n")
@@ -155,6 +192,14 @@ def write_report(a, summ, rows, meta):
         if k in summ:
             L.append(f"| {lab} | {summ[k]} |")
     L.append("")
+    if "stage2" in summ:
+        s2 = summ["stage2"]
+        L.append(f"### 2단계 재평가 (visits {s2['visits']})\n")
+        L.append("| 항목 | 값 |\n|---|---|")
+        L.append(f"| 1단계 큰 실수 후보(3집+) | {s2['candidates_64']} |")
+        L.append(f"| 재평가된 착수 | {s2['reevaluated']} |")
+        L.append(f"| 재평가 후에도 3집+ (유지) | {s2['kept_big']} ({s2['kept_rate']}%) |")
+        L.append("\n아래 표의 손해는 재평가된 착수만 visits 400 값으로 바꾼 것이다(나머지는 visits 64).\n")
 
     def trow(lab, s):
         return f"| {lab} | {s.get('n', 0)} | {s.get('avg_loss', '—')} | {s.get('avg_wr_loss', '—')}%p | {s.get('big', '—')} | {s.get('big_rate', '—')}% | {s.get('best_rate', '—')}% |"
@@ -184,7 +229,7 @@ def write_report(a, summ, rows, meta):
         L.append(f"| {gidx[gid]} | {m['era']} | {'승' if m['result'] == 'W' else '패'} | {m['moves']} | {len(rs)} | {avg:.2f} | {len(big)} | {big[0]['move_no'] if big else '—'} |")
     L.append("")
     L.append("<!-- NOTES -->\n<!-- /NOTES -->\n")
-    path = os.path.join(HERE, "reports", "MISTAKES_v0.md")
+    path = os.path.join(HERE, "reports", f"{a.report_name}.md")
     notes = "<!-- NOTES -->\n<!-- /NOTES -->"
     if os.path.exists(path):
         import re
