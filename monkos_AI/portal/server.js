@@ -45,7 +45,7 @@ import { cropToSpec, warmupCropEngine, getSpecCropParams } from './lib/spec-crop
 import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, getMatteEngineState, stripDataUri, getSpecBgColor, cropMetaWithinSpec, runMatteChain } from './lib/matte.js';
 import { judgeMetrics, metricsFromFit } from './lib/spec-judge.js';
 import { assessFov, fovRejectionReason, fitCacheGet, fitCacheSet } from './lib/fit-fov.js';
-import { checkCrownContact, resolveHairPlacement, hairPlacementApplies, HAIR_PLACEMENT_SLUGS } from './lib/hair-measure.js';
+import { checkCrownContact, resolveHeadPlacement, hairPlacementApplies, HAIR_PLACEMENT_SLUGS } from './lib/hair-measure.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
@@ -130,6 +130,16 @@ async function computeFitGeometry({ buf, W, H, fbPx, spec, slug, cropEngineUrl, 
     slog(`[Fit] ${slug}: 랜드마크 검증 이탈 (targetFaceH=${targetFaceH}, faceH=${Math.round(faceH)}, eyeChinRatio=${eyeChinRatio.toFixed(3)}) → 재시도`);
   }
   return { frame, lines, gate };
+}
+
+/** 두상 재배율 규격 입력 — 목표 = faceTargetMm(kr·jp 여권 하한+1 = 33mm), 가드 = 규정 범위 */
+function headPlacementSpec(spec) {
+  return { frameHmm: spec.frameHmm, headTargetMm: spec.faceTargetMm, headMinMm: spec.headHeightMinMm ?? spec.faceMinMm, headMaxMm: spec.headHeightMaxMm };
+}
+
+/** 두상 재배율 판정 숫자 로그 (ORDER_20261104 §3-7) */
+function headPlacementLog(p) {
+  return `두상 ${p.verdict}${p.headGuard ? `(${p.headGuard})` : ''} 실측두상 ${p.headMeasuredOrigMm}→${p.headMeasuredMm}mm 거울상 ${p.headMirrorMm}mm 배율x${p.scaleRatio} 눈 ${p.eyeOrigPct}→${p.eyeAfterPct}% 여백 ${p.marginOrigMm}→${p.marginAfterMm}mm 턱아래 ${p.chinBelowMm}mm`;
 }
 
 async function normalizeImage(rawBase64) {
@@ -542,12 +552,17 @@ const httpServer = createServer(async (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         return res.end(JSON.stringify({ success: false, code: 'FIT_SANITY' }));
       }
-      // 머리끝 배치 — precheck 실측값을 받아 같은 산식으로 틀을 옮긴다 (미리보기 틀 = 최종 재단). 인스턴스가 달라도 재매팅 없음
+      // 두상 재배율 + 머리끝 배치 — precheck 실측값을 받아 같은 산식으로 틀을 다시 정한다 (미리보기 틀 = 최종 재단). 인스턴스가 달라도 재매팅 없음
       let hairPlacement = null;
+      let linesOut = lines;
       if (hairPlacementApplies(slug, body.hairTopRatio)) {
-        hairPlacement = resolveHairPlacement({ frame, lines, hairTopRatio: body.hairTopRatio, imageHeight: H, frameHmm: spec.frameHmm });
-        frame = hairPlacement.frame;
-        slog(`[Fit] ${slug}: 머리끝 ${hairPlacement.verdict} 여백 ${hairPlacement.marginBeforeMm}→${hairPlacement.marginAfterMm}mm 눈 ${hairPlacement.eyeBeforePct}→${hairPlacement.eyeAfterPct}% 턱아래 ${hairPlacement.chinBelowMm}mm`);
+        hairPlacement = resolveHeadPlacement({ frame, lines, hairTopRatio: body.hairTopRatio, imageHeight: H, ...headPlacementSpec(spec) });
+        if (hairPlacement) {
+          frame = hairPlacement.frame;
+          // 화면의 머리끝 선 = 실측 덩어리 머리끝 (hairScan:false라 엔진 값은 거울상 정수리와 같다)
+          linesOut = { ...lines, hairTopY: body.hairTopRatio * H };
+          slog(`[Fit] ${slug}: ${headPlacementLog(hairPlacement)}`);
+        } else log(`[Fit] ${slug}: 두상 재배율 입력 무효 (hairTopRatio=${body.hairTopRatio}) → 거울상 프레임 유지`, 'WARNING');
       }
       const frameInitial = { ...frame };
       const fov = assessFov(frame, { width: W, height: H }, spec.frameW);
@@ -559,8 +574,10 @@ const httpServer = createServer(async (req, res) => {
       const metrics = metricsFromFit(frame, lines, spec);
       const codedNote = (function() {
         if (!frame || !lines) return null;
-        if (metrics.topMm < 2) return '머리 위 여백이 부족합니다. 헤어 볼륨이 큰 경우 다른 사진을 권장합니다.';
-        if (metrics.topMm > 6) return '머리 위 공간이 넉넉합니다.';
+        // 실측 머리끝이 있으면 그 여백으로 본다 (거울상 정수리 여백은 머리카락을 빼고 잰 값)
+        const topMm = hairPlacement ? hairPlacement.marginAfterMm : metrics.topMm;
+        if (topMm < 2 && !hairPlacement) return '머리 위 여백이 부족합니다. 헤어 볼륨이 큰 경우 다른 사진을 권장합니다.';
+        if (topMm > 6) return '머리 위 공간이 넉넉합니다.';
         if (metrics.bottomMm < 4) return '어깨선 여백이 좁습니다.';
         return null;
       })();
@@ -569,7 +586,7 @@ const httpServer = createServer(async (req, res) => {
       // ④ IDPASS 정본 판정표
       const judge = judgeMetrics(metrics, spec);
       const meta = {
-        faceMM: String(metrics.faceMm), crownMarginMM: String(metrics.topMm),
+        faceMM: String(metrics.faceMm), crownMarginMM: String(hairPlacement ? hairPlacement.marginAfterMm : metrics.topMm),
         eyePositionPercent: (metrics.eyeRatio * 100).toFixed(1),
       };
       // gate 기반 postcheck
@@ -584,7 +601,7 @@ const httpServer = createServer(async (req, res) => {
       slog(`[Fit] ${slug}: face=${metrics.faceMm}mm top=${metrics.topMm}mm btm=${metrics.bottomMm}mm eye=${(metrics.eyeRatio * 100).toFixed(1)}% judge=${judge.blocked ? 'BLOCKED' : judge.face + '/' + judge.eye} vision=${vision ? (vision.note || 'ok') : 'skip'} detect=${detectSrc}${gate ? ` gate={mouth:${gate.mouthOpen},eyeL:${gate.eyeOpenL},eyeR:${gate.eyeOpenR},roll:${gate.rollDeg},yaw:${gate.yawRatio}}` : ''}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({
-        success: true, frame, frameInitial, outside, fov, hairPlacement, lines, gate, poseCheck, imageSize: { width: W, height: H }, meta, metrics, judge, vision,
+        success: true, frame, frameInitial, outside, fov, hairPlacement, lines: linesOut, gate, poseCheck, imageSize: { width: W, height: H }, meta, metrics, judge, vision,
         spec: { frameW: spec.frameW, frameH: spec.frameH, frameHmm: spec.frameHmm, headHeightMin: spec.headHeightMinMm || spec.faceMinMm, headHeightMax: spec.headHeightMaxMm || null, faceTargetMm: spec.faceTargetMm },
       }));
     } catch (err) {
@@ -762,11 +779,22 @@ const httpServer = createServer(async (req, res) => {
         if (measurable && fov && fitGeom && crownCheck?.status === 'measured') {
           if (hairPlacementApplies(body.slug, crownCheck.hairTopRatio)) {
             const fovSpec = getSpecCropParams(body.slug);
-            hairPlacement = resolveHairPlacement({ frame: fitGeom.frame, lines: fitGeom.lines, hairTopRatio: crownCheck.hairTopRatio, imageHeight: norm.height, frameHmm: fovSpec.frameHmm });
-            slog(`[IDPhoto][precheck] ${body.slug} 머리끝 ${hairPlacement.verdict} 여백 ${hairPlacement.marginBeforeMm}→${hairPlacement.marginAfterMm}mm 눈 ${hairPlacement.eyeBeforePct}→${hairPlacement.eyeAfterPct}% 턱아래 ${hairPlacement.chinBelowMm}mm`);
-            if (hairPlacement.verdict === 'moved') fov = assessFov(hairPlacement.frame, { width: norm.width, height: norm.height }, fovSpec.frameW);
-            // 눈 상한 안에서 머리가 안 들어옴 → 무료 매팅으로 규정 사진 불가, AI 경로·다른 사진만
-            else if (hairPlacement.verdict === 'no_room') fov = { ...fov, verdict: 'warn', cause: 'head_margin', aiOnly: true };
+            hairPlacement = resolveHeadPlacement({ frame: fitGeom.frame, lines: fitGeom.lines, hairTopRatio: crownCheck.hairTopRatio, imageHeight: norm.height, ...headPlacementSpec(fovSpec) });
+            if (!hairPlacement) {
+              log(`[IDPhoto][precheck] ${body.slug} 두상 재배율 입력 무효 (hairTopRatio=${crownCheck.hairTopRatio}) → 거울상 프레임 유지`, 'WARNING');
+            } else {
+              const rawMm = Number.isFinite(crownCheck.hairTopRawRatio)
+                ? +((crownCheck.hairTopRatio - crownCheck.hairTopRawRatio) * norm.height * fovSpec.frameHmm / hairPlacement.frame.h).toFixed(2) : null;
+              slog(`[IDPhoto][precheck] ${body.slug} ${headPlacementLog(hairPlacement)} 잔머리차=${rawMm}mm`);
+              // 재배율 프레임으로 화각 재평가 — 프레임이 커지면 아래·옆이 원본 밖으로 나갈 수 있다(기존 fov 규칙)
+              if (hairPlacement.verdict !== 'no_room') {
+                fov = assessFov(hairPlacement.frame, { width: norm.width, height: norm.height }, fovSpec.frameW);
+                if (fov.verdict === 'block') { measurable = false; reason = fovRejectionReason(fov); }
+              } else {
+                // 눈 상한 안에서 머리가 안 들어옴 → 무료 매팅으로 규정 사진 불가, AI 경로·다른 사진만
+                fov = { ...fov, verdict: 'warn', cause: 'head_margin', aiOnly: true };
+              }
+            }
           } else if (HAIR_PLACEMENT_SLUGS.has(body.slug)) {
             log(`[IDPhoto][precheck] ${body.slug} 머리끝 미검출 → 판정 없이 통과`, 'WARNING');
           }

@@ -2,7 +2,7 @@
  * 정수리 실측 — 상단 접촉 판정 경계 (ORDER_20261102 정수리게이트_실측전환)
  */
 import sharp from 'sharp';
-import { measureTopContact, checkCrownContact, CROWN_CONTACT_RATIO, resolveHairPlacement, hairPlacementApplies } from '../lib/hair-measure.js';
+import { measureTopContact, checkCrownContact, CROWN_CONTACT_RATIO, resolveHairPlacement, resolveHeadPlacement, hairPlacementApplies } from '../lib/hair-measure.js';
 
 const BG = '#00FF00';
 const W = 100, H = 100;
@@ -49,7 +49,7 @@ describe('measureTopContact', () => {
 
   test('전경 없음 → hairTopRatio null', async () => {
     const r = await measureTopContact(await img(0, 0, 0, 0), BG);
-    expect(r).toEqual({ hairTopRatio: null, contactRatio: 0, rowContacts: [0, 0, 0, 0, 0], touched: false });
+    expect(r).toEqual({ hairTopRatio: null, hairTopRawRatio: null, contactRatio: 0, rowContacts: [0, 0, 0, 0, 0], touched: false });
   });
 });
 
@@ -164,5 +164,125 @@ describe('resolveHairPlacement — 눈 48%·여백 0.5mm 경계', () => {
     expect(hairPlacementApplies('us-visa', 0.1)).toBe(false);
     expect(hairPlacementApplies('kr-passport', null)).toBe(false);
     expect(hairPlacementApplies('kr-passport', 1.5)).toBe(false);
+  });
+});
+
+describe('머리 덩어리 머리끝 — 잔머리 제외 (ORDER_20261104)', () => {
+  /** 덩어리(검은 사각형) 위에 1px 폭 세로 가닥을 띄엄띄엄 세운 합성본 */
+  async function strands({ lumpTop = 20, strandTop = 10, strandXs = [], strandW = 1 } = {}) {
+    const parts = [{ input: await sharp({ create: { width: 40, height: 60, channels: 3, background: '#000000' } }).png().toBuffer(), left: 30, top: lumpTop }];
+    for (const x of strandXs) {
+      parts.push({ input: await sharp({ create: { width: strandW, height: lumpTop - strandTop, channels: 3, background: '#000000' } }).png().toBuffer(), left: x, top: strandTop });
+    }
+    return sharp({ create: { width: W, height: H, channels: 3, background: BG } }).composite(parts).png().toBuffer();
+  }
+
+  test('가는 가닥 여러 개(총합은 2% 이상) → 덩어리 머리끝, 맨 위 전경은 따로 기록', async () => {
+    const r = await measureTopContact(await strands({ strandXs: [35, 40, 45, 50, 55] }), BG);
+    expect(r.hairTopRawRatio).toBe(0.1);
+    expect(r.hairTopRatio).toBe(0.2);
+  });
+
+  test('가닥 없음 → 두 값이 같다', async () => {
+    const r = await measureTopContact(await strands(), BG);
+    expect(r.hairTopRatio).toBe(0.2);
+    expect(r.hairTopRawRatio).toBe(0.2);
+  });
+
+  test('넓은 뭉치(연속 8px 이상)가 3행 이상이면 덩어리로 본다', async () => {
+    const r = await measureTopContact(await strands({ strandXs: [40], strandW: 10 }), BG);
+    expect(r.hairTopRatio).toBe(0.1);
+  });
+
+  test('가로로 누운 가닥 1~2행은 덩어리가 아니다', async () => {
+    const line = await sharp({ create: { width: 30, height: 2, channels: 3, background: '#000000' } }).png().toBuffer();
+    const lump = await sharp({ create: { width: 40, height: 60, channels: 3, background: '#000000' } }).png().toBuffer();
+    const buf = await sharp({ create: { width: W, height: H, channels: 3, background: BG } })
+      .composite([{ input: line, left: 35, top: 12 }, { input: lump, left: 30, top: 20 }]).png().toBuffer();
+    const r = await measureTopContact(buf, BG);
+    expect(r.hairTopRawRatio).toBe(0.12);
+    expect(r.hairTopRatio).toBe(0.2);
+  });
+
+  test('1px 구멍(매팅 노이즈)은 이어 본다', async () => {
+    const hole = await sharp({ create: { width: 1, height: 60, channels: 3, background: BG } }).png().toBuffer();
+    const lump = await sharp({ create: { width: 40, height: 60, channels: 3, background: '#000000' } }).png().toBuffer();
+    const parts = [{ input: lump, left: 30, top: 20 }];
+    for (let x = 32; x < 70; x += 2) parts.push({ input: hole, left: x, top: 20 });
+    const buf = await sharp({ create: { width: W, height: H, channels: 3, background: BG } }).composite(parts).png().toBuffer();
+    expect((await measureTopContact(buf, BG)).hairTopRatio).toBe(0.2);
+  });
+});
+
+describe('resolveHeadPlacement — 실측 두상 33mm 재배율 (ORDER_20261104)', () => {
+  // 원 프레임: 450px = 45mm(0.1mm/px), 거울상 두상 33mm(330px), 눈 43%.
+  const frame = { x: 0, y: 100, w: 350, h: 450 };
+  const eyeY = 100 + 450 * 0.43;               // 293.5
+  const lines = { eyeY, chinY: eyeY + 165, crownY: eyeY - 165, eyeCenterX: 175 };
+  const spec = { frameHmm: 45, headTargetMm: 33, headMinMm: 32, headMaxMm: 36 };
+  const place = (hairY) => resolveHeadPlacement({ frame, lines, hairTopRatio: hairY / 1000, imageHeight: 1000, ...spec });
+
+  test('실측 머리끝 = 거울상 정수리 → 프레임 그대로 (재배율 0)', () => {
+    const r = place(lines.crownY);
+    expect(r.verdict).toBe('pass');
+    expect(r.frame.h).toBeCloseTo(450);
+    expect(r.frame.y).toBeCloseTo(100);
+    expect(r.headMeasuredMm).toBe(33);
+    expect(r.scaleRatio).toBeCloseTo(1, 3);
+  });
+
+  test('머리 볼륨 1mm → 실측 두상 33mm로 축소, 눈 43% 유지', () => {
+    const r = place(lines.crownY - 10); // 실측 34mm
+    expect(r.verdict).toBe('pass');
+    expect(r.headMeasuredOrigMm).toBe(34);
+    expect(r.headMeasuredMm).toBe(33);
+    expect(r.headMirrorMm).toBeCloseTo(32.03, 1);
+    expect(r.headGuard).toBe(null);
+    expect(r.eyeAfterPct).toBeCloseTo(43, 1);
+    expect(r.frame.w / r.frame.h).toBeCloseTo(350 / 450, 6);
+    expect(r.frame.x + r.frame.w / 2).toBeCloseTo(175); // 눈 중심 = 수평 중앙
+  });
+
+  test('얼굴 하한 가드 — 거울상 32mm 밑으로 안 줄이고 나머지는 위로 이동', () => {
+    const r = place(lines.crownY - 30); // 실측 36mm → 33mm면 거울상 30.25mm < 32
+    expect(r.headGuard).toBe('face_min');
+    expect(r.headMirrorMm).toBe(32);
+    expect(r.headMeasuredMm).toBeCloseTo(34.9, 1);
+    // 눈 43%(19.35mm)에서 머리끝 = 눈 위 34.9−16 = 18.9mm → 여백 0.45mm < 0.5 → 위로 이동
+    expect(r.verdict).toBe('moved');
+    expect(r.marginAfterMm).toBe(0.5);
+    expect(r.eyeAfterPct).toBeCloseTo(43.11, 1);
+  });
+
+  test('재현(Jemison형): 원 프레임 기준 실측 37.7mm·여백 −1.9mm → no_room 아님', () => {
+    // 원 프레임에서 머리끝이 틀 위 1.89mm, 실측 두상 37.7mm
+    const r = place(100 - 18.9);
+    expect(r.marginOrigMm).toBeCloseTo(-1.89, 1);
+    expect(r.headMeasuredOrigMm).toBeCloseTo(37.7, 0);
+    expect(r.verdict).not.toBe('no_room');
+    expect(r.headGuard).toBe('face_min');
+    expect(r.marginAfterMm).toBeGreaterThanOrEqual(0.5);
+    expect(r.eyeAfterPct).toBeLessThanOrEqual(48);
+  });
+
+  test('볼륨이 극단이면 가드 후에도 no_room — 원 프레임 유지', () => {
+    const r = place(lines.crownY - 60); // 실측 39mm
+    expect(r.verdict).toBe('no_room');
+    expect(r.frame).toBe(frame);
+    expect(r.rescaled).toBe(false);
+  });
+
+  test('대머리(실측 < 거울상) → 얼굴 확대, 상한 가드 36mm', () => {
+    const r = place(lines.crownY + 20); // 실측 31mm → 33mm면 거울상 35.1mm
+    expect(r.headGuard).toBe(null);
+    expect(r.headMeasuredMm).toBe(33);
+    expect(r.headMirrorMm).toBeCloseTo(35.13, 1);
+    const big = place(lines.crownY + 40); // 실측 29mm → 거울상 37.6 > 36
+    expect(big.headGuard).toBe('face_max');
+    expect(big.headMirrorMm).toBe(36);
+  });
+
+  test('입력 무효(머리끝이 턱 아래) → null', () => {
+    expect(place(lines.chinY + 5)).toBe(null);
   });
 });

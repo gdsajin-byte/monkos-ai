@@ -1197,7 +1197,7 @@ var SpecsFunnel = (function(){
     // 5) 딤 + 신호등 판정
     fitAfter(t, function(){
       var scF = stageW / d.frame.w;
-      var crownTop = (d.lines.crownY - d.frame.y) * scF;
+      var crownTop = (Math.min(d.lines.crownY, d.lines.hairTopY || d.lines.crownY) - d.frame.y) * scF; // 실측 머리끝이 거울상 정수리보다 위면 머리까지 밝게 (11-04)
       var chinTop = (d.lines.chinY - d.frame.y) * scF;
       document.getElementById('v2-fit-dim-top').style.height = Math.max(0, crownTop) + 'px';
       document.getElementById('v2-fit-dim-bot').style.height = Math.max(0, stageH - chinTop) + 'px';
