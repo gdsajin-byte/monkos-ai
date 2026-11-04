@@ -1403,7 +1403,40 @@ soundBox.onchange = () => {
 };
 
 // ---- 시계(초읽기): 화면이 재고 서버에는 시간패만 알린다. 엔진 시계는 표시만(초읽기 마지막 1초에서 멈춤 — 시간패 없음)
-let clocks = null, clockTimer = null, clockLast = 0;
+let clocks = null, clockTimer = null, clockLast = 0, clockMv = -1;
+// 초읽기 음성 관리(11-05 08:20 쌍아 승인 — 작가님 "더 끊겨" 원인 REPORT_20261105 초읽기끊김):
+// ① 같은 (수순·남은 회·숫자)는 한 번만 — 서버 동기화로 시계가 뒤로 가도 다시 읽지 않는다
+// ② 남은 회수 안내가 나오는 동안 온 숫자는 버리지 않고 안내가 끝난 뒤 차례로 이어 읽는다(안내 우선 — 누락 0)
+const CD = { mv: -1, said: new Set(), holdUntil: 0, queue: [], timer: null, log: null };
+const cdKey = (e, c) => `${c ? c.left : '-'}:${e}`;
+function cdPlay(key, url, e) {  // 실제 재생 1회 — 길이만큼 다음 대기열을 막는다
+  CD.said.add(key);
+  if (CD.log) CD.log.push([Math.round(performance.now()), e, key]);  // 테스트 기록(평소 null)
+  if (voice(url)) { const b = decoded[url]; CD.holdUntil = performance.now() + (b ? b.duration * 1000 : 0); }
+}
+function cdFlush() {
+  clearTimeout(CD.timer);
+  const wait = CD.holdUntil - performance.now();
+  if (wait > 0) { CD.timer = setTimeout(cdFlush, wait); return; }
+  const q = CD.queue.shift();
+  if (!q) return;
+  if (q.mv === CD.mv && !CD.said.has(q.key)) cdPlay(q.key, q.url, q.e);
+  if (CD.queue.length) cdFlush();
+}
+function clockVoice(e, c) {
+  if (!SND || !S) return;
+  if (CD.mv !== S.moveNo) { CD.mv = S.moveNo; CD.said.clear(); CD.queue = []; clearTimeout(CD.timer); CD.holdUntil = 0; }
+  const key = cdKey(e, c);
+  if (CD.said.has(key) || CD.queue.some(q => q.key === key)) return;
+  const url = e.startsWith('count') ? SND.count[Number(e.slice(5))] : SND.remain[Number(e.slice(6))];
+  if (e.startsWith('remain')) {  // 안내는 바로(앞 대기열이 있어도 끊지 않고 이어서 — 안내가 먼저)
+    CD.queue.unshift({ key, url, e, mv: CD.mv });
+    cdFlush();
+    return;
+  }
+  if (performance.now() < CD.holdUntil || CD.queue.length) { CD.queue.push({ key, url, e, mv: CD.mv }); cdFlush(); return; }
+  cdPlay(key, url, e);
+}
 
 function makeClock(t) {
   return t ? { main: t.main * 60, byo: t.byo, periods: t.periods, left: t.periods, period: t.byo, inByo: t.main === 0, flagged: false } : null;
@@ -1412,6 +1445,7 @@ function makeClock(t) {
 // 시계 정본은 서버(10-24) — 받은 값에 '지금 차례가 흐른 시간'을 더해 이어서 잰다. 새로고침·재기동에도 같은 시계
 function syncClocks() {
   const k = S && S.clock, t = S && S.time;
+  const old = clocks && S && clocks[S.user] && clockMv === S.moveNo ? { ...clocks[S.user] } : null;
   clocks = k && t ? { B: null, W: null } : null;
   if (clocks) for (const c of ['B', 'W']) {
     const v = k[c];
@@ -1425,6 +1459,20 @@ function syncClocks() {
     if (!isUser && clocks[k.running].flagged) { clocks[k.running].flagged = false; clocks[k.running].left = 1; clocks[k.running].period = 1; }
   }
   clockLast = performance.now();
+  clockMv = S ? S.moveNo : -1;
+  if (old && clocks && clocks[S.user] && k.running === S.user && !S.result && old.inByo && clocks[S.user].inByo) {
+    const nu = clocks[S.user], rem = c => c.period + (c.left - 1) * c.byo, dt = rem(old) - rem(nu);
+    if (dt > 0 && dt <= 2) {  // 2초를 넘는 차이는 소리 없이 맞춘다
+      const ev = [];
+      tickClock(old, dt, (e, cc) => { if (e.startsWith('count') || e.startsWith('remain')) ev.push([e, { left: cc.left }]); });
+      const rm = ev.find(x => x[0].startsWith('remain')), cs = ev.filter(x => x[0].startsWith('count'));
+      if (rm) clockVoice(rm[0], rm[1]);
+      if (cs.length) {
+        cs.slice(0, -1).forEach(x => CD.said.add(cdKey(x[0], x[1])));  // 한꺼번에 겹치지 않게 지난 숫자는 건너뜀 처리
+        clockVoice(cs[cs.length - 1][0], cs[cs.length - 1][1]);
+      }
+    }
+  }
   if (!clockTimer) clockTimer = setInterval(clockTick, 100);
   renderClocks();
 }
@@ -1440,11 +1488,14 @@ function tickClock(c, dt, emit) {
   const before = c.period;
   c.period -= dt;
   // 마지막 10초는 '하나'부터 센다(10-23 작가님 "초읽기 하나부터"): 10초 남음=하나 … 1초 남음=열
-  for (let k = 10; k >= 1; k--) if (before > k && c.period <= k) emit('count' + (11 - k));
+  // 11-05: before > k 이면 회가 정확히 10초로 시작할 때 '하나'를 영영 못 센다(10초 초읽기 실측 0회) → before >= k && < k
+  for (let k = 10; k >= 1; k--) if (before >= k && c.period < k) emit('count' + (11 - k), c);
   if (c.period <= 0) {
     c.left -= 1;
     if (c.left <= 0) { c.flagged = true; c.period = 0; emit('flag'); return; }
-    c.period += c.byo; emit('remain' + c.left);
+    c.period += c.byo; emit('remain' + c.left, c);
+    // 새 회는 '초읽기 − 넘친 시간'(예: 9.97초)에서 시작 — 회 시작 경계(10초 초읽기의 '하나')를 이 틱에서 함께 센다
+    for (let k = 10; k >= 1; k--) if (c.byo >= k && c.period < k) emit('count' + (11 - k), c);
   }
 }
 
@@ -1464,9 +1515,8 @@ function clockTick() {
     tickClock(c, dt, () => {});
     if (c.flagged) { c.flagged = false; c.left = 1; c.period = 1; }
   } else {
-    tickClock(c, dt, e => {
-      if (e.startsWith('count')) voice(SND.count[Number(e.slice(5))]);
-      else if (e.startsWith('remain')) voice(SND.remain[Number(e.slice(6))]);
+    tickClock(c, dt, (e, cc) => {
+      if (e.startsWith('count') || e.startsWith('remain')) clockVoice(e, cc);
       else if (e === 'flag') call('/api/timeout', { color: S.user });
     });
   }
