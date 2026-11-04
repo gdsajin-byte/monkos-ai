@@ -2443,6 +2443,14 @@ class Handler(BaseHTTPRequestHandler):
             return None
         return c[COOKIE_NAME].value if COOKIE_NAME in c else None
 
+    def _portal_cookie(self):
+        """운영 도메인(go.monkos.ai)에선 포털 세션 쿠키(.monkos.ai)가 함께 온다 — 값은 로그에 내지 않는다"""
+        try:
+            c = http.cookies.SimpleCookie(self.headers.get("Cookie") or "")
+        except http.cookies.CookieError:
+            return None
+        return c["monkos_session"].value if "monkos_session" in c else None
+
     def _who(self):
         """쿠키 세션의 사용자. 쿠키가 없으면 로컬호스트 요청은 '작가님'(live_view·내부 도구 호환), 그 밖엔 None."""
         u = AUTH.user_of(self._token())
@@ -2472,10 +2480,63 @@ class Handler(BaseHTTPRequestHandler):
         if not rec:
             return {"nick": u["nick"] if u else ADMIN_NICK, "rank": None, "rankKo": None, "created": None}
         return {"nick": rec["nick"], "rank": rec.get("rank"), "rankKo": rank_ko(rec.get("rank")), "created": rec.get("created"),
-                "display": AUTH.display_name(rec["uid"])}
+                "display": AUTH.display_name(rec["uid"]), "portal": rec.get("portal_provider") if rec.get("portal") else None}
 
     def _auth_post(self, path, body):
         """/api/auth/* · /api/presence — 처리했으면 True."""
+        if path in ("/api/auth/portal", "/api/auth/portal/cookie"):
+            # 포털 로그인 결과 — 팝업 토큰·매직 링크 교차 토큰(주소 조각) 또는 .monkos.ai 세션 쿠키(운영 도메인)
+            if not AUTH.rate_ok(self._ip()):
+                self._json({"error": "요청이 너무 많습니다 — 잠시 뒤에 다시 해 주세요"}, 429)
+                return True
+            tok = body.get("token") if path.endswith("portal") else self._portal_cookie()
+            pu = portal_verify(tok)
+            if not pu:
+                self._json({"error": "포털 로그인을 확인하지 못했습니다 — 다시 로그인해 주세요", "portal": False}, 401)
+                return True
+            cur = self._user if self._user and not self._user.get("local") and AUTH.get(self._user["uid"]) else None
+            if cur:  # 이미 바둑 아이디로 들어와 있다 = 기존 계정 이관(연결) — uid 그대로라 방·전적 보존
+                err = AUTH.link_portal(cur["uid"], pu["id"], pu["provider"])
+                if err:
+                    self._json({"error": err}, 409)
+                else:
+                    print(f"✅ go-board: 포털 연결 {cur['uid']} ← {pu['provider']}", flush=True)
+                    self._json({"ok": True, "linked": True, "me": self._me(AUTH.get(cur["uid"]))})
+                return True
+            u = AUTH.by_portal(pu["id"])
+            if u:
+                self._json({"ok": True, "me": self._me(u)}, headers=self._cookie(AUTH.new_session(u["uid"])))
+                return True
+            self._json({"needProfile": True, "ticket": AUTH.portal_ticket(pu["id"], pu["provider"]), "suggest": nick_suggest(pu["name"]),
+                        "provider": pu["provider"]})
+            return True
+        if path == "/api/auth/portal/signup":
+            if not AUTH.rate_ok(self._ip()):
+                self._json({"error": "요청이 너무 많습니다 — 잠시 뒤에 다시 해 주세요"}, 429)
+                return True
+            u, err = AUTH.signup_portal(body.get("ticket"), body.get("nick"), body.get("rank"))
+            if err:
+                self._json({"error": err}, 400)
+            else:
+                self._json({"ok": True, "me": self._me(AUTH.get(u["uid"]))}, headers=self._cookie(AUTH.new_session(u["uid"])))
+            return True
+        if path == "/api/auth/email/start":  # 매직 링크 — 포털로 서버 대 서버 중계(주소는 저장·로그하지 않음)
+            if not AUTH.rate_ok(self._ip()):
+                self._json({"error": "요청이 너무 많습니다 — 잠시 뒤에 다시 해 주세요"}, 429)
+                return True
+            email = str(body.get("email") or "").strip()
+            if not EMAIL_SHAPE_RE.fullmatch(email):
+                self._json({"error": "이메일 주소를 확인해 주세요"}, 400)
+                return True
+            lang = body.get("lang") if body.get("lang") in ("ko", "ja", "en") else "ko"
+            code, j = portal_email_start(email, lang)
+            if code == 200:
+                self._json({"ok": True, "ttlMin": j.get("ttlMin", 15)})
+            elif code == 429:
+                self._json({"error": "잠시 뒤에 다시 보내 주세요 (같은 주소는 1분에 1번, 하루 10번)"}, 429)
+            else:
+                self._json({"error": "메일을 보내지 못했습니다 — 잠시 뒤에 다시 해 주세요"}, 502)
+            return True
         if path in ("/api/auth/signup", "/api/auth/enter"):
             if not AUTH.rate_ok(self._ip()):
                 self._json({"error": "요청이 너무 많습니다 — 잠시 뒤에 다시 해 주세요"}, 429)
@@ -2535,6 +2596,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, page, "text/html; charset=utf-8")
         elif path == "/api/version":  # 화면 판본 확인(대기실·대국실·감상 공통, 가벼움)
             self._json({"build": build_id()})
+        elif path == "/api/auth/portal/config":  # 로그인 창의 포털 버튼(언어권 순서)·포털 주소
+            self._json({"portal": PORTAL_URL, "origin": APP_ORIGIN, "providers": PORTAL_PROVIDERS})
         elif path == "/api/auth/ranks":  # 가입 화면의 희망 급수 목록(로그인 전에도)
             self._json({"ranks": [{"v": r, "label": RANK_KO[r]} for r in SIGNUP_RANKS]})
         elif path == "/api/auth/check":  # 아이디 중복 확인 — 가입·입장과 합쳐 IP별 1분 30회
