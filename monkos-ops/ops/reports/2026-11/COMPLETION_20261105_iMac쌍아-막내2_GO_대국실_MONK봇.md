@@ -3,7 +3,7 @@ type: completion
 date: 2026-11-05
 device: iMac
 agent: 쌍아-막내2
-status: 진행
+status: 마감
 portfolio: PF_GO
 order: monkos-ops/ops/orders/2026-11/ORDER_20261105_iMac쌍아_막내2_GO_대국실_MONK봇b10_참여.md
 ---
@@ -89,6 +89,24 @@ MONK 봇(b10·4,154만, 최강과 같은 1500 visits·17초)을 대국실 상대
   3. `kill 53863 && apps/go-board-web/run.sh`로 재기동하고, 기동 줄 `MONK OK`와 방 복원 수를 대조합니다.
 - 병합 통지를 받으면 막내2가 2·3단계를 수행할 수 있습니다.
 
+**[2026-11-05 05:49 KST] 반영 완료** — 쌍아 05:42 병합(공용 체크아웃 반영 확인), 작가님 05:47 "재기동"(쌍아 전달)
+- 05:44 진행 중 방 1개 발견: `20261105-054405-571a`(작가님 계정, 상대 5단). 1차로 재기동을 보류하고 쌍아에 보고했습니다. 이후 05:47 작가님 지시로 진행했습니다.
+- 재기동 직전 상태: 76수, 흑(작가님) 차례라 엔진이 생각 중이 아니었습니다. 수순 스냅숏을 떠 두었습니다.
+- ⚠️ **경위**: 8765는 launchd `ai.monkos.go-board`(KeepAlive, ThrottleInterval 30)가 관리합니다. 저는 이를 모르고 `kill` 뒤 수동으로 nohup을 띄웠습니다.
+  - 그 사이 launchd 재기동이 2회 시도됐고, 포트 충돌(`Address already in use`)로 exit 1 났습니다. 시도마다 KataGo 3개를 띄웠다가 내렸습니다.
+  - 05:49에 수동 인스턴스를 내리고 `launchctl kickstart -k gui/$(id -u)/ai.monkos.go-board`로 launchd에 넘겼습니다.
+  - **앞으로 8765 재기동의 정식 명령은 `launchctl kickstart -k gui/$(id -u)/ai.monkos.go-board`입니다.** `run.sh`나 수동 기동으로 하지 않습니다.
+- 결과(05:49 실측):
+
+| 항목 | 결과 |
+|---|---|
+| 기동 로그 | `최강 OK, 급수 OK, MONK OK · 방 169개 복원(진행 중 1)` |
+| health | `"monk": true`, rooms 169(재기동 전 169와 같음) |
+| 포트 소유 | launchd PID 50444, 하위 katago-ocl 3개(잔여 프로세스 없음) |
+| 진행 중 방 | 파일 76수, 재기동 전 스냅숏과 수순 일치, 05:49:26 새 서버가 다시 저장 |
+
+- 방 상태 API(`/api/rooms/{id}/state`)는 작가님 로그인 계정 소유 방이라 로컬 요청에 403이 납니다(정상 권한 동작). 그래서 대조는 방 파일로 했습니다.
+
 ## 💡 참고
 - 11-04 미확인이었던 4060 재개 건: 05:32에 읽기로 확인했습니다. 학습은 running이고 시작은 11-05 04:10:30입니다. `max_samples` 95,000,000, `Deferring 56/633`으로 새 셔플을 읽고 있습니다(예측 58). nsamp는 57.2M입니다.
 - 화면 메시지 두 곳("2수(내 수·KataGo 수)를 물렀습니다", "KataGo 차례입니다")은 MONK 판에서도 "KataGo"로 나옵니다. 범위 밖이라 두었습니다.
@@ -97,6 +115,7 @@ MONK 봇(b10·4,154만, 최강과 같은 1500 visits·17초)을 대국실 상대
 - ✅ 모델 복사 + sha256 대조(일치)
 - ✅ MONK 엔진·방 레벨·기보 표기 + 교체 상수 3줄
 - ✅ 8766 검증 28수(MONK 응수 14회, 평균 1.85s·최대 2.71s, 1500 visits 실측) + 동작·회귀 점검
-- ⏳ 8765 반영 — main 병합 후(§4)
+- ✅ 8765 반영(05:49, launchd 재기동) — health monk true·방 169 유지·진행 중 방 76수 일치(§4)
+- 💡 8765 재기동은 `launchctl kickstart -k gui/$(id -u)/ai.monkos.go-board`가 정식 — 수동 기동하면 KeepAlive와 포트 충돌(이번 2회)
 - 📁 이 문서, 세션 로그 `monkos-ops/ops/sessions/2026-11/2026-11-05_iMac_쌍아-막내2.md`
 - 🔀 작업 브랜치 `makne2-go-monk-bot`(origin/main 93b15341 기준)
