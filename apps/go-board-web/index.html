@@ -687,7 +687,7 @@ function render() {
   // 대국자 카드 — 따낸 돌 배지·이름·급수(시계는 renderClocks)
   for (const col of ['B', 'W']) {
     const mine = col === S.user;
-    document.getElementById('name' + col).textContent = mine ? (S.ownerNick || '나') : (S.oppShort || 'KataGo');
+    document.getElementById('name' + col).textContent = mine ? (S.ownerDisplay || S.ownerNick || '나') : (S.oppShort || 'KataGo');
     document.getElementById('rank' + col).textContent = mine ? '' :
       (S.level === 'strong' ? '최강' : (S.level === 'monkos' || S.level === 'monk') ? ((S.bot && S.bot.stage) || '') : `${(S.ranks.find(r => r.v === S.level) || {}).label || S.level}`);
     document.getElementById('cap' + col).textContent = S.captures[col];
@@ -734,7 +734,7 @@ function render() {
   const t = S.time;
   const fc = S.finalCount;
   document.getElementById('gameInfo').innerHTML =
-    `<div>${S.moveNo}수 · ${ha} · 덤 ${S.komi} · ${S.ownerNick || '나'} ${me} · 상대 ${S.levelLabel}</div>` +
+    `<div>${S.moveNo}수 · ${ha} · 덤 ${S.komi} · ${S.ownerDisplay || S.ownerNick || '나'} ${me} · 상대 ${S.levelLabel}</div>` +
     `<div class="small">시간 ${t ? `${t.main ? t.main + '분 + ' : ''}${t.byo}초 ${t.periods}회` : '무제한'}</div>` +
     (S.result ? `<div><b>결과: ${S.resultKo}</b>${fc ? ` — 흑 ${fc.black} · 백 ${fc.white}(KataGo ${fc.kataKo})` : ''}</div>` : '') +
     (reviewJob ? `<div><a href="/review/${reviewJob}" target="_blank">이 판 해설 열기</a></div>` : '') +
@@ -1574,7 +1574,7 @@ setInterval(() => {
   if (ROOM) return;
   const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const when = iso => { const d = new Date(iso); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
-  const rule = r => `${r.handicap ? r.handicap + '점' : '호선'} · ${esc(r.ownerNick || '나')} ${r.user === 'B' ? '흑' : '백'}`;
+  const rule = r => `${r.handicap ? r.handicap + '점' : '호선'} · ${esc(r.ownerDisplay || r.ownerNick || '나')} ${r.user === 'B' ? '흑' : '백'}`;
   const dur = sec => { sec = Math.max(0, Math.floor(sec)); const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), x = sec % 60;
     return h ? `${h}:${String(m).padStart(2, '0')}:${String(x).padStart(2, '0')}` : `${m}:${String(x).padStart(2, '0')}`; };
   function row(r) {
@@ -1634,7 +1634,7 @@ setInterval(() => {
     const aiRow = (v, name, off, offWhy, sub) => `<div class="box lobby-row${off ? ' off' : ''}"><span class="dot ai"></span><div class="grow"><div class="t1">${esc(name)}</div>` +
       `<div class="t2">${off ? (offWhy || why) : esc(sub || 'AI · 대국 가능')}</div></div><div class="btns"><button class="hl" data-pick="${v}"${off ? ' disabled' : ''}>대국 신청</button></div></div>`;
     // 11-04 작가님 — 테스트 아이디: 접속 중 사람(대기실·대국 중) 먼저, 내 행은 (나). 그 아래 AI 상대
-    const humans = (d.people || []).map(p => `<div class="box lobby-row"><span class="dot me"></span><div class="grow"><div class="t1">${esc(p.nick)}${p.rank ? ' · ' + esc(p.rank) : ''}${p.me ? ' (나)' : ''}</div>` +
+    const humans = (d.people || []).map(p => `<div class="box lobby-row"><span class="dot me"></span><div class="grow"><div class="t1">${esc(p.display || p.nick)}${p.me ? ' (나)' : ''}</div>` +
       `<div class="t2">${esc(p.state)}</div></div></div>`).join('');
     // 11-05 07:07 작가님 — AI는 두 줄: KataGo AI(급수·최강은 대국 설정에서) + MONKOS Go(보조 표기 '몽코스 고'는 둘째 줄 — 행 문법: 첫 줄 이름·둘째 줄 설명)
     const b = d.bot || {};
@@ -1650,14 +1650,14 @@ setInterval(() => {
       .sort((a, b) => String(b.started).localeCompare(String(a.started))).slice(0, 3);
     const warn = ongoing ? `<div class="lose">진행 중 ${ongoing}판 — 5분 안에 돌아오지 않으면 접속 장애패로 종결</div>` : '';
     document.getElementById('lobbyNews').innerHTML = warn + (news.length
-      ? news.map(r => `<div>${esc(String(r.started).slice(11, 16))} ${esc(r.ownerNick || '나')} vs ${esc(r.levelLabel)} · ${esc(r.resultKo)}</div>`).join('')
+      ? news.map(r => `<div>${esc(String(r.started).slice(11, 16))} ${esc(r.ownerDisplay || r.ownerNick || '나')} vs ${esc(r.levelLabel)} · ${esc(r.resultKo)}</div>`).join('')
       : (warn ? '' : '<div class="lobby-empty">아직 소식이 없습니다.</div>'));
   }
   async function load() {
     try {
       const d = await (await fetch('/api/rooms')).json();
       if (d.auth) { openAuth(); return; }
-      document.getElementById('lobbyMeNick').textContent = d.me ? d.me.nick + (d.me.rankKo ? ' · ' + d.me.rankKo : '') : '';
+      document.getElementById('lobbyMeNick').textContent = d.me ? (d.me.display || d.me.nick) : '';
       document.getElementById('tabMy').hidden = true;  // 마이페이지는 닉네임으로만 연다(탭 줄엔 두지 않음)
       document.getElementById('lobbyMe').hidden = !d.me;
       const df = d.defaults || {};

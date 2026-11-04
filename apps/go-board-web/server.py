@@ -654,6 +654,13 @@ class Auth:
         u = self.get(uid)
         return u.get("rank") if u else None
 
+    def display_name(self, uid):
+        """사람 표기 정본 — "신작가 6단"(닉 + 기력, rank_ko 형식). 기력이 없으면 닉만.
+        11-05 07:12 작가님 "대기실에 아이디에 신작가 6단 식으로 기력 표기". 화면의 사람 이름은 전부 이 값을 쓴다
+        (대기실 접속자·내 이름·방 목록·대국자 칸). 기보 PB/PW·파일명은 기록이라 닉 그대로(owner_nick)."""
+        r = rank_ko(self.rank(uid))
+        return f"{self.nick(uid)} {r}" if r else self.nick(uid)
+
     def rate_ok(self, ip):
         now = time.time()
         with self.lock:
@@ -758,7 +765,7 @@ class Auth:
     def people(self, me_uid):
         """접속 중(최근 30초 신호) 사람 — 닉네임 + 대기실/대국 중. uid 는 내보내지 않는다."""
         now = time.time()
-        out = [{"nick": self.nick(uid), "rank": rank_ko(self.rank(uid)), "state": "대국 중" if w == "room" else "대기실", "me": uid == me_uid}
+        out = [{"nick": self.nick(uid), "rank": rank_ko(self.rank(uid)), "display": self.display_name(uid), "state": "대국 중" if w == "room" else "대기실", "me": uid == me_uid}
                for uid, (t, w) in list(self.seen.items()) if now - t <= PRESENCE_TTL]
         return sorted(out, key=lambda p: (not p["me"], p["nick"].casefold()))
 
@@ -841,6 +848,11 @@ class Room:
     @property
     def owner_nick(self):
         return AUTH.nick(self.owner) if AUTH else ADMIN_NICK
+
+    @property
+    def owner_display(self):
+        """화면 표기(닉 + 기력) — Auth.display_name 경유. 기보·파일명은 owner_nick."""
+        return AUTH.display_name(self.owner) if AUTH else ADMIN_NICK
 
     # ---- 만들기·저장
 
@@ -1330,7 +1342,8 @@ class Room:
                 "review": REVIEWS.status(self),
                 "lastReview": {"id": last["id"], "state": last["state"]} if last else None,
                 "dc": self.dc_state(), "resultReason": self.result_reason, "source": self.source,
-                "players": self.players, "origName": self.orig_name, "ownerNick": self.owner_nick}
+                "players": self.players, "origName": self.orig_name, "ownerNick": self.owner_nick,
+                "ownerDisplay": self.owner_display}
 
     def state(self):
         g, caps = replay(self.moves, self.setup)
@@ -1339,7 +1352,7 @@ class Room:
             last = list(to_xy(self.moves[-1][1]))
         return {
             "room": self.id, "kind": self.kind, "status": self.status, "statusKo": STATUS_KO[self.status],
-            "imported": self.imported, "ownerNick": self.owner_nick,
+            "imported": self.imported, "ownerNick": self.owner_nick, "ownerDisplay": self.owner_display,
             "board": g, "captures": caps, "last": last, "moveNo": len(self.moves),
             "lastPass": bool(self.moves) and self.moves[-1][1].lower() == "pass",
             "lastColor": self.moves[-1][0] if self.moves else None,
@@ -1349,8 +1362,8 @@ class Room:
             "scores": self.scores, "result": self.result,
             # 기보 감상(10-24): 화면이 수순을 직접 재생한다 — 국면 계산은 화면 쪽 1벌
             "moveList": [list(m) for m in self.moves], "setup": self.setup, "source": self.source,
-            "players": self.players or ({"B": self.owner_nick, "W": self.opp_name()} if self.user == "B"
-                                        else {"B": self.opp_name(), "W": self.owner_nick}),
+            "players": self.players or ({"B": self.owner_display, "W": self.opp_name()} if self.user == "B"
+                                        else {"B": self.opp_name(), "W": self.owner_display}),
             "record": {"date": self.record_date or f"{self.started:%Y-%m-%d}", "rules": self.rules,
                        "origName": self.orig_name},
             "resultKo": result_ko(self.result) if self.result else None,
@@ -2352,7 +2365,8 @@ class Handler(BaseHTTPRequestHandler):
         """내 정보(응답용) — uid·세션은 내지 않는다. 계정 레코드가 없으면(로컬 호환 '작가님') 닉네임만."""
         if not rec:
             return {"nick": u["nick"] if u else ADMIN_NICK, "rank": None, "rankKo": None, "created": None}
-        return {"nick": rec["nick"], "rank": rec.get("rank"), "rankKo": rank_ko(rec.get("rank")), "created": rec.get("created")}
+        return {"nick": rec["nick"], "rank": rec.get("rank"), "rankKo": rank_ko(rec.get("rank")), "created": rec.get("created"),
+                "display": AUTH.display_name(rec["uid"])}
 
     def _auth_post(self, path, body):
         """/api/auth/* · /api/presence — 처리했으면 True."""
@@ -2436,7 +2450,7 @@ class Handler(BaseHTTPRequestHandler):
             u = self._need()
             if u:  # 내 방만 — 남의 방은 목록에 없다
                 self._json({"rooms": [r.summary() for r in ROOMS.listing(u["uid"])], "defaults": ROOMS.defaults(u["uid"]),
-                            "me": {"nick": u["nick"], "rankKo": rank_ko(AUTH.rank(u["uid"]))}, "people": AUTH.people(u["uid"]), **common_state()})
+                            "me": {"nick": u["nick"], "rankKo": rank_ko(AUTH.rank(u["uid"])), "display": AUTH.display_name(u["uid"])}, "people": AUTH.people(u["uid"]), **common_state()})
         elif m := re.fullmatch(rf"/api/rooms/({ROOM_ID_RE})/analysis", path):
             room = ROOMS.get(m.group(1))
             if not room:
