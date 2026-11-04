@@ -163,3 +163,8 @@
 {"ts": "2026-11-04 06:31 KST", "id": 196, "event": "note", "text": "11-03 09:30 순찰 정상(누출 0)이나 MONKOS_PATROL_CHAT_ID 미설정 경고 지속", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-11-04 06:31 KST", "id": 183, "event": "note", "text": "06:30 Pages monk-kr 시크릿 6 변동 없음", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-11-04 19:16 KST", "id": 146, "event": "resolve", "evidence": "19:16 origin/worktree-makne6-runpod429 2242ae7c matte.js 429 분류(Retry-After 초·HTTP-date, 무헤더 지수 백오프+지터, 체인 누적 MATTE_QUEUE_WAIT_MS 예산, 초과 시 '429 예산 소진' 명시 실패) + 단위 11건, 포털 266/266. dev rev monkos-portal-dev-00237-wjg precheck 실호출 매팅 measured 1156ms. prod는 작가님 배포 승인 대기", "by": "iMac/쌍아-막내6"}
+{"ts": "2026-11-05 06:31 KST", "id": 195, "event": "note", "text": "06:31 claude agents 실측 blocked 2 유지: iMac-소소-1028-1148 186.7h · 쌍아-막내2(57af0de7) 61.1h", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-05 06:31 KST", "id": 194, "event": "note", "text": "06:30 본진 미추적 4 유지(10-29·10-30 민아, 11-01 쌍아 11-02 02:16 수정 — 3일 도달, 11-02 민아 11-05 05:15 수정=활동 중)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-05 06:31 KST", "id": 116, "event": "note", "text": "06:30 secret.sh check BIZINFO_API_KEY 없음 유지(대조군 TX_API_KEY·AUTH_SECRET 존재)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-05 06:31 KST", "id": 183, "event": "note", "text": "06:30 Pages monk-kr 시크릿 6 변동 없음, §E 10 미대조 유지", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-05 06:31 KST", "id": 196, "event": "note", "text": "06:31 patrol 11-04 09:30 정상 실행·누출 0, 미배선 경고 지속", "by": "iMac/민아-헤드리스"}
