@@ -70,6 +70,7 @@ status: active
 | 11/05 | ?/? | **ORDER** 오늘 밤 4060 GPU 순서 예약 — 23:00 b10 마무리(95M·최종 평가) → 이어서 실수 사전 2,000국 본 실행(2단계: visits 64 → 큰 실수 후보 visits 400). 놓친 예약 즉시 실행 설정 포함 | [ORDER_20261105_iMac쌍아_막내3_GO_오늘밤_b10마무리_실수사전본실행](../../orders/2026-11/ORDER_20261105_iMac쌍아_막내3_GO_오늘밤_b10마무리_실수사전본실행.md) | ⏳ |
 | 11/05 | ?/? | **ORDER** 바둑앱(go-board-web) 대국실 상대에 우리 학습 모델 "MONK 봇(b10)" 추가 — 4060 eval 모델 b10-s41211392 bin을 iMac으로 복사, 최강 엔진과 같은 1500 visits·17초. 시험 포트 검증 후 실사용 반영 | [ORDER_20261105_iMac쌍아_막내2_GO_대국실_MONK봇b10_참여](../../orders/2026-11/ORDER_20261105_iMac쌍아_막내2_GO_대국실_MONK봇b10_참여.md) | ⏳ |
 | 11/05 | iMac/쌍아-막내2 | 바둑앱 대국실에 MONK 봇(b10-s41M, 1500v·17초) 상대 추가 — 8766 검증 28수(응수 평균 1.85s), 8765 반영은 main 병합 후 | [COMPLETION_20261105_iMac쌍아-막내2_GO_대국실_MONK봇](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_대국실_MONK봇.md) | ⏳ |
+| 11/05 | iMac/쌍아-막내2 | 자체 소리 팩 1단계 후보 — 목소리 4종×5문구(기본 목소리, 키 voices_read 부재), 착수 A·B 3종·따냄 A·B 2종, 청취 페이지 ~/.monkos/go-board-sound-candidates, ≈1,334크레딧 | [COMPLETION_20261105_iMac쌍아-막내2_GO_자체음성팩_후보](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_자체음성팩_후보.md) | ✅ |
 
 ## 3. Phase 현황
 
