@@ -106,6 +106,8 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 11/04 | iMac/민아 | **REPORT** 여권 화각 "머리 여백 부족" 오판 — 레퍼런스 산식과 제품 산식의 두상 정의 분기 추적 | [REPORT_20261104_iMac민아_IDPHOTO_여권화각_두상정의_분기](../../reports/2026-11/REPORT_20261104_iMac민아_IDPHOTO_여권화각_두상정의_분기.md) | 📁 |
 | 11/04 | ?/? | **ORDER** kr·jp 여권 두상을 실측 머리끝(머리 덩어리 기준) 기준 33mm로 재배율 — 업로드 직후 판정, 레퍼런스 도안 33mm 통일, head_margin 문구 교정, dev까지 | [ORDER_20261104_iMac쌍아_막내1_IDPHOTO_여권두상_실측머리끝_33mm재배율](../../orders/2026-11/ORDER_20261104_iMac쌍아_막내1_IDPHOTO_여권두상_실측머리끝_33mm재배율.md) | ⏳ |
 | 11/04 | iMac/쌍아-막내1 | **COMPLETION** COMPLETION_20261104_iMac쌍아-막내1_IDPHOTO_여권두상_33mm재배율 | [COMPLETION_20261104_iMac쌍아-막내1_IDPHOTO_여권두상_33mm재배율](../../reports/2026-11/COMPLETION_20261104_iMac쌍아-막내1_IDPHOTO_여권두상_33mm재배율.md) | ✅ |
+| 11/04 | iMac/민아 | 여권 두상 실측 머리끝 33mm 재배율 prod 배포 — portal 00578-lzc + 엣지 5a3ad8f1, 라이브 2회 히트 kr·jp 신문구 1/구문구 0, prod precheck jemison moved (작가님 15:30 배포 승인, 민아 실행) | — | 배포 |
+| 11/04 | ?/? | **ORDER** 꾸 맥북 셀렉 기록기 1단계 — 캡처원 잔존 촬영본(10-14 이후 ≈890컷) 512px 축소본 + 셀렉 정답(시놀로지 파일명 대조) + 별점·색태그 기록을 시놀로지 _select_dataset에 회수, 반복 실행 가능한 스크립트까지 | [ORDER_20261104_iMac쌍아_막내4_IDPHOTO_맥북셀렉기록기_1차회수](../../orders/2026-11/ORDER_20261104_iMac쌍아_막내4_IDPHOTO_맥북셀렉기록기_1차회수.md) | ⏳ |
 
 ### Phase 1 — idphoto-kr/jp 웹 서비스 (01/16~02/14)
 
