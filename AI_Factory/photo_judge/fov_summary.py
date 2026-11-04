@@ -48,10 +48,15 @@ def main():
     print("\n## 2. 산식 판정\n")
     v = Counter(r["verdict"] for r in ok)
     g = Counter((r["verdict"], r["headGuard"]) for r in ok)
-    print("| 판정 | 건수 | 가드 face_min | 가드 face_max | 가드 없음 |")
-    print("|---|---:|---:|---:|---:|")
+    # 가드 이름은 산식 판에 따라 다르다(v0 face_min·face_max / v1 head_reg_min·head_reg_max·face_min_30) — 실제 값으로 열을 만든다
+    gs = sorted({r["headGuard"] for r in ok if r["headGuard"]})
+    print("| 판정 | 건수 | " + " | ".join(f"가드 {x}" for x in gs) + " | 가드 없음 |")
+    print("|---|---:|" + "---:|" * (len(gs) + 1))
     for vv in ("pass", "moved", "no_room"):
-        print(f"| {vv} | {v[vv]} | {g[(vv,'face_min')]} | {g[(vv,'face_max')]} | {g[(vv,None)]} |")
+        print(f"| {vv} | {v[vv]} | " + " | ".join(str(g[(vv, x)]) for x in gs) + f" | {g[(vv,None)]} |")
+    nrc = Counter(r.get("noRoomCause") for r in ok if r["verdict"] == "no_room" and r.get("noRoomCause"))
+    if nrc:
+        print(f"\n- no_room 원인: {dict(nrc)}")
     tt = sum(1 for r in ok if r["topTouched"])
     print(f"\n- 정수리 접촉(fov_tight_top, 재배율 전 반려): {tt}건")
     fb = Counter((r["fov1"], r["fov1_cause"]) for r in ok)

@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PORTAL = path.resolve(HERE, '../../monkos_AI/portal');
-const { checkCrownContact, resolveHeadPlacement, crownMatteRowPx, hairPlacementApplies, eyeAnchorFor, HAIR_MARGIN_SLACK_ROWS } =
+const { checkCrownContact, resolveHeadPlacement, headPlacementSpec, crownMatteRowPx, hairPlacementApplies, HAIR_MARGIN_SLACK_ROWS } =
   await import(path.join(PORTAL, 'lib/hair-measure.js'));
 const { assessFov } = await import(path.join(PORTAL, 'lib/fit-fov.js'));
 const sharp = createRequire(path.join(PORTAL, 'lib/hair-measure.js'))('sharp');
@@ -34,7 +34,7 @@ const SPEC = { frameW: 413, frameH: 531, frameHmm: 45, faceTargetMm: 33, faceMin
 if (sd.pixels !== '413 × 531px' || sd.size !== '3.5 × 4.5cm' || sd.headHeightMin !== 32 || sd.headHeightMax !== 36 || Number.isFinite(sd.faceTargetExplicitMm)) {
   console.error('❌ fov_formula: specs-data kr-passport가 고정 입력과 다르다 — SPEC 재확인 필요'); process.exit(2);
 }
-const headPlacementSpec = (spec) => ({ frameHmm: spec.frameHmm, headTargetMm: spec.faceTargetMm, headMinMm: spec.headHeightMinMm ?? spec.faceMinMm, headMaxMm: spec.headHeightMaxMm });
+// 두상 재배율 규격 입력은 포털 정본 headPlacementSpec(spec, slug)을 import한다(11-04 막내8 — 사본 제거)
 
 const DETECT_LONG_SIDE = 1024;
 const slog = (m) => process.stderr.write(m + '\n');
@@ -128,25 +128,15 @@ async function measure(file) {
   if (crown.touched) out.topTouched = true; // prod: fov_tight_top 반려 (재배율 전에 막힘)
   if (!hairPlacementApplies(SLUG, crown.hairTopRatio)) return { ...out, status: 'not_applicable' };
   const rowPx = crownMatteRowPx(W, H);
-  const hp = resolveHeadPlacement({ frame: g.frame, lines: g.lines, hairTopRatio: crown.hairTopRatio, imageHeight: H, ...headPlacementSpec(SPEC), slackPx: HAIR_MARGIN_SLACK_ROWS * rowPx });
+  const hp = resolveHeadPlacement({ frame: g.frame, lines: g.lines, hairTopRatio: crown.hairTopRatio, imageHeight: H, ...headPlacementSpec(SPEC, SLUG), slackPx: HAIR_MARGIN_SLACK_ROWS * rowPx });
   if (!hp) return { ...out, status: 'invalid_input' };
-  // no_room이면 hp.frame은 원 프레임 — 산식이 시도한 최선 틀(재배율 + 눈 48%)을 따로 재현해 지표를 낸다
-  let attempt = hp.frame;
-  if (hp.verdict === 'no_room') {
-    const mirrorPx = g.lines.chinY - g.lines.crownY;
-    const headPx = g.lines.chinY - crown.hairTopRatio * H;
-    let h = headPx * SPEC.frameHmm / SPEC.faceTargetMm;
-    const mirrorAt = (fh) => mirrorPx * SPEC.frameHmm / fh;
-    if (mirrorAt(h) < SPEC.headHeightMinMm) h = mirrorPx * SPEC.frameHmm / SPEC.headHeightMinMm;
-    else if (mirrorAt(h) > SPEC.headHeightMaxMm) h = mirrorPx * SPEC.frameHmm / SPEC.headHeightMaxMm;
-    const w = h * (g.frame.w / g.frame.h);
-    const cx = g.lines.eyeCenterX > 0 ? g.lines.eyeCenterX : g.frame.x + g.frame.w / 2;
-    attempt = { x: cx - w / 2, y: g.lines.eyeY - 0.48 * h, w, h }; // 눈 상한 48%까지 올린 최선 틀
-  }
-  const fov1 = assessFov(hp.verdict === 'no_room' ? attempt : hp.frame, { width: W, height: H }, SPEC.frameW);
+  // no_room이면 hp.frame은 원 프레임 — 지표는 산식이 시도한 최선 틀(hp.attemptFrame: eye_max=눈 48%, 충돌=규정 상한 틀)로 낸다
+  const attempt = hp.verdict === 'no_room' ? hp.attemptFrame : hp.frame;
+  const fov1 = assessFov(attempt, { width: W, height: H }, SPEC.frameW);
   return {
-    ...out, status: 'ok', verdict: hp.verdict, headGuard: hp.headGuard, frame: hp.frame, attempt,
-    rowPx, slackMm: hp.slackMm, marginTargetMm: hp.marginTargetMm, eyeAnchor: eyeAnchorFor(SPEC.frameHmm),
+    ...out, status: 'ok', verdict: hp.verdict, headGuard: hp.headGuard, headGuards: hp.headGuards, conflict: hp.conflict,
+    noRoomCause: hp.noRoomCause, frame: hp.frame, attempt,
+    rowPx, slackMm: hp.slackMm, marginTargetMm: hp.marginTargetMm, eyeAnchor: hp.eyeAnchorPct / 100,
     hp: { headMeasuredMm: hp.headMeasuredMm, headMirrorMm: hp.headMirrorMm, eyeAfterPct: hp.eyeAfterPct, marginAfterMm: hp.marginAfterMm, chinBelowMm: hp.chinBelowMm, scaleRatio: hp.scaleRatio },
     fov1: { verdict: fov1.verdict, rawVerdict: fov1.rawVerdict, cause: fov1.cause, outside: fov1.outside },
   };

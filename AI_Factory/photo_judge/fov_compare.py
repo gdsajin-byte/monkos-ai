@@ -199,6 +199,10 @@ def main():
             c_ship = rp.apply(np.asarray(M2), np.float32([[spec_wh[0] / 2, spec_wh[1] / 2]]))[0]
             rec.update({
                 "ok": True, "verdict": f["verdict"], "headGuard": f["headGuard"], "topTouched": bool(f.get("topTouched")),
+                "noRoomCause": f.get("noRoomCause"), "conflict": f.get("conflict"), "eyeAnchor": f.get("eyeAnchor"),
+                # 수치 기하만(픽셀 없음) — 앵커·가드 변형을 재현상 없이 오프라인 재계산하기 위한 입력 (11-04 막내8)
+                "geom": {"W": f["W"], "H": f["H"], "rowPx": f["rowPx"], "frame0": f["frame0"], "lines": L,
+                         "hairTopRatio": f["crown"]["hairTopRatio"], "M2": [list(map(float, r)) for r in M2], "spec_wh": list(spec_wh)},
                 "fov0": f["fov0"]["verdict"], "fov1": f["fov1"]["rawVerdict"], "fov1_cause": f["fov1"]["cause"],
                 "slackMm": f["slackMm"], "marginTargetMm": f["marginTargetMm"],
                 "hairRawGapPx": round((f["crown"]["hairTopRatio"] - (f["crown"]["hairTopRawRatio"] or f["crown"]["hairTopRatio"])) * f["H"], 1),
