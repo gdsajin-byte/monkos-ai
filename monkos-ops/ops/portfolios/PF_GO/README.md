@@ -90,6 +90,7 @@ status: active
 | 11/05 | ?/? | **ORDER** 바둑 서비스(go.monkos.ai·앱 공용) 디자인 브리프 — 대기실·마이페이지·프로필 사진. 모바일·PC 공용, 라이트·다크. 시안 2방향 → 작가님 선택 | [ORDER_20261105_iMac쌍아_소소_GO_대기실_마이페이지_프로필_디자인](../../orders/2026-11/ORDER_20261105_iMac쌍아_소소_GO_대기실_마이페이지_프로필_디자인.md) | ⏳ |
 | 11/05 | iMac/쌍아-막내2 | 바둑앱 대기실 AI 2줄(KataGo AI·MONKOS Go) + 급수는 대국 설정에서 + MONK 봇→MONKOS Go 명칭(상수 1곳, 옛 판 표기 보존) — 8766 통과, 8765는 병합 후 | [COMPLETION_20261105_iMac쌍아-막내2_GO_대기실AI정리](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_대기실AI정리.md) | ⏳ |
 | 11/05 | iMac/민아 | **STRATEGY** MONKOS Go 출시 전 마케팅 로드맵 1장 — 브랜드 메시지 3축(광고 없는 무료·폰 안 AI·사람처럼+해설, 해금 시점 명시)·채널 ko→ja→en·사전 대기자=웹 대국실 선공개·PF_GO ⑥ 게이트 연동·결정 5건. 작가님 07:12 마케팅 민아 전담 | [STRATEGY_20261105_GO_출시전_마케팅로드맵](../../../marketing/strategy/STRATEGY_20261105_GO_출시전_마케팅로드맵.md) | ✅ 제출 |
+| 11/05 | iMac/쌍아-막내2 | 바둑앱 사람 표기 닉+기력(Auth.display_name 1곳, 화면 4곳) — 8766 통과, 6단은 기력 상한(5단)으로 결정 대기 | [COMPLETION_20261105_iMac쌍아-막내2_GO_닉단수표기](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_닉단수표기.md) | ⏳ |
 
 ## 3. Phase 현황
 
