@@ -674,7 +674,9 @@ class Room:
     # ---- 접속 장애: 대국 시계 대신 장애 시계(내 차례 동안만). 다시 들어오면 리셋, 한도 넘기면 접속 장애패
 
     def _ongoing(self):
-        return not (self.result or self.scoring or self.imported)
+        # 11-04 원인 수정: 계가 중(scoring)을 '진행 중 아님'으로 보던 탓에 계가 화면에서 떠난 판은 끊김 판정·장애패가 영영 안 났다
+        # (2030·df13 실측). 계가 중에도 접속 판정은 돈다 — 시계는 계가 중 정지(_running)라 장애 시계만 흐른다
+        return not (self.result or self.imported)
 
     def dc_spent(self, now=None):
         return self.dc_used + ((now or time.time()) - self.dc_mark if self.dc_mark is not None else 0.0)
@@ -683,7 +685,7 @@ class Room:
         return max(0.0, self.dc_limit - self.dc_spent(now))
 
     def _dc_update(self, now):
-        counting = self.offline and self._ongoing() and self.to_move == self.user
+        counting = self.offline and self._ongoing() and (self.to_move == self.user or bool(self.scoring))  # 계가 중엔 차례 무관
         if counting and self.dc_mark is None:
             self.dc_mark = max(now, self.turn_since)
         elif not counting and self.dc_mark is not None:
@@ -704,6 +706,7 @@ class Room:
         self._dc_update(now)
         if self.dc_mark is not None and self.dc_left(now) <= 0:
             self.dc_used, self.dc_mark = float(self.dc_limit), None
+            self.scoring = None
             self.result = f"{self.eng_color}+F"
             self.result_reason = "disconnect"
             self.message = f"접속 장애패 — 접속이 끊긴 채 한도({fmt_dur(self.dc_limit)})를 넘겼습니다."
@@ -916,8 +919,20 @@ class Room:
         if not self.moves:
             raise RuntimeError("아직 둔 수가 없습니다.")
         self._charge(reset=False)
+        self.scoring = None
         self.result = f"{'W' if self.user == 'B' else 'B'}+R"
         self.message = "기권했습니다." + (" '리뷰'로 이번 판을 돌아볼 수 있어요." if REVIEWS.status(self)["ok"] else "")
+        self.save_sgf()
+
+    def void_empty(self):
+        """11-04 작가님 이어두기 폐지 — 한 수도 안 둔 판을 대기실로 나가면 무효(Void, 승패 없음)로 종결."""
+        if self.result or self.imported:
+            raise RuntimeError("이미 끝난 대국입니다.")
+        if self.moves:
+            raise RuntimeError("수를 둔 판은 기권으로 끝냅니다.")
+        self.scoring = None
+        self.result, self.result_reason = VOID, "void"
+        self.message = "무효 종료 — 한 수도 두지 않고 대기실로 나갔습니다."
         self.save_sgf()
 
     def undo(self):
@@ -1870,7 +1885,7 @@ ENGINES = None  # EngineHub
 ROOMS = None  # Rooms
 ANALYSES = None  # Analyses(승률 그래프)
 ACTIONS = ("play", "engine", "score", "score/toggle", "score/confirm", "score/cancel", "hint", "judge",
-           "timeout", "resign", "undo", "swap", "level", "review", "ping")
+           "timeout", "resign", "void", "undo", "swap", "level", "review", "ping")
 # 호환 경로(단계 ① 이전 화면·PWA 보관본·live_view --goboard): /api/state·/api/{동작}은 초점 방을 가리킨다.
 # 대국실은 /api/rooms/{id}/… 만 쓴다. 호환 경로는 보관본이 v3로 바뀐 뒤 제거 예정(단계 ②).
 LEGACY_ACTIONS = ACTIONS + ("new",)
@@ -1907,6 +1922,8 @@ def act(room, action, body):
             room.timeout(str(body.get("color")))
         elif action == "resign":
             room.resign()
+        elif action == "void":
+            room.void_empty()
         elif action == "undo":
             room.undo()
         elif action == "swap":
@@ -2168,6 +2185,11 @@ MIGRATIONS = [{
     # 출처: 작가님 10-24 22:34 "B" — 옛 24시간 규칙 방을 끝난 판으로(ORDER_20261024 옛규칙방정리)
     "forfeit": ["20261024-105112-9bab"],
     "void": ["20261024-101721-0a1d", "20261024-101731-0967", "20261024-105102-a53c", "20261024-154735-b4f1"],
+}, {
+    # 11-04 작가님 10:25 "이어서두기는 필요없는 기능이야 삭제 그판은 어떤결과던 그 자체로 종결" — 이어두기 폐지, 떠난 판은 그 자체로 종결.
+    # 기동 시점에 결과 없는 진행 중 방 전부(수 있으면 접속 장애패, 0수면 무효)
+    "id": "20261104-no-resume-cleanup",
+    "all_ongoing": True,
 }]
 
 
@@ -2183,25 +2205,27 @@ def run_migrations():
         if mg["id"] in done:
             continue
         applied = []
-        for kind in ("forfeit", "void"):
-            for rid in mg[kind]:
-                r = ROOMS.get(rid)
-                if not r or r.result or r.imported:  # 없거나 이미 끝난 방은 건드리지 않음
-                    applied.append({"room": rid, "kind": kind, "skipped": "없음" if not r else "이미 끝남"})
-                    continue
-                with r.lock.hold("migration"):
-                    r.scoring, r.offline, r.dc_mark = None, False, None
-                    if kind == "forfeit":
-                        r.result, r.result_reason = f"{r.eng_color}+F", "rule-cleanup"
-                        r.message = "접속 장애패 — 규칙 단일화 정리 10-24(옛 24시간 규칙 방)"
-                    else:
-                        r.result, r.result_reason = VOID, "void"
-                        r.message = "무효 종료 — 빈 방 정리(원인 미상 — 착수 미수신)"
-                    r.save_sgf()
-                    r.cache = json.dumps(r.state(), ensure_ascii=False)
-                    ROOMS.save(r)
-                EVENTS.add(rid, action="migration", migration=mg["id"], result=r.result, reason=r.result_reason, moveNo=len(r.moves))
-                applied.append({"room": rid, "kind": kind, "result": r.result, "moves": len(r.moves)})
+        targets = [("forfeit" if r.moves else "void", r.id) for r in ROOMS.listing() if r._ongoing()] if mg.get("all_ongoing") else None
+        for kind, rid in (targets if targets is not None else [(k, i) for k in ("forfeit", "void") for i in mg[k]]):
+            r = ROOMS.get(rid)
+            if not r or r.result or r.imported:  # 없거나 이미 끝난 방은 건드리지 않음
+                applied.append({"room": rid, "kind": kind, "skipped": "없음" if not r else "이미 끝남"})
+                continue
+            with r.lock.hold("migration"):
+                r.scoring, r.offline, r.dc_mark = None, False, None
+                if kind == "forfeit":
+                    r.result, r.result_reason = f"{r.eng_color}+F", "rule-cleanup"
+                    r.message = ("접속 장애패 — 11-04 이어두기 폐지 정리(떠난 판은 그 자체로 종결)" if mg.get("all_ongoing")
+                                 else "접속 장애패 — 규칙 단일화 정리 10-24(옛 24시간 규칙 방)")
+                else:
+                    r.result, r.result_reason = VOID, "void"
+                    r.message = ("무효 종료 — 11-04 이어두기 폐지 정리(한 수도 두지 않은 판)" if mg.get("all_ongoing")
+                                 else "무효 종료 — 빈 방 정리(원인 미상 — 착수 미수신)")
+                r.save_sgf()
+                r.cache = json.dumps(r.state(), ensure_ascii=False)
+                ROOMS.save(r)
+            EVENTS.add(rid, action="migration", migration=mg["id"], result=r.result, reason=r.result_reason, moveNo=len(r.moves))
+            applied.append({"room": rid, "kind": kind, "result": r.result, "moves": len(r.moves)})
         done[mg["id"]] = {"at": datetime.now().isoformat(timespec="seconds"), "rooms": applied}
         tmp = ROOMS_DIR / "._migrations.json.tmp"
         ROOMS_DIR.mkdir(parents=True, exist_ok=True)

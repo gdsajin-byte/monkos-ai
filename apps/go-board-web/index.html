@@ -275,12 +275,11 @@
 </div>
 <div id="lobby">
   <div class="status"><span><b>MONK 바둑</b> 대기실</span><span class="grow"></span><span class="small" id="lobbyEng" style="color:#cfd6e0"></span></div>
-  <!-- 11-04 작가님 — 대기실/내 기보 분리: 대기실 = 진행 중 대국·참여자·방 만들기·소식 / 내 기보 = 지난 대국·기보 불러오기 -->
+  <!-- 11-04 작가님 — 대기실/내 기보 분리: 대기실 = 참여자·방 만들기·소식(11-04 이어두기 폐지: 진행 중 판은 표시하지 않음) / 내 기보 = 지난 대국·기보 불러오기 -->
   <div class="lobby-tabs"><button id="tabWait" data-tab="wait">대기실</button><button id="tabMine" data-tab="mine">내 기보</button></div>
   <div class="lobby-body">
     <div class="msg" id="lobbyMsg"></div>
     <div class="tab-pane" id="paneWait">
-      <h3>내 진행 중 대국</h3><div id="lobbyLive"><div class="lobby-empty">불러오는 중…</div></div>
       <h3>참여자</h3><div id="lobbyPeople"></div>
       <h3>대기실 소식</h3>
       <div class="lobby-note">채팅·초청은 사용자 구분(단계 ②) 뒤 열립니다</div>
@@ -1017,7 +1016,20 @@ document.getElementById('dOk').onclick = async () => {
     location.href = `/room/${j.id}`;
   } catch (e) { notice('서버 연결 실패 — run.sh가 켜져 있는지 확인해 주세요'); }
 };
-document.getElementById('bLobby').onclick = () => { location.href = '/'; };
+// 11-04 작가님 — 이어두기 폐지, 떠난 판은 그 자체로 종결: 진행 중에 나가면 기권, 0수 판은 무효. (새로고침 = 5분 안 재접속은 그대로)
+document.getElementById('bLobby').onclick = async () => {
+  if (busy) { notice('상대가 생각 중입니다'); return; }
+  if (!S || S.result || S.imported || S.stale || (window.RV && window.RV.on)) { location.href = '/'; return; }
+  if (S.moveNo > 0) {
+    if (!confirm('대기실로 나가면 이 판은 기권으로 끝납니다.\n[확인] 나가기  /  [취소] 머무르기')) return;
+    try { await fetch(api('/api/resign'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }); }
+    catch (e) { notice('서버 연결 실패 — 나가지 않았습니다'); return; }
+  } else {
+    try { await fetch(api('/api/void'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }); }
+    catch (e) { notice('서버 연결 실패 — 나가지 않았습니다'); return; }
+  }
+  location.href = '/';
+};
 
 document.getElementById('bUndo').onclick = () => call('/api/undo');
 document.getElementById('bSwap').onclick = () => call('/api/swap');
@@ -1336,16 +1348,14 @@ setInterval(() => {
   const dur = sec => { sec = Math.max(0, Math.floor(sec)); const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), x = sec % 60;
     return h ? `${h}:${String(m).padStart(2, '0')}:${String(x).padStart(2, '0')}` : `${m}:${String(x).padStart(2, '0')}`; };
   function row(r) {
-    const live = r.status !== 'ended';
+    const live = false;  // 11-04 작가님 — 이어두기 폐지, 떠난 판은 그 자체로 종결: 대기실엔 끝난 판만 나온다
     const res = r.result ? `<span class="${r.win === true ? 'win' : r.win === false ? 'lose' : ''}">${esc(r.resultKo)}${r.win === true ? ' · 승' : r.win === false ? ' · 패' : ''}</span>`
       : (live ? (r.toMove === r.user ? '내 차례' : 'KataGo 차례') : (r.source === 'upload' ? '결과 없음' : '끝내지 않은 판'));
-    // 끊긴 판 = 5분 안에 돌아가는 동선만(10-24 22:04) — '재접속 · m:ss 남음'
-    const dcTxt = live && r.dc && r.dc.offline ? ` <span class="lose">· 재접속${r.dc.counting ? ` · ${dur(r.dc.left)} 남음` : ''}</span>` : '';
+    const dcTxt = '';
     const rv = r.lastReview && r.lastReview.state === 'done' ? `<a class="btn" href="/review/${r.lastReview.id}" target="_blank">리뷰 열기</a>`
       : r.lastReview && r.lastReview.state === 'running' ? `<a class="btn" href="/review/${r.lastReview.id}" target="_blank">리뷰 중…</a>`
       : r.review && r.review.ok ? `<button data-review="${r.id}" data-handi="${r.handicap}">리뷰 만들기</button>` : '';
-    const btns = live ? `<button class="hl" data-open="${r.id}">${r.dc && r.dc.offline ? '재접속' : '대국실'}</button>`
-      : `${r.sgfUrl ? `<a class="btn" href="${r.sgfUrl}" download>내려받기</a>` : ''}${rv}`;
+    const btns = `${r.sgfUrl ? `<a class="btn" href="${r.sgfUrl}" download>내려받기</a>` : ''}${rv}`;
     const up = r.source === 'upload';  // 불러온 기보 — 대국자는 기보 값
     const t2 = up ? `불러온 기보 · ${esc(r.levelLabel)} · ${r.moveNo}수` :
       `${when(r.started)} · ${r.moveNo}수 · ${esc(r.levelLabel)} · ${rule(r)}${r.imported ? ' · 이전 기보' : ''}`;
@@ -1379,11 +1389,13 @@ setInterval(() => {
   }
   // 11-04 작가님 — 대기실/내 기보 분리: 대기실 소식 = 최근 끝난 대국 결과 3건(시스템 소식만, 입력줄 없음)
   function renderNews(rooms) {
+    const ongoing = rooms.filter(r => r.status !== 'ended').length;  // 들어가는 버튼 없음 — 알림 한 줄만
     const news = rooms.filter(r => r.status === 'ended' && r.result && r.source !== 'upload')
       .sort((a, b) => String(b.started).localeCompare(String(a.started))).slice(0, 3);
-    document.getElementById('lobbyNews').innerHTML = news.length
+    const warn = ongoing ? `<div class="lose">진행 중 ${ongoing}판 — 5분 안에 돌아오지 않으면 접속 장애패로 종결</div>` : '';
+    document.getElementById('lobbyNews').innerHTML = warn + (news.length
       ? news.map(r => `<div>${esc(String(r.started).slice(11, 16))} 작가님 vs ${esc(r.levelLabel)} · ${esc(r.resultKo)}</div>`).join('')
-      : '<div class="lobby-empty">아직 소식이 없습니다.</div>';
+      : (warn ? '' : '<div class="lobby-empty">아직 소식이 없습니다.</div>'));
   }
   async function load() {
     try {
@@ -1392,8 +1404,7 @@ setInterval(() => {
       // 신청 창은 대국실과 같은 것을 쓴다 — 기본값은 가장 최근 방의 설정
       S = { ...d, level: df.level || 'strong', handicap: df.handicap || 0, time: df.time === undefined ? { main: 0, byo: 20, periods: 3 } : df.time, user: df.user || 'B' };
       if (!widgetsReady) { setupWidgets(); widgetsReady = true; }
-      const live = d.rooms.filter(r => r.status !== 'ended'), past = d.rooms.filter(r => r.status === 'ended');
-      document.getElementById('lobbyLive').innerHTML = live.length ? live.map(row).join('') : '<div class="lobby-empty">진행 중인 대국이 없습니다 — 아래 \'방 만들기\'나 참여자의 \'대국 신청\'으로 시작하세요.</div>';
+      const past = d.rooms.filter(r => r.status === 'ended');
       renderPeople(d); renderNews(d.rooms);
       document.getElementById('lobbyPast').innerHTML = past.length ? past.map(row).join('') : '<div class="lobby-empty">아직 지난 대국이 없습니다.</div>';
       document.getElementById('lobbyEng').textContent = d.strongOk ? '' : (d.strongError || '엔진 기동 실패');
