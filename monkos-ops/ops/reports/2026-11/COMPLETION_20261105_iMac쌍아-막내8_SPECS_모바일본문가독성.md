@@ -73,7 +73,7 @@ prod는 검색 제목 시험과 함께 엣지 배포 1회로 반영한다(§5 �
   - dev 배포 exit 0. `[obfuscate] WARN public/index.html`은 이전 배포부터 있던 경고로, 이번 변경과 무관하다.
 - **SSG 빌드는 돌리지 않았다.** `tools/specs-ssg/build.sh`가 `.env`(AUTH_SECRET 등 시크릿 포함)를 읽기 때문이다. 이번 변경은 정적 CSS 파일 1개라 렌더러 출력이 바뀌지 않는다. prod 엣지 배포(`edge/deploy.sh`)가 SSG 빌드를 먼저 강제하므로 그때 빌드된다.
 
-**캡처** `monkos-ops/tech/designs/2026-11/specs-mobile-read/`
+**캡처** `~/.monkos/captures/specs-mobile-read-20261105/` (iMac 로컬 — 레포는 `*.jpg` 무시 정책이라 미커밋)
 - JPEG 8장. 전/후 × (us-visa 375 · kr-passport 375 · en-us-visa 390 · us-visa 1280)
 
 ## 3. 이중 컨테이너 — 다른 specs 섹션 (보고만, 수정 없음)
@@ -116,5 +116,5 @@ prod는 검색 제목 시험과 함께 엣지 배포 1회로 반영한다(§5 �
 - ⚠️ 바깥 여백 16px(17a0e8d3)은 specs 상세 **전체 섹션** 폭에 영향을 준다. 지시서의 구조 가정(.v2-wrap 하나)과 실측(.container 24 + .v2-wrap 16)이 달랐다. 원하지 않으면 이 커밋만 되돌린다.
 - ❌ SSG 빌드 로컬 실행 안 함(시크릿 포함 `.env` 필요). prod 엣지 배포 때 강제 실행된다.
 - ⏳ prod: 검색 제목 시험과 함께 엣지 → portal(작가님 '배포 승인').
-- 📁 `monkos_AI/portal/public/css/specs-funnel.css` / `monkos-ops/tech/designs/2026-11/specs-mobile-read/*.jpg` / 이 보고서·세션 로그·PF_SPECS 1행
+- 📁 `monkos_AI/portal/public/css/specs-funnel.css` / 캡처 `~/.monkos/captures/specs-mobile-read-20261105/`(iMac 로컬) / 이 보고서·세션 로그·PF_SPECS 1행
 - 🔀 브랜치 `worktree-makne8-specs-mobile-read` → 원격 푸시. 병합은 쌍아가 한다.
