@@ -3,7 +3,7 @@ type: completion
 date: 2026-11-05
 device: iMac
 agent: 쌍아-막내2
-status: 진행
+status: 마감
 portfolio: PF_GO
 order: monkos-ops/ops/orders/2026-11/ORDER_20261105_iMac쌍아_막내2_GO_대기실_닉단수표기.md
 ---
@@ -63,7 +63,8 @@ order: monkos-ops/ops/orders/2026-11/ORDER_20261105_iMac쌍아_막내2_GO_대기
 
 ## 완료 보고
 - ✅ 표기 함수 1곳(`Auth.display_name`) + 적용 4곳 + 캡처 2장
-- ⏳ 8765 반영 — main 병합 후 진행 중 판 0 확인, `launchctl kickstart`
+- ✅ 8765 반영(07:18) — 쌍아 07:18 병합 통지, 진행 중 판 0 확인 후 `launchctl kickstart -k`. PID 75573, MONK OK, 방 173 유지. 라이브 `/api/rooms`의 `me.display`·`ownerDisplay` 필드와 화면 코드(`ownerDisplay` 4건) 반영 확인
+  - 로컬 무쿠키 조회는 관리자 "작가님"(기력 없음 → "작가님")으로 나옵니다. 라이브 계정 "신작가"도 기력이 없어 닉만 표시됩니다(§4)
 - ⏳ 6단 표기 결정(§4)
 - 📁 이 문서, 세션 로그 `monkos-ops/ops/sessions/2026-11/2026-11-05_iMac_쌍아-막내2.md`
 - 🔀 브랜치 `makne2-go-nick-rank` (코드 6751d536)
