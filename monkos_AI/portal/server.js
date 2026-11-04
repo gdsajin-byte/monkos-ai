@@ -28,6 +28,7 @@ import {
 } from './lib/shared/config.js';
 
 // === 핸들러 모듈 ===
+import { handleEmailStart, handleEmailCallback } from './lib/email-login.js';
 import { handleKakaoAuth, handleKakaoCallback, handleLineAuth, handleLineCallback, handleGoogleRedirectAuth, handleGoogleRedirectCallback, handleGoogleAuth, handleAuthToken, handleAuthVerify, handleAuthRefresh, handleVerifyCookie, handleLogout } from './lib/auth.js';
 import { handleCreditsGet, handleCreditsUse, handleCreditsRefund } from './lib/credits.js';
 import { handleCheckout, handleLemonSqueezyWebhook, handleTossWebhook, handleTossConfirm, handleTossDirect, handleDownloadDirect, handleTossSuccess, handleTossFail, handleDirectInit, handleDirectStatus, handleDirectFail, handleDirectDevGrant, handlePayFail, consumeGenerateQuota, refundGenerateQuota } from './lib/payments.js';
@@ -434,6 +435,13 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/api/auth/verify-cookie' && req.method === 'GET') return handleVerifyCookie(req, res);
   if (urlPath === '/api/auth/refresh' && req.method === 'POST') return handleAuthRefresh(req, res);
   if (urlPath === '/api/auth/logout' && req.method === 'POST') return handleLogout(req, res);
+  // 이메일 매직 링크 (포털 공용, ORDER_20261105 GO 로그인) — IP는 신뢰 엣지 값, 없으면 소켓 주소(XFF 끝)
+  if (urlPath === '/api/auth/email/start' && req.method === 'POST') {
+    const edge = resolveEdgeClient(req);
+    const xff = req.headers['x-forwarded-for'];
+    return handleEmailStart(req, res, { clientIp: edge.ip || (xff ? xff.split(',').pop().trim() : '') || req.socket?.remoteAddress || '' });
+  }
+  if (urlPath === '/auth/email/callback' && req.method === 'GET') return handleEmailCallback(req, res);
 
   // === 에이전트 인증 ===
   if (urlPath === '/auth/agent' && req.method === 'POST') return handleAgentAuth(req, res);

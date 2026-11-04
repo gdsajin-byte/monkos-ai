@@ -221,7 +221,13 @@ export const ALLOWED_POPUP_ORIGINS = [
   'https://idphoto-kr.monkos.ai',
   'https://idphoto-jp.monkos.ai',
   'https://monkos.ai',
+  'https://go.monkos.ai', // 바둑앱 — 포털 계정 공용 로그인 (ORDER_20261105 GO 로그인)
 ];
+/** 실제 허용 출처 — 정본 목록 + dev 서비스에서만 로컬 바둑 테스트(8766) 출처. prod는 정본 목록 그대로 */
+export function allowedPopupOrigins(kService = process.env.K_SERVICE) {
+  const devExtra = typeof kService === 'string' && kService.endsWith('-dev') ? ['http://127.0.0.1:8766', 'http://localhost:8766'] : [];
+  return [...ALLOWED_POPUP_ORIGINS, ...devExtra];
+}
 
 // === MIME 타입 ===
 export const MIME_TYPES = {

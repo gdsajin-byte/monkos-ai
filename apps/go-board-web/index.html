@@ -262,6 +262,14 @@
   #authDlg input[type=text] { flex: 1 1 160px; font-size: 17px; padding: 8px; border: 1px solid var(--line-ui); border-radius: 6px; }
   #authMsg { color: #b4462b; min-height: 1.2em; font-size: 15px; }
   #authMsg.ok { color: #2f7d3c; }
+  /* 포털 로그인 버튼 (11-05) — 제공자 색은 각 사의 기본 버튼 색 */
+  .portal-btns { display: flex; flex-direction: column; gap: 8px; }
+  .portal-btns.inline { display: inline-flex; flex-direction: row; flex-wrap: wrap; }
+  .pbtn { padding: 10px 14px; border-radius: 8px; border: 1px solid #c9ccd3; background: #fff; color: #222; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .pbtn-kakao { background: #fee500; border-color: #fee500; color: #191919; }
+  .pbtn-line { background: #06c755; border-color: #06c755; color: #fff; }
+  .portal-email { display: flex; gap: 8px; }
+  .portal-email input { flex: 1; min-width: 0; }
   #authDlg select { font-size: 17px; padding: 8px; }
   #authDlg .linkbtn, .lobby-me .nickbtn { background: none; border: 0; box-shadow: none; color: var(--blue); text-decoration: underline; padding: 2px; font-size: 14px; }
   .lobby-me .nickbtn { color: #cfd6e0; font-size: 14px; }
@@ -344,6 +352,7 @@
         <div>아이디 <b id="myNick"></b></div>
         <label>희망 급수 <select id="myRank"></select> <button id="myRankSave">저장</button> <span class="small" id="myRankMsg"></span></label>
         <div>가입일 <span id="myCreated"></span></div>
+        <div>포털 계정 <span id="myPortal">-</span> <span id="myPortalBtns" class="portal-btns inline"></span> <span class="small" id="myPortalMsg"></span></div>
       </div>
       <h3>AI 대국 전적</h3>
       <div class="box my-box" id="myStats"></div>
@@ -451,6 +460,10 @@
 <dialog id="authDlg">
   <div class="dlg-head" id="aTitle">MONK 바둑 — 아이디 만들기</div>
   <div class="dlg-body">
+    <!-- 11-05 작가님 07:12 — 포털 계정(카카오·Google·LINE) + 이메일 가입. 버튼 순서는 언어권별(서버 /api/auth/portal/config) -->
+    <div id="aPortal" class="portal-btns"></div>
+    <div id="aEmailRow" class="portal-email" hidden><input type="email" id="aEmail" autocomplete="email" placeholder="이메일 주소"> <button id="aEmailSend">로그인 링크 받기</button></div>
+    <div class="small" id="aPortalNote">또는 바둑 아이디로 (테스트)</div>
     <label>아이디 <input type="text" id="aNick" maxlength="12" autocomplete="username" autocapitalize="off" placeholder="2~12자 한글·영문·숫자·_"> <button id="aCheck">중복 확인</button></label>
     <label id="aRankRow">희망 급수 <select id="aRank"></select></label>
     <label id="aClaimRow" hidden>인수 코드 <input type="text" id="aClaim" autocomplete="off" autocapitalize="off" placeholder="서버 인수 코드 파일의 값"></label>
@@ -1110,8 +1123,15 @@ async function loadRanks() {
     ranksLoaded = true;
   } catch (e) { /* 다음에 다시 */ }
 }
+let portalCookieTried = false;
 function openAuth(msg) {
+  if (!portalCookieTried && location.protocol === 'https:') {  // go.monkos.ai — 포털에 로그인돼 있으면 창 없이 들어간다
+    portalCookieTried = true;
+    portalDone(null, true).then(ok => { if (!ok) openAuth(msg); });
+    return;
+  }
   authMsg(msg); loadRanks(); authSync();
+  portalRender($a('aPortal'), authMsg);
   if (!authDlg.open) authDlg.showModal();
 }
 authDlg.addEventListener('cancel', e => e.preventDefault());  // 로그인 없이 닫을 수 없다(Esc 포함)
@@ -1143,7 +1163,17 @@ async function authGo(kind) {
     location.reload();
   } catch (e) { authMsg('서버 연결 실패'); }
 }
-$a('aSignup').onclick = () => authGo('signup');
+$a('aSignup').onclick = async () => {
+  if (!portalTicket) return authGo('signup');
+  authMsg('');
+  try {
+    const r = await fetch('/api/auth/portal/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                                       body: JSON.stringify({ ticket: portalTicket, nick: $a('aNick').value.trim(), rank: $a('aRank').value }) });
+    const j = await r.json();
+    if (!r.ok || j.error) { authMsg(j.error || '실패했습니다'); return; }
+    location.reload();
+  } catch (e) { authMsg('서버 연결 실패'); }
+};
 $a('aEnter').onclick = () => authGo('enter');
 authDlg.addEventListener('keydown', e => {
   if (e.key !== 'Enter') return;
@@ -1155,6 +1185,73 @@ const doLogout = async () => {
   location.href = '/';
 };
 document.getElementById('bLogout').onclick = doLogout;
+
+// ---- 포털 계정 로그인 (11-05 작가님 07:12, ORDER_20261105 GO 로그인) — 로그인·크레딧은 포털 것. 바둑은 닉·급수·전적만 붙인다
+// 팝업(카카오·Google·LINE) → 포털이 토큰을 postMessage / 이메일 → 매직 링크가 이 주소로 #monkos_xt=토큰 을 붙여 돌려보낸다.
+// 바둑 아이디로 이미 들어와 있으면 '연결'(기존 계정 이관 — 방·전적 그대로), 아니면 연결된 계정으로 입장 또는 새 아이디 정하기
+const PORTAL_LABEL = { kakao: '카카오로 계속', google: 'Google로 계속', line: 'LINE으로 계속', email: '이메일로 계속' };
+const PORTAL_NAME = { kakao: '카카오', google: 'Google', line: 'LINE', email: '이메일' };
+let portalCfg = null, portalTicket = null;
+const portalLang = () => { const l = (navigator.language || 'ko').toLowerCase(); return l.startsWith('ja') ? 'ja' : l.startsWith('ko') ? 'ko' : 'en'; };
+async function portalConfig() {
+  if (!portalCfg) { try { portalCfg = await (await fetch('/api/auth/portal/config')).json(); } catch (e) { portalCfg = null; } }
+  return portalCfg;
+}
+async function portalRender(box, onMsg) {
+  const cfg = await portalConfig();
+  if (!cfg) { box.innerHTML = ''; return; }
+  box.innerHTML = (cfg.providers[portalLang()] || cfg.providers.en).map(p => `<button class="pbtn pbtn-${p}" data-p="${p}">${PORTAL_LABEL[p]}</button>`).join('');
+  box.querySelectorAll('button').forEach(b => { b.onclick = () => b.dataset.p === 'email' ? portalEmailOpen(onMsg) : portalPopup(b.dataset.p, onMsg); });
+}
+function portalPopup(p, onMsg) {
+  const cfg = portalCfg;
+  const w = window.open(`${cfg.portal}/auth/${p}?popup=1&redirect_app=${encodeURIComponent(cfg.origin)}`, 'monkos_login', 'width=480,height=680');
+  if (!w) { onMsg('팝업이 막혔습니다 — 팝업을 허용해 주세요'); return; }
+  onMsg(`${PORTAL_NAME[p]} 로그인 창에서 계속해 주세요`, true);
+}
+window.addEventListener('message', e => {
+  if (!portalCfg || e.origin !== new URL(portalCfg.portal).origin) return;
+  if (e.data && e.data.type === 'auth-success' && e.data.token) portalDone(e.data.token);
+});
+function portalEmailOpen(onMsg) {
+  const row = $a('aEmailRow');
+  if (authDlg.open) { row.hidden = false; $a('aEmail').focus(); return; }
+  openAuth(); row.hidden = false;  // 마이페이지에서 연결할 때도 같은 칸 — 보낸 링크로 돌아오면 연결된다
+}
+$a('aEmailSend').onclick = async () => {
+  const email = $a('aEmail').value.trim();
+  if (!email) { authMsg('이메일 주소를 입력해 주세요'); return; }
+  $a('aEmailSend').disabled = true;
+  try {
+    const r = await fetch('/api/auth/email/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, lang: portalLang() }) });
+    const j = await r.json();
+    authMsg(r.ok ? `메일을 보냈습니다 — 받은 편지함의 링크를 ${j.ttlMin || 15}분 안에 눌러 주세요` : (j.error || '보내지 못했습니다'), r.ok);
+  } catch (e) { authMsg('서버 연결 실패'); }
+  setTimeout(() => { $a('aEmailSend').disabled = false; }, 60000);  // 같은 주소 분당 1회
+};
+async function portalDone(token, viaCookie) {
+  try {
+    const r = await fetch(viaCookie ? '/api/auth/portal/cookie' : '/api/auth/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                                                                     body: JSON.stringify(viaCookie ? {} : { token }) });
+    const j = await r.json();
+    if (viaCookie && !r.ok) return false;  // 포털 쿠키가 없거나 무효 — 조용히 아이디 창으로
+    if (!r.ok || j.error) { openAuth(j.error || '포털 로그인 실패'); return false; }
+    if (j.needProfile) {  // 처음 오는 포털 계정 — 바둑 아이디·희망 급수만 정하면 끝
+      portalTicket = j.ticket; authMode = 'signup'; nickOk = null;
+      openAuth(`${PORTAL_NAME[j.provider] || '포털'} 계정 확인됨 — 바둑에서 쓸 아이디와 희망 급수를 정해 주세요`);
+      $a('aNick').value = j.suggest || ''; $a('aTitle').textContent = 'MONK 바둑 — 바둑 아이디 정하기'; $a('aSwitch').hidden = true;
+      return true;
+    }
+    location.reload();
+    return true;
+  } catch (e) { openAuth('서버 연결 실패'); return false; }
+}
+(() => {  // 매직 링크로 돌아옴 — 토큰은 주소에서 바로 지운다(기록·공유 방지)
+  const m = location.hash.match(/monkos_xt=([A-Za-z0-9_-]+)/);
+  if (!m) return;
+  history.replaceState(null, '', location.pathname + location.search);
+  portalDone(m[1]);
+})();
 document.getElementById('myLogout').onclick = doLogout;
 
 // ---- 대국 신청 창(타이젬 형식): 상대 수준·대국방법·치수·덤·흑백·시간을 한 창에서
@@ -1612,6 +1709,9 @@ setInterval(() => {
       document.getElementById('myNick').textContent = m.nick;
       document.getElementById('myRank').innerHTML = (m.rank ? '' : '<option value="">선택하세요</option>') + j.ranks.map(r => `<option value="${r.v}"${r.v === m.rank ? ' selected' : ''}>${r.label}</option>`).join('');
       document.getElementById('myCreated').textContent = m.created ? m.created.slice(0, 10) : '-';
+      document.getElementById('myPortal').textContent = m.portal ? (PORTAL_NAME[m.portal] || m.portal) + ' 연결됨' : '연결 안 됨';
+      const pb = document.getElementById('myPortalBtns'), pm = t => { document.getElementById('myPortalMsg').textContent = t || ''; };
+      if (m.portal || m.local) pb.innerHTML = ''; else portalRender(pb, pm);  // 연결하면 이 바둑 아이디(방·전적)가 그대로 포털 계정에 붙는다
       document.getElementById('myRankMsg').textContent = '';
       document.getElementById('myStats').innerHTML = `<div>전체 <b>${t.win}승 ${t.loss}패</b> · 무효 ${t.void}</div>` + (st.byLevel.length
         ? `<table><tr><th>상대 수준</th><th>승</th><th>패</th></tr>${st.byLevel.map(r => `<tr><td>${esc(r.label)}</td><td>${r.win}</td><td>${r.loss}</td></tr>`).join('')}</table>`
