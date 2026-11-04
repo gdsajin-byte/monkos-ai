@@ -84,7 +84,8 @@ export function gtagSnippet() {
 </script>`;
 }
 
-export function layoutHead(title, description, extra = '', htmlLang = 'ko') {
+// themeColorMeta: 지정한 표면만 theme-color를 교체(예: specs 라이트·다크 2줄, ORDER_20261105 다크테마). 미지정 = 기존 1줄 그대로
+export function layoutHead(title, description, extra = '', htmlLang = 'ko', themeColorMeta = null) {
   return `<!DOCTYPE html>
 <html lang="${htmlLang}">
 <head>
@@ -93,7 +94,7 @@ ${gtagSnippet()}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${escapeHtml(title)}</title>
 <meta name="description" content="${escapeHtml(description)}">
-<meta name="theme-color" content="#f6f7fb">
+${themeColorMeta || '<meta name="theme-color" content="#f6f7fb">'}
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/favicon-192.png" sizes="192x192" type="image/png">
 <link rel="icon" href="/monkos-icon.svg" type="image/svg+xml">
@@ -199,10 +200,10 @@ export function layoutFooter(lang = 'ko') {
  * 전체 HTML 페이지를 래핑하는 셸 함수
  * v4에서 3컬럼 레이아웃으로 교체될 진입점
  */
-export function layoutShell({ title, description, seoMeta, htmlLang, pageStyle, bodyContent, pageScript, paymentRegion }) {
+export function layoutShell({ title, description, seoMeta, htmlLang, pageStyle, bodyContent, pageScript, paymentRegion, themeColorMeta }) {
   const lang = htmlLang || 'ko';
   const region = paymentRegion || (lang === 'ko' ? 'kr' : 'global');
-  return `${layoutHead(title, description, seoMeta || '', lang)}
+  return `${layoutHead(title, description, seoMeta || '', lang, themeColorMeta)}
 ${pageStyle ? `<style>${pageStyle}</style>` : ''}
 </head>
 <body>
