@@ -596,7 +596,39 @@ def portal_verify(token, opener=None):
     pid = str(u.get("id") or "")
     if not pid or pid.startswith("agent_"):
         return None
-    return {"id": pid, "provider": str(u.get("provider") or ""), "name": str(u.get("name") or "")}
+    return {"id": pid, "provider": str(u.get("provider") or ""), "name": str(u.get("name") or ""), "emailMasked": mask_email(u.get("email"))}
+
+
+def mask_email(e):
+    """화면 기억용 표시 — a***@d***.com. 원 주소는 저장·응답하지 않는다"""
+    e = str(e or "")
+    if "@" not in e:
+        return ""
+    user, _, dom = e.partition("@")
+    head, _, rest = dom.partition(".")
+    return f"{user[:1]}***@{head[:1]}***.{rest or '?'}"
+
+
+_EMAIL_CAP = {"ok": None, "at": 0.0}
+
+
+def portal_email_available(opener=None, now=None):
+    """포털에 매직 링크 엔드포인트가 있는가 — 빈 본문 POST: 400(형식 오류)=있음, 404=없음. 10분 캐시(실패는 1분).
+    포털 prod 배포 전 라이브에 깨진 이메일 버튼이 보이지 않게(11-05 08:30 쌍아) — 배포되면 저절로 나타난다"""
+    now = now or time.time()
+    if _EMAIL_CAP["ok"] is not None and now - _EMAIL_CAP["at"] < (600 if _EMAIL_CAP["ok"] is not False else 60):
+        return _EMAIL_CAP["ok"]
+    req = urllib.request.Request(PORTAL_URL + "/api/auth/email/start", data=b"{}", method="POST",
+                                 headers={"Content-Type": "application/json", "User-Agent": "monk-go-board"})
+    try:
+        with (opener or urllib.request.urlopen)(req, timeout=8) as r:
+            ok = r.status < 500
+    except urllib.error.HTTPError as e:
+        ok = e.code == 400
+    except (urllib.error.URLError, OSError):
+        ok = False
+    _EMAIL_CAP.update(ok=ok, at=now)
+    return ok
 
 
 def portal_email_start(email, lang, opener=None, origin=None):
@@ -2510,13 +2542,14 @@ class Handler(BaseHTTPRequestHandler):
                     self._json({"error": err}, 409)
                 else:
                     print(f"✅ go-board: 포털 연결 {cur['uid']} ← {pu['provider']}", flush=True)
-                    self._json({"ok": True, "linked": True, "me": self._me(AUTH.get(cur["uid"]))})
+                    self._json({"ok": True, "linked": True, "me": self._me(AUTH.get(cur["uid"])), "login": {"provider": pu["provider"], "emailMasked": pu["emailMasked"]}})
                 return True
             u = AUTH.by_portal(pu["id"])
             if u:
-                self._json({"ok": True, "me": self._me(u)}, headers=self._cookie(AUTH.new_session(u["uid"])))
+                self._json({"ok": True, "me": self._me(u), "login": {"provider": pu["provider"], "emailMasked": pu["emailMasked"]}},
+                           headers=self._cookie(AUTH.new_session(u["uid"])))
                 return True
-            self._json({"needProfile": True, "ticket": AUTH.portal_ticket(pu["id"], pu["provider"]), "suggest": nick_suggest(pu["name"]),
+            self._json({"needProfile": True, "emailMasked": pu["emailMasked"], "ticket": AUTH.portal_ticket(pu["id"], pu["provider"]), "suggest": nick_suggest(pu["name"]),
                         "provider": pu["provider"]})
             return True
         if path == "/api/auth/portal/signup":
@@ -2606,7 +2639,9 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/api/version":  # 화면 판본 확인(대기실·대국실·감상 공통, 가벼움)
             self._json({"build": build_id()})
         elif path == "/api/auth/portal/config":  # 로그인 창의 포털 버튼(언어권 순서)·포털 주소
-            self._json({"portal": PORTAL_URL, "origin": self._app_origin(), "providers": PORTAL_PROVIDERS})
+            email_ok = portal_email_available()
+            provs = {k: [p for p in v if p != "email" or email_ok] for k, v in PORTAL_PROVIDERS.items()}
+            self._json({"portal": PORTAL_URL, "origin": self._app_origin(), "providers": provs, "email": email_ok})
         elif path == "/api/auth/ranks":  # 가입 화면의 희망 급수 목록(로그인 전에도)
             self._json({"ranks": [{"v": r, "label": RANK_KO[r]} for r in SIGNUP_RANKS]})
         elif path == "/api/auth/check":  # 아이디 중복 확인 — 가입·입장과 합쳐 IP별 1분 30회
