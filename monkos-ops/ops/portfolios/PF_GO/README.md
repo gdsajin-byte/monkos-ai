@@ -77,6 +77,7 @@ status: active
 | 11/05 | ?/? | **ORDER** MONK 봇(b10) 아이폰 자체 구동 실측 — M1(Xcode 26.5·개발 서명 있음)에서 공개 KataGo iOS 포크를 빌드해 작가님 아이폰(iPhone18,1, M1에 케이블 연결됨)에 설치, 1500 visits 응수 시간·초당 visits 측정 + 대국 가능 상태. PF_GO ⑥-1 | [ORDER_20261105_iMac쌍아_막내3_GO_아이폰실측_MONK봇](../../orders/2026-11/ORDER_20261105_iMac쌍아_막내3_GO_아이폰실측_MONK봇.md) | ⏳ |
 | 11/05 | iMac/쌍아-막내2 | 자체 소리 팩 후보를 앱 팩 8개(monk-{daniel,alice,george,river}-{a,b})로 반영 — 8765 재기동 없이 노출, 선택=대국실 ⋯→소리. 수사는 이어 읽기+정렬 분할, 누적 ≈1,786크레딧 | [COMPLETION_20261105_iMac쌍아-막내2_GO_자체음성팩_후보](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_자체음성팩_후보.md) | ✅ |
 | 11/05 | iMac/쌍아-막내3 | MONK 봇(b10) 아이폰 온디바이스 실측 — Metal 1500v 약 1.5초·약 1,000 v/s(b18 약 14초), 앱은 분석판(대국 모드 패치 제안) · 복귀 소리 묵음 진단 장치 main 병합(8765 재기동 대기) | [COMPLETION_20261105_iMac쌍아-막내3_GO_아이폰실측](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내3_GO_아이폰실측.md) | ✅ |
+| 11/05 | iMac/쌍아-막내3 | 앱 복귀 소리 묵음 원인 분석 — 탭 밖 resume() 무한 대기로 재생성 경로 미실행 + WebKit 291892·243727(running인데 무음) 가설, 오디오 상태 진단 기록 장치(8766 검증), 고침안 F1~F6 제안 | [COMPLETION_20261105_iMac쌍아-막내3_GO_앱복귀소리묵음](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내3_GO_앱복귀소리묵음.md) | 🔀 |
 
 ## 3. Phase 현황
 
