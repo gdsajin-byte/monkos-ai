@@ -84,6 +84,7 @@ status: active
 | 11/05 | iMac/쌍아 | 서비스 형태 확정 — 앱 설치·웹 대국 둘 다, 대국실은 웹이 지원해 모바일·PC 간 사람 대국(타이젬형), 앱은 같은 대국실 클라이언트 + 오프라인 MONK 봇. 출시 전 교체 필수: tygem-ref 소리·판 스킨. 다음 순서 = 소리 정리 | — | 🔀 |
 | 11/05 | iMac/민아 | **REPORT** 바둑 앱·서비스 시장조사 — 한국·일본·중국·글로벌 경쟁 서비스 비교(규모·과금·평점·불만·AI 기능), 시장 공백, 가격대, 출시 언어 순서 | [REPORT_20261105_iMac민아_GO_바둑앱_시장조사](../../reports/2026-11/REPORT_20261105_iMac민아_GO_바둑앱_시장조사.md) | 📁 |
 | 11/05 | ?/? | **ORDER** 바둑앱 대기실 AI 목록 정리 — KataGo 급수별 줄 나열을 없애고 "KataGo AI" 한 줄로, 급수(최강 포함)는 대국 설정에서 고름. MONK 봇 표기를 "MONKOS Go(몽코스 고)"로 변경 | [ORDER_20261105_iMac쌍아_막내2_GO_대기실AI정리_MONKOSGo명칭](../../orders/2026-11/ORDER_20261105_iMac쌍아_막내2_GO_대기실AI정리_MONKOSGo명칭.md) | ⏳ |
+| 11/05 | iMac/쌍아-막내2 | 바둑앱 대기실 AI 2줄(KataGo AI·MONKOS Go) + 급수는 대국 설정에서 + MONK 봇→MONKOS Go 명칭(상수 1곳, 옛 판 표기 보존) — 8766 통과, 8765는 병합 후 | [COMPLETION_20261105_iMac쌍아-막내2_GO_대기실AI정리](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_대기실AI정리.md) | ⏳ |
 
 ## 3. Phase 현황
 
