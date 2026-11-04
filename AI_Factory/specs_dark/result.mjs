@@ -21,8 +21,10 @@ await send('DOM.setFileInputFiles', { nodeId: q.result.nodeId, files: [photo] })
 await ev(`document.getElementById('v2-file-input').dispatchEvent(new Event('change', { bubbles: true }))`);
 let st = '';
 for (let i = 0; i < 120; i++) { await sleep(1000);
-  st = await ev(`(() => { const b = document.getElementById('v2-fit-make'); const r = document.getElementById('v2-result-after-img');
-    if (r && r.src && r.src.startsWith('data:')) return 'result';
+  // 무료 파일럿 결과는 #ip-free-img, 유료 결과는 #v2-result-after-img
+  st = await ev(`(() => { const b = document.getElementById('v2-fit-make');
+    const r = [document.getElementById('ip-free-img'), document.getElementById('v2-result-after-img')].find(x => x && x.src && x.src.startsWith('data:') && x.offsetParent);
+    if (r) return 'result';
     if (b && b.offsetParent && !b.disabled) return 'make'; return 'wait'; })()`);
   if (st === 'make') { await ev(`document.getElementById('v2-fit-make').click()`); st = 'clicked'; }
   if (st === 'result') break; }
@@ -47,8 +49,9 @@ const AUD = `(() => {
       const cr = (Math.max(L(f), L(bg)) + .05) / (Math.min(L(f), L(bg)) + .05); const big = parseFloat(s.fontSize) >= 24 || (parseFloat(s.fontSize) >= 18.66 && +s.fontWeight >= 700);
       if (cr < (big ? 3 : 4.5)) low.push(name(e) + ' "' + e.textContent.trim().slice(0, 24) + '" ' + cr.toFixed(2)); } }
   const img = document.querySelector('[data-audit-result]'); const is = getComputedStyle(img);
+  const box = img.parentElement.getBoundingClientRect(), ib = img.getBoundingClientRect(); const clipped = ib.right > box.right + 0.5 || ib.bottom > box.bottom + 0.5; const bs = getComputedStyle(img.parentElement);
   const chain = []; let n = img; for (let k = 0; k < 4 && n; k++) { chain.push(name(n)); n = n.parentElement; }
-  return { light, low, imgPad: is.padding, imgBg: is.backgroundColor, imgBorder: is.borderTopColor, chain }; })()`;
+  return { light, low, imgPad: is.padding, imgBg: is.backgroundColor, imgBorder: is.borderTopColor, boxPad: bs.padding, boxBg: bs.backgroundColor, clipped, chain }; })()`;
 const rep = {};
 for (const s of ['light', 'dark']) for (const w of [375, 1280]) {
   await scheme(s); await size(w); await sleep(700);
@@ -56,7 +59,7 @@ for (const s of ['light', 'dark']) for (const w of [375, 1280]) {
   const shot = await send('Page.captureScreenshot', { format: 'png' });
   writeFileSync(`${OUT}/result_${s}_${w}.png`, Buffer.from(shot.result.data, 'base64'));
   rep[`${s}@${w}`] = await ev(AUD);
-  console.log(s, w, '밝은 면', rep[`${s}@${w}`].light.length, '· 대비 미달', rep[`${s}@${w}`].low.length, '· 사진 받침', rep[`${s}@${w}`].imgPad, rep[`${s}@${w}`].imgBg);
+  console.log(s, w, '밝은 면', rep[`${s}@${w}`].light.length, '· 대비 미달', rep[`${s}@${w}`].low.length, '· 틀 받침', rep[`${s}@${w}`].boxPad, rep[`${s}@${w}`].boxBg, '· 사진 잘림', rep[`${s}@${w}`].clipped);
 }
 writeFileSync(`${OUT}/result_audit.json`, JSON.stringify(rep, null, 1));
 ws.close();
