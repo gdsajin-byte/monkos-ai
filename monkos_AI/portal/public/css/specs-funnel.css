@@ -710,3 +710,150 @@ a:hover { color: var(--sf-fg-5a3de6); }
 @media (max-width: 480px) {
   .v2-toss-widget { margin-left: -20px; margin-right: -20px; padding-left: 8px; padding-right: 8px; }
 }
+
+/* ── 다크 테마 — 기기 설정 추종 (ORDER_20261105 SPECS_다크테마, 작가님 05:24 "폰에서는 다크에 비해 피로도가 높고 가독성이 떨어지네").
+   변수 값만 바꾼다. 값 정본 = DESIGN_20261105_dsn_SPECS_다크테마_시안.html 토큰표. 생성: AI_Factory/specs_dark/darkgen.py + funnel_dark_manual.css.
+   수동 토글 없음 — prefers-color-scheme만 따른다. ── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --sf-bd-00b894: #00B894;
+    --sf-bd-17151f: #4a4658;
+    --sf-bd-1a1a1a: #4a4658;
+    --sf-bd-6c4fff: #9d8bff;
+    --sf-bd-7c6cf0: #9d8bff;
+    --sf-bd-c9bdf2: #34313f;
+    --sf-bd-cfe8dc: #2c4a3c;
+    --sf-bd-d4cceb: #34313f;
+    --sf-bd-dcd8e8: #34313f;
+    --sf-bd-e2dfec: #34313f;
+    --sf-bd-e5e5e5: #34313f;
+    --sf-bd-e7e5f0: #34313f;
+    --sf-bd-fff: #fff;
+    --sf-bd-rgba-0-0-0-0p04: rgba(255,255,255,0.12);
+    --sf-bd-rgba-0-0-0-0p05: rgba(255,255,255,0.13);
+    --sf-bd-rgba-0-0-0-0p06: rgba(255,255,255,0.14);
+    --sf-bd-rgba-0-0-0-0p08: rgba(255,255,255,0.16);
+    --sf-bd-rgba-0-0-0-0p1: rgba(255,255,255,0.18);
+    --sf-bd-rgba-0-0-0-0p12: rgba(255,255,255,0.2);
+    --sf-bd-rgba-0-0-0-0p15: rgba(255,255,255,0.23);
+    --sf-bd-rgba-0-0-0-0p2: rgba(255,255,255,0.28);
+    --sf-bd-rgba-108-79-255-0p15: rgba(157,139,255,0.27);
+    --sf-bd-rgba-108-79-255-0p2: rgba(157,139,255,0.36);
+    --sf-bd-rgba-108-79-255-0p25: rgba(157,139,255,0.45);
+    --sf-bd-rgba-108-79-255-0p3: rgba(157,139,255,0.54);
+    --sf-bd-rgba-26-26-46-0p55: rgba(26,26,46,0.55);
+    --sf-bg-17151f: #17151f;
+    --sf-bg-1a1a1a: #f1f0f6;
+    --sf-bg-22c55e: #22c55e;
+    --sf-bg-333: #d3d0de;
+    --sf-bg-5a3de6: #b3a5ff;
+    --sf-bg-6c4fff: #9d8bff;
+    --sf-bg-9f7afe: #b3a5ff;
+    --sf-bg-eaf7f1: #16281f;
+    --sf-bg-f0f1f5: #262432;
+    --sf-bg-f2faf6: #16281f;
+    --sf-bg-f4f2fc: #2a2640;
+    --sf-bg-f5f5f7: #262432;
+    --sf-bg-f6f6fb: #262432;
+    --sf-bg-f7f7fb: #1d1c26;
+    --sf-bg-f8f6fe: #1d1c26;
+    --sf-bg-fbeef0: #3a1f26;
+    --sf-bg-fbfafd: #1d1c26;
+    --sf-bg-fff: #1d1c26;
+    --sf-bg-ffffff: #1d1c26;
+    --sf-bg-rgba-0-0-0-0p015: rgba(255,255,255,0.03);
+    --sf-bg-rgba-0-0-0-0p45: rgba(0,0,0,0.45);
+    --sf-bg-rgba-108-79-255-0p03: rgba(157,139,255,0.054);
+    --sf-bg-rgba-108-79-255-0p04: rgba(157,139,255,0.072);
+    --sf-bg-rgba-108-79-255-0p05: rgba(157,139,255,0.09);
+    --sf-bg-rgba-108-79-255-0p06: rgba(157,139,255,0.108);
+    --sf-bg-rgba-108-79-255-0p08: rgba(157,139,255,0.144);
+    --sf-bg-rgba-108-79-255-0p1: rgba(157,139,255,0.18);
+    --sf-bg-rgba-108-79-255-0p15: rgba(157,139,255,0.27);
+    --sf-bg-rgba-108-79-255-0p85: rgba(108,79,255,0.85);
+    --sf-bg-rgba-139-115-255-p18: rgba(157,139,255,0.324);
+    --sf-bg-rgba-239-68-68-0p08: rgba(248,113,113,0.144);
+    --sf-bg-rgba-239-68-68-0p1: rgba(248,113,113,0.18);
+    --sf-bg-rgba-239-68-68-0p12: rgba(248,113,113,0.216);
+    --sf-bg-rgba-245-158-11-0p12: rgba(251,191,36,0.192);
+    --sf-bg-rgba-26-26-46-0p16: rgba(26,26,46,0.16);
+    --sf-bg-rgba-34-197-94-0p08: rgba(74,222,128,0.128);
+    --sf-bg-rgba-34-197-94-0p12: rgba(74,222,128,0.192);
+    --sf-fg-0a6b4a: #6fd3a6;
+    --sf-fg-0b7a53: #6fd3a6;
+    --sf-fg-0e8a5f: #6fd3a6;
+    --sf-fg-16a34a: #6fd3a6;
+    --sf-fg-17151f: #f1f0f6;
+    --sf-fg-1a1a1a: #f1f0f6;
+    --sf-fg-2d2a3a: #f1f0f6;
+    --sf-fg-333: #d3d0de;
+    --sf-fg-3a3744: #d3d0de;
+    --sf-fg-3f2e99: #b3a5ff;
+    --sf-fg-444: #d3d0de;
+    --sf-fg-45424f: #d3d0de;
+    --sf-fg-555: #d3d0de;
+    --sf-fg-5a3de6: #b3a5ff;
+    --sf-fg-5d5a6b: #d3d0de;
+    --sf-fg-666: #d3d0de;
+    --sf-fg-6c4fff: #b3a5ff;
+    --sf-fg-6e62a8: #b3a5ff;
+    --sf-fg-777: #a9a5bd;
+    --sf-fg-7c6cf0: #b3a5ff;
+    --sf-fg-888: #a9a5bd;
+    --sf-fg-8b879b: #a9a5bd;
+    --sf-fg-999: #a9a5bd;
+    --sf-fg-9c93c4: #a9a5bd;
+    --sf-fg-a32538: #ff8a8a;
+    --sf-fg-aaa: #a9a5bd;
+    --sf-fg-b4afc6: #a9a5bd;
+    --sf-fg-bbb: #a9a5bd;
+    --sf-fg-c9bbff: #c9bbff;
+    --sf-fg-ccc: #a9a5bd;
+    --sf-fg-d97706: #f0b866;
+    --sf-fg-dc2626: #ff8a8a;
+    --sf-fg-ef4444: #ff8a8a;
+    --sf-fg-efedf6: #efedf6;
+    --sf-fg-fff: #1a1033;
+    --sf-fg-rgba-255-255-255-0p8: rgba(255,255,255,0.8);
+    --sf-ot-00b894: #00B894;
+    --sf-ot-fff: #fff;
+    --sf-ot-rgba-26-26-46-0p55: rgba(26,26,46,0.55);
+    --sf-sh-rgba-0-0-0-0p03: rgba(0,0,0,0.09);
+    --sf-sh-rgba-0-0-0-0p04: rgba(0,0,0,0.12);
+    --sf-sh-rgba-0-0-0-0p15: rgba(0,0,0,0.45);
+    --sf-sh-rgba-108-79-255-0p08: rgba(108,79,255,0.08);
+    --sf-sh-rgba-108-79-255-0p1: rgba(108,79,255,0.1);
+    --sf-sh-rgba-108-79-255-0p18: rgba(108,79,255,0.18);
+    --sf-sh-rgba-108-79-255-p55: rgba(108,79,255,.55);
+    --sf-sh-rgba-23-21-31-0p45: rgba(23,21,31,0.45);
+    --sf-sh-rgba-23-21-31-p18: rgba(23,21,31,.18);
+
+    /* 의상 선택기(--atp-* — 설계상 호스트가 재정의) */
+    --atp-bg: #1d1c26; --atp-border: #34313f; --atp-border-on: #9d8bff; --atp-text: #f1f0f6;
+    --atp-sub: #a9a5bd; --atp-chip-bg: #262432; --atp-on-bg: #2a2640;
+  }
+  /* 공통 셸 변수 — 셸 인라인 <style>이 이 CSS 뒤에 오므로 :root:root로 우선순위를 올린다. 이 파일은 specs에서만 로드 */
+  :root:root {
+    --bg: #14131a; --surface: #1d1c26; --surface2: #262432; --card-bg: #1d1c26;
+    --text: #d3d0de; --text-dim: #a9a5bd; --text-bright: #f1f0f6; --border: #34313f;
+    --accent: #b3a5ff; --accent2: #c9bfff; --border-hover: rgba(179,165,255,0.4);
+  }
+  /* 페이지 바탕 — body와 카드가 같은 라이트 변수(#ffffff)를 써서 여기서 분리 (시안: 페이지 #14131a · 면 #1d1c26) */
+  body { background: #14131a !important; }
+  /* 흰 글자 유지 — 사진 위 오버레이·초록 체크·어두운 T2 카드 위 */
+  .v2-preview-overlay, .v2-preview-check, .ip-card-t2 h4, .ip-t2-price b { color: #fff; }
+  /* 결과·미리보기 사진: 다크에서만 받침 10px + 밝은 테두리 (사진 자체 흰 배경은 그대로) */
+  .v2-result-before img, .v2-result-after img, .v2-pay-preview img {
+    padding: 10px; background: #262432; border-color: rgba(255,255,255,0.28); box-sizing: content-box;
+  }
+  /* 결제 위젯(토스, 외부 iframe) — 흰 상자 + 얇은 테두리로 둔다(위젯 테마 옵션은 조사만) */
+  .v2-toss-widget { background: #fff; border: 1px solid rgba(255,255,255,0.28); border-radius: 12px; }
+  /* 의상 선택기 선택 칩: 배경(--atp-text)이 밝아지므로 글자를 어둡게 */
+  html .atp-seg-btn.atp-on, html .atp-cat.atp-on { color: #1a1033; }
+  html .atp-visual-original, html .atp-has-thumb .atp-visual { background: #262432; }
+  html .atp-warn { color: #f0b866; background: #33270f; border-color: #5a4518; }
+  html .atp-badge-warn { color: #f0b866; }
+  html .atp-baby-guide { color: #8ab4f8; background: #172334; border-color: #2a3d57; }
+  html .atp-tie-toggle:not([data-on="true"]) { background: #4a4658; }
+}

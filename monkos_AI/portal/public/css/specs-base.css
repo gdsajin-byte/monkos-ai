@@ -685,3 +685,96 @@ a:hover { color: var(--sb-fg-5a3de6); }
   .specs-guide-h { right: -44px; }
   .specs-head-guide { left: -38px; }
 }
+
+/* ── 다크 테마 — 기기 설정 추종 (ORDER_20261105 SPECS_다크테마). 허브·목록. 생성: AI_Factory/specs_dark/darkgen.py ── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --sb-bd-6c4fff: #9d8bff;
+    --sb-bd-rgba-0-0-0-0p04: rgba(255,255,255,0.12);
+    --sb-bd-rgba-0-0-0-0p05: rgba(255,255,255,0.13);
+    --sb-bd-rgba-0-0-0-0p06: rgba(255,255,255,0.14);
+    --sb-bd-rgba-0-0-0-0p08: rgba(255,255,255,0.16);
+    --sb-bd-rgba-0-0-0-0p1: rgba(255,255,255,0.18);
+    --sb-bd-rgba-0-0-0-0p12: rgba(255,255,255,0.2);
+    --sb-bd-rgba-0-0-0-0p15: rgba(255,255,255,0.23);
+    --sb-bd-rgba-108-79-255-0p15: rgba(157,139,255,0.27);
+    --sb-bd-rgba-108-79-255-0p2: rgba(157,139,255,0.36);
+    --sb-bd-rgba-108-79-255-0p25: rgba(157,139,255,0.45);
+    --sb-bd-rgba-108-79-255-0p3: rgba(157,139,255,0.54);
+    --sb-bd-rgba-239-68-68-0p3: rgba(248,113,113,0.54);
+    --sb-bd-rgba-239-68-68-0p4: rgba(248,113,113,0.72);
+    --sb-bd-rgba-255-255-255-0p2: rgba(255,255,255,0.2);
+    --sb-bd-rgba-34-197-94-0p3: rgba(74,222,128,0.48);
+    --sb-bd-rgba-34-197-94-0p4: rgba(74,222,128,0.64);
+    --sb-bg-0b1120: #0b1120;
+    --sb-bg-0f2a3d: #0f2a3d;
+    --sb-bg-162032: #162032;
+    --sb-bg-5a3de6: #b3a5ff;
+    --sb-bg-6c4fff: #9d8bff;
+    --sb-bg-e0e2e6: #d3d0de;
+    --sb-bg-f0f1f5: #262432;
+    --sb-bg-f5f5f5: #262432;
+    --sb-bg-f8f9fb: #1d1c26;
+    --sb-bg-ffffff: #1d1c26;
+    --sb-bg-rgba-0-0-0-0p015: rgba(255,255,255,0.03);
+    --sb-bg-rgba-0-0-0-0p05: rgba(255,255,255,0.1);
+    --sb-bg-rgba-0-0-0-0p15: rgba(255,255,255,0.3);
+    --sb-bg-rgba-0-0-0-0p5: rgba(0,0,0,0.5);
+    --sb-bg-rgba-108-79-255-0p015: rgba(157,139,255,0.027);
+    --sb-bg-rgba-108-79-255-0p05: rgba(157,139,255,0.09);
+    --sb-bg-rgba-108-79-255-0p08: rgba(157,139,255,0.144);
+    --sb-bg-rgba-108-79-255-0p1: rgba(157,139,255,0.18);
+    --sb-bg-rgba-108-79-255-0p2: rgba(157,139,255,0.36);
+    --sb-bg-rgba-108-79-255-0p4: rgba(157,139,255,0.72);
+    --sb-bg-rgba-108-79-255-0p7: rgba(157,139,255,1);
+    --sb-bg-rgba-239-68-68-0p06: rgba(248,113,113,0.108);
+    --sb-bg-rgba-239-68-68-0p08: rgba(248,113,113,0.144);
+    --sb-bg-rgba-239-68-68-0p3: rgba(248,113,113,0.54);
+    --sb-bg-rgba-255-255-255-0p08: rgba(255,255,255,0.08);
+    --sb-bg-rgba-34-197-94-0p06: rgba(74,222,128,0.096);
+    --sb-fg-16a34a: #6fd3a6;
+    --sb-fg-1a1a1a: #f1f0f6;
+    --sb-fg-333: #d3d0de;
+    --sb-fg-555: #d3d0de;
+    --sb-fg-5a3de6: #b3a5ff;
+    --sb-fg-666: #d3d0de;
+    --sb-fg-6c4fff: #b3a5ff;
+    --sb-fg-888: #a9a5bd;
+    --sb-fg-aaa: #a9a5bd;
+    --sb-fg-b4a0ff: #b3a5ff;
+    --sb-fg-bbb: #a9a5bd;
+    --sb-fg-dc2626: #ff8a8a;
+    --sb-fg-ef4444: #ff8a8a;
+    --sb-fg-fff: #fff;
+    --sb-fg-ffffff: #ffffff;
+    --sb-fg-rgba-255-255-255-0p5: rgba(255,255,255,0.5);
+    --sb-fg-rgba-255-255-255-0p6: rgba(255,255,255,0.6);
+    --sb-fg-rgba-255-255-255-0p75: rgba(255,255,255,0.75);
+    --sb-fg-rgba-255-255-255-0p8: rgba(255,255,255,0.8);
+    --sb-sh-rgba-0-0-0-0p02: rgba(0,0,0,0.06);
+    --sb-sh-rgba-0-0-0-0p03: rgba(0,0,0,0.09);
+    --sb-sh-rgba-0-0-0-0p04: rgba(0,0,0,0.12);
+    --sb-sh-rgba-0-0-0-0p05: rgba(0,0,0,0.15);
+    --sb-sh-rgba-0-0-0-0p06: rgba(0,0,0,0.18);
+    --sb-sh-rgba-0-0-0-0p1: rgba(0,0,0,0.3);
+    --sb-sh-rgba-0-0-0-0p2: rgba(0,0,0,0.45);
+    --sb-sh-rgba-0-0-0-0p4: rgba(0,0,0,0.45);
+    --sb-sh-rgba-0-0-0-0p7: rgba(0,0,0,0.7);
+    --sb-sh-rgba-0-0-0-0p8: rgba(0,0,0,0.8);
+    --sb-sh-rgba-108-79-255-0p06: rgba(108,79,255,0.06);
+    --sb-sh-rgba-108-79-255-0p08: rgba(108,79,255,0.08);
+    --sb-sh-rgba-108-79-255-0p15: rgba(108,79,255,0.15);
+    --sb-sh-rgba-124-58-237-0p3: rgba(124,58,237,0.3);
+
+  }
+  /* 공통 셸 변수 — 셸 인라인 <style>이 이 CSS 뒤에 오므로 :root:root로 우선순위를 올린다. 이 파일은 specs에서만 로드 */
+  :root:root {
+    --bg: #14131a; --surface: #1d1c26; --surface2: #262432; --card-bg: #1d1c26;
+    --text: #d3d0de; --text-dim: #a9a5bd; --text-bright: #f1f0f6; --border: #34313f;
+    --accent: #b3a5ff; --accent2: #c9bfff; --border-hover: rgba(179,165,255,0.4);
+  }
+  body { background: #14131a !important; }
+  /* 채움 버튼 위 글자 — 버튼이 #9d8bff로 밝아지므로 어둡게(흰 글자 변수는 사진·어두운 띠 위라 그대로 둠) */
+  .specs-hero-cta, .specs-cta-btn { color: #1a1033; }
+}

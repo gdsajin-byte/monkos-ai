@@ -35,6 +35,7 @@ const SPECS_DATA_MODIFIED = (() => {
 
 // 퍼널 분리 정적 자산 버전 — Cloud Run 리비전 단위 캐시 버스트 (로컬은 dev)
 const ASSET_VER = process.env.K_REVISION || 'dev';
+const SPECS_THEME_COLOR_META = '<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">\n<meta name="theme-color" content="#14131a" media="(prefers-color-scheme: dark)">';
 const specsCssLink = (name) => `\n<link rel="stylesheet" href="/css/${name}.css?v=${ASSET_VER}">`;
 const specsJsTag = (name) => `\n<script src="/js/${name}.js?v=${ASSET_VER}" defer></script>`;
 
@@ -280,7 +281,6 @@ export function specsListFragment(forceLang = null) {
 <meta property="og:image:alt" content="${escapeHtml(i.hubH1)} | MONKOS AI">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://monkos.ai/og-image.png">
-<meta name="theme-color" content="#05080E">
 <link rel="canonical" href="${canonicalUrl}">
 ${hreflangTags}
 <script type="application/ld+json">${itemListJsonLd}</script>`;
@@ -362,6 +362,7 @@ ${hreflangTags}
     description: i.hubDesc,
     seoMeta: seoMeta + specsCssLink('specs-base'),
     htmlLang: lang,
+    themeColorMeta: SPECS_THEME_COLOR_META, // 구 #05080E 메타는 셸 #f6f7fb 뒤라 무효였다 — 다크테마와 함께 정리
     pageStyle: '',
     bodyContent: bodyContent + specsJsTag('specs-list'),
     pageScript,
@@ -509,7 +510,6 @@ function specsDetailV2Fragment(slug, forceLang = null) {
 <meta property="og:image:height" content="600">
 <meta property="og:image:alt" content="${escapeHtml(title)}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#ffffff">
 <link rel="canonical" href="${canonicalUrl}">
 ${hreflangTags}
 <script type="application/ld+json">${JSON.stringify(specsJsonLdArr)}</script>`;
@@ -705,6 +705,8 @@ ${relatedServices(ctx)}
     description,
     seoMeta: seoMeta + specsCssLink('specs-funnel') + (isFunnelDisabled ? '' : `\n<link rel="stylesheet" href="/components/attire-picker/attire-picker.css?v=${ASSET_VER}">`),
     htmlLang: lang,
+    // 브라우저 상단 막대 — 기기 설정 추종(다크테마). 공통 셸의 #f6f7fb 1줄을 이 표면만 대체(구 #ffffff 메타는 셸 뒤라 무효였다)
+    themeColorMeta: SPECS_THEME_COLOR_META,
     pageStyle: '',
     bodyContent: bodyContent + funnelAssets,
     pageScript,
