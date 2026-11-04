@@ -6,7 +6,7 @@ import {
   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
   KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI,
   LINE_CHANNEL_ID, LINE_CHANNEL_SECRET,
-  LEMONSQUEEZY_WEBHOOK_SECRET, ALLOWED_POPUP_ORIGINS, ADMIN_UIDS,
+  LEMONSQUEEZY_WEBHOOK_SECRET, ALLOWED_POPUP_ORIGINS, allowedPopupOrigins, ADMIN_UIDS,
   pendingLineStates, createHmac, randomBytes, authSecret
 } from './shared/config.js';
 import { trackEvent, linkIdentity } from './tracking.js';
@@ -146,7 +146,7 @@ export async function handleKakaoCallback(req, res) {
 
     if (popupMode) {
       // 팝업 모드: postMessage로 부모 윈도우에 전달 후 자동 닫힘
-      const targetOrigin = ALLOWED_POPUP_ORIGINS.includes(redirectApp)
+      const targetOrigin = allowedPopupOrigins().includes(redirectApp)
         ? redirectApp
         : 'https://monkos.ai';
       const { token } = generateAuthToken(docId, 30 * 24 * 60 * 60 * 1000); // 30일
@@ -177,7 +177,7 @@ export async function handleKakaoCallback(req, res) {
       );
       const isSafeInternalPath = redirectApp.startsWith('/') && !redirectApp.startsWith('//');
       const returnUrl = isSafeInternalPath ? redirectApp
-        : ALLOWED_POPUP_ORIGINS.includes(redirectApp) ? redirectApp
+        : allowedPopupOrigins().includes(redirectApp) ? redirectApp
         : '/';
       const userObj = JSON.stringify(userInfo);
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
@@ -335,7 +335,7 @@ export async function handleLineCallback(req, res) {
 
     if (lineStateData.popup) {
       // 팝업 모드: postMessage로 부모 윈도우에 전달 후 자동 닫힘
-      const targetOrigin = ALLOWED_POPUP_ORIGINS.includes(lineStateData.redirectApp)
+      const targetOrigin = allowedPopupOrigins().includes(lineStateData.redirectApp)
         ? lineStateData.redirectApp
         : 'https://monkos.ai';
       const { token } = generateAuthToken(docId, 30 * 24 * 60 * 60 * 1000); // 30일
@@ -367,7 +367,7 @@ export async function handleLineCallback(req, res) {
       const lineRedirectApp = lineStateData.redirectApp || '';
       const isLineSafeInternalPath = lineRedirectApp.startsWith('/') && !lineRedirectApp.startsWith('//');
       const returnUrl = isLineSafeInternalPath ? lineRedirectApp
-        : ALLOWED_POPUP_ORIGINS.includes(lineRedirectApp) ? lineRedirectApp
+        : allowedPopupOrigins().includes(lineRedirectApp) ? lineRedirectApp
         : '/';
       const userObj = JSON.stringify(userInfo);
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
@@ -522,7 +522,7 @@ export async function handleGoogleRedirectCallback(req, res) {
     );
 
     if (stateData.popup) {
-      const targetOrigin = ALLOWED_POPUP_ORIGINS.includes(stateData.redirectApp)
+      const targetOrigin = allowedPopupOrigins().includes(stateData.redirectApp)
         ? stateData.redirectApp : 'https://monkos.ai';
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>로그인 완료</title></head><body><script>
@@ -541,7 +541,7 @@ export async function handleGoogleRedirectCallback(req, res) {
       const googleRedirectApp = stateData.redirectApp || '';
       const isGoogleSafeInternalPath = googleRedirectApp.startsWith('/') && !googleRedirectApp.startsWith('//');
       const returnUrl = isGoogleSafeInternalPath ? googleRedirectApp
-        : ALLOWED_POPUP_ORIGINS.includes(googleRedirectApp) ? googleRedirectApp
+        : allowedPopupOrigins().includes(googleRedirectApp) ? googleRedirectApp
         : '/';
       const userObj = JSON.stringify(sessionUser);
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });

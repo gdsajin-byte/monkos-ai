@@ -565,6 +565,59 @@ CLAIM_FILE = ROOMS_DIR.parent / "admin_claim.txt"
 NICK_RULE = "아이디는 2~12자의 한글·영문·숫자·_ 만 쓸 수 있습니다"
 CLAIM_FAIL = "인수 코드가 맞지 않습니다 — 서버의 인수 코드 파일 값을 확인해 주세요"
 
+# ---------------------------------------------------------------- 포털 계정 로그인 (ORDER_20261105 GO 로그인, 작가님 11-05 07:12)
+# 로그인·크레딧·마이페이지는 포털 것을 쓴다(DESIGN_20261023 §2) — 바둑은 포털 uid에 바둑 프로필(닉·급수·전적)을 연결만 한다.
+# 토큰은 포털 /api/auth/verify-cookie 로 서버 대 서버 확인(바둑 서버는 포털 시크릿을 갖지 않는다). 이메일은 저장·로그하지 않는다.
+PORTAL_URL = os.environ.get("GO_PORTAL_URL") or ("https://monkos-portal-dev-4jeplpqpua-uc.a.run.app" if TEST_MODE else "https://monkos.ai")
+APP_ORIGIN = os.environ.get("GO_APP_ORIGIN") or (f"http://127.0.0.1:{PORT}" if TEST_MODE else "https://go.monkos.ai")
+# 언어권 버튼 순서(작가님 07:12 "일본 모델은 라인 오스, 한국 카톡 … 구글은 공통") — Apple·중국은 설계서 §6·§7
+PORTAL_PROVIDERS = {"ko": ["kakao", "google", "email"], "ja": ["line", "google", "email"], "en": ["google", "email"]}
+PORTAL_TICKET_TTL = 600  # 포털 확인 후 바둑 프로필(닉·급수)을 고르는 동안 유효
+PORTAL_TOKEN_RE = re.compile(r"[A-Za-z0-9_-]{20,400}")
+EMAIL_SHAPE_RE = re.compile(r"[^\s@]{1,64}@[^\s@]{1,253}\.[A-Za-z]{2,24}")
+
+
+def portal_verify(token, opener=None):
+    """포털 세션·교차 토큰(같은 형식) → 포털 사용자 {id, provider, name} 또는 None. 이메일은 버린다."""
+    token = str(token or "").strip()
+    if not PORTAL_TOKEN_RE.fullmatch(token):
+        return None
+    req = urllib.request.Request(PORTAL_URL + "/api/auth/verify-cookie", headers={"Cookie": f"monkos_session={token}", "User-Agent": "monk-go-board"})
+    try:
+        with (opener or urllib.request.urlopen)(req, timeout=8) as r:
+            u = (json.loads(r.read().decode()) or {}).get("user") or {}
+    except (urllib.error.URLError, OSError, ValueError) as e:
+        print(f"❌ go-board: 포털 토큰 확인 실패 — {type(e).__name__}", file=sys.stderr, flush=True)
+        return None
+    pid = str(u.get("id") or "")
+    if not pid or pid.startswith("agent_"):
+        return None
+    return {"id": pid, "provider": str(u.get("provider") or ""), "name": str(u.get("name") or "")}
+
+
+def portal_email_start(email, lang, opener=None):
+    """포털 매직 링크 발송 중계 → (HTTP 코드, 응답 dict). 주소는 로그에 남기지 않는다."""
+    body = json.dumps({"email": email, "redirectApp": APP_ORIGIN + "/", "lang": lang}).encode()
+    req = urllib.request.Request(PORTAL_URL + "/api/auth/email/start", data=body, method="POST",
+                                 headers={"Content-Type": "application/json", "User-Agent": "monk-go-board"})
+    try:
+        with (opener or urllib.request.urlopen)(req, timeout=15) as r:
+            return r.status, json.loads(r.read().decode() or "{}")
+    except urllib.error.HTTPError as e:
+        try:
+            return e.code, json.loads(e.read().decode() or "{}")
+        except ValueError:
+            return e.code, {}
+    except (urllib.error.URLError, OSError, ValueError) as e:
+        print(f"❌ go-board: 포털 메일 중계 실패 — {type(e).__name__}", file=sys.stderr, flush=True)
+        return 502, {"error": "portal_unreachable"}
+
+
+def nick_suggest(name):
+    """포털 이름 → 바둑 아이디 후보(규칙에 맞게 다듬음, 맞지 않으면 빈 값)"""
+    n = re.sub(r"[^가-힣A-Za-z0-9_]", "", str(name or ""))[:12]
+    return n if NICK_RE.fullmatch(n) else ""
+
 
 def write_json_atomic_text(path, text):
     """텍스트 파일 원자적 저장, 권한 600 — 인수 코드 파일용."""
@@ -717,6 +770,59 @@ class Auth:
                 if not self._claim_ok(claim):
                     return None, CLAIM_FAIL
                 self.write_claim()
+        return {"uid": u["uid"], "nick": u["nick"]}, None
+
+    # ---- 포털 계정 연결 (ORDER_20261105) — 바둑 uid는 그대로(방·전적 보존), 포털 uid만 붙인다
+    def by_portal(self, pid):
+        return next((u for u in self.users if u.get("portal") == pid), None)
+
+    def link_portal(self, uid, pid, provider):
+        """이미 로그인한 바둑 계정에 포털 계정을 연결 → 오류문구 또는 None. 1포털 = 1바둑 계정, 다른 포털로 바꿔 붙이지 않는다."""
+        with self.lock:
+            u = self.get(uid)
+            if not u:
+                return "바둑 계정이 없습니다"
+            other = self.by_portal(pid)
+            if other and other["uid"] != uid:
+                return "이 포털 계정은 이미 다른 바둑 아이디에 연결되어 있습니다"
+            if u.get("portal") and u["portal"] != pid:
+                return "이 바둑 아이디는 이미 다른 포털 계정에 연결되어 있습니다"
+            if u.get("portal") != pid:
+                u.update({"portal": pid, "portal_provider": provider, "portal_linked": datetime.now().isoformat(timespec="seconds")})
+                self._save_users()
+        return None
+
+    def portal_ticket(self, pid, provider):
+        t = secrets.token_urlsafe(18)
+        now = time.time()
+        with self.lock:
+            self.tickets = {k: v for k, v in getattr(self, "tickets", {}).items() if v[2] > now}
+            self.tickets[t] = (pid, provider, now + PORTAL_TICKET_TTL)
+        return t
+
+    def signup_portal(self, ticket, nick, rank):
+        """포털 확인을 마친 새 사용자 — 닉·희망 급수로 바둑 계정 생성. (사용자, 오류문구)"""
+        with self.lock:
+            tk = getattr(self, "tickets", {}).pop(str(ticket or ""), None)
+        if not tk or tk[2] <= time.time():
+            return None, "로그인 시간이 지났습니다 — 다시 로그인해 주세요"
+        pid, provider, _ = tk
+        nick = str(nick or "").strip()
+        if not NICK_RE.fullmatch(nick):
+            return None, NICK_RULE
+        if self.is_admin_nick(nick):
+            return None, "쓸 수 없는 아이디입니다"
+        if rank not in SIGNUP_RANKS:
+            return None, "희망 급수를 골라 주세요 (18급~5단)"
+        with self.lock:
+            if self.by_portal(pid):
+                return None, "이미 연결된 포털 계정입니다 — 다시 로그인해 주세요"
+            if self._find(nick):
+                return None, "이미 있는 아이디입니다"
+            u = {"uid": "u-" + secrets.token_hex(6), "nick": nick, "rank": rank, "created": datetime.now().isoformat(timespec="seconds"),
+                 "portal": pid, "portal_provider": provider, "portal_linked": datetime.now().isoformat(timespec="seconds")}
+            self.users.append(u)
+            self._save_users()
         return {"uid": u["uid"], "nick": u["nick"]}, None
 
     def set_rank(self, uid, rank):

@@ -54,12 +54,17 @@ export function isMailerConfigured() {
  * @returns {Promise<string>} Resend 메시지 id
  * @throws {MailError} 설정 누락·API 거부·네트워크 실패 전부 throw
  */
-export async function sendMail({ to, subject, text, html, cc, bcc, replyTo } = {}) {
+/** 로그용 주소 마스킹 — a***@d***.com (redactLog 옵션) */
+const maskAddr = (e) => { const [u, d = ''] = String(e).split('@'); const [h, ...r] = d.split('.'); return `${(u || '?')[0]}***@${(h || '?')[0]}***.${r.join('.') || '?'}`; };
+
+export async function sendMail({ to, subject, text, html, cc, bcc, replyTo, redactLog = false } = {}) {
   if (!RESEND_API_KEY) {
     throw new MailError('RESEND_API_KEY 미설정 — 메일 발송 불가 (Secret Manager 등록 필요)');
   }
   const recipients = [].concat(to || []).filter(Boolean);
   if (recipients.length === 0) throw new MailError('수신 주소(to) 누락');
+  // redactLog: 개인정보 로그 금지 호출부(이메일 로그인 등)용 — 기본 동작(원 주소 기록)은 그대로
+  const logTo = redactLog ? recipients.map(maskAddr) : recipients;
   if (!subject) throw new MailError('제목(subject) 누락');
   if (!text && !html) throw new MailError('본문 누락 — text 또는 html 중 하나는 필수');
 
@@ -86,7 +91,7 @@ export async function sendMail({ to, subject, text, html, cc, bcc, replyTo } = {
     });
   } catch (err) {
     // 네트워크 단절 — 여기서 삼키면 미발송이 성공으로 둔갑한다
-    log(`[Mailer] 발송 실패(네트워크): ${err.message}`, 'ERROR', { to: recipients, subject });
+    log(`[Mailer] 발송 실패(네트워크): ${err.message}`, 'ERROR', { to: logTo, subject });
     throw new MailError(`메일 발송 실패(네트워크): ${err.message}`, { cause: err });
   }
 
@@ -97,7 +102,7 @@ export async function sendMail({ to, subject, text, html, cc, bcc, replyTo } = {
   if (!res.ok) {
     // Resend 에러 본문을 가공하지 않고 그대로 노출 (한도 초과·도메인 미검증 등)
     const detail = parsed?.message || parsed?.error || raw || `HTTP ${res.status}`;
-    log(`[Mailer] 발송 거부 HTTP ${res.status}: ${detail}`, 'ERROR', { to: recipients, subject });
+    log(`[Mailer] 발송 거부 HTTP ${res.status}: ${detail}`, 'ERROR', { to: logTo, subject });
     throw new MailError(`메일 발송 거부 (HTTP ${res.status}): ${detail}`, {
       status: res.status,
       body: parsed ?? raw,
@@ -107,13 +112,13 @@ export async function sendMail({ to, subject, text, html, cc, bcc, replyTo } = {
   const id = parsed?.id;
   if (!id) {
     // 200인데 id가 없다 = 발송 보장 없음. 성공으로 처리하지 않는다.
-    log(`[Mailer] 응답에 메시지 id 없음: ${raw}`, 'ERROR', { to: recipients, subject });
+    log(`[Mailer] 응답에 메시지 id 없음: ${raw}`, 'ERROR', { to: logTo, subject });
     throw new MailError('메일 발송 응답에 메시지 id 없음 — 발송 미보장', {
       status: res.status,
       body: parsed ?? raw,
     });
   }
 
-  log(`[Mailer] 발송 성공 id=${id}`, 'INFO', { to: recipients, subject });
+  log(`[Mailer] 발송 성공 id=${id}`, 'INFO', { to: logTo, subject });
   return id;
 }
