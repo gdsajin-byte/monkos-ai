@@ -694,3 +694,12 @@
 > ## secret map (2026-11-03 09:30)
 ```
 - ⚠️ 경보 표식 4건 (스냅샷 /Users/jeong-kyushin/.monkos/patrol/snap_20261103.txt 참조)
+
+## [2026-11-04 09:30 KST] 순찰 감지
+```diff
+< ## secret map (2026-11-03 09:30)
+> ## secret map (2026-11-04 09:30)
+> GITHUB_TOKEN                         2026-11-03  등재
+> GOOGLE_CLIENT_SECRET                 2026-11-03  등재
+```
+- ⚠️ 경보 표식 4건 (스냅샷 /Users/jeong-kyushin/.monkos/patrol/snap_20261104.txt 참조)
