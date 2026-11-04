@@ -42,7 +42,13 @@ MAIN_MODEL = KATA_DIR / "kata1-b18c384nbt-s9996604416-d4316597426.bin.gz"
 HUMAN_MODEL = KATA_DIR / "b18c384nbt-humanv0.bin.gz"
 # 우리 학습 모델(PF_GO, 4060 b10 학습분) — 교체는 이 세 줄만(파일·기보 태그·화면 표기). 11-05 작가님 "대국 테스트할 수 있게"
 MONK_MODEL = KATA_DIR / "monk_b10_s41M.bin.gz"  # 4060 eval b10-s41211392-d12492409 (sha256 2ba167f4…)
-MONK_TAG, MONK_LABEL = "MONK-b10-s41M", "MONK 봇 (b10·4,154만)"
+# 화면 이름 정본(11-05 07:07 작가님 "몽크봇은 몽코스 고로 네이밍") — 이름은 여기 한 곳. 새 판 레벨 키 = "monkos"
+BOT_NAME, BOT_NAME_KO = "MONKOS Go", "몽코스 고"
+BOT_STAGE = "b10·4,154만"  # 학습 단계(화면 보조 표기) — 모델 교체 때 MONK_MODEL·MONK_TAG와 함께 바꾼다
+MONK_TAG = "MONKOS-Go-b10-s41M"  # 기보 PB/PW·파일명 — 학습 단계 식별자 유지
+# 옛 판(레벨 "monk", 11-05 05:3x~07:0x) 표기는 그대로 둔다 — 저장된 방·기보를 새 이름으로 바꾸지 않는다(지시서 §1-4)
+LEGACY_MONK = {"label": "MONK 봇 (b10·4,154만)", "name": "MONK 봇", "tag": "MONK-b10-s41M"}
+BOT_LEVELS = ("monkos", "monk")  # 같은 엔진 — monk는 옛 판 복원용(새 판 선택지에는 없음)
 PLAY_CFG = KATA_DIR / "gtp_play.cfg"
 HUMAN_CFG = KATA_DIR / "configs" / "gtp_human5k_example.cfg"
 HERE = Path(__file__).resolve().parent
@@ -90,7 +96,9 @@ COMMON_OVR = f"rules=korean,reportAnalysisWinratesAs=BLACK,logDir={KATA_DIR / 'g
 STRONG_VISITS, STRONG_TIME = 1500, 17
 STRONG_OVR = COMMON_OVR + f",maxVisits={STRONG_VISITS},maxTime={STRONG_TIME}"
 MONK_OVR = STRONG_OVR  # MONK 봇 = 최강과 같은 수읽기(11-05 작가님 "1500수읽기로 동일하게") — 사본 숫자 금지
-MONK_SGF = f"{MONK_TAG}({STRONG_VISITS}v)"  # 기보 PB/PW·파일명 — 학습 단계별 비교용
+def bot_sgf(level):
+    """기보 PB/PW 상대 이름 — 모델 태그+수읽기(학습 단계별 비교용). 옛 판은 옛 태그."""
+    return f"{LEGACY_MONK['tag'] if level == 'monk' else MONK_TAG}({STRONG_VISITS}v)"
 # 승률 그래프(기보 감상) — 국면당 짧은 분석. 10-24 실측: 200방문 0.2~1.1초/국면
 GRAPH_VISITS, GRAPH_MAX_TIME = 200, 0.8  # 한 걸음 상한 0.8초 = 대국 요청이 기다리는 최대치(양보 +1초 이내)
 GRAPH_YIELD_GAP = 0.5  # 대국 요청 뒤 그래프가 비켜 있는 초 — 착수 1번의 검사·응수 사이에 끼지 않게
@@ -262,7 +270,7 @@ def build_engines():
 
 
 def level_ok(level):
-    return level in ("strong", "monk") or level in RANKS
+    return level == "strong" or level in BOT_LEVELS or level in RANKS
 
 
 class EngineHub:
@@ -319,8 +327,8 @@ class EngineHub:
         return (c[0]["winrate"], c[0]["score"]) if c else (None, None)
 
     def _pick(self, level):
-        if level == "monk":
-            e, why, name = self.monk, self.monk_reason, "MONK 봇"
+        if level in BOT_LEVELS:
+            e, why, name = self.monk, self.monk_reason, BOT_NAME
         else:
             e = self.strong if level == "strong" else self.human
             why, name = self.human_reason, ("최강" if level == "strong" else "급수")
@@ -331,7 +339,7 @@ class EngineHub:
     @staticmethod
     def _judge(level):
         """판정·계가 엔진 — MONK 봇 판은 최강이 맡는다(상대 엔진이 해설까지 하면 시험이 섞인다)."""
-        return "strong" if level == "monk" else level
+        return "strong" if level in BOT_LEVELS else level
 
     @staticmethod
     def _key(pos):
@@ -347,7 +355,7 @@ class EngineHub:
         return key
 
     def _profile(self, e, level):
-        if level not in ("strong", "monk") and e.profile != level:
+        if level != "strong" and level not in BOT_LEVELS and e.profile != level:
             e.cmd(f"kata-set-param humanSLProfile rank_{level}")
             e.profile = level
 
@@ -420,7 +428,7 @@ class EngineHub:
         return self.monk is not None and self.monk.ok
 
     def monk_why(self):
-        return None if self.monk_ok else ((self.monk.error if self.monk else self.monk_reason) or "MONK 봇 엔진이 꺼져 있음")
+        return None if self.monk_ok else ((self.monk.error if self.monk else self.monk_reason) or f"{BOT_NAME} 엔진이 꺼져 있음")
 
 
 # ---------------------------------------------------------------- 판 규칙(따낸 돌·표시용)
@@ -841,7 +849,8 @@ class Room:
         rid = f"{datetime.now():%Y%m%d-%H%M%S}-{secrets.token_hex(2)}"
         r = cls(rid)
         r.owner = owner
-        r.sgf_path = GAMES_DIR / f"{r.started:%Y%m%d_%H%M%S}_{r.owner_nick}_vs_{MONK_TAG if level == 'monk' else 'KataGo'}.sgf"
+        level = "monkos" if level == "monk" else level  # 새 판은 새 이름(옛 화면 캐시가 'monk'를 보내도)
+        r.sgf_path = GAMES_DIR / f"{r.started:%Y%m%d_%H%M%S}_{r.owner_nick}_vs_{MONK_TAG if level == 'monkos' else 'KataGo'}.sgf"
         if not level_ok(level):
             raise RuntimeError("알 수 없는 수준")
         if level != "strong":
@@ -942,17 +951,23 @@ class Room:
     def position(self):
         return {"moves": self.moves, "setup": self.setup, "komi": self.komi}
 
+    def opp_short(self):
+        """대국 화면·결과 문구의 상대 짧은 이름."""
+        return BOT_NAME if self.level == "monkos" else LEGACY_MONK["name"] if self.level == "monk" else "KataGo"
+
     def opp_name(self):
         """기보·대국자 표기의 상대 이름 — MONK 봇은 모델 태그+수읽기(학습 단계별 비교용)."""
-        return MONK_SGF if self.level == "monk" else f"KataGo({self.level_label()})"
+        return bot_sgf(self.level) if self.level in BOT_LEVELS else f"KataGo({self.level_label()})"
 
     def level_label(self):
         if self.source == "upload":
             p = self.players or {}
             rk = lambda c: f"({p.get(c + 'R')})" if p.get(c + "R") else ""
             return f"흑 {p.get('B', '흑')}{rk('B')} vs 백 {p.get('W', '백')}{rk('W')}"
+        if self.level == "monkos":
+            return BOT_NAME
         if self.level == "monk":
-            return MONK_LABEL
+            return LEGACY_MONK["label"]
         return "KataGo 최강" if self.level == "strong" else f"KataGo {RANK_KO[self.level]}"  # 10-24 표기 단순화(옛 '사람형 N단')
 
     # ---- 시계: 차례가 바뀔 때마다 둔 쪽을 깎고, 초읽기면 그 회를 처음부터
@@ -1059,7 +1074,7 @@ class Room:
             self.scores.append((len(self.moves) + 1, round(score, 1)))
         if mv.lower() == "resign":
             self.result = f"{'W' if c == 'B' else 'B'}+R"
-            self.message = f"{'MONK 봇' if self.level == 'monk' else 'KataGo'}가 돌을 던졌습니다. 이기셨어요!"
+            self.message = f"{self.opp_short()}가 돌을 던졌습니다. 이기셨어요!"
         else:
             self.moves.append((c, mv))
             self._check_end()
@@ -1257,6 +1272,7 @@ class Room:
         self.save_sgf()
 
     def set_level(self, level):
+        level = "monkos" if level == "monk" else level  # 상대 변경도 새 이름으로
         if not level_ok(level):
             raise RuntimeError("알 수 없는 수준")
         if level != "strong":
@@ -1329,7 +1345,7 @@ class Room:
             "lastColor": self.moves[-1][0] if self.moves else None,
             "toMove": self.to_move, "user": self.user, "level": self.level,
             "handicap": self.handicap, "komi": self.komi, "handicaps": HANDICAPS,
-            "levelLabel": self.level_label(), "score": self.score, "winrate": self.winrate,
+            "levelLabel": self.level_label(), "oppShort": self.opp_short(), "score": self.score, "winrate": self.winrate,
             "scores": self.scores, "result": self.result,
             # 기보 감상(10-24): 화면이 수순을 직접 재생한다 — 국면 계산은 화면 쪽 1벌
             "moveList": [list(m) for m in self.moves], "setup": self.setup, "source": self.source,
@@ -1371,7 +1387,8 @@ def common_state():
     """방과 무관한 화면 재료(엔진 상태·수준 목록·소리·스킨) — 대기실도 같은 값을 쓴다."""
     return {"strongOk": ENGINES.strong.ok, "strongError": ENGINES.strong.error,
             "humanOk": ENGINES.human_ok, "humanReason": ENGINES.human_why(),
-            "monkOk": ENGINES.monk_ok, "monkReason": ENGINES.monk_why(), "monkLabel": MONK_LABEL,
+            "monkOk": ENGINES.monk_ok, "monkReason": ENGINES.monk_why(),
+            "bot": {"name": BOT_NAME, "nameKo": BOT_NAME_KO, "stage": BOT_STAGE, "legacy": LEGACY_MONK},
             "ranks": [{"v": r, "label": RANK_KO[r]} for r in RANKS], "handicaps": HANDICAPS,
             "sounds": custom_sounds(), "packs": sound_packs(), "skins": skin_packs(), "testMode": TEST_MODE,
             "build": build_id()}
@@ -1463,7 +1480,7 @@ def parse_sgf_room(path):
     r.user = "W" if prop("PW") == "작가님" else "B"
     opp = prop("PW" if r.user == "B" else "PB") or ""
     mr = re.search(r"KataGo (?:사람형 )?(\d+[급단])\)?$", opp)  # 옛 표기 '사람형 5급' · 새 표기 '5급' 둘 다
-    r.level = "monk" if opp.startswith("MONK-") else next((k for k, v in RANK_KO.items() if mr and v == mr.group(1)), "strong")
+    r.level = "monkos" if opp.startswith(MONK_TAG.split("-b")[0] + "-") else "monk" if opp.startswith("MONK-") else next((k for k, v in RANK_KO.items() if mr and v == mr.group(1)), "strong")
     tm, ot = prop("TM"), re.match(r"(\d+)x(\d+)", prop("OT") or "")
     r.time = {"main": int(float(tm)) // 60, "byo": int(ot.group(2)), "periods": int(ot.group(1))} if tm and ot else None
     r.result = prop("RE")
