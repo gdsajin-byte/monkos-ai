@@ -122,6 +122,7 @@ status: active
 | 11/05 | ?/? | **ORDER** 바둑앱 흑·백 대국자 각각 설정(사람·최강·급수·MONKOS Go 버전) — 봇끼리 대국을 실시간으로 지켜보기 | [ORDER_20261105_iMac쌍아_막내8_GO_흑백대국자설정_봇대국관전](../../orders/2026-11/ORDER_20261105_iMac쌍아_막내8_GO_흑백대국자설정_봇대국관전.md) | ⏳ |
 | 11/05 | iMac/쌍아-막내8 | 흑·백 대국자 각각(AI vs AI 관전)·봇 대 봇 실시간 진행(사람 판 우선 +0.08s, 닫으면 멈춤)·판정 엔진 종국 — v1 vs v2 2판 v2 압승(+102.5·+205.5) | [COMPLETION_20261105_iMac쌍아-막내8_GO_흑백대국자_봇대국관전](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내8_GO_흑백대국자_봇대국관전.md) | 진행 |
 | 11/05 | iMac/쌍아 | **DESIGN** 형세봇 — 규칙 계가를 정답지로 확정집·세력·돌뭉치 3층 형세를 코드화하고, 해설·참고도·해설집 선별에 인용, KataGo(교사)–MONKOS(학생) 채점으로 MONKOS가 KataGo를 대체해 가는 길 | [DESIGN_20261105_GO_형세봇_계가정답지_MONKOS성장](../../../tech/designs/2026-11/DESIGN_20261105_GO_형세봇_계가정답지_MONKOS성장.md) | ⏳ |
+| 11/05 | iMac/쌍아-막내2 | 계가 정답 기록(형세봇 1/8) — 확정마다 answers.jsonl 1행(대국자·원국면 해시·마무리 수·사석·집 지도·결과·KataGo·preLead·토글), 8767 사람 vs KataGo·사람 vs MONKOS·AI vs AI 3행·취소 0행, 요약 도구 | [COMPLETION_20261105_iMac쌍아-막내2_GO_계가정답기록](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_계가정답기록.md) | ✅ |
 
 ## 3. Phase 현황
 
