@@ -37,3 +37,7 @@ portfolio: PF_IDPHOTO
 ## 반환
 
 COMPLETION 파일 + 쌍아 세션에 1줄 알림(변경 이벤트 목록 · 실데이터 수신 확인 방법 · 남은 결정).
+
+## 추가 (쌍아 2026-11-05 15:56)
+
+- 막내8 kr 업로드 열기(d06f9061, dev 00007-lgd)가 `photo_upload`에 `capture_mode=upload`를 넣었다. 헤드리스에선 수신 0(대조군 generate_click도 0) — 실기기 확인 필요. `capture_mode` 커스텀 측정기준 미등록 가능성 → 등록 여부 확인 부탁.
