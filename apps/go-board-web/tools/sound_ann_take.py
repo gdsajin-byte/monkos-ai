@@ -44,7 +44,7 @@ def split(name):
                 gaps.append((i, j)); i = j
             else:
                 i += 1
-        inner = [g for g in gaps if g[0] > 0 and g[1] < len(x)]
+        inner = [g for g in gaps if g[0] > 0 and g[1] < len(x) and g[1] - g[0] >= int(0.15 * T.SR)]  # 150ms 미만 내부 쉼은 경계 아님 — 11-05 10:55
         if len(inner) >= n - 1:
             inner = sorted(sorted(inner, key=lambda g: g[1] - g[0], reverse=True)[:n - 1])
             break
