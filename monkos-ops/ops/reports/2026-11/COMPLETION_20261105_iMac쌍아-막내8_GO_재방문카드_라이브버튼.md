@@ -70,3 +70,14 @@ portfolio: PF_GO
 - ⏳ main 병합(쌍아) → 판 0 확인 → `launchctl kickstart -k gui/$(id -u)/ai.monkos.go-board`(막내8 단독) → 라이브 config 2회 히트로 `email:false`·버튼 2개 확인, 로그에 URLError 0건 확인
 - ⏳ 라이브 카카오·Google 실제 클릭은 작가님 몫이다. 단, prod 포털에는 go.monkos.ai 허용 출처가 아직 없어 팝업 메시지가 버려진다. 팝업이 닫히면 이번 (b)의 쿠키 입장으로 들어가게 된다.
 - 💡 인증서 문제는 다른 python.org 파이썬 도구에도 있을 수 있다. 근본 대안은 `Install Certificates.command`를 1회 실행하는 것이다(전역 환경 변경이므로 작가님 승인 사항).
+
+## 5. 라이브 반영 (09:36)
+
+- 09:22 쌍아에게서 main 병합 통지를 받았다.
+- 09:23에는 판이 진행 중이어서(95수) 재기동을 보류했다.
+- 09:36 판 종결(B+F)과 5분 무갱신을 확인했다. PID 89696과 직전 재기동 시각 08:28:54가 그대로라 다른 재기동과 겹치지 않았다. kickstart로 재기동해 PID 99172가 됐다.
+- 라이브 실측(go.monkos.ai, URL당 2회 히트)
+  - config 두 번 모두 `email:false`, ko 버튼은 카카오·Google 2개
+  - 무효 토큰을 넣으면 401이 오고, 로그는 `HTTPError`다. 포털까지 도달했다는 뜻이며 재기동 후 URLError는 0건이다.
+  - `<title>`은 MONKOS 바둑판
+- 남은 일: 작가님의 라이브 카카오·Google 실제 클릭 확인. prod 포털 허용 출처에 go.monkos.ai가 들어가기 전까지는 팝업이 닫힐 때 쿠키 입장으로 들어간다.
