@@ -143,10 +143,98 @@ cmd_fetch() {
   echo "✅ ftl: $out — bench ${nj}개 · 앱 캡처 ${np}장 · FTL 영상 ${nv}개"
 }
 
+# ── 안드로이드 Game Loop (막내2, ORDER_20261106 안드로이드빌드 — 막내8 함수와 분리, 병합은 쌍아) ──────────────
+# ftl.sh run android --models MediumPhone.arm:34[,a05s:34] --apk PATH [--timeout 3m] [--dry-run]
+#   가상(form=VIRTUAL)·실기기(PHYSICAL)를 나눠 가드: 실기기 = 기존 LIMIT_MIN(25분, 원장 minutes) / 가상 = VLIMIT_MIN(50분, 원장 virtual_minutes)
+#   한 번에 한 종류만(섞으면 거부). 앱 폴더(/sdcard/Android/data/<패키지>/files — 결과 JSON·캡처)를 같이 회수.
+VLIMIT_MIN=50                   # 가상 기기 하루 무료 60분 − 여유 10분(쌍아 11-06 06:02). 우회 플래그 없음
+APK_PKG="ai.monkos.go.bench"
+
+used_virtual_today() {
+  [ -f "$LEDGER" ] || { echo 0; return; }
+  python3 -I - "$LEDGER" "$(today)" <<'PY'
+import json, math, sys
+tot = 0.0
+for ln in open(sys.argv[1], encoding="utf-8"):
+    try:
+        d = json.loads(ln)
+    except ValueError:
+        continue
+    if d.get("date") == sys.argv[2]:
+        tot += float(d.get("virtual_minutes") or 0)
+print(math.ceil(tot))
+PY
+}
+
+cmd_run_android() {
+  local models="" apk="" tmo="3m" dry=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --models) models="$2"; shift 2;;
+      --apk) apk="$2"; shift 2;;
+      --timeout) tmo="$2"; shift 2;;
+      --dry-run) dry=1; shift;;
+      *) die "모르는 인자: $1";;
+    esac
+  done
+  [ -n "$models" ] || die "--models 필요(예: MediumPhone.arm:34 또는 a05s:34)"
+  local per; per=$(minutes_of "$tmo") || die "--timeout 형식(예: 3m, 180s)"
+  [ "$per" -le "$MAX_TIMEOUT_MIN" ] || die "--timeout 기종당 ${MAX_TIMEOUT_MIN}분 이하(지금 ${per}분)"
+  local devs=() m model ver form forms=""
+  for m in $(echo "$models" | tr ',' ' '); do
+    model="${m%%:*}"; ver=""; [ "$m" != "$model" ] && ver="${m#*:}"
+    form=$(gcloud firebase test android models describe "$model" --project "$PROJECT" --format="value(form)" 2>/dev/null)
+    [ -n "$form" ] || die "기종 조회 실패: $model"
+    forms="$forms $form"
+    devs+=(--device "model=${model}${ver:+,version=${ver}}")
+  done
+  local kinds; kinds=$(echo "$forms" | tr ' ' '\n' | grep . | sort -u | wc -l | tr -d ' ')
+  [ "$kinds" = 1 ] || die "가상·실기기를 한 번에 섞지 않는다($forms) — 따로 실행"
+  local n=${#devs[@]}; n=$((n / 2))
+  local expect=$((n * per)) used field limit
+  if echo "$forms" | grep -q VIRTUAL; then used=$(used_virtual_today); limit=$VLIMIT_MIN; field=virtual_minutes
+  else used=$(used_today); limit=$LIMIT_MIN; field=minutes; fi
+  [ $((used + expect)) -le "$limit" ] || die "무료 한도 초과 예상(${field}) — 오늘 ${used}분 + 예상 ${expect}분 > ${limit}분 (유료 0)"
+  echo "가드 통과(${field}): 오늘 ${used}분 + 예상 ${expect}분(${n}대 × ${per}분) ≤ ${limit}분"
+  [ "$dry" = 1 ] || [ -f "$apk" ] || die "APK 없음: ${apk:-'(미지정)'}"
+  local rdir="ftl/$(TZ='Asia/Seoul' date '+%Y%m%d_%H%M%S')_android"
+  local cmd=(gcloud firebase test android run --project "$PROJECT" --type game-loop --app "$apk" "${devs[@]}"
+             --timeout "$tmo" --results-dir "$rdir" --no-record-video
+             --directories-to-pull "/sdcard/Android/data/${APK_PKG}/files" --format json)
+  if [ "$dry" = 1 ]; then echo "(dry-run) ${cmd[*]}"; return 0; fi
+  if [ "$field" = minutes ]; then
+    printf '{"date":"%s","at":"%s","os":"android","form":"physical","models":"%s","minutes":%s,"resultsDir":"%s","basis":"upper-bound"}\n' \
+      "$(today)" "$(TZ='Asia/Seoul' date '+%H:%M:%S')" "$models" "$expect" "$rdir" >> "$LEDGER"
+  else
+    printf '{"date":"%s","at":"%s","os":"android","form":"virtual","models":"%s","minutes":0,"virtual_minutes":%s,"resultsDir":"%s","basis":"upper-bound"}\n' \
+      "$(today)" "$(TZ='Asia/Seoul' date '+%H:%M:%S')" "$models" "$expect" "$rdir" >> "$LEDGER"
+  fi
+  local log="${DIR}/run_${rdir#ftl/}.log"
+  "${cmd[@]}" > "$log" 2>&1
+  local rc=$?
+  grep -E "Test results|outcome|Passed|Failed|Inconclusive|gs://" "$log" | tail -12
+  [ $rc -eq 0 ] || die "실행 실패(rc=$rc) — 로그 $log"
+  echo "✅ ftl: 완료 · 결과 디렉터리 $rdir · 로그 $log · 회수: ftl.sh fetch-android $rdir"
+}
+
+cmd_fetch_android() {  # 결과 디렉터리 전체(게임 루프 결과 JSON·당겨온 앱 폴더·logcat) — 영상 없음이라 작다
+  local rdir="${1:-}" out="${2:-}"
+  [ -n "$rdir" ] || die "fetch-android RESULTS_DIR [OUT]"
+  out="${out:-${DIR}/results/${rdir#ftl/}}"
+  local log="${DIR}/run_${rdir#ftl/}.log" bucket
+  bucket=$(grep -ho "gs://[^/ ]*" "$log" 2>/dev/null | head -1)
+  [ -n "$bucket" ] || bucket=$(grep -ho "storage/browser/[^/ ]*" "$log" 2>/dev/null | head -1 | sed 's#storage/browser/#gs://#')
+  [ -n "$bucket" ] || die "결과 버킷을 실행 로그에서 찾지 못함(run_${rdir#ftl/}.log)"
+  mkdir -p "$out"
+  gcloud storage cp -r "${bucket}/${rdir}/*" "$out/" 2>"${out}/fetch.err" || die "내려받기 실패 — $(tail -1 "${out}/fetch.err")"
+  echo "✅ ftl: 결과 → $out ($(find "$out" -type f ! -name fetch.err | wc -l | tr -d ' ')개)"
+}
+
 case "${1:-}" in
   models) shift; cmd_models "$@";;
-  usage) cmd_usage;;
-  run) shift; cmd_run "$@";;
+  usage) cmd_usage; echo "오늘($(today)) 가상 기기 사용 $(used_virtual_today)분 / 가드 ${VLIMIT_MIN}분 (무료 60분)";;
+  run) shift; if [ "${1:-}" = android ]; then shift; cmd_run_android "$@"; else cmd_run "$@"; fi;;
+  fetch-android) shift; cmd_fetch_android "$@";;
   fetch) shift; cmd_fetch "$@";;
   *) sed -n '2,16p' "$0"; exit 2;;
 esac
