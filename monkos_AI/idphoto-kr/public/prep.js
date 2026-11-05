@@ -11,6 +11,7 @@ import {
   saveSessionData, loadSessionData, navigateTo, SCHEMA_VERSION
 } from './shared.js';
 import { initChatbot } from './modules/chatbot.js';
+import { normalizeUpload, pickImage, UploadError, UPLOAD_MESSAGES } from './modules/upload.js';
 import {
   V5_OPTIONS, CLOTHING_BY_AGE, HAIR_VISIBLE_AGES,
   PASSPORT_FORCED_BG, PHOTO_SPECS
@@ -528,6 +529,8 @@ function renderConfirmPage() {
       <button class="prep-start" onclick="startShooting()">
         촬영 시작하기 <span class="prep-start-arrow">&rarr;</span>
       </button>
+      <button class="prep-upload" type="button" onclick="startUpload()">갤러리에서 사진 올리기</button>
+      <div class="prep-upload-msg" id="prep-upload-msg" role="alert" hidden></div>
       <button class="prep-reset" onclick="resetAll()">처음부터 다시 선택</button>
     </div>
   `;
@@ -556,6 +559,41 @@ function startShooting() {
   navigateTo('camera.html');
 }
 
+// ─── 사진 올리기(11-05 작가님 — 촬영 강제 해제): 고른 사진을 촬영과 같은 규격으로 맞춰 분석실로 ───
+
+let uploadInput = null;
+async function startUpload() {
+  const msg = document.getElementById('prep-upload-msg');
+  const btn = document.querySelector('.prep-upload');
+  if (msg) { msg.hidden = true; msg.textContent = ''; }
+  saveSelections();  // 설정 저장은 촬영과 동일하게 먼저
+  if (!uploadInput) {
+    uploadInput = document.createElement('input');
+    uploadInput.type = 'file';
+    uploadInput.accept = 'image/*';  // capture 속성 없음 — 카메라 강제 아님
+    uploadInput.hidden = true;
+    document.body.appendChild(uploadInput);
+  }
+  const file = await pickImage(uploadInput);
+  if (!file) return;
+  if (btn) { btn.disabled = true; btn.textContent = '사진 여는 중...'; }
+  try {
+    const { dataURL } = await normalizeUpload(file);
+    // 이전 결과물 제거 — 촬영실 init 과 같은 처리(촬영실을 거치지 않으므로 여기서). 옛 결과가 새 사진에 붙지 않게
+    sessionStorage.removeItem('monkos_generated');
+    sessionStorage.removeItem('monkos_image');
+    saveSessionData('captured', dataURL);
+    if (typeof gtag === 'function') gtag('event', 'photo_upload', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr', capture_mode: 'upload' });
+    Monk.log('사진 올리기 완료 → 분석실 이동');
+    navigateTo('result.html');
+  } catch (e) {
+    const code = e instanceof UploadError ? e.code : 'decode';
+    if (msg) { msg.textContent = UPLOAD_MESSAGES[code] || UPLOAD_MESSAGES.decode; msg.hidden = false; }
+    Monk.log('사진 올리기 실패: ' + code);
+    if (btn) { btn.disabled = false; btn.textContent = '갤러리에서 사진 올리기'; }
+  }
+}
+
 // ─── 리셋 ───
 
 function resetAll() {
@@ -575,7 +613,7 @@ function jumpTo(pageIdx) {
 // ─── window 노출 ───
 
 Object.assign(window, {
-  nextPage, prevPage, startShooting, resetAll, jumpTo,
+  nextPage, prevPage, startShooting, startUpload, resetAll, jumpTo,
 });
 
 // ─── 초기화 ───

@@ -34,6 +34,7 @@ export const KAKAO_CHANNEL_ID = '_hxjKqX';
 
 // 캡처 설정
 export const MAX_CAPTURE_SIZE = 512;
+export const CAPTURE_QUALITY = 0.6; // 촬영·업로드 공용 JPEG 품질(11-05 업로드 열기 — camera.js 사본 숫자 정본화)
 export const COACHING_DISPLAY_MS = 10000;
 export const FRAME_INTERVAL_MS = 500;
 export const CAPTURE_SIZE = 512;

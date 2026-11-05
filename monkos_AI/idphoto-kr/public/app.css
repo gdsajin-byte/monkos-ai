@@ -280,6 +280,22 @@ body {
 }
 .prep-start-arrow { font-size: 22px; }
 
+/* 사진 올리기 버튼(11-05) — 촬영 시작과 같은 위계(같은 폭·높이), 외곽선형 */
+.prep-upload {
+    width: 100%; max-width: 340px; margin-top: 12px;
+    padding: 16px 24px; border-radius: 16px;
+    background: transparent; color: #c4b5fd;
+    border: 1.5px solid rgba(167,139,250,0.6);
+    font-size: 17px; font-weight: 700; cursor: pointer; font-family: inherit;
+    touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.prep-upload:active { transform: scale(0.98); }
+.prep-upload:disabled { opacity: 0.5; cursor: not-allowed; }
+.prep-upload-msg {
+    margin-top: 10px; max-width: 340px; color: #fca5a5; font-size: 14px; text-align: center; line-height: 1.5;
+}
+.prep-upload-msg[hidden] { display: none; }
+
 /* 리셋 버튼 */
 .prep-reset {
     margin-top: 16px; background: none; border: none;

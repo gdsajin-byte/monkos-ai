@@ -6,9 +6,10 @@
 import {
   store, Monk, TX, API,
   sharedInit, saveSessionData, loadSessionData, navigateTo, showDesktopBlocker,
-  MAX_CAPTURE_SIZE, FRAME_INTERVAL_MS, COACHING_DISPLAY_MS
+  MAX_CAPTURE_SIZE, CAPTURE_QUALITY, FRAME_INTERVAL_MS, COACHING_DISPLAY_MS
 } from './shared.js';
 import { GateModule } from './modules/gate.js';
+import { normalizeUpload, pickImage, UploadError, UPLOAD_MESSAGES } from './modules/upload.js';
 import { initChatbot } from './modules/chatbot.js';
 import { evaluateGate, createStabilityCounter, GATE_THRESHOLDS, GATE_MESSAGES } from './modules/capture-gate.js';
 
@@ -19,7 +20,7 @@ const media = Monk.media({
   video: '#camera-video',
   canvas: '#capture-canvas',
   maxSize: MAX_CAPTURE_SIZE,
-  captureQuality: 0.6,
+  captureQuality: CAPTURE_QUALITY,
   frameInterval: FRAME_INTERVAL_MS,
   faceDetection: true,
   mirror: true,
@@ -322,10 +323,46 @@ async function init() {
       startCoachingLoop();
       Monk.log('촬영실 초기화 완료');
     } catch (err) {
-      alert(TX.cameraError);
       Monk.log('카메라 시작 실패: ' + err.message);
+      showUploadFallback(err);  // 권한 거부·카메라 없음이 막다른 길이 되지 않게(11-05) — 사진 올리기로 우회
     }
   });
+}
+
+// ─── 카메라 실패 → 사진 올리기 우회(11-05 kr 업로드 열기 §2-4) ───
+function showUploadFallback(err) {
+  let box = document.getElementById('upload-fallback');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'upload-fallback';
+    box.className = 'upload-fallback';
+    box.innerHTML = `<p class="upload-fallback-text"></p>
+      <button type="button" class="prep-upload">갤러리에서 사진 올리기</button>
+      <div class="prep-upload-msg" role="alert" hidden></div>`;
+    document.body.appendChild(box);
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = 'image/*'; input.hidden = true;
+    box.appendChild(input);
+    const btn = box.querySelector('.prep-upload'), msg = box.querySelector('.prep-upload-msg');
+    btn.onclick = async () => {
+      msg.hidden = true;
+      const file = await pickImage(input);
+      if (!file) return;
+      btn.disabled = true; btn.textContent = '사진 여는 중...';
+      try {
+        const { dataURL } = await normalizeUpload(file);
+        saveSessionData('captured', dataURL);
+        if (typeof gtag === 'function') gtag('event', 'photo_upload', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr', capture_mode: 'upload', gate_reason: 'camera_fail' });
+        navigateTo('result.html');
+      } catch (e) {
+        msg.textContent = UPLOAD_MESSAGES[e instanceof UploadError ? e.code : 'decode'] || UPLOAD_MESSAGES.decode;
+        msg.hidden = false;
+        btn.disabled = false; btn.textContent = '갤러리에서 사진 올리기';
+      }
+    };
+  }
+  box.querySelector('.upload-fallback-text').textContent = `${TX.cameraError} 갤러리에 있는 사진으로도 진행할 수 있습니다.`;
+  box.classList.add('active');
 }
 
 init();
