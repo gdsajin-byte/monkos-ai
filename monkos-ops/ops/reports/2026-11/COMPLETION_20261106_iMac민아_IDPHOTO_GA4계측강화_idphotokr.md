@@ -5,7 +5,7 @@ device: iMac
 agent: 민아
 order: ORDER_20261105_iMac쌍아_민아_IDPHOTO_GA4계측강화_idphotokr.md
 portfolio: PF_IDPHOTO
-status: dev 반영(00008-mrn) · prod 대기
+status: dev 반영(00009-xlt) · GA 관리 A~C 집행 완료 · prod 대기
 ---
 
 # COMPLETION — idphoto-kr GA4 계측 강화 (민아 주관)
@@ -80,3 +80,18 @@ status: dev 반영(00008-mrn) · prod 대기
 - **prod 미배포.** 이 변경은 막내8 업로드 열기(6e22b163)와 같은 main이라 prod 배포 시 함께 나간다 → 쌍아 2번(무료 생성 노출 확대 방지)과 묶어 작가님 '배포 승인' 1회. prod 반영 전까지 라이브 속성 데이터는 구 이벤트 이름 그대로.
 - prod 반영 후 민아 재검증: 2회 히트 + `run_report(hostName=idphoto-kr.monkos.ai, eventName in [download_click, thankyou_view, login])` 실데이터 + DebugView(작가님 폰 `?monk_internal=1`로 1회 진입 후).
 - 작가님 폰·iMac 브라우저는 prod 반영 후 `https://idphoto-kr.monkos.ai/?monk_internal=1` 1회 열기 → 이후 테스트가 internal로 표식(필터 B가 Active일 때 보고서 제외).
+
+## 7. GA 관리 설정 집행 (2026-11-06 00:32~00:42 KST, 민아 — CDP 9222 크롬, 작가님 로그인 세션)
+
+출처: 작가님 00:30 "내가 꼭 직접 해야 하나?" → 쌍아 제안(SA 권한 상향 없이 로그인된 브라우저로 설정) → 작가님 00:31 "진행 승인"(쌍아 세션 사람 턴) → 쌍아 00:31 집행 의뢰. SA 권한·사용자 추가는 하지 않았다. 캡처는 레포 밖(스크래치패드 `ga/`, 20장).
+
+| # | 결과 | 사후 실측(Admin API, SA 뷰어) |
+|---|---|---|
+| A 맞춤 측정기준 10종 | **등록 완료** — capture_mode·auth_method·gate_reason·fail_stage·fail_code·ai_engine·in_app·lang·method·signup_source (이벤트 범위, 설명 포함). 목록 3→13 | `customDimensions` 13건, 10종 전부 `scope=EVENT` |
+| B 데이터 필터 | `Internal Traffic`은 **이미** traffic_type=internal·제외·**사용중**(변경 없음, 열람만). `Developer Traffic`(debug_mode/debug_event 제외) **신규 생성·사용중** — "테스트 없이 활성화" 확인창을 승인 범위 안에서 수락(테스트 상태는 실데이터 누적이 필요해 이번 세션에서 확인 불가, 대상이 우리 dev·내부 표식뿐이라 위험 낮음) | Admin API 미제공 → UI 목록 2건 '활성' 캡처 B7 |
+| C 데이터 보존 | 이벤트 2개월 → **14개월**(사용자 14개월·재설정 ON 유지) | `eventDataRetention=FOURTEEN_MONTHS` (UI 안내: 24시간 후 적용) |
+| D 원치 않는 리퍼러 | 생략(코드 ignore_referrer로 처리, 쌍아 지시) | — |
+
+시행착오 1건: 두 번째 측정기준 입력 때 목록 필터 상자가 패널 입력으로 잘못 잡혀 이름 칸에 설명이 들어감 → 저장 버튼 비활성(검증 실패)으로 **저장되지 않음**, 재입력 후 정상. 잘못 저장된 항목 0.
+
+주의: 필터 B는 소급 없음. prod 반영 전까지 idphoto-kr 실트래픽은 표식이 없으므로 영향 0, dev·localhost 이벤트는 이제부터 보고서에서 제외된다. 작가님 폰은 prod 반영 후 `?monk_internal=1` 1회.
