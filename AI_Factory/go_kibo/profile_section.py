@@ -45,8 +45,13 @@ def longest_run(vals, cond):
     return best
 
 
-def game_flow(rows, result):
-    """작가님 승률 궤적 → 유형. rows = 한 판의 착수(작가님·상대)."""
+def game_flow(rows, result, rtype=None, n_moves=None):
+    """작가님 승률 궤적 + 종국 유형 → 판 흐름 유형. rows = 한 판의 착수(작가님·상대).
+    종국 유형(쌍아 11-06 08:45, 작가님 "중간에 불계 처리된 판을 중단된 바둑으로 분류한 건 아닌지"):
+      시간패·미상 = '비정상 종국'(기풍 통계에서 따로), 150수 이하 불계 = '중반 불계 결판',
+      151수+인데 150수 시점에 이미 한쪽 70%↑ = '중반 결판'(81~150수에 갈리고 유지)."""
+    if rtype in ("T", "?"):  # 시간패·종국 미상 — 바둑 내용과 별개라 기풍 통계에서 따로 센다(None = 정보 없음은 건너뜀)
+        return "비정상 종국", (max(rows, key=lambda r: r["wr_loss"]) if rows else None)
     traj = []
     for x in sorted(rows, key=lambda r: r["move_no"]):
         w = x["wr_before"] if x["who"] == "me" else 1 - x["wr_before"]
@@ -67,9 +72,13 @@ def game_flow(rows, result):
     if by80 and ((result == "W" and by80[-1] >= LEAD_WR and min(after50 or [1]) >= 0.5)
                  or (result == "L" and by80[-1] <= BEHIND_WR and max(after50 or [0]) <= 0.5)):
         return "초반 우세 유지" if result == "W" else "초반 열세 유지", worst
+    if rtype == "R" and n_moves is not None and n_moves <= CLOSE_FROM:
+        return "중반 불계 결판", worst
     at150 = [w for n, w in traj if n >= CLOSE_FROM]
     if at150 and BEHIND_WR < at150[0] < LEAD_WR:
         return "박빙 끝내기 결판", worst
+    if at150 and (at150[0] >= LEAD_WR or at150[0] <= BEHIND_WR):
+        return "중반 결판", worst
     return "기타", worst
 
 
@@ -105,16 +114,18 @@ def profile_section(all_rows, meta, gidx):
     flows = {}
     for gid, rs in games.items():
         res = meta[gid]["result"]
-        flows[gid] = (res,) + game_flow(rs, res)
+        flows[gid] = (res,) + game_flow(rs, res, meta[gid].get("result_type"), meta[gid].get("n_moves"))
     L.append("### 8-2. 판 흐름 유형 (작가님 승률 궤적)\n")
     L.append(f"분류 순서: 대마 사망 결판(진 쪽이 한 수에 {COLLAPSE:g}집↑·승률 {FLIP_WR * 100:.0f}%p↑ 손해) → 역전승/역전패(51수 이후 "
              f"{BEHIND_WR * 100:.0f}% 이하/{LEAD_WR * 100:.0f}% 이상이 연속 {HOLD_PLIES}수 유지) → 초반 우세·열세 유지(80수 시점 {LEAD_WR * 100:.0f}%/{BEHIND_WR * 100:.0f}% 넘고 이후 뒤집히지 않음) "
-             f"→ 박빙 끝내기 결판({CLOSE_FROM}수 시점 {BEHIND_WR * 100:.0f}~{LEAD_WR * 100:.0f}%) → 기타.\n")
+             f"→ 중반 불계 결판({CLOSE_FROM}수 이하 불계) → 박빙 끝내기 결판({CLOSE_FROM}수 시점 {BEHIND_WR * 100:.0f}~{LEAD_WR * 100:.0f}%) "
+             f"→ 중반 결판({CLOSE_FROM}수 시점 한쪽 {LEAD_WR * 100:.0f}%↑) → 기타. 시간패·미상은 맨 앞에서 '비정상 종국'으로 따로 센다.\n")
     L.append("| 유형 | 판 | 작가님 승 | 승률 | 대표 판(결정 수) |\n|---|---|---|---|---|")
     ft = defaultdict(list)
     for gid, (res, typ, worst) in flows.items():
         ft[typ].append((gid, res, worst))
-    for typ in ("초반 우세 유지", "초반 열세 유지", "역전승", "역전패", "박빙 끝내기 결판", "대마 사망 결판", "기타"):
+    for typ in ("초반 우세 유지", "초반 열세 유지", "역전승", "역전패", "중반 결판", "중반 불계 결판", "박빙 끝내기 결판", "대마 사망 결판",
+                "비정상 종국", "기타"):
         g = ft.get(typ, [])
         if not g:
             continue

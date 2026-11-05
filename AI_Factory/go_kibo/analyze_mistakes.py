@@ -135,6 +135,9 @@ def main():
         for x in open(sp, encoding="utf-8"):
             d = json.loads(x)
             ranks[d["id"]] = (d.get("my_rank"), d.get("opp_rank"))
+            if d["id"] in meta:  # 종국 유형(R 불계·N 계가·T 시간·D·?)·수수 — 기풍 프로필 판 흐름 분류용(쌍아 11-06 08:45)
+                meta[d["id"]]["result_type"] = d.get("result_type")
+                meta[d["id"]]["n_moves"] = d.get("moves")
 
     rows = []        # 작가님 착수(기존 집계 §1~6의 대상)
     all_rows = []    # 작가님 + 상대 착수(§7 기력대 비교)
