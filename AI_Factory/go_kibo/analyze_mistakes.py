@@ -391,6 +391,8 @@ def write_report(a, summ, rows, meta, all_rows=None):
     L += quad_section(rows, gidx)
     if all_rows:
         L += rank_section(all_rows, gidx)
+        from profile_section import profile_section  # §8 개인 기풍 프로필(작가님 23:43)
+        L += profile_section(all_rows, meta, gidx)
     path = os.path.join(HERE, "reports", f"{a.report_name}.md")
     notes = "<!-- NOTES -->\n<!-- /NOTES -->"
     if os.path.exists(path):
