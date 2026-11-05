@@ -109,6 +109,7 @@ status: active
 | 11/05 | iMac/쌍아-막내2 | 젊은 여성 목소리 4종 청취 파일(통과 Rosa Oh·Sian, 경계 Annie·Anna Kim) + 초읽기 박자 재설계(격자 예약·slew 30ms/s, 간격 sd 0.0011/0.0007s) — 8765 반영은 청취 후 | [COMPLETION_20261105_iMac쌍아-막내2_GO_젊은여성음성_박자재설계](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_젊은여성음성_박자재설계.md) | ⏳ |
 | 11/05 | iMac/쌍아-막내2 | Anna Kim 채택·안내 '하나' 2초 앞(20초+ 12초 남음, 10초는 회 시작·첫 숫자 셋)·기운 2종(mid 1.06/high 1.54반음) 청취 파일·숨김 팩 — 8767 안내→숫자 2.000s, sd ≤0.007s | [COMPLETION_20261105_iMac쌍아-막내2_GO_젊은여성음성_박자재설계](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_젊은여성음성_박자재설계.md) | ⏳ |
 | 11/05 | iMac/쌍아-막내2 | Anna Kim 기운 높음 팩 monk-annakim 8765 노출 + 안내 규칙 반영(PID 2802), 실패 팩 24개 숨김 — 기본 팩 미변경 | [COMPLETION_20261105_iMac쌍아-막내2_GO_젊은여성음성_박자재설계](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_젊은여성음성_박자재설계.md) | ✅ |
+| 11/05 | iMac/쌍아-막내2 | 출시 전 교체 자산 추가: monk-annakim 착수·따냄음 = tygem-ref stone* 심볼릭 링크(작가님 10:36 돌소리 당분간 타이젬), 목소리는 자체 Anna Kim — 재기동 없음 | — | ⏳ |
 
 ## 3. Phase 현황
 
