@@ -1497,7 +1497,8 @@ let clocks = null, clockTimer = null, clockLast = 0, clockMv = -1;
 // → 내 차례 같은 회에서 오차가 1초 안이면 내 시계를 그대로 두고, 같은 (회·숫자)는 한 번만 읽는다. 박자 계산은 원본 그대로.
 const SAID = { mv: -1, set: new Set() };
 // 11-05 11:10 작가님 "0.1초 짧다 사람의 한숨 들어가는 느낌 1초로 가봐" — 착수 화면 반영 → '하나'까지(초). 조정은 이 값 하나
-const HANA_DELAY = 1.0;
+let HANA_DELAY = 1.0;  // 11-05 11:38 시험용: 주소에 ?hana=1.5 (0.5~2.0) — 작가님 결정 전 기본 1.0
+try { const q = Number(new URLSearchParams(location.search).get('hana')); if (q >= 0.5 && q <= 2) HANA_DELAY = q; } catch (e) {}
 const CLOCK_LOOKAHEAD = 0.1;  // 다음 틱 안에 올 숫자는 미리 정확한 시각으로 예약(±0.05초). 착수하면 예약분만 취소
 let annEnd = 0, cntEnd = 0;  // 안내·숫자 말소리가 끝나는 시각(performance.now ms)
 function sayOnce(key, url, delay) {
@@ -1511,8 +1512,7 @@ function sayOnce(key, url, delay) {
     at = Math.max(at, cntEnd);
     annEnd = at + (b ? Math.max(0, b.duration - 0.15) * 1000 : 0);
   } else {
-    // 순서 "안내 → 하나 → 둘": 안내가 아직 나오는 중이면 '하나'만 안내 끝으로(최대 0.95초). 둘부터는 격자 그대로
-    if (key.endsWith(':count1') && annEnd > at) at = Math.min(at + 950, annEnd);
+    // 11-05 11:38 작가님 "하나 둘 사이가 짧아질 때도 있어" — 숫자는 미루지 않는다. 회 안 모든 숫자 = 하나 시각 + 정확히 1초 간격
     cntEnd = at + (b ? Math.max(0, b.duration - 0.08) * 1000 : 0);
   }
   voice(url, Math.max(0, (at - now) / 1000));
@@ -1537,7 +1537,7 @@ function syncClocks() {
   if (clocks && S && k && t && !S.stale && (S.kind || 'ai') === 'ai' && clockRoom === S.room && clockMv !== -1) {
     if (clockMv !== S.moveNo) {
       const mover = S.lastColor && clocks[S.lastColor];
-      if (mover && mover.inByo) { mover.period = mover.byo; mover.off = 0; }  // 한 수(통과 포함)를 두면 그 쪽 회가 처음부터
+      if (mover && mover.inByo) { mover.period = mover.byo; mover.off = 0; mover.carry = false; mover.annDue = false; }  // 한 수(통과 포함)를 두면 그 쪽 회가 처음부터
       clockLast = performance.now();  // 반영한 이 순간부터 다음 차례가 흐른다(하나 = +HANA_DELAY초)
       clockMv = S.moveNo;
     }
@@ -1574,7 +1574,7 @@ function syncClocks() {
     const c = clocks[S.user], v = k[S.user];
     if (c && c.inByo && v.inByo && !c.flagged && c.left === v.left && k.elapsed < Math.min(3, t.byo)) {
       const before = clockTot(c);
-      c.period = t.byo;
+      c.period = t.byo; c.carry = false; c.annDue = false;
       c.off = clockTot(c) - before;  // 서버보다 늦게 세는 만큼(응답 지연) — 같은 수 안의 비교 때 뺀다
     }
   }
@@ -1593,27 +1593,32 @@ function tickClock(c, dt, emit) {
   }
   const before = c.period;
   c.period -= dt;
-  // 숫자 n = 남은 (11 − n − HANA_DELAY)초. 다음 틱(CLOCK_LOOKAHEAD) 안에 올 경계는 지금 정확한 시각으로 예약한다
-  const LA = CLOCK_LOOKAHEAD, cross = (from, to) => {
+  // 숫자 n = 회 시작 + HANA_DELAY + (n − 1)초 = 남은 (11 − n − HANA_DELAY)초. 다음 틱(CLOCK_LOOKAHEAD) 안의 경계는 지금 정확한 시각으로 예약.
+  // HANA_DELAY > 1이면 끝 숫자(열 등)가 회 끝을 넘는다 → 다음 회 앞부분에서 같은 격자로 내고(앞 회 숫자), 남은 횟수 안내는 그 뒤에.
+  const LA = CLOCK_LOOKAHEAD, thrOf = n => 11 - n - HANA_DELAY, tail = Math.min(0, thrOf(10));
+  const cross = (from, to) => {
     for (let n = 1; n <= 10; n++) {
-      const thr = 11 - n - HANA_DELAY;
-      if (thr < 0 || thr >= c.byo) continue;
-      if (from - LA >= thr && to - LA < thr) emit('count' + n, Math.max(0, to - thr));
+      const thr = thrOf(n);
+      if (thr >= c.byo) continue;
+      const carry = thr < 0, at = carry ? c.byo + thr : thr;
+      if (carry && !c.carry) continue;  // 넘어온 숫자는 회가 시간으로 넘어갔을 때만(착수로 새 회면 없음)
+      if (from - LA >= at && to - LA < at) emit('count' + n, Math.max(0, to - at), carry ? c.left + 1 : c.left);
     }
+    if (c.annDue && to - LA < c.byo + tail) { c.annDue = false; emit('remain' + c.left, Math.max(0, to - (c.byo + tail))); }
   };
   cross(before, c.period);
   if (c.period <= 0) {
     c.left -= 1;
     if (c.left <= 0) { c.flagged = true; c.period = 0; emit('flag'); return; }
-    c.period += c.byo; emit('remain' + c.left, 0);
-    cross(c.byo + LA, c.period);  // 새 회 첫 틱 안의 경계
+    c.period += c.byo; c.carry = true; c.annDue = true;
+    cross(c.byo + LA, c.period);  // 새 회 첫 틱 안의 경계(넘어온 숫자·안내 포함)
   }
 }
 
 function clockMoved(color) {  // 한 수를 두면 초읽기 한 회가 처음부터
   cancelPendingVoice();  // 예정된 다음 숫자만 취소 — 재생 중인 음성은 건드리지 않음
   const c = clocks && clocks[color];
-  if (c && c.inByo) { c.period = c.byo; c.off = 0; }
+  if (c && c.inByo) { c.period = c.byo; c.off = 0; c.carry = false; c.annDue = false; }
 }
 
 function clockTick() {
@@ -1627,8 +1632,8 @@ function clockTick() {
     tickClock(c, dt, () => {});
     if (c.flagged) { c.flagged = false; c.left = 1; c.period = 1; }
   } else {
-    tickClock(c, dt, (e, d) => {
-      if (e.startsWith('count')) sayOnce(`${c.left}:${e}`, SND.count[Number(e.slice(5))], d);
+    tickClock(c, dt, (e, d, left) => {
+      if (e.startsWith('count')) sayOnce(`${left || c.left}:${e}`, SND.count[Number(e.slice(5))], d);
       else if (e.startsWith('remain')) sayOnce(`${c.left}:${e}`, SND.remain[Number(e.slice(6))], d);
       else if (e === 'flag') call('/api/timeout', { color: S.user });
     });

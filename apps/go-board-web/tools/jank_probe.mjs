@@ -46,7 +46,7 @@ if (process.env.PACK) await ev(`localStorage.setItem('goBoardPack', ${JSON.strin
 const room = await ev(`fetch('/api/rooms', { method: 'POST', headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ level: 'monkos', handicap: 0, time: { main: 0, byo: 10, periods: 5 }, color: 'B' }) }).then(r => r.json()).then(j => j.id || JSON.stringify(j))`);
 if (!room || room.startsWith('{')) { console.error('❌ jank_probe: 방 생성 실패', room); chrome.kill(); process.exit(1); }
-await cdp('Page.navigate', { url: `${BASE}/room/${room}` });
+await cdp('Page.navigate', { url: `${BASE}/room/${room}${process.env.HANA ? "?hana=" + process.env.HANA : ""}` });
 const tRoom = Date.now();
 await sleep(3000);
 await cdp('Emulation.setCPUThrottlingRate', { rate: Number(RATE) });
