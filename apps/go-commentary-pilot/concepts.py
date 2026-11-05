@@ -18,7 +18,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OPP = {"B": "W", "W": "B"}
 # 사분면(외길×발견 난도) 정의 정본 — 실수 사전과 공유(사본 금지): AI_Factory/go_kibo/quadrant.py
 sys.path.insert(0, os.path.join(HERE, "..", "..", "AI_Factory", "go_kibo"))
-from quadrant import QUAD_EASY, necessity_gap, quad_of  # noqa: E402
+from quadrant import QUAD_EASY, necessity_gap, phase_of, quad_of  # noqa: E402
 
 
 def load_lexicon(path=os.path.join(HERE, "lexicon.yaml")):
@@ -63,6 +63,22 @@ def cut_points(board, color, p, r):
             if len(gs) >= 2:
                 n += 1
     return n
+
+
+def atari_saves(b0, color, prev, small):
+    """직전 상대 수(prev)로 단수에 걸린 자기 돌(≤ small점) → (살리는 점 집합, 돌 수). 판 전체의 오래된 단수 돌은 제외."""
+    pts, stones = set(), 0
+    if prev is None:
+        return pts, stones
+    for c0, g0, l0 in b0.groups():
+        if c0 == color and len(l0) == 1 and len(g0) <= small and any(prev in neighbors(q) for q in g0):
+            pts |= set(l0)
+            stones += len(g0)
+    return pts, stones
+
+
+def gtp_of(q):
+    return "ABCDEFGHJKLMNOPQRST"[q[0]] + str(N - q[1])
 
 
 def signals(d, gm, T=None):
@@ -159,6 +175,25 @@ def signals(d, gm, T=None):
             if len(g) >= 3 and -0.2 <= m0 <= 0.5:
                 lift = round(sum(sign * (at(own_a, r) - at(own_p, r)) for r in g) / len(g), 3)
 
+    # 사석 활용·단수 이음 판정(v1.1, 작가님 22:20): 직전 상대 수로 단수에 걸린 자기 소수 돌과 그 돌을 살리는 수
+    ts = (T or {}).get("sacrifice", {})
+    prev0 = gtp_to_xy(gm["moves"][i - 1][1]) if i > 0 else None
+    save_pts, atari_stones = atari_saves(b0, color, prev0, ts.get("small", 3))
+    save_info = None
+    if save_pts:
+        mis = {mi["move"]: mi for mi in before["moveInfos"]}
+        extra = d.get("save_eval") or {}  # review.deep_plus가 후보 밖 살리는 수를 따로 1회 평가한 값(흑 기준 scoreLead)
+        order = sorted(range(N * N), key=lambda k: -pol[k]) if pol else []
+        topk = {(k % N, k // N) for k in order[:ts.get("intuition_rank", 3)]}
+        cands = []
+        for q in save_pts:
+            mv_q = gtp_of(q)
+            mi = mis.get(mv_q)
+            lead = mi["scoreLead"] if mi else extra.get(mv_q)
+            cands.append({"move": mv_q, "loss": round(sign * (best["scoreLead"] - lead), 2) if lead is not None else None,
+                          "prior": round(at(pol, q), 4) if pol else None, "src": "후보" if mi else ("별도 평가" if lead is not None else "없음")})
+        save_info = {"stones": atari_stones, "saves": cands, "intuition_is_save": bool(topk & save_pts), "played_save": p in save_pts}
+
     reply = after["moveInfos"][0]["move"]
     rp = gtp_to_xy(reply)
     prev = gtp_to_xy(gm["moves"][i - 1][1]) if i > 0 else None
@@ -170,6 +205,7 @@ def signals(d, gm, T=None):
         "loss": loss, "gap2": gap2, "prior": prior, "rank": rank, "is_best": is_best,
         "prior_best": prior_best, "gap_nec": gap_nec, "quad": quad,
         "opp_min_libs": [min((len(lb) for _, lb in opp_g0), default=None), min((len(lb) for _, lb in opp_g), default=None)],
+        "save": save_info, "phase": phase_of(i + 1),
         "own_at_p": round(sign * at(own_b0, p), 3), "band": [near_mine, near_theirs], "line": edge_line(p),
         "best": best["move"], "wr_before": round(wr, 3),
         "local_gain": round(local, 2), "territory_gain": round(terr, 2), "influence_gain": round(infl, 2),
@@ -195,11 +231,14 @@ def analyze_concepts(d, gm, lex, f3_best=None):
     s = signals(d, gm, T)
     names = {e["id"]: (e["name"], k) for k in ("shapes", "keypoints", "proverbs", "qualities") for e in lex[k]}
     plain = {e["id"]: e.get("plain", e.get("definition", "")) for k in ("keypoints", "proverbs", "qualities", "shapes") for e in lex[k]}
-    phrase = {e["id"]: e["phrase"] for e in lex["shapes"] if e.get("phrase")}  # 해설 문장용 '호구 자리'·'쌍립 자리' 
+    phrase = {e["id"]: e["phrase"] for e in lex["shapes"] if e.get("phrase")}
+    # 단계별 이름(v1.1, 작가님 22:22 "끝내기에선 대세라는 말은 잘 안 쓰지. 큰자리·급소자리·끝내기의 맥") — 어느 개념에나 phase_names 가능
+    phase_names = {e["id"]: e["phase_names"] for k in ("shapes", "keypoints", "proverbs", "qualities") for e in lex[k] if e.get("phase_names")}  # 해설 문장용 '호구 자리'·'쌍립 자리' 
     hits = []
 
     def hit(cid, mode, ev, why):
         name, layer = names[cid]
+        name = phase_names.get(cid, {}).get(s["phase"], name)
         hits.append({"id": cid, "name": name, "layer": layer, "mode": mode, "evidence": ev,
                      "text": f"{name}{'(' + ('준수' if mode == 'follow' else '위반') + ')' if mode else ''} — {why}. 쉬운 풀이: {plain[cid]}"})
 
@@ -244,6 +283,26 @@ def analyze_concepts(d, gm, lex, f3_best=None):
         hit("big_point", None, {"착점 소유권": s["own_at_p"], "주변 자기·상대 영향권 점": s["band"], "확정집 변화": s["territory_gain"],
                                 "주변 효과": s["local_gain"]},
             f"착점은 아직 주인이 없고 주변에 양쪽 세력이 맞닿아 있다, 확정집 변화는 작지만 주변 효과가 {s['local_gain']:.1f}집이다")
+
+    # 사석 활용(버림돌) · 단수 이음 떡수 (v1.1, 작가님 22:20 "당연히 이어야 할 것 같은데 안 잇고 사석으로 활용하는 수도 많다,
+    #   단수 잇는 게 떡수일 때도 많다"). 이음이 정답이면 기존 '외길'(사분면 당연한 수).
+    sv = s["save"]
+    if sv:
+        t = T["sacrifice"]
+        known = [c for c in sv["saves"] if c["loss"] is not None]
+        save_loss = min((c["loss"] for c in known), default=None)
+        if (not sv["played_save"] and sv["intuition_is_save"] and save_loss is not None and save_loss >= t["save_loss"]
+                and L <= t["ok"]):
+            links = [h["name"] for h in hits if h["id"] in ("sente_first", "small_for_big")]
+            hit("sacrifice", "follow", {"버린 돌": sv["stones"], "살리는 수 손해": save_loss, "일감": "살리는 수", "연결": links},
+                f"단수에 걸린 돌 {sv['stones']}점을 잇는 게 일감이지만 이으면 {save_loss}집 손해, 버리고 다른 곳에 둔 판단"
+                + (f" ({'·'.join(links)})" if links else ""))
+        t = T["dumb_connect"]
+        th = T["heavy"]
+        mg = s["my_group"]
+        if sv["played_save"] and L >= t["loss"] and mg["libs"] <= th["libs"] and mg["own"] <= th["own"]:
+            hit("dumb_connect", None, {"loss": L, "이은 뒤 활로": mg["libs"], "이은 뒤 소유권": mg["own"]},
+                f"단수에 걸린 돌을 이었지만 {L}집 손해, 이은 뒤에도 활로 {mg['libs']}·소유권 {mg['own']:.2f}로 무겁다")
 
     # (다) 위기십결
     t = T["no_greed"]
