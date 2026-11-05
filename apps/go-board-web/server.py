@@ -565,7 +565,8 @@ class EngineHub:
 
     def finish(self, pos, level, color, rules=None, progress=None, visits=None, max_time=None):
         """계가 마무리 — 사본 국면에서 판정 엔진이 양쪽 최선 수를 번갈아 둔다(연속 2패스·상한까지). 실제 판은 건드리지 않는다.
-        줄에 다른 대국 요청이 서면 한 수 끝날 때마다 엔진을 놓아 준다(다른 판 응수를 막지 않음). → (수순, 초, 놓아 준 횟수)"""
+        줄에 다른 대국 요청이 서면 한 수 끝날 때마다 엔진을 놓아 준다(다른 판 응수를 막지 않음).
+        → (수순, 초, 놓아 준 횟수, 끝난 사유 'passes' | 'budget' | 'max')"""
         rules = rules or FINISH_RULES
         e = self._pick(self._judge(level))
         moves, out, t0, yields = list(pos["moves"]), [], time.time(), 0
@@ -586,7 +587,7 @@ class EngineHub:
                 e.cmd("kata-set-rules korean")
             e.key = None
 
-        done = False
+        done, why = False, None
         while not done:
             t_wait = time.time()
             while self._others_busy(e) and time.time() - t_wait < 30:  # 다른 판 수 계산이 끝날 때까지(최대 30초) 쉰다
@@ -605,8 +606,13 @@ class EngineHub:
                         moves.append((c, mv))
                         out.append((c, mv))
                         is_pass = mv.lower() == "pass"
-                        if (is_pass and prev_pass) or len(out) >= FINISH_MAX or time.time() - t0 > FINISH_BUDGET:
-                            done = True
+                        if is_pass and prev_pass:
+                            done, why = True, "passes"
+                        elif len(out) >= FINISH_MAX:
+                            done, why = True, "max"
+                        elif time.time() - t0 > FINISH_BUDGET:
+                            done, why = True, "budget"
+                        if done:
                             break
                         prev_pass, c = is_pass, ("W" if c == "B" else "B")
                         if progress:
@@ -616,7 +622,7 @@ class EngineHub:
                             break
                 finally:
                     restore_engine()
-        return out, round(time.time() - t0, 2), yields
+        return out, round(time.time() - t0, 2), yields, why
 
     def scoring(self, pos, level, light=False):
         """계가 재료 — 사석·KataGo 판정(11-04: 소유권 추정 폐지). light = 마무리 끝난(경계 닫힌) 국면 — 탐색을 줄여 빨리"""
@@ -1513,8 +1519,12 @@ class Room:
             if empty > FINISH_EMPTY_MAX:  # 11-04 정확도 원칙 — 집이 정해지지 않은 국면을 마무리로 '추정'하지 않는다
                 raise RuntimeError(f"아직 집이 정해지지 않았습니다(빈 곳 {empty}점) — 이어 두거나 'AI 판정'을 보세요.")
             vis, mt = next(((v, t) for lim, v, t in FINISH_STAGES if empty <= lim), FINISH_STAGES[-1][1:])
-            finish, secs, yields = ENGINES.finish(self.position(), self.level, self.to_move, progress=self._finish_progress,
-                                                  visits=FINISH_VISITS or vis, max_time=FINISH_TIME or mt)
+            finish, secs, yields, why = ENGINES.finish(self.position(), self.level, self.to_move, progress=self._finish_progress,
+                                                       visits=FINISH_VISITS or vis, max_time=FINISH_TIME or mt)
+            if why != "passes":  # 쌍아 19:40 — 연속 2패스로 끝나지 않은(시간·수 상한) 국면은 경계가 덜 닫혔을 수 있다 → 세지 않는다
+                print(f"⚠️ go-board: 계가 마무리 끊김 — 방 {self.id} 사유 {why} · {len(finish)}수 {secs}초", file=sys.stderr)
+                EVENTS.add(self.id, action="score-finish-cut", reason=why, n=len(finish), secs=secs)
+                raise RuntimeError(f"마무리를 끝내지 못했습니다({'시간' if why == 'budget' else '수'} 상한, {len(finish)}수) — 이어 두거나 'AI 판정'을 보세요.")
         pos = self.position()
         sc = ENGINES.scoring({**pos, "moves": list(pos["moves"]) + finish}, self.level, light=bool(finish))
         sc.update(finish=[list(m) for m in finish], finishSecs=secs, finishYields=yields, finishRules=FINISH_RULES if finish else None)
