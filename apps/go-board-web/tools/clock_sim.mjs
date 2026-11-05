@@ -12,7 +12,7 @@ const grab = name => {
   return m[0];
 };
 const hasSaid = /^function sayOnce\b/m.test(src);
-const decl = hasSaid ? src.match(/^const SAID = [^\n]*\n/m)[0] + (src.match(/^(let annEnd|const spanCache|let HANA_DELAY|const HANA_DELAY|try \{ const q = Number|let ANN_MODE|try \{ if \(new URLSearchParams|const CLOCK_LOOKAHEAD|let annEnd|const CLOCK_SNAP|const clockTot|const byoGrace|const byoFull)[^\n]*\n/gm) || []).join('') : '';
+const decl = hasSaid ? src.match(/^const SAID = [^\n]*\n/m)[0] + (src.match(/^(let annEnd|const spanCache|let HANA_DELAY|const HANA_DELAY|try \{ const q = Number|let ANN_MODE|const ANN_TO_HANA|try \{ if \(new URLSearchParams|const CLOCK_LOOKAHEAD|let annEnd|const CLOCK_SNAP|const clockTot|const byoGrace|const byoFull)[^\n]*\n/gm) || []).join('') : '';
 const grabOpt = name => (new RegExp(`^function ${name}\\b`, 'm').test(src) ? grab(name) : '');
 const BYO = Number(byoS), PER = Number(perS), ERR = Number(errS), PHASE = Number(phaseS);
 let NOW = 0;  // 가짜 performance.now (ms)
