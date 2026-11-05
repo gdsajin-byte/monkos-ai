@@ -2062,6 +2062,9 @@ setInterval(() => {
       ? news.map(r => `<div>${esc(String(r.started).slice(11, 16))} ${esc(r.ownerDisplay || r.ownerNick || '나')} vs ${esc(r.levelLabel)} · ${esc(r.resultKo)}</div>`).join('')
       : (warn ? '' : '<div class="lobby-empty">아직 소식이 없습니다.</div>'));
   }
+  // 11-05 20:13 — 대기실 목록 요청이 실패하면(서버 재기동 순간 등) S가 비어 15초 신호가 참여자를 못 그리고 AI 행이 영영 안 돌아왔다
+  // → 실패하면 스스로 다시 받는다(2·4·8·16·30초 간격), 신호 때도 목록 실패 상태면 전체를 다시 받는다
+  let lobbyOk = false, lobbyRetry = null, lobbyFails = 0;
   async function load() {
     try {
       const d = await (await fetch('/api/rooms')).json();
@@ -2079,7 +2082,13 @@ setInterval(() => {
       document.getElementById('lobbyPast').innerHTML = past.length ? past.map(row).join('') : '<div class="lobby-empty">아직 지난 대국이 없습니다.</div>';
       document.getElementById('lobbyEng').textContent = d.strongOk ? '' : (d.strongError || '엔진 기동 실패');
       if (d.testMode) document.title = 'MONKOS 바둑 대기실 (테스트)';
-    } catch (e) { notice('서버 연결 실패 — run.sh가 켜져 있는지 확인해 주세요'); }
+      lobbyOk = true; lobbyFails = 0; clearTimeout(lobbyRetry);
+    } catch (e) {
+      lobbyOk = false;
+      notice('서버 연결 실패 — 잠시 뒤 다시 불러옵니다');
+      clearTimeout(lobbyRetry);
+      lobbyRetry = setTimeout(load, Math.min(30000, 2000 * 2 ** lobbyFails++));
+    }
   }
   document.getElementById('lobby').addEventListener('click', async e => {
     const pk = e.target.closest('[data-pick]');
@@ -2125,6 +2134,7 @@ setInterval(() => {
   // 11-04 작가님 — 접속 신호: 대기실이 보이는 동안 15초마다 서버에 알리고 참여자 목록을 새로 받는다(서버는 30초 안 신호를 접속 중으로 봄)
   const beat = async () => {
     if (document.hidden) return;
+    if (!lobbyOk) return load();  // 목록을 못 받은 상태면 참여자만이 아니라 전체를 다시
     try {
       const j = await (await fetch('/api/presence', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })).json();
       if (j.auth) { openAuth(); return; }
