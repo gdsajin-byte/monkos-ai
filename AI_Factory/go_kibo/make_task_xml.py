@@ -36,6 +36,7 @@ def main():
     ap.add_argument("outdir")
     ap.add_argument("--b10-at", required=True, help="YYYY-MM-DDTHH:MM:SS (KST)")
     ap.add_argument("--b10-until", required=True, help="YYYY-MM-DD_HH:MM")
+    ap.add_argument("--no-final-eval", action="store_true", help="b10 인자에서 --final-eval 제거(평가가 07:30을 넘길 수 있을 때)")
     ap.add_argument("--mistakes-at", default=None, help="매일 시작 기준 YYYY-MM-DDTHH:MM:SS (기본 b10-at 날짜 23:05)")
     a = ap.parse_args()
     src = read(a.src)
@@ -46,6 +47,8 @@ def main():
     b10, n = re.subn(r"--until \S+", f"--until {a.b10_until}", b10)
     if n != 1:
         raise SystemExit("❌ make_task_xml: --until 인자를 찾지 못함")
+    if a.no_final_eval:
+        b10 = b10.replace(" --final-eval", "")
     # ② 실수 사전 러너: 매일 23:05, 실행 한도 9시간
     at = a.mistakes_at or a.b10_at[:10] + "T23:05:00"
     mk = re.sub(r"<URI>[^<]*</URI>", r"<URI>\\MONK\\GO-mistakes-run</URI>", src)
