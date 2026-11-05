@@ -8,7 +8,7 @@
 #   ftl.sh usage                                      오늘(KST) 쓴 실기기 분(로컬 원장 합계)
 #   ftl.sh run ios --models a[:ver],b --ipa PATH [--scenarios 1] [--timeout 3m] [--dry-run]
 #                                                     Game Loop 실행(gcloud beta) → 원장 기록 → 결과 위치 출력
-#   ftl.sh fetch RESULTS_DIR [OUT]                    결과 버킷의 GameLoopResults/* 내려받기
+#   ftl.sh fetch RESULTS_DIR [OUT]                    결과 버킷 → GameLoopResults(bench·앱 캡처) + FTL 영상 내려받기
 #
 # 무료 한도 가드(우회 플래그 없음): 오늘 누적 + 이번 예상(기종 수 × 기종당 상한 분) > 25분이면 실행 거부.
 #   Blaze 실기기 하루 30분 무료(여유 5분). 넘기려면 작가님 승인 후 아래 LIMIT_MIN 상수를 바꾼다.
@@ -105,7 +105,7 @@ cmd_run() {
   done
   local rdir="ftl/$(TZ='Asia/Seoul' date '+%Y%m%d_%H%M%S')"
   local cmd=(gcloud beta firebase test ios run --project "$PROJECT" --type game-loop --app "$ipa" "${devs[@]}"
-             --scenario-numbers "$scen" --timeout "$tmo" --results-dir "$rdir" --no-record-video --format json)
+             --scenario-numbers "$scen" --timeout "$tmo" --results-dir "$rdir" --record-video --format json)  # FTL 자체 녹화도 회수
   if [ "$dry" = 1 ]; then echo "(dry-run) ${cmd[*]}"; return 0; fi
   # 원장 먼저(상한 분) — 실행 중 끊겨도 기록은 남는다(보수적)
   printf '{"date":"%s","at":"%s","os":"ios","models":"%s","minutes":%s,"resultsDir":"%s","basis":"upper-bound"}\n' \
@@ -128,9 +128,15 @@ cmd_fetch() {
   [ -n "$bucket" ] || bucket=$(grep -ho "storage/browser/[^/ ]*" "$log" 2>/dev/null | head -1 | sed 's#storage/browser/#gs://#')
   [ -n "$bucket" ] || die "결과 버킷을 실행 로그에서 찾지 못함(run_${rdir#ftl/}.log)"
   mkdir -p "$out"
-  gcloud storage cp -r "${bucket}/${rdir}/**/GameLoopResults/*" "$out/" 2>"${out}/fetch.err" \
+  # 기기별 폴더 구조를 살려 받는다: GameLoopResults(bench_*.json·screen_*.png 앱 자체 캡처) + FTL 영상(video.mp4)·스크린샷
+  gcloud storage cp -r "${bucket}/${rdir}" "$out/" 2>"${out}/fetch.err" \
     || die "내려받기 실패 — $(tail -1 "${out}/fetch.err")"
-  echo "✅ ftl: GameLoopResults → $out ($(find "$out" -type f ! -name fetch.err | wc -l | tr -d ' ')개)"
+  local nj nv np
+  nj=$(find "$out" -path "*GameLoopResults*" -name "bench_*.json" | wc -l | tr -d ' ')
+  np=$(find "$out" -name "screen_*.png" | wc -l | tr -d ' ')
+  nv=$(find "$out" -name "*.mp4" | wc -l | tr -d ' ')
+  [ "$nj" -gt 0 ] || die "GameLoopResults/bench_*.json 이 없음 — 앱이 측정을 끝내지 못했거나 Game Loop 진입 실패(영상 ${nv}개 확인)"
+  echo "✅ ftl: $out — bench ${nj}개 · 앱 캡처 ${np}장 · FTL 영상 ${nv}개"
 }
 
 case "${1:-}" in
