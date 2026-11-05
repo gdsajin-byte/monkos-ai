@@ -115,7 +115,9 @@ class Runner:
                 self.log(f"b10 오늘 밤 실행 종료 확인 — state {state}, nsamp {n:,}, start {started}")
                 self.status("b10_finished", b10_state=state, b10_nsamp=n)
                 return True
-            if not tonight and not kicked and self.now() >= wstart + dt.timedelta(minutes=15) and state not in ("running", "final_eval"):
+            # 상태값은 보지 않는다 — 낮에 끊긴 실행이 'final_eval' 등으로 남아 있을 수 있다(11-05 17:22 평가 중단 사례).
+            # 같은 작업의 중복 기동은 작업 설정 IgnoreNew가 막는다.
+            if not tonight and not kicked and self.now() >= wstart + dt.timedelta(minutes=15):
                 self.log(f"오늘 밤 b10 실행 흔적 없음(state {state}, start {started}) — 놓친 예약 보정: {self.a.b10_task} 1회 실행")
                 if not self.a.dry_run:
                     r = subprocess.run(["schtasks", "/run", "/tn", self.a.b10_task], capture_output=True, text=True, creationflags=NO_WINDOW)
