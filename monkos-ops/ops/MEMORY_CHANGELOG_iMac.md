@@ -742,3 +742,4 @@
 - **[2026-11-05 15:32 KST]** iMac/쌍아 — 갱신: project_idphoto_kr_direct_pay_pivot (무료 생성 폐지·첫 가입 첫 결제 보너스, 작가님 15:32)
 - **[2026-11-05 15:33 KST]** iMac/쌍아 — 갱신: project_idphoto_kr_direct_pay_pivot (1컷 결제→다른 컷 크레딧 마케팅, 작가님 15:33)
 - **[2026-11-05 18:05 KST]** iMac/쌍아 — 추가: project_idphoto_price_ladder_20261105 (가격 사다리 개편, 작가님 18:05)
+- **[2026-11-05 20:15 KST]** iMac/쌍아 — 갱신: project_go_commentary_llm_vision (형세판단봇 방향, 작가님 20:15)
