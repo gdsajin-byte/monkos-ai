@@ -10,6 +10,7 @@ import os
 import re
 
 RUNNER = r"C:\Users\smuse73\go_kibo\mistakes_runner.py"
+DAYCHAIN = r"C:\Users\smuse73\go_kibo\day_chain.py"
 PYW = r"C:\Users\smuse73\venvs\go-train\Scripts\pythonw.exe"
 
 
@@ -37,8 +38,8 @@ def main():
     ap.add_argument("--b10-at", required=True, help="YYYY-MM-DDTHH:MM:SS (KST)")
     ap.add_argument("--b10-until", required=True, help="YYYY-MM-DD_HH:MM")
     ap.add_argument("--no-final-eval", action="store_true", help="b10 인자에서 --final-eval 제거(평가가 07:30을 넘길 수 있을 때)")
-    ap.add_argument("--scenes-at", default=None, help="결정 장면 1회 예약 YYYY-MM-DDTHH:MM:SS (낮 창, GO-scenes-run.xml 추가 생성)")
-    ap.add_argument("--scenes-end", default="14:00", help="결정 장면 창 끝(러너가 이 시각에 엔진을 끊음)")
+    ap.add_argument("--day-at", default=None, help="낮 창 연쇄 1회 예약 YYYY-MM-DDTHH:MM:SS (GO-day-run.xml 추가 생성 — 실수 사전 잔여 → 결정 장면)")
+    ap.add_argument("--day-end", default="14:00", help="낮 창 끝(하교 가드·러너 엔진 중단 시각)")
     ap.add_argument("--mistakes-at", default=None, help="매일 시작 기준 YYYY-MM-DDTHH:MM:SS (기본 b10-at 날짜 23:05)")
     a = ap.parse_args()
     src = read(a.src)
@@ -65,17 +66,15 @@ def main():
     os.makedirs(a.outdir, exist_ok=True)
     write(os.path.join(a.outdir, "GO-train-resume.xml"), b10)
     write(os.path.join(a.outdir, "GO-mistakes-run.xml"), mk)
-    if a.scenes_at:  # 결정 장면 정밀 분석(낮 학교 시간 창) — 1회 트리거, 같은 러너를 1단계만·b10 비대기로
-        sc = re.sub(r"<URI>[^<]*</URI>", r"<URI>\\MONK\\GO-scenes-run</URI>", mk)
-        sc = re.sub(r"<Triggers>.*?</Triggers>", f"<Triggers>\n    <TimeTrigger>\n      <StartBoundary>{a.scenes_at}+09:00</StartBoundary>\n"
+    if a.day_at:  # 낮 창 연쇄(day_chain.py) — 1회 트리거. 바탕 XML이 '사용 안 함'이어도 켠다
+        sc = re.sub(r"<URI>[^<]*</URI>", r"<URI>\\MONK\\GO-day-run</URI>", mk)
+        sc = re.sub(r"<Triggers>.*?</Triggers>", f"<Triggers>\n    <TimeTrigger>\n      <StartBoundary>{a.day_at}+09:00</StartBoundary>\n"
                     f"    </TimeTrigger>\n  </Triggers>", sc, flags=re.S)
-        # 바탕 XML(GO-train-resume)이 11-05 23:28부터 '사용 안 함'이라 그 설정을 물려받지 않게 켠다
         sc = sc.replace("<Enabled>false</Enabled>", "<Enabled>true</Enabled>")
-        st = a.scenes_at[11:16]
-        sc = re.sub(r"<Arguments>[^<]*</Arguments>", lambda _: (f"<Arguments>\"{RUNNER}\" --root C:\\Users\\smuse73\\go_kibo\\scenes "
-                    f"--queries scenes_queries.jsonl --stage1-only --no-b10-wait --window-start {st} --window-end {a.scenes_end}</Arguments>"), sc)
-        write(os.path.join(a.outdir, "GO-scenes-run.xml"), sc)
-        print("== GO-scenes-run\n" + re.search(r"<Triggers>.*?</Triggers>", sc, re.S).group(0) + "\nArguments: " + re.search(r"<Arguments>([^<]*)</Arguments>", sc).group(1))
+        st = a.day_at[11:16]
+        sc = re.sub(r"<Arguments>[^<]*</Arguments>", lambda _: f"<Arguments>\"{DAYCHAIN}\" --start {st} --end {a.day_end}</Arguments>", sc)
+        write(os.path.join(a.outdir, "GO-day-run.xml"), sc)
+        print("== GO-day-run\n" + re.search(r"<Triggers>.*?</Triggers>", sc, re.S).group(0) + "\nArguments: " + re.search(r"<Arguments>([^<]*)</Arguments>", sc).group(1))
     for name, t in (("GO-train-resume", b10), ("GO-mistakes-run", mk)):
         trig = re.search(r"<Triggers>.*?</Triggers>", t, re.S).group(0)
         args = re.search(r"<Arguments>([^<]*)</Arguments>", t).group(1)
