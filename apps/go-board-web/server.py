@@ -1766,7 +1766,10 @@ class Room:
             mv = [list(m) for m in self.moves]
             row = {
                 "v": 1, "room": self.id, "at": datetime.now().isoformat(timespec="seconds"), "kind": self.kind,
-                "bot": self.level in BOT_LEVELS, "level": self.level, "user": self.user,
+                # 쌍아 21:34 — 흑·백 대국자를 각각(사람 = 'human', 엔진 = bot_sgf_name 태그) — 형세봇 채점에서 어느 엔진 판인지
+                "players": ({c: bot_sgf_name(self.bots[c]) for c in "BW"} if self.bots
+                            else {c: ("human" if c == self.user else bot_sgf_name(self.level)) for c in "BW"}),
+                "level": self.level, "user": None if self.bots else self.user,
                 "rules": self.rules or "korean", "komi": self.komi, "handicap": self.handicap, "setup": list(self.setup),
                 "moveN": len(mv), "movesHash": hashlib.sha1(json.dumps(mv).encode()).hexdigest()[:16],
                 "finish": sc.get("finish") or [], "finishWhy": sc.get("finishWhy"), "finishSecs": sc.get("finishSecs"),

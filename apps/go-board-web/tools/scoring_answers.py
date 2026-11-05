@@ -43,7 +43,7 @@ def main(path):
     print(f"결과 일치(앱 = KataGo): {same}/{n} ({same / n:.0%}) · 승패 방향 일치 {dir_ok}/{n} · 1집 이내 {within1}/{n}")
     print(f"사석 수정한 계가: {fixed}/{n} ({fixed / n:.0%}) · 토글 합 {sum((r.get('toggles') or 0) for r in rows)}")
     print("마무리 사유:", dict(Counter(r.get("finishWhy") or "-" for r in rows)))
-    print("봇/사람:", dict(Counter("봇" if r.get("bot") else "KataGo" for r in rows)))
+    print("대국자(흑 vs 백):", dict(Counter(f"{(r.get('players') or {}).get('B')} vs {(r.get('players') or {}).get('W')}" for r in rows)))
     have = [r for r in rows if r.get("preLead") is not None]
     if have:
         gap = [abs(r["preLead"] - signed(r["kata"])) for r in have if signed(r.get("kata")) is not None]
