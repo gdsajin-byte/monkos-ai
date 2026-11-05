@@ -110,7 +110,8 @@ class Runner:
             if state not in ("running", "final_eval") and n >= target - 2_000_000:
                 self.log(f"b10 목표 도달(nsamp {n:,} / {target:,}, state {state}) — 대기 없음")
                 return True
-            tonight = started_dt is not None and started_dt >= wstart
+            # 창 시작 1시간 전부터 시작한 실행도 '오늘 밤'으로 본다(11-05 22:48 작가님 지시로 b10 조기 시작 사례)
+            tonight = started_dt is not None and started_dt >= wstart - dt.timedelta(hours=self.a.early_grace_h)
             if tonight and state not in ("running", "final_eval"):
                 self.log(f"b10 오늘 밤 실행 종료 확인 — state {state}, nsamp {n:,}, start {started}")
                 self.status("b10_finished", b10_state=state, b10_nsamp=n)
@@ -293,6 +294,7 @@ def main():
     ap.add_argument("--b10-status", default=r"C:\Users\smuse73\go_train\run\b10\status.json")
     ap.add_argument("--b10-task", default=r"\MONK\GO-train-resume")
     ap.add_argument("--b10-target", type=int, default=95_000_000)
+    ap.add_argument("--early-grace-h", type=float, default=1.0, help="창 시작 전 이 시간 안에 시작한 b10도 오늘 밤 실행으로 본다")
     ap.add_argument("--window-start", default="23:00")
     ap.add_argument("--window-end", default="07:30")
     ap.add_argument("--visits2", type=int, default=400)
