@@ -42,7 +42,9 @@ for (let i = 1; i <= 3; i++) SND.remain[i] = `remain${i}`;
 api.setSND(SND);
 const clk = (running, elapsed, left) => ({
   B: { main: 0, period: BYO, left, inByo: true }, W: { main: 0, period: BYO, left: PER, inByo: true }, running, elapsed });
+const MAIN0 = Number(process.env.MAIN || 0);  // 기본 시간(초) — 첫 복원에만(기기 시계는 그 뒤 서버 값을 쓰지 않음)
 const S = { room: 'r', kind: process.env.KIND || 'ai', lastColor: null, moveNo: 0, user: 'B', toMove: 'W', time: { main: 0, byo: BYO, periods: PER }, result: null, scoring: false, stale: false, clock: clk('W', 0, PER) };
+if (MAIN0) { S.clock.B = { main: MAIN0, period: BYO, left: PER, inByo: false }; S.time.main = MAIN0 / 60; }
 api.setS(S);
 api.syncClocks();
 const out = [];

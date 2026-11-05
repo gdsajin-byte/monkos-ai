@@ -1596,7 +1596,7 @@ function tickClock(c, dt, emit) {
   if (!c.inByo) {
     c.main -= dt;
     if (c.main > 0) return;
-    c.inByo = true; dt = -c.main; c.main = 0; c.period = c.byo; emit('byo');
+    c.inByo = true; dt = -c.main; c.main = 0; c.period = byoFull(c); emit('byo');  // 첫 초읽기 회도 숨 고르기 유예부터(11-05 12:00 — 기본 시간 자체엔 유예 없음)
   }
   const before = c.period;
   c.period -= dt;
@@ -1662,7 +1662,7 @@ function liveClock(col, running) {
   const v = { main: c.main, period: c.period, left: c.left, inByo: c.inByo, byo: c.byo };
   if (running === col && !c.flagged) {
     let dt = Math.max(0, performance.now() - clockLast) / 1000;
-    if (!v.inByo) { const u = Math.min(dt, v.main); v.main -= u; dt -= u; if (dt > 0) { v.inByo = true; v.period = v.byo; } }
+    if (!v.inByo) { const u = Math.min(dt, v.main); v.main -= u; dt -= u; if (dt > 0) { v.inByo = true; v.period = v.byo + byoGrace(); } }
     if (v.inByo) v.period = Math.max(0, v.period - dt);  // 회 넘김은 틱이 처리(표시는 0에서 멈춤)
   }
   if (v.inByo) v.period = Math.min(v.period, v.byo);  // 숨 고르기 유예 동안은 가득 찬 값(0:10)
