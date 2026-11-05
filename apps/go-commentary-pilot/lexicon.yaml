@@ -22,6 +22,7 @@
 #   sente         상대 최선 응수가 착점 반경 3 안이면 참(받아야 하는 수 = 선수)
 #   prev_dist     직전 상대 수와의 거리(체비쇼프)
 #   prior_best    1순위 수의 직감(정책망) — 사분면 발견 난도
+#   phase         국면 단계 포석 1–50·중반 51–150·끝내기 151+ (quadrant.phase_of) — 항목의 phase_names로 단계별 이름
 #   quad          사분면(외길×발견 난도) — 정의·상수 정본 AI_Factory/go_kibo/quadrant.py (실수 사전과 공유, 사본 금지)
 #
 # v1 (2026-11-05 iMac/쌍아-막내3) — 출처: 작가님 11-05 20:25 "와우 수가 단수 잇는 당연한 수", 20:27 당연한 수 정의,
@@ -78,6 +79,7 @@ keypoints:
     rule: "실제 수 = 엔진 최선 · gap2 ≥ t.gap2 · 1순위 직감 < 사분면 '쉬움'(당연한 수 제외) · 착수 후 상대 돌뭉치 약화(opp_near 소유권 하락 ≥ t.swing 또는 주변 상대 그룹 최소 활로가 줄어 ≤ t.libs)"
     threshold: {gap2: 1.5, swing: 0.2, libs: 2}
     templates: ["{move}가 급소였어요 — {why}.", "여기가 바로 급소예요. {why}.", "일감으로는 다른 곳이 먼저 보이지만, {move}처럼 상대를 추궁하는 수가 있습니다."]
+    phase_names: {끝내기: 급소 자리}  # 단계(quadrant.phase_of)별 이름 — 작가님 11-05 22:22
     opposite: null
   - id: tesuji
     name: 맥
@@ -87,6 +89,7 @@ keypoints:
     rule: "실제 수 = 엔진 최선 · prior ≤ t.prior · gap2 ≥ t.gap2 · 상대 돌에 닿는 수"
     threshold: {prior: 0.15, gap2: 1.0}
     templates: ["맥을 찾으셨네요 — {why}.", "일감으로는 잘 안 보이는데, {move} 같은 맥이 있습니다.", "{move}, 바둑판 위의 기술이죠. {why}."]
+    phase_names: {끝내기: 끝내기의 맥}  # 단계(quadrant.phase_of)별 이름 — 작가님 11-05 22:22
     opposite: null
   - id: big_point
     name: 대세점
@@ -96,6 +99,7 @@ keypoints:
     rule: "v1 근사(형세봇 3층 전): 착점 소유권 |여기서 손을 뺐다면(패스) 기준| ≤ t.band(주인 없는 경계) · 반경 t.r 안에 자기 영향권(≥ t.side) 점과 상대 영향권(≤ −t.side) 점이 각각 t.n개↑ · 3선 이상 · 확정집 변화 territory_gain ≤ t.terr · 착점 주변 효과 local_gain ≥ t.value · loss ≤ t.ok"
     threshold: {band: 0.5, r: 4, side: 0.3, n: 4, terr: 1.0, value: 2.0, ok: 1.0}  # band 0.3은 smoke10 61국면 중 1건 — 0.5로(11-05 막내3, 작가님 라벨로 보정 예정)
     templates: ["{move}가 대세점이었어요 — {why}.", "당장 집은 아니지만 세력이 마주보는 자리, {move}가 대세점이에요.", "일감으로는 작은 곳에 손이 가지만, 이런 대세점이 있습니다."]
+    phase_names: {끝내기: 큰 자리}  # 단계(quadrant.phase_of)별 이름 — 작가님 11-05 22:22
     opposite: null
 
 # ── (다) 위기십결 — 원리별 정량 근사. 준수(follow)·위반(break) 두 방향 ──
@@ -183,6 +187,24 @@ proverbs:
 
 # ── 정성 평가어 ──
 qualities:
+  - id: sacrifice
+    name: 사석 활용
+    patterns: [사석, 버림돌, 버리고]
+    definition: "단수에 걸린 돌을 잇지 않고 버려, 그 대가로 선수나 더 큰 곳을 얻는 판단(작가님 11-05 22:20)."
+    plain: "이어야 할 것 같은 돌을 일부러 버리고 더 큰 걸 챙긴 수예요."
+    rule: "직전 상대 수로 단수에 걸린 자기 돌(≤ t.small점) · 일감(정책망 상위 t.intuition_rank) ∋ 그 돌을 살리는 수 · 살리는 수의 손해 ≥ t.save_loss(엔진 후보 값, 후보에 없으면 리뷰 분석이 1회 따로 평가) · 실전은 살리지 않음 · loss ≤ t.ok · 기자쟁선·사소취대 발동 시 연결 표기"
+    threshold: {small: 3, intuition_rank: 3, save_loss: 2.0, ok: 0.5}
+    templates: ["일감으로는 이어야 할 것 같지만, 버리고 {move} — 이런 수가 있습니다.", "사석을 활용했어요 — {why}.", "{move}, 돌 몇 점보다 큰 곳을 택했네요."]
+    opposite: dumb_connect
+  - id: dumb_connect
+    name: 떡수 이음
+    patterns: [떡수, 무거워]
+    definition: "단수에 걸린 돌을 이었지만 손해가 크고 이은 뒤에도 무거운 수(작가님 11-05 22:20 '단수 잇는 게 떡수일 때도 많다')."
+    plain: "이었는데 오히려 무거운 짐이 됐어요."
+    rule: "실전 = 단수 돌을 살리는 수 · loss ≥ t.loss · 이은 뒤 그룹 활로 ≤ 무겁다 t.libs · 소유권 ≤ 무겁다 t.own"
+    threshold: {loss: 2.0}
+    templates: ["이으면 무거워집니다 — {why}.", "단수를 이었지만 떡수가 됐어요.", "일감으로는 잇고 싶지만, 버리는 수가 있습니다."]
+    opposite: sacrifice
   - id: thick
     name: 두텁다
     patterns: [두텁, 두터, 두께]

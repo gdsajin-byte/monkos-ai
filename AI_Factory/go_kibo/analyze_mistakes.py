@@ -32,7 +32,8 @@ BIG = 3.0  # 큰 실수 기준(집)
 
 
 def phase(n):
-    return "포석" if n <= 50 else "중반" if n <= 150 else "끝내기"
+    from quadrant import phase_of  # 정본(해설 사전과 공유)
+    return phase_of(n)
 
 
 def xy(m):

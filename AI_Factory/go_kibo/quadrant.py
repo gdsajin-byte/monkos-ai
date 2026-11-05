@@ -36,3 +36,12 @@ def quad_of(gap, prior_best, is_best, gap_t=None, easy=None, hard=None, sense_mi
             return "brilliant" if is_best else "missed_brilliant"
         return "normal"
     return "ai_sense" if (prior_best < hard and gap >= sense_min) else "normal"
+
+
+# 국면 단계(수순 기준) — 실수 사전 보고서와 해설 사전의 단계별 이름(phase_names)이 같이 쓴다
+PHASE_OPENING_MAX = 50
+PHASE_MIDDLE_MAX = 150
+
+
+def phase_of(move_no):
+    return "포석" if move_no <= PHASE_OPENING_MAX else "중반" if move_no <= PHASE_MIDDLE_MAX else "끝내기"

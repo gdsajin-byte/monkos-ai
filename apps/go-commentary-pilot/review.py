@@ -244,6 +244,24 @@ def deep_plus(eng, gm, c):
         q["maxVisits"] = analyze.DEEP_VISITS // 2
         (r,) = eng.ask(q, 1)
         d["alt_line"] = [mi[1]["move"]] + (r["moveInfos"][0]["pv"][:4] if r.get("moveInfos") else [])
+    # 사석 활용 판정용(v1.1): 직전 상대 수로 단수에 걸린 자기 소수 돌을 살리는 수가 엔진 후보에 없으면 1회 따로 평가(최대 2수)
+    from concepts import atari_saves, gtp_of, load_lexicon
+    small = next(e["threshold"]["small"] for e in load_lexicon()["qualities"] if e["id"] == "sacrifice")  # 상수는 lexicon 한 곳
+    i = c["move_index"]
+    prev = gtp_to_xy(gm["moves"][i - 1][1]) if i > 0 else None
+    pts, _ = atari_saves(board_at(gm, i), c["color"], prev, small)
+    have = {m["move"] for m in mi}
+    d["save_eval"] = {}
+    for q in sorted(pts)[:2]:
+        mv_q = gtp_of(q)
+        if mv_q in have:
+            continue
+        sq = base_query(gm, c["pos_id"] + "-save")
+        sq["moves"] = gm["moves"][:i] + [[c["color"], mv_q]]
+        sq["analyzeTurns"] = [i + 1]
+        sq["maxVisits"] = analyze.DEEP_VISITS // 2
+        (rr,) = eng.ask(sq, 1)
+        d["save_eval"][mv_q] = rr["rootInfo"]["scoreLead"]
     return d
 
 
