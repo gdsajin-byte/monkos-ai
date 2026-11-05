@@ -90,6 +90,8 @@ GAMES_DIR = KATA_DIR / "games" / ("_test" if TEST_MODE else "")
 REVIEW_DIR = GAMES_DIR / "reviews"
 # 방 저장소(단계 ① 로컬 — 단계 ⑤에서 Firestore·GCS로 이관, RoomStore 인터페이스만 바꾼다). 테스트는 _test/ 로 분리
 ROOMS_DIR = Path.home() / ".monkos" / "go-board" / ("_test" if TEST_MODE else "") / "rooms"
+# 11-05 21:31 형세봇 1/8 — 계가 정답 기록(레포 밖, append-only). 테스트 인스턴스는 _test 아래
+ANSWERS_FILE = ROOMS_DIR.parent / "scoring" / "answers.jsonl"
 ROOM_ID_RE = r"[A-Za-z0-9_-]{4,64}"
 EMPTY_ROOM_TTL = 600  # 빈 방(0수) 정리 기준 초
 # 접속 장애(10-24 작가님 "일반적으로는 멈추고 별도 시간으로 접속장애패"): 대국실이 5초마다 ping,
@@ -1371,7 +1373,8 @@ class Room:
         sc = None
         if self.scoring:
             sc = {"dead": sorted(self.scoring["dead"]), "kata": self.scoring["kata"], "finish": self.scoring.get("finish") or [],
-                  "finishSecs": self.scoring.get("finishSecs"), "finishRules": self.scoring.get("finishRules")}
+                  "finishSecs": self.scoring.get("finishSecs"), "finishRules": self.scoring.get("finishRules"),
+                  "finishWhy": self.scoring.get("finishWhy"), "preLead": self.scoring.get("preLead"), "toggles": self.scoring.get("toggles", 0)}
         return {"v": 1, "id": self.id, "owner": self.owner, "kind": self.kind, "user": self.user, "level": self.level,
                 "handicap": self.handicap, "time": self.time, "setup": self.setup,
                 "moves": [list(m) for m in self.moves], "scores": [list(s) for s in self.scores],
@@ -1398,7 +1401,8 @@ class Room:
         r.final_count = d.get("finalCount")
         sc = d.get("scoring")
         r.scoring = ({"dead": {tuple(p) for p in sc["dead"]}, "kata": sc["kata"], "finish": sc.get("finish") or [],
-                      "finishSecs": sc.get("finishSecs"), "finishRules": sc.get("finishRules")} if sc else None)
+                      "finishSecs": sc.get("finishSecs"), "finishRules": sc.get("finishRules"), "finishWhy": sc.get("finishWhy"),
+                      "preLead": sc.get("preLead"), "toggles": sc.get("toggles", 0)} if sc else None)
         r.message = d.get("message", "")
         r.started = datetime.fromisoformat(d["started"])
         r.updated = d.get("updated", time.time())
@@ -1643,7 +1647,7 @@ class Room:
             raise RuntimeError("아직 둔 수가 없습니다.")
         # 양쪽 패스로 끝난 판이 아니면 사본 국면에서 AI가 끝까지 두고(마무리 수) 그 끝 국면으로 센다. 실제 수순·기보는 그대로
         ended = len(self.moves) >= 2 and all(m.lower() == "pass" for _, m in self.moves[-2:])
-        finish, secs, yields = [], 0.0, 0
+        finish, secs, yields, why = [], 0.0, 0, None
         if not ended:
             empty = sum(1 for row in replay(self.moves, self.setup)[0] for v in row if v is None)
             if empty > FINISH_EMPTY_MAX:  # 11-04 정확도 원칙 — 집이 정해지지 않은 국면을 마무리로 '추정'하지 않는다
@@ -1657,7 +1661,8 @@ class Room:
                 raise RuntimeError(f"마무리를 끝내지 못했습니다({'시간' if why == 'budget' else '수'} 상한, {len(finish)}수) — 이어 두거나 'AI 판정'을 보세요.")
         pos = self.position()
         sc = ENGINES.scoring({**pos, "moves": list(pos["moves"]) + finish}, self.level, light=bool(finish))
-        sc.update(finish=[list(m) for m in finish], finishSecs=secs, finishYields=yields, finishRules=FINISH_RULES if finish else None)
+        sc.update(finish=[list(m) for m in finish], finishSecs=secs, finishYields=yields, finishRules=FINISH_RULES if finish else None,
+                  finishWhy=("ended" if ended else why), preLead=self.score, toggles=0)  # preLead = 마지막 엔진 수 때 이미 잰 흑 기준 점수(추가 계산 없음)
         self._charge(reset=False)
         self.scoring = sc
         self.message = ((f"AI가 끝까지 {len(finish)}수 마무리한 국면으로 계가합니다(실제 판은 그대로). " if finish else "")
@@ -1694,6 +1699,7 @@ class Room:
             self.scoring["dead"] -= group
         else:
             self.scoring["dead"] |= group
+        self.scoring["toggles"] = self.scoring.get("toggles", 0) + 1  # 사람이 사석을 고친 횟수(정답 기록)
 
     def count(self):
         g, caps = replay(self._score_moves(), self.setup)  # 마무리 수에서 따낸 돌도 포로
@@ -1744,6 +1750,7 @@ class Room:
         if not self.scoring:
             raise RuntimeError("계가 중이 아닙니다.")
         c = self.count()
+        self._record_answer(c)
         self.result = c["result"]
         self.final_count = c
         self.scoring = None
@@ -1751,6 +1758,31 @@ class Room:
                         + f"계가 확정 — 흑 {c['black']:g} · 백 {c['white']:g}(덤 {c['komi']:g} 포함) → {c['resultKo']}"
                         + (f" · KataGo 판정({c['kataKo']})과 달랐음" if c["result"] != c["kata"] else ""))  # 10-25 B3 결과 한 줄
         self.save_sgf()
+
+    def _record_answer(self, c):
+        """계가 정답 1행(형세봇 설계 §2-2) — 원국면·마무리 수·사석·집 지도·결과·KataGo 점수. 실패해도 대국은 계속(로그 1줄)."""
+        sc = self.scoring or {}
+        try:
+            mv = [list(m) for m in self.moves]
+            row = {
+                "v": 1, "room": self.id, "at": datetime.now().isoformat(timespec="seconds"), "kind": self.kind,
+                # 쌍아 21:34 — 흑·백 대국자를 각각(사람 = 'human', 엔진 = bot_sgf_name 태그) — 형세봇 채점에서 어느 엔진 판인지
+                "players": ({c: bot_sgf_name(self.bots[c]) for c in "BW"} if self.bots
+                            else {c: ("human" if c == self.user else bot_sgf_name(self.level)) for c in "BW"}),
+                "level": self.level, "user": None if self.bots else self.user,
+                "rules": self.rules or "korean", "komi": self.komi, "handicap": self.handicap, "setup": list(self.setup),
+                "moveN": len(mv), "movesHash": hashlib.sha1(json.dumps(mv).encode()).hexdigest()[:16],
+                "finish": sc.get("finish") or [], "finishWhy": sc.get("finishWhy"), "finishSecs": sc.get("finishSecs"),
+                "dead": [list(p) for p in sorted(sc.get("dead") or [])],
+                "terrB": [[x, y] for x, y, o in c["terr"] if o == "B"], "terrW": [[x, y] for x, y, o in c["terr"] if o == "W"],
+                "dame": c["dame"], "black": c["black"], "white": c["white"], "result": c["result"],
+                "kata": c["kata"], "preLead": sc.get("preLead"), "toggles": sc.get("toggles", 0),
+            }
+            ANSWERS_FILE.parent.mkdir(parents=True, exist_ok=True)
+            with open(ANSWERS_FILE, "a", encoding="utf-8") as f:
+                f.write(json.dumps(row, ensure_ascii=False) + "\n")
+        except Exception as e:  # noqa: BLE001 — 기록 실패는 대국을 막지 않는다
+            print(f"⚠️ go-board: 계가 정답 기록 실패 — 방 {self.id}: {e}", file=sys.stderr)
 
     def cancel_score(self):
         self.scoring = None
