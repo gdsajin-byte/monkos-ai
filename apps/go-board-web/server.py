@@ -856,6 +856,12 @@ class Auth:
             self.tickets[t] = (pid, provider, now + PORTAL_TICKET_TTL)
         return t
 
+    def take_ticket(self, ticket):
+        """포털 확인 티켓 1회 소모 → (pid, provider) 또는 None(없음·만료)"""
+        with self.lock:
+            tk = getattr(self, "tickets", {}).pop(str(ticket or ""), None)
+        return (tk[0], tk[1]) if tk and tk[2] > time.time() else None
+
     def signup_portal(self, ticket, nick, rank):
         """포털 확인을 마친 새 사용자 — 닉·희망 급수로 바둑 계정 생성. (사용자, 오류문구)"""
         with self.lock:
@@ -2571,6 +2577,24 @@ class Handler(BaseHTTPRequestHandler):
                 return True
             self._json({"needProfile": True, "emailMasked": pu["emailMasked"], "ticket": AUTH.portal_ticket(pu["id"], pu["provider"]), "suggest": nick_suggest(pu["name"]),
                         "provider": pu["provider"]})
+            return True
+        if path == "/api/auth/portal/link":
+            # 11-05 작가님 10:37 — '아이디 정하기' 화면에서 기존 바둑 아이디에 연결. 조건: 이 브라우저가 그 아이디로 지금 들어와 있다
+            # (테스트 기간엔 아이디 입장이 열려 있어 입장 직후 연결. 아이디 입장이 닫히면 같은 조건이 실제 본인 확인이 된다. '작가님'은 인수 코드 입장)
+            cur = self._user if self._user and not self._user.get("local") and AUTH.get(self._user["uid"]) else None
+            if not cur:
+                self._json({"error": "먼저 기존 바둑 아이디로 들어와 주세요"}, 401)
+                return True
+            tk = AUTH.take_ticket(body.get("ticket"))
+            if not tk:
+                self._json({"error": "로그인 시간이 지났습니다 — 포털 로그인부터 다시 해 주세요"}, 400)
+                return True
+            err = AUTH.link_portal(cur["uid"], tk[0], tk[1])
+            if err:
+                self._json({"error": err}, 409)
+            else:
+                print(f"✅ go-board: 포털 연결(아이디 정하기 화면) {cur['uid']} ← {tk[1]}", flush=True)
+                self._json({"ok": True, "linked": True, "me": self._me(AUTH.get(cur["uid"])), "login": {"provider": tk[1], "emailMasked": ""}})
             return True
         if path == "/api/auth/portal/signup":
             if not AUTH.rate_ok(self._ip()):
