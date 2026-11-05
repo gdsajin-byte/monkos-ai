@@ -119,6 +119,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 11/04 | iMac/쌍아-막내8 | 유료 크롭 눈 45% 정합(A′) — 포털 eyeAnchor 합성·crop-engine 선택 파라미터, 200건 시뮬 유료−무료 세로 차 0.82→0.07mm, dev 부재로 로컬 종단 대체 | [COMPLETION_20261104_iMac쌍아-막내8_IDPHOTO_유료크롭_눈45정합](../../reports/2026-11/COMPLETION_20261104_iMac쌍아-막내8_IDPHOTO_유료크롭_눈45정합.md) | ✅ |
 | 11/05 | ?/? | **ORDER** 생성 기록(generations)에 테스트 딱지 — 저장 시 originService·isTest 필드를 남기고, 어드민 생성 검토 화면에 '테스트' 배지와 기본 숨김 필터를 둔다. dev까지 | [ORDER_20261105_iMac쌍아_막내8_IDPHOTO_생성기록_테스트딱지](../../orders/2026-11/ORDER_20261105_iMac쌍아_막내8_IDPHOTO_생성기록_테스트딱지.md) | ⏳ |
 | 11/05 | iMac/쌍아-막내8 | 생성 기록 테스트 딱지 — originService·isTest(dev 서비스·인증된 X-Test-Run), 어드민 기본 숨김·배지(새 색인 0), dev 00239-7gq 로그 실측 isTest=true, 과거 dev 시험 36건 목록(수정 0) | [COMPLETION_20261105_iMac쌍아-막내8_IDPHOTO_생성기록_테스트딱지](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내8_IDPHOTO_생성기록_테스트딱지.md) | ✅ |
+| 11/05 | ?/? | **ORDER** idphoto-kr 중심 GA4 계측 강화 — 결제 전환·퍼널·배너 QR 출처·테스트 트래픽 분리. 민아 주관(마케팅·보안·검수 메인) | [ORDER_20261105_iMac쌍아_민아_IDPHOTO_GA4계측강화_idphotokr](../../orders/2026-11/ORDER_20261105_iMac쌍아_민아_IDPHOTO_GA4계측강화_idphotokr.md) | ⏳ |
 
 ### Phase 1 — idphoto-kr/jp 웹 서비스 (01/16~02/14)
 
