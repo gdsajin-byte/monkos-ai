@@ -747,3 +747,5 @@
 - **[2026-11-05 20:32 KST]** iMac/쌍아 — 갱신: project_small_ai_plus_code_doctrine (데이터링→코드화 일반화, 작가님 20:32)
 - **[2026-11-05 20:47 KST]** iMac/쌍아 — 갱신: project_small_ai_plus_code_doctrine (4단 정식화, 작가님 20:47)
 - **[2026-11-05 21:32 KST]** iMac/쌍아 — 갱신: project_approval_bottleneck_scope_gate (권장안으로 진행, 작가님 21:31) + MEMORY.md 1행
+- **[2026-11-05 23:09 KST]** iMac/쌍아 — 갱신: project_small_ai_plus_code_doctrine (반복 비용 작업=봇 학습, 작가님 23:09)
+- **[2026-11-05 23:11 KST]** iMac/쌍아 — 갱신: project_monkos_sovereignty (SaaS→모듈러, 작가님 23:11)

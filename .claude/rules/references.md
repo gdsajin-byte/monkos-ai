@@ -133,6 +133,7 @@
 
 | 도구 | 분류 | 위치 | 인지 경로 |
 |------|------|------|----------|
+| **AI_Factory 엔진·봇 장부** (MONKOS Go·계가·실수 사전·해설 사전·형세봇·자막 교정·장면 태거·사진 판별·비전 매팅 + 수집 도구 + 외부 교사) | 엔진 레지스트리 | `AI_Factory/REGISTRY.md` 정본 | 11-05 신설(작가님 23:11·23:13 — SaaS→모듈러). 엔진 신설·버전업 시 1행 갱신 + 해당 PF 1행. PF_INFRA 히스토리 연결 |
 | **MCP 서버 6 + 래퍼** (monk-retrieval=`scripts/retrieval/mcp_server.js`·build_index.js / playwright·ga4·gsc·cloudflare·gdocs=`scripts/tools/*_mcp.sh`) | MCP | `.mcp.json` 정본 | `rules/mcp-tools.md`. 10-01 전수조사 등재 — 래퍼는 시크릿을 SM에서 주입(값 미노출). 헬스: `monk_stats` health 필드 / 타 서버는 세션 연결 여부 |
 | monk_search | MCP | `scripts/retrieval/` | `rules/mcp-tools.md` — 헬스: 빈/부재 인덱스는 `❌ retrieval 인덱스 비정상`+재빌드 명령 반환(raw SQLite 에러 금지). 스모크 `node scripts/retrieval/search.js --smoke`(mk-push.sh 빌드 직후 자동, PASS/FAIL). 다어절 0건→OR 폴백, 헤더에 `[모드]` 표기 (09-27) |
 | record-explorer | 서브에이전트 | `.claude/agents/record-explorer.md` | `rules/mcp-tools.md` §과거 기록 — 기록 탐색 위임, 결론 20줄·근거 경로:행·인덱스 비정상 시 🔴 명시 (09-27 신설) |
