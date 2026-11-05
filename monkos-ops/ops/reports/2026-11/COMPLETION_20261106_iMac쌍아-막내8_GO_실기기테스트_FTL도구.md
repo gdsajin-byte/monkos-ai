@@ -146,3 +146,14 @@ cd ~/developer/_ext/katago-ios && bash monk_build_ipa.sh
   - 경로: `~/.monkos/device_lab/results/20261106_060546/20261106_060546/iphone11pro-16.6-en-portrait/CustomResults/screen_1~3.png` · 영상 `…/video.mp4`(8·11 Pro 둘 다)
 - 실행 시간: runDuration 277 + 316초 = 9.9분 ≤ 원장 기록 10분 → 보정 없음. **오늘 누적 24분 / 가드 25분**. SE 3 판 캡처 재측정은 내일 한다.
 - 결과 이력이 막내2 안드로이드 실행과 같은 history를 공유한다 → 사용 시간 조회는 실행 ID(= 매트릭스 ID)로 한다.
+
+## 9. 저메모리 대응 v4 (06:14, 쌍아 06:13) — 재빌드는 내일 아침 1회
+
+- 실메모리 < 3GB면 `numSearchThreads=8 · nnCacheSizePowerOfTwo=16 · nnMaxBatchSize=8`을 적용한다. 대상은 세 곳이다.
+  - autobench benchmark: `-t 32,32` → `8,8`, `-override-config` 추가
+  - gameloop benchOnce: `-t 32` → `8`, 오버라이드 추가
+  - 실대국 GTP: `-override-config maxVisits=N,…` 뒤에 붙인다
+- 기록 JSON에 `physicalMemoryMB`·`lowMem` 필드를 추가했다.
+- 기본 설정 실측(`default_gtp.cfg`): numSearchThreads 32 · nnMaxBatchSize 16 · nnCacheSizePowerOfTwo 미지정(KataGo 기본) · benchmark는 `addOverrideConfigArg`를 지원한다(소스 확인).
+- M1 적용(백업 .bak-gameloop-20261106-061431) → 서명 없는 빌드(16.4) BUILD SUCCEEDED.
+- 내일: 작가님 재빌드 1줄(아침 1회, 다른 수정과 함께) → 실행 전 `ftl.sh usage` 확인 → iPhone 8 + SE 3 판 캡처(2대 × 5분 = 10분). 막내2 안드로이드 3대(15분)와 한도를 나눈다.

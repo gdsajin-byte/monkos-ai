@@ -25,7 +25,7 @@ h = open(H).read()
 if "// ===== MONK autobench" not in h:
     sys.exit("❌ patch_gameloop: patch_autobench.py 를 먼저 적용해야 한다(monkAutoBench 없음)")
 
-VER = "v3"  # v2: 자체 화면 캡처 3장(11-06 05:42 작가님) · v3: 판 화면에서 캡처(쌍아 06:00 — v2는 GTP 명령 화면이 찍힘)
+VER = "v4"  # v2: 자체 화면 캡처(05:42 작가님) · v3: 판 화면 캡처(쌍아 06:00) · v4: 저메모리 축소(쌍아 06:13 — iPhone 8 Jetsam)
 if MARK in h and f"MONK gameloop {VER}" in h:
     print("helper: already", VER)
 else:
@@ -44,7 +44,8 @@ static NSDictionary* gMonkGL = nil;  // 이번 실행 측정 결과(화면 캡�
 static void monkBenchOnce(const string& model, const string& config, int visits, double& vps, double& secPerMove, string& raw) {
     std::stringstream ss;
     std::streambuf* old = cout.rdbuf(ss.rdbuf());
-    vector<string> a = {"benchmark", "-model", model, "-config", config, "-v", std::to_string(visits), "-n", "3", "-t", "32"};
+    vector<string> a = {"benchmark", "-model", model, "-config", config, "-v", std::to_string(visits), "-n", "3", "-t", monkLowMem() ? "8" : "32"};
+    if (monkLowMem()) { a.push_back("-override-config"); a.push_back(kMonkLowOvr); }
     auto t0 = std::chrono::steady_clock::now();
     try { MainCmds::benchmark(a); } catch (...) {}
     double total = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
@@ -100,6 +101,7 @@ static void monkGameLoop(NSString* docs, NSString* modelPath, NSString* configPa
     NSDictionary* rec = @{@"machine": [NSString stringWithUTF8String:u.machine],
                           @"os": [[NSProcessInfo processInfo] operatingSystemVersionString],
                           @"autobench": ab, @"autoVisits": @(autoVisits),
+                          @"physicalMemoryMB": @([NSProcessInfo processInfo].physicalMemory / (1024 * 1024)), @"lowMem": @(monkLowMem()),
                           @"v1500": @{@"visitsPerSec": @(v1), @"secPerMove": @(s1)},
                           @"vAuto": @{@"visits": @(autoVisits), @"visitsPerSec": @(v2), @"secPerMove": @(s2)},
                           @"at": [[NSDate date] description], @"rawTail1500": tail};
@@ -145,6 +147,26 @@ static void monkGameLoopShow() {
 
 """
     h = h.replace("@implementation KataGoHelper", funcs + "@implementation KataGoHelper", 1)
+    LOWMARK = "// ===== MONK lowmem"
+    if LOWMARK not in h:
+        low = LOWMARK + r""" (실메모리 3GB 미만 = 스레드 8·NN 캐시 2^16·배치 8 — 11-06 FTL iPhone 8 Jetsam) =====
+#import <Foundation/Foundation.h>
+static bool monkLowMem() { return [NSProcessInfo processInfo].physicalMemory < 3ULL * 1024 * 1024 * 1024; }
+static const char* kMonkLowOvr = "numSearchThreads=8,nnCacheSizePowerOfTwo=16,nnMaxBatchSize=8";
+// ===== /MONK lowmem =====
+
+"""
+        h = h.replace("// ===== MONK autobench", low + "// ===== MONK autobench", 1)
+        old_ab = 'vector<string> a = {"benchmark", "-model", model, "-config", config, "-v", "300", "-n", "3", "-t", "32,32"};'
+        if h.count(old_ab) != 1:
+            sys.exit("❌ patch_gameloop: autobench benchmark 줄을 못 찾음")
+        h = h.replace(old_ab, 'vector<string> a = {"benchmark", "-model", model, "-config", config, "-v", "300", "-n", "3", "-t", monkLowMem() ? "8,8" : "32,32"};\n'
+                              '    if (monkLowMem()) { a.push_back("-override-config"); a.push_back(kMonkLowOvr); }  // MONK lowmem', 1)
+        old_g = 'subArgs.push_back("maxVisits=" + std::to_string(monkVisits));'
+        if h.count(old_g) != 1:
+            sys.exit("❌ patch_gameloop: GTP maxVisits 오버라이드 줄을 못 찾음")
+        h = h.replace(old_g, 'subArgs.push_back("maxVisits=" + std::to_string(monkVisits) + (monkLowMem() ? string(",") + kMonkLowOvr : string("")));  // MONK lowmem', 1)
+        print("lowmem: patched(autobench·GTP)")
     anchor = "    int monkVisits = monkAutoBench(docs, modelPath, configPath);  // MONK autobench\n"
     if anchor not in h:
         sys.exit("❌ patch_gameloop: monkAutoBench 호출 줄을 못 찾음 — patch_autobench 결과가 달라졌다")
