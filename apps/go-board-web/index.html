@@ -902,22 +902,18 @@ function buildSounds(state) {
     const cap = { 1: urls(['stone1', 'stone1s']), 2: urls(['stone2', 'stone2s']), 3: urls(['stone3', 'stone3s']) };
     const count = {}, remain = {};
     for (let i = 1; i <= 11; i++) count[i] = one('count' + i);
-    for (let i = 1; i <= 5; i++) remain[i] = one('remain' + i);
-    const c = state.sounds || {}, st = urls(['stone0', 'stone0s']);
-    // 11-05 작가님 "돌소리는 AI로 만들지 않는다" — 목소리 전용 팩(돌 파일 없음)은 기본 녹음 돌소리·따냄 겹침을 쓴다
-    SND = st.length ? { stone: st, cap: cap[1].length ? cap : null, overlay: [] }
-      : { stone: (c.stone && c.stone.length ? c.stone : BUILTIN.stone).map(f => `/sounds/${f}.wav`), cap: null,
-          overlay: (c.capture && c.capture.length ? c.capture : BUILTIN.capture).map(f => `/sounds/${f}.wav`) };
-    Object.assign(SND, { count, remain, byo: one('byo'), start: one('start'), counting: one('counting'), note: pack.note });
+    for (let i = 1; i <= 3; i++) remain[i] = one('remain' + i);
+    SND = { stone: urls(['stone0', 'stone0s']), cap: cap[1].length ? cap : null, overlay: [], count, remain,
+            start: one('start'), counting: one('counting'), note: pack.note };
   } else {
     packName = 'builtin';
     const c = state.sounds || {};
     const st = (c.stone && c.stone.length ? c.stone : BUILTIN.stone).map(f => `/sounds/${f}.wav`);
     const ov = (c.capture && c.capture.length ? c.capture : BUILTIN.capture).map(f => `/sounds/${f}.wav`);
-    SND = { stone: st, cap: null, overlay: ov, count: {}, remain: {}, byo: null, start: null, counting: null, note: '' };
+    SND = { stone: st, cap: null, overlay: ov, count: {}, remain: {}, start: null, counting: null, note: '' };
   }
   const all = [...SND.stone, ...SND.overlay, ...(SND.cap ? [...SND.cap[1], ...SND.cap[2], ...SND.cap[3]] : []),
-               ...Object.values(SND.count), ...Object.values(SND.remain), SND.byo, SND.start, SND.counting].filter(Boolean);
+               ...Object.values(SND.count), ...Object.values(SND.remain), SND.start, SND.counting].filter(Boolean);
   for (const u of all) {
     if (decoded[u] !== undefined) continue;
     decoded[u] = null;
@@ -1482,71 +1478,17 @@ soundBox.onchange = () => {
 
 // ---- 시계(초읽기): 화면이 재고 서버에는 시간패만 알린다. 엔진 시계는 표시만(초읽기 마지막 1초에서 멈춤 — 시간패 없음)
 let clocks = null, clockTimer = null, clockLast = 0, clockMv = -1;
-// 초읽기 음성 v3 — 박자 최우선(11-05 09:22 작가님 "초읽기가 빨라졌다 느려졌다" → 08:28 '밀린 숫자 이어 읽기' 폐기):
-// · 숫자는 로컬 시계의 1초 격자 시각에만 낸다 — 오디오 시계로 0.3초 앞서 예약(100ms 타이머 떨림이 박자에 안 섞임), 몰아 읽기 없음
-// · 서버 보정은 점프 대신 서서히(초당 30ms slew) — 누락·몰아치기 없음. 3초 넘는 오차만 즉시(무음) 맞춘다
-// · 안내(초읽기를 시작합니다 / N번 남았습니다 / 마지막)는 '하나'(10초 남음)보다 2초 앞(12초 남음) 격자에 시작 —
-//   11-05 09:48 작가님 "하나 전에 넣어야해 마지막 하나 둘 이렇게 마지막을 약 2초전에 시작해".
-//   회가 12초보다 짧으면(10초 초읽기) 회 시작 순간에 안내하고, 안내 시작 2초 안에 오는 숫자(하나·둘)는 건너뛴다 —
-//   숫자 n은 '남은 11−n초'라는 뜻을 지키기 위해(당겨 세면 1초 남음에 '열'이 안 나오고 화면 시계와 어긋남). 첫 숫자는 '셋'(8초 남음)
-// · 같은 (남은 회·숫자)는 한 번만 — 시계가 뒤로 가도 다시 읽지 않는다
-const CD = { said: new Set(), plan: {}, srcs: [], slew: 0, mv: -1, log: null };
-const CD_AHEAD = 0.3, CD_SLEW = 0.03, CD_JUMP = 3;
-function cdReset() {
-  for (const x of CD.srcs) { try { x.stop(); } catch (e) { /* 이미 끝남 */ } }
-  CD.srcs = []; CD.said.clear(); CD.plan = {}; CD.slew = 0;
+// 동기화 최소 수정(11-05 10:40 작가님 '타이젬 방식 그대로, 목소리만' — 재생 규칙·박자는 11-04 원본):
+// 5초 핑마다 서버 값으로 내 시계를 갈아 끼우면 그 사이 지난 초의 음성이 빠지거나(앞으로) 되풀이됐다(뒤로) — REPORT 초읽기끊김.
+// → 내 차례 같은 회에서 오차가 1초 안이면 내 시계를 그대로 두고, 같은 (회·숫자)는 한 번만 읽는다. 박자 계산은 원본 그대로.
+const SAID = { mv: -1, set: new Set() };
+function sayOnce(key, url) {
+  if (!S) return;
+  if (SAID.mv !== S.moveNo) { SAID.mv = S.moveNo; SAID.set.clear(); }
+  if (SAID.set.has(key)) return;
+  SAID.set.add(key);
+  voice(url);
 }
-function cdAt(url, delay, key) {  // 격자 시각에 1회 예약
-  CD.said.add(key);
-  const buf = url && decoded[url];
-  if (!soundOn || !buf) return;
-  const a = audio();
-  if (a.state === 'suspended') adResume(a, 'play');
-  const src = a.createBufferSource();
-  src.buffer = buf; src.connect(a.destination);
-  // 격자 시각(화면 시계 기준) → 오디오 시계로 정확히 옮긴다: currentTime은 수~수십 ms 단위로 끊겨 갱신되므로
-  // getOutputTimestamp(같은 순간의 오디오·화면 시각 짝)로 환산(미지원 브라우저는 currentTime)
-  const ts = a.getOutputTimestamp ? a.getOutputTimestamp() : null;
-  const target = (clockLast || performance.now()) + Math.max(0, delay) * 1000;  // 시계 상태를 잰 순간 기준
-  let when = ts && ts.performanceTime > 0 ? ts.contextTime + (target - ts.performanceTime) / 1000 : a.currentTime + Math.max(0, delay);
-  if (when < a.currentTime) when = a.currentTime;
-  src.start(when);
-  CD.srcs.push(src);
-  src.onended = () => { CD.srcs = CD.srcs.filter(x => x !== src); };
-  if (CD.log) CD.log.push([when, key]);  // 테스트 기록(평소 null)
-}
-function cdSchedule(c) {  // 내 차례 — 다음 0.3초 안에 오는 격자만 예약
-  if (!SND || !S || !c || c.flagged) return;
-  if (CD.mv !== S.moveNo) { cdReset(); CD.mv = S.moveNo; }
-  const annAt = Math.min(c.byo, 12);  // 안내 시작(남은 초) — '하나'(10초) 2초 앞, 회가 더 짧으면 회 시작
-  const plan = (left, url) => {  // 이 회(left)에 안내가 있다 — 안내 시작 2초 안의 숫자는 건너뜀
-    const key = `${left}:ann`;
-    if (!url || CD.said.has(key) || CD.plan[left]) return;  // 팩에 그 안내가 없으면 숫자도 건너뛰지 않는다
-    CD.plan[left] = { url, key };
-    for (let k = 10; k >= 1; k--) if (annAt - k < 2) CD.said.add(`${left}:count${11 - k}`);
-  };
-  if (!c.inByo) {  // 기본 시간 → 초읽기 진입 직전: '초읽기를 시작합니다'
-    if (c.main <= CD_AHEAD) plan(c.left, SND.byo);
-    if (CD.plan[c.left] && annAt >= c.byo && !CD.said.has(CD.plan[c.left].key)) cdAt(CD.plan[c.left].url, c.main, CD.plan[c.left].key);
-    return;
-  }
-  if (c.left > 1 && c.period <= CD_AHEAD) {  // 회 넘김 직전 — 다음 회 안내 계획(회가 짧으면 회 시작 순간에 예약)
-    const nl = c.left - 1;
-    plan(nl, SND.remain[nl]);
-    const pl = CD.plan[nl];
-    if (pl && annAt >= c.byo && !CD.said.has(pl.key)) cdAt(pl.url, c.period, pl.key);
-  }
-  const pl = CD.plan[c.left];  // 이 회의 안내(12초 남음 격자)
-  if (pl && !CD.said.has(pl.key)) {
-    const d = c.period - annAt;
-    if (d <= CD_AHEAD && d > -0.5) cdAt(pl.url, Math.max(0, d), pl.key);
-  }
-  for (let k = 10; k >= 1; k--) {  // 10초 남음=하나 … 1초 남음=열
-    const d = c.period - k, key = `${c.left}:count${11 - k}`;
-    if (d >= 0 && d <= CD_AHEAD && !CD.said.has(key)) cdAt(SND.count[11 - k], d, key);
-  }
-}
-
 function makeClock(t) {
   return t ? { main: t.main * 60, byo: t.byo, periods: t.periods, left: t.periods, period: t.byo, inByo: t.main === 0, flagged: false } : null;
 }
@@ -1554,7 +1496,7 @@ function makeClock(t) {
 // 시계 정본은 서버(10-24) — 받은 값에 '지금 차례가 흐른 시간'을 더해 이어서 잰다. 새로고침·재기동에도 같은 시계
 function syncClocks() {
   const k = S && S.clock, t = S && S.time;
-  const old = clocks && S && clocks[S.user] && clockMv === S.moveNo ? clocks[S.user] : null, prevLast = clockLast;
+  const keep = clocks && S && clockMv === S.moveNo && clocks[S.user] ? clocks[S.user] : null, keepLast = clockLast;
   clocks = k && t ? { B: null, W: null } : null;
   if (clocks) for (const c of ['B', 'W']) {
     const v = k[c];
@@ -1568,15 +1510,11 @@ function syncClocks() {
     if (!isUser && clocks[k.running].flagged) { clocks[k.running].flagged = false; clocks[k.running].left = 1; clocks[k.running].period = 1; }
   }
   clockLast = performance.now();
-  clockMv = S ? S.moveNo : -1;
-  if (old && clocks && clocks[S.user] && k.running === S.user && !S.result && old.inByo && clocks[S.user].inByo && !old.flagged) {
-    const rem = c => c.period + (c.left - 1) * c.byo, err = rem(clocks[S.user]) - rem(old);
-    if (Math.abs(err) <= CD_JUMP) {  // 점프 없이 — clockTick이 초당 30ms씩 맞춘다
-      clocks[S.user] = old; CD.slew = err;
-      clockLast = prevLast;  // 유지한 시계는 직전 틱 이후 흐른 시간을 잃지 않게(되돌리지 않으면 동기화마다 ~65ms 뒤처짐 — 11-05 실측)
-    }
-    else CD.slew = 0;  // 큰 오차(오래 닫아 둔 판 등)는 즉시 맞추되 소리는 다음 격자부터
+  if (keep && clocks && k.running === S.user && !S.result && keep.inByo && clocks[S.user].inByo && !keep.flagged) {
+    const rem = c => c.period + (c.left - 1) * c.byo;
+    if (Math.abs(rem(clocks[S.user]) - rem(keep)) <= 1) { clocks[S.user] = keep; clockLast = keepLast; }  // 내 시계 그대로(박자 무변경)
   }
+  clockMv = S ? S.moveNo : -1;
   if (!clockTimer) clockTimer = setInterval(clockTick, 100);
   renderClocks();
 }
@@ -1592,19 +1530,15 @@ function tickClock(c, dt, emit) {
   const before = c.period;
   c.period -= dt;
   // 마지막 10초는 '하나'부터 센다(10-23 작가님 "초읽기 하나부터"): 10초 남음=하나 … 1초 남음=열
-  // 11-05: before > k 이면 회가 정확히 10초로 시작할 때 '하나'를 영영 못 센다(10초 초읽기 실측 0회) → before >= k && < k
-  for (let k = 10; k >= 1; k--) if (before >= k && c.period < k) emit('count' + (11 - k), c);
+  for (let k = 10; k >= 1; k--) if (before > k && c.period <= k) emit('count' + (11 - k));
   if (c.period <= 0) {
     c.left -= 1;
     if (c.left <= 0) { c.flagged = true; c.period = 0; emit('flag'); return; }
-    c.period += c.byo; emit('remain' + c.left, c);
-    // 새 회는 '초읽기 − 넘친 시간'(예: 9.97초)에서 시작 — 회 시작 경계(10초 초읽기의 '하나')를 이 틱에서 함께 센다
-    for (let k = 10; k >= 1; k--) if (c.byo >= k && c.period < k) emit('count' + (11 - k), c);
+    c.period += c.byo; emit('remain' + c.left);
   }
 }
 
 function clockMoved(color) {  // 한 수를 두면 초읽기 한 회가 처음부터
-  if (S && color === S.user) cdReset();  // 예약해 둔(0.3초 안) 초읽기 음성 취소
   const c = clocks && clocks[color];
   if (c && c.inByo) c.period = c.byo;
 }
@@ -1620,13 +1554,11 @@ function clockTick() {
     tickClock(c, dt, () => {});
     if (c.flagged) { c.flagged = false; c.left = 1; c.period = 1; }
   } else {
-    let dtE = dt;
-    if (CD.slew) {  // 서버보다 덜 남았으면(slew<0) 조금 빨리, 더 남았으면 조금 늦게 — 초당 최대 30ms
-      const adj = Math.max(-CD_SLEW * dt, Math.min(CD_SLEW * dt, CD.slew));
-      dtE = dt - adj; CD.slew -= adj;
-    }
-    tickClock(c, dtE, e => { if (e === 'flag') call('/api/timeout', { color: S.user }); });
-    cdSchedule(c);
+    tickClock(c, dt, e => {
+      if (e.startsWith('count')) sayOnce(`${c.left}:${e}`, SND.count[Number(e.slice(5))]);
+      else if (e.startsWith('remain')) sayOnce(`${c.left}:${e}`, SND.remain[Number(e.slice(6))]);
+      else if (e === 'flag') call('/api/timeout', { color: S.user });
+    });
   }
   renderClocks();
 }
