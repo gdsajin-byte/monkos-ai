@@ -141,6 +141,7 @@ status: active
 | 11/06 | iMac/쌍아-막내8 | 실기기 테스트 도구 1단계 FTL — ftl.sh(25분 가드·우회 없음, 스모크 8/8)·기종 실측 iOS 6·안드로이드 204·Game Loop 패치/IPA 빌드 스크립트 · 1차 실측은 M1 오프라인으로 보류 · 안드로이드 경로 조사 | [COMPLETION_20261106_iMac쌍아-막내8_GO_실기기테스트_FTL도구](../../reports/2026-11/COMPLETION_20261106_iMac쌍아-막내8_GO_실기기테스트_FTL도구.md) | 진행 |
 | 11/06 | iMac/쌍아-막내2 | 유튜브 해설 자막 교정 봇 v1 — 사전 규칙 26(홀드아웃 오류율 14.36→14.31%, 용어 재현율 88.7→90.9%, 과교정 0/43)·화자 목소리 높이 83.3%·목록 30편 corrected.jsonl 17,126구간 (같은 보고서 §8) | [COMPLETION_20261105_iMac쌍아-막내2_GO_유튜브해설_3인_도구비교_목록화](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_유튜브해설_3인_도구비교_목록화.md) | ✅ |
 | 11/06 | ?/? | **ORDER** MONKOS Go 안드로이드 빌드 v0 — KataGo CPU(Eigen) arm64 + Game Loop 래퍼 APK → FTL 가상 기기 스모크 → 저가 갤럭시 실기기 실측(무료 한도 안) | [ORDER_20261106_iMac쌍아_막내2_GO_안드로이드빌드_GameLoop](../../orders/2026-11/ORDER_20261106_iMac쌍아_막내2_GO_안드로이드빌드_GameLoop.md) | ⏳ |
+| 11/06 | iMac/쌍아 | **DESIGN** MONKOS Go 앱 설정창 — 수읽기(visits) 조절을 기기 성능 자동 맞춤 + 사람 말 단계 + 고급 숫자 3층으로. 아이폰·안드로이드·웹 공통 | [DESIGN_20261106_GO_앱설정창_수읽기조절](../../../tech/designs/2026-11/DESIGN_20261106_GO_앱설정창_수읽기조절.md) | ⏳ |
 
 ## 3. Phase 현황
 
