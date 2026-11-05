@@ -15,7 +15,7 @@ cas = sys.argv[7] if len(sys.argv) > 7 else ""
 out.mkdir(parents=True, exist_ok=True)
 who = (f"해설위원 {com}" if com else "해설위원(이름은 화면·설명에 보일 때만)") + (f", 진행(캐스터) {cas}" if cas else ", 캐스터(이름은 화면에 보일 때만, 추정 금지)")
 prompt = f"""너는 바둑 해설 방송 기록가다. 첨부 영상 구간({s0}초~{s1}초)을 보고 들은 그대로 기록한다. 출연: {who}.
-발화가 바뀌거나 판에 무언가를 그릴 때마다 장면 1행. 반드시 아래 JSON만 출력:
+장면 나누기(쌍아 22:56 — 더 잘게): 화자가 바뀌거나, 판에 무언가를 그리거나, 15초가 지나면 새 장면. 장면 1행의 line은 2문장·150자 이내(넘으면 다음 장면으로). 반드시 아래 JSON만 출력:
 {{
  "scenes": [{{
    "t_start": "MM:SS(영상 전체 기준)", "t_end": "MM:SS",
@@ -33,12 +33,17 @@ prompt = f"""너는 바둑 해설 방송 기록가다. 첨부 영상 구간({s0}
  "names_seen": {{"commentator": "화면 자막에 보인 해설 이름 또는 null", "caster": "화면 자막에 보인 캐스터 이름 또는 null"}}
 }}
 대사는 빠짐없이, 지어내지 마라. board_draw·expression·where는 각 80자 이내 요약(같은 표시를 나열하지 말고 '우하귀 흑백 돌 6개에 세모'처럼 묶어서)."""
-body = {"contents": [{"role": "user", "parts": [
-    {"fileData": {"fileUri": f"https://www.youtube.com/watch?v={vid}", "mimeType": "video/*"},
-     "videoMetadata": {"startOffset": f"{s0}s", "endOffset": f"{s1}s"}},
-    {"text": prompt}]}],
+import base64, os
+AUDIO = os.environ.get("GEMINI_AUDIO")  # 음성만 비교용 — 구간 음성 파일 경로(mp3). 있으면 영상 URL 대신 이 음성을 넣는다(판·표정 필드는 null 예상)
+media = ({"inlineData": {"mimeType": "audio/mpeg", "data": base64.b64encode(open(AUDIO, "rb").read()).decode()}} if AUDIO else
+         {"fileData": {"fileUri": f"https://www.youtube.com/watch?v={vid}", "mimeType": "video/*"},
+          "videoMetadata": {"startOffset": f"{s0}s", "endOffset": f"{s1}s"}})
+if AUDIO:
+    prompt = prompt.replace("첨부 영상 구간", "첨부 음성(영상의 해당 구간)") + " 음성만 들으므로 expression·board_draw는 말로 확인되는 것만, 아니면 null."
+body = {"contents": [{"role": "user", "parts": [media, {"text": prompt}]}],
     "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2, "maxOutputTokens": int(__import__("os").environ.get("GEMINI_MAX_OUT") or 16000),
-                         "frequencyPenalty": 0.3, "mediaResolution": "MEDIA_RESOLUTION_LOW"}}  # 11-05 목진석 표본 반복 폭주(65k 출력) 뒤 상한·반복 벌점
+                         **({"frequencyPenalty": 0.3} if "pro" in model else {}),  # Flash는 벌점 미지원(400)
+                         "mediaResolution": "MEDIA_RESOLUTION_LOW"}}  # 11-05 목진석 표본 반복 폭주(65k 출력) 뒤 상한·반복 벌점
 tok = subprocess.run(["gcloud", "auth", "print-access-token"], capture_output=True, text=True, check=True).stdout.strip()
 req = urllib.request.Request(f"https://aiplatform.googleapis.com/v1/projects/monkos/locations/global/publishers/google/models/{model}:generateContent",
                              data=json.dumps(body).encode(), headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json"})
@@ -56,6 +61,6 @@ try:
 except json.JSONDecodeError:
     (out / "gemini_full_raw.txt").write_text(txt)
     sys.exit(f"❌ gemini_full: JSON 아님(finishReason {cand.get('finishReason')}, 출력 토큰 {u.get('candidatesTokenCount')}) — 원문 {out / 'gemini_full_raw.txt'}")
-res["_meta"] = {"model": r.get("modelVersion", model), "usage": u, "secs": round(time.time() - t0, 1), "window": [s0, s1]}
+res["_meta"] = {"model": r.get("modelVersion", model), "usage": u, "secs": round(time.time() - t0, 1), "window": [s0, s1], "input": "audio" if AUDIO else "video"}
 (out / "gemini_full.json").write_text(json.dumps(res, ensure_ascii=False, indent=1))
 print(f"완료 {time.time() - t0:.0f}초 · 장면 {len(res.get('scenes', []))} · 토큰 입력 {u.get('promptTokenCount')} 출력 {u.get('candidatesTokenCount')} 생각 {u.get('thoughtsTokenCount')}")
