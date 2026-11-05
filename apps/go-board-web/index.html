@@ -896,7 +896,7 @@ document.addEventListener('pointerdown', ev => { AD.lastTap = performance.now();
 function buildSounds(state) {
   const pack = state.packs && state.packs[packName];
   if (pack) {
-    const base = `/pack/${packName}/`, has = n => pack.files.find(f => f.replace(/\.(mp3|wav)$/, '') === n);
+    const base = `/pack/${packName}/`, has = n => pack.files.find(f => f.replace(/\.(mp3|wav|m4a)$/, '') === n);
     const urls = names => names.map(has).filter(Boolean).map(f => base + f);
     const one = n => (has(n) ? base + has(n) : null);
     const cap = { 1: urls(['stone1', 'stone1s']), 2: urls(['stone2', 'stone2s']), 3: urls(['stone3', 'stone3s']) };
@@ -1528,8 +1528,22 @@ function makeClock(t) {
 // 시간패 판정은 서버가 한다.
 const CLOCK_SNAP = 2.0;
 const clockTot = c => (c.inByo ? 0 : c.main) + c.period + (c.left - 1) * c.byo;
+let clockRoom = null;
 function syncClocks() {
   const k = S && S.clock, t = S && S.time;
+  // 11-05 11:25 작가님 "시간을 서버가 처리해줘야하나? 앱 자체에서 기계적으로 처리하는게 더 정확한거 아니야?"
+  // AI 대국: 시계는 기기가 혼자 잰다. 서버 시계는 화면을 처음 열 때(새로고침·재접속) 한 번만 복원에 쓰고, 그 뒤 핑·응답으로는
+  // 건드리지 않는다. 새 수가 오면 그 수를 둔 쪽의 초읽기 회만 새로 시작한다. 시간패는 기기가 판정해 서버에 알린다(/api/timeout)
+  if (clocks && S && k && t && !S.stale && (S.kind || 'ai') === 'ai' && clockRoom === S.room && clockMv !== -1) {
+    if (clockMv !== S.moveNo) {
+      const mover = S.lastColor && clocks[S.lastColor];
+      if (mover && mover.inByo) { mover.period = mover.byo; mover.off = 0; }  // 한 수(통과 포함)를 두면 그 쪽 회가 처음부터
+      clockLast = performance.now();  // 반영한 이 순간부터 다음 차례가 흐른다(하나 = +HANA_DELAY초)
+      clockMv = S.moveNo;
+    }
+    return;
+  }
+  clockRoom = S && !S.stale ? S.room : null;
   const old = clocks && S && clockMv === S.moveNo ? clocks : null, oldLast = clockLast;
   clocks = k && t ? { B: null, W: null } : null;
   if (clocks) for (const c of ['B', 'W']) {

@@ -41,7 +41,7 @@ for (let i = 1; i <= 3; i++) SND.remain[i] = `remain${i}`;
 api.setSND(SND);
 const clk = (running, elapsed, left) => ({
   B: { main: 0, period: BYO, left, inByo: true }, W: { main: 0, period: BYO, left: PER, inByo: true }, running, elapsed });
-const S = { moveNo: 0, user: 'B', toMove: 'W', time: { main: 0, byo: BYO, periods: PER }, result: null, scoring: false, stale: false, clock: clk('W', 0, PER) };
+const S = { room: 'r', kind: process.env.KIND || 'ai', lastColor: null, moveNo: 0, user: 'B', toMove: 'W', time: { main: 0, byo: BYO, periods: PER }, result: null, scoring: false, stale: false, clock: clk('W', 0, PER) };
 api.setS(S);
 api.syncClocks();
 const out = [];
@@ -51,7 +51,7 @@ for (const [lat, think] of TURNS) {
   const tStart = NOW / 1000 + 0.5;            // 상대가 생각 0.5초 뒤 착수(서버 시각)
   step(Math.round((tStart + lat) * 1000) + (PHASE % 100));
   const arrive = NOW / 1000;
-  S.moveNo += 1; S.toMove = 'B'; S.clock = clk('B', +(arrive - tStart).toFixed(3), left);
+  S.moveNo += 1; S.lastColor = 'W'; S.toMove = 'B'; S.clock = clk('B', +(arrive - tStart).toFixed(3), left);
   api.syncClocks();                           // 상대 수 화면 반영(새 moveNo)
   const from = said.length;
   let nextSync = arrive + 5;
@@ -64,7 +64,7 @@ for (const [lat, think] of TURNS) {
   }
   api.clockMoved('B');                         // 내 착수
   left = api.clocks().B.left;
-  S.moveNo += 1; S.toMove = 'W'; S.clock = clk('W', 0, left);
+  S.moveNo += 1; S.lastColor = 'B'; S.toMove = 'W'; S.clock = clk('W', 0, left);
   api.syncClocks();
   out.push({ lat, think, arrive: +arrive.toFixed(3), said: said.slice(from).map(e => [+(e.t - arrive).toFixed(3), e.file + (e.cancelled ? '(취소)' : '')]) });
 }

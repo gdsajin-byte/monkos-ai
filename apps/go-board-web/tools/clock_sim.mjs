@@ -41,7 +41,7 @@ const serverAt = tSec => {  // 서버가 보는 내 시계(정확한 값) + 주�
   while (rem <= 0 && left > 1) { left--; rem += BYO; }
   return { B: { main: 0, period: BYO, left: PER, inByo: true }, W: { main: 0, period: BYO, left: PER, inByo: true }, running: 'B', elapsed: tSec + ERR };
 };
-const S = { moveNo: 1, user: 'B', toMove: 'B', time: { main: 0, byo: BYO, periods: PER }, result: null, scoring: false, clock: serverAt(0), stale: false };
+const S = { room: 'r', kind: process.env.KIND || 'ai', moveNo: 1, user: 'B', toMove: 'B', time: { main: 0, byo: BYO, periods: PER }, result: null, scoring: false, clock: serverAt(0), stale: false };
 api.setS(S);
 NOW = PHASE;
 S.clock = serverAt(0); S.clock.elapsed = 0;
