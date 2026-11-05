@@ -47,6 +47,8 @@ HUMAN_MODEL = KATA_DIR / "b18c384nbt-humanv0.bin.gz"
 MONKOS_VERSIONS = [
     {"key": "monkos", "ver": "v1", "model": "monk_b10_s41M.bin.gz", "tag": "MONKOS-Go-b10-s41M", "stage": "b10·4,154만",
      "samples": "4,154만", "saved": "11-04", "sha256": "2ba167f4"},  # 4060 eval b10-s41211392-d12492409
+    {"key": "monkos-v2", "ver": "v2", "model": "monk_b10_s83M.bin.gz", "tag": "MONKOS-Go-b10-s83M", "stage": "b10·8,344만",
+     "samples": "8,344만", "saved": "11-05", "sha256": "b05657e9"},  # 4060 b10-s83435776-d44718443(11-05 14:50 마감 최종 평가 변환본)
 ]
 if os.environ.get("GO_BOARD_TEST") == "1" and os.environ.get("GO_BOARD_TEST_VERSIONS"):
     # 테스트 인스턴스 전용 — 공존·상한·유휴 정리 검증용 추가 버전(JSON 목록). 실사용 포트는 TEST 가 아니라 읽지 않는다
@@ -66,6 +68,11 @@ MONK_TAG = MONK_LATEST["tag"]
 def monk_ver(level):
     """MONKOS Go 레벨 → 버전 사전(옛 'monk' 판 = v1 모델). 아니면 None"""
     return MONKOS_VERSIONS[0] if level == "monk" else MONK_BY_KEY.get(level)
+
+
+def monk_gone(level):
+    """목록에서 빠진 버전의 옛 방('monkos-vN') — 표기만 하고 대국 엔진은 없다(기동 때 방 복원이 죽지 않게)"""
+    return isinstance(level, str) and level.startswith("monkos-") and level not in MONK_BY_KEY
 
 
 def monk_label(v):
@@ -1271,11 +1278,15 @@ class Room:
 
     def opp_short(self):
         """대국 화면·결과 문구의 상대 짧은 이름."""
+        if monk_gone(self.level):
+            return f"{BOT_NAME} {self.level[7:]}"
         return (f"{BOT_NAME} {MONK_BY_KEY[self.level]['ver']}" if self.level in MONK_BY_KEY
                 else LEGACY_MONK["name"] if self.level == "monk" else "KataGo")
 
     def opp_name(self):
         """기보·대국자 표기의 상대 이름 — MONK 봇은 모델 태그+수읽기(학습 단계별 비교용)."""
+        if monk_gone(self.level):
+            return f"{BOT_NAME.replace(' ', '-')}-{self.level[7:]}({STRONG_VISITS}v)"
         return bot_sgf(self.level) if self.level in BOT_LEVELS else f"KataGo({self.level_label()})"
 
     def level_label(self):
@@ -1285,9 +1296,11 @@ class Room:
             return f"흑 {p.get('B', '흑')}{rk('B')} vs 백 {p.get('W', '백')}{rk('W')}"
         if self.level in MONK_BY_KEY:
             return monk_label(MONK_BY_KEY[self.level])
+        if monk_gone(self.level):
+            return f"{BOT_NAME} {self.level[7:]} (목록에 없는 버전)"
         if self.level == "monk":
             return LEGACY_MONK["label"]
-        return "KataGo 최강" if self.level == "strong" else f"KataGo {RANK_KO[self.level]}"  # 10-24 표기 단순화(옛 '사람형 N단')
+        return "KataGo 최강" if self.level == "strong" else f"KataGo {RANK_KO.get(self.level, self.level)}"  # 모르는 레벨도 기동을 막지 않는다 · 10-24 표기 단순화(옛 '사람형 N단')
 
     # ---- 시계: 차례가 바뀔 때마다 둔 쪽을 깎고, 초읽기면 그 회를 처음부터
 
