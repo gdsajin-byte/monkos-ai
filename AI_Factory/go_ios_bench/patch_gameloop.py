@@ -25,7 +25,7 @@ h = open(H).read()
 if "// ===== MONK autobench" not in h:
     sys.exit("❌ patch_gameloop: patch_autobench.py 를 먼저 적용해야 한다(monkAutoBench 없음)")
 
-VER = "v2"  # v2: 자체 화면 캡처 3장(11-06 05:42 작가님 "기기마다 잘 도는지 캡처")
+VER = "v3"  # v2: 자체 화면 캡처 3장(11-06 05:42 작가님) · v3: 판 화면에서 캡처(쌍아 06:00 — v2는 GTP 명령 화면이 찍힘)
 if MARK in h and f"MONK gameloop {VER}" in h:
     print("helper: already", VER)
 else:
@@ -33,9 +33,12 @@ else:
         a, b = h.index(MARK), h.index("// ===== /MONK gameloop =====") + len("// ===== /MONK gameloop =====\n")
         h = h[:a] + h[b:]
         h = h.replace("    monkGameLoop(docs, modelPath, configPath, monkVisits);  // MONK gameloop(FTL)\n", "")
+        h = h.replace("    monkGameLoopShow();  // MONK gameloop(FTL) — GTP 준비 뒤 판 화면 캡처\n", "")
         print("helper: 이전 gameloop 블록 교체")
     funcs = MARK + f" {VER}" + r""" (FTL Game Loop — 한 번 측정·기록·캡처·종료) =====
 #import <UIKit/UIKit.h>
+
+static NSDictionary* gMonkGL = nil;  // 이번 실행 측정 결과(화면 캡처 단계로 넘김)
 
 /// benchmark 1회(-v visits -n 3 -t 32) → (visits/s, 국면당 초). 실패 시 -1
 static void monkBenchOnce(const string& model, const string& config, int visits, double& vps, double& secPerMove, string& raw) {
@@ -89,9 +92,7 @@ static void monkGameLoop(NSString* docs, NSString* modelPath, NSString* configPa
     [fm createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
     string model([modelPath UTF8String]), config([configPath UTF8String]), raw1, raw2;
     double v1, s1, v2, s2;
-    monkSnap(dir, 1, @"시작");
     monkBenchOnce(model, config, 1500, v1, s1, raw1);
-    monkSnap(dir, 2, [NSString stringWithFormat:@"1500v %.0f v/s", v1]);
     monkBenchOnce(model, config, autoVisits, v2, s2, raw2);
     struct utsname u; uname(&u);
     NSDictionary* ab = [NSJSONSerialization JSONObjectWithData:([NSData dataWithContentsOfFile:[docs stringByAppendingPathComponent:@"autobench.json"]] ?: [NSData data]) options:0 error:nil] ?: @{};
@@ -104,10 +105,40 @@ static void monkGameLoop(NSString* docs, NSString* modelPath, NSString* configPa
                           @"at": [[NSDate date] description], @"rawTail1500": tail};
     NSData* d = [NSJSONSerialization dataWithJSONObject:rec options:NSJSONWritingPrettyPrinted error:nil];
     [d writeToFile:[dir stringByAppendingPathComponent:[NSString stringWithFormat:@"bench_%s.json", u.machine]] atomically:YES];
-    monkSnap(dir, 3, [NSString stringWithFormat:@"종료 · 자동 %dv %.0f v/s", autoVisits, v2]);
     [@"1" writeToFile:done atomically:YES encoding:NSUTF8StringEncoding error:nil];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"firebase-game-loop-complete://"] options:@{} completionHandler:nil];
+    gMonkGL = @{@"dir": dir, @"v1": @(v1), @"s1": @(s1), @"v2": @(v2), @"s2": @(s2), @"auto": @(autoVisits)};  // 화면 캡처는 GTP 준비 뒤(monkGameLoopShow)
+}
+
+/// GTP 준비 뒤 판 화면 캡처 — 측정 국면(G10 첫 30수)을 놓고 Goban 탭으로 → 시작 · 1500v genmove 직후 · 자동 genmove 직후 → 완료 URL.
+/// GTP 명령은 전역 입력 스트림에 미리 넣어 두면 GTP가 뜬 뒤 차례로 처리한다(bench_cmds 와 같은 방식). 응답은 화면(UI)이 읽어 판을 그린다.
+static void monkGameLoopShow() {
+    NSDictionary* g = gMonkGL;
+    if (!g) return;  // 이번 실행에서 측정하지 않았으면(FTL 아님·이미 끝남) 아무것도 안 한다
+    gMonkGL = nil;
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        NSString* dir = g[@"dir"];
+        double s1 = [g[@"s1"] doubleValue], s2 = [g[@"s2"] doubleValue], v1 = [g[@"v1"] doubleValue], v2 = [g[@"v2"] doubleValue];
+        int av = [g[@"auto"] intValue];
+        const char* seq = "B R16 W Q4 B D17 W C4 B E4 W E3 B D4 W D3 B C5 W F4 B C3 W B4 B C2 W B5 B D6 W C6 B F3 W D5 B E5 W E6 "
+                          "B F5 W F6 B C5 W G5 B G4 W D7 B H5 W G6 B C14 W H4";  // 측정 국면 30수(작가님 G10 기보 앞부분)
+        std::stringstream in(seq); string c, m, cmds = "clear_board\n";
+        while (in >> c >> m) cmds += "play " + c + " " + m + "\n";
+        outToKataGo << cmds << "showboard\n" << flush;
+        sleep(12);  // GTP 기동(모델 적재)·판 그림 대기
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"MONKShowGoban" object:nil];
+        });
+        sleep(2);
+        monkSnap(dir, 1, @"시작 · 측정 국면 30수");
+        outToKataGo << "kata-set-param maxVisits 1500\ngenmove b\nshowboard\n" << flush;
+        sleep((unsigned)(s1 > 0 ? s1 : 5) + 4);
+        monkSnap(dir, 2, [NSString stringWithFormat:@"1500v 직후 · %.2f초 · %.0f v/s", s1, v1]);
+        outToKataGo << "kata-set-param maxVisits " << av << "\ngenmove w\nshowboard\n" << flush;
+        sleep((unsigned)(s2 > 0 ? s2 : 3) + 4);
+        monkSnap(dir, 3, [NSString stringWithFormat:@"종료 · 자동 %dv %.2f초 · %.0f v/s", av, s2, v2]);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"firebase-game-loop-complete://"] options:@{} completionHandler:nil];
+        });
     });
 }
 // ===== /MONK gameloop =====
@@ -118,8 +149,50 @@ static void monkGameLoop(NSString* docs, NSString* modelPath, NSString* configPa
     if anchor not in h:
         sys.exit("❌ patch_gameloop: monkAutoBench 호출 줄을 못 찾음 — patch_autobench 결과가 달라졌다")
     h = h.replace(anchor, anchor + "    monkGameLoop(docs, modelPath, configPath, monkVisits);  // MONK gameloop(FTL)\n", 1)
+    anchor2 = "    MainCmds::gtp(subArgs);\n"
+    if h.count(anchor2) != 1:
+        sys.exit("❌ patch_gameloop: MainCmds::gtp 호출 줄을 못 찾음")
+    h = h.replace(anchor2, "    monkGameLoopShow();  // MONK gameloop(FTL) — GTP 준비 뒤 판 화면 캡처\n" + anchor2, 1)
     open(H, "w").write(h)
     print("helper: patched")
+
+# ---- ContentView: 탭 선택 상태 + MONKShowGoban 알림 → Goban 탭(v3, 멱등)
+CV = os.path.join(ROOT, "KataGo iOS", "ContentView.swift")
+cv = open(CV).read()
+if "MONKShowGoban" in cv:
+    print("contentview: already")
+else:
+    pairs = [("    @State var isEditing = EditMode.inactive\n",
+              "    @State var isEditing = EditMode.inactive\n    @State private var monkTab = 0  // MONK gameloop: FTL 캡처 때 Goban 탭으로\n"),
+             ("        TabView() {", "        TabView(selection: $monkTab) {"),
+             ('''                    Label("Command", systemImage: "text.alignleft")
+                }
+''', '''                    Label("Command", systemImage: "text.alignleft")
+                }
+                .tag(0)
+'''),
+             ('''                    Label("Goban", systemImage: "circle")
+                }
+''', '''                    Label("Goban", systemImage: "circle")
+                }
+                .tag(1)
+'''),
+             ('''                    Label("Config", systemImage: "slider.horizontal.3")
+                }
+''', '''                    Label("Config", systemImage: "slider.horizontal.3")
+                }
+                .tag(2)
+'''),
+             ('''        .environment(\\.editMode, $isEditing)
+''', '''        .environment(\\.editMode, $isEditing)
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("MONKShowGoban"))) { _ in monkTab = 1 }  // MONK gameloop
+''')]
+    for a, b in pairs:
+        if cv.count(a) != 1:
+            sys.exit(f"❌ patch_gameloop: ContentView 패치 지점 없음 — {a.strip()[:40]}")
+        cv = cv.replace(a, b, 1)
+    open(CV, "w").write(cv)
+    print("contentview: patched(탭 선택·Goban 전환)")
 
 # ---- Info.plist URL 스킴 — 앱 대상은 생성형 Info.plist(GENERATE_INFOPLIST_FILE=YES, 11-06 M1 실측)
 # → URL 스킴만 담은 GameLoop-Info.plist 를 만들고 앱 대상(번들 ai.monkos.go.bench) 설정에 INFOPLIST_FILE 로 연결한다(Xcode가 생성 키와 합친다)
@@ -147,4 +220,4 @@ tg = sorted(set(re.findall(r"IPHONEOS_DEPLOYMENT_TARGET = ([\d.]+);", pbx)))
 print("deployment targets(전체 대상):", tg)
 if any(tuple(map(int, t.split("."))) > (16, 6) for t in tg):
     print("⚠️ patch_gameloop: 일부 대상(프레임워크 KataGoSwift·katago 등)의 최소 iOS가 16.6보다 높다 — "
-          "FTL iPhone 8·11 Pro(16.6)에서 설치·실행이 막힐 수 있다(실측으로 확인). SE 3(18.4)·16 Pro(18.3)는 무관")
+          "build_ipa.sh 가 IPHONEOS_DEPLOYMENT_TARGET=16.4 로 덮어써 빌드한다(11-06 FTL: 17.0 KataGoSwift 때문에 iOS 16.6 실행 직후 충돌 실측). 이 스크립트로 직접 빌드하지 말 것")
