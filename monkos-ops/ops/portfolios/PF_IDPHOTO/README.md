@@ -122,6 +122,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 11/05 | ?/? | **ORDER** idphoto-kr 중심 GA4 계측 강화 — 결제 전환·퍼널·배너 QR 출처·테스트 트래픽 분리. 민아 주관(마케팅·보안·검수 메인) | [ORDER_20261105_iMac쌍아_민아_IDPHOTO_GA4계측강화_idphotokr](../../orders/2026-11/ORDER_20261105_iMac쌍아_민아_IDPHOTO_GA4계측강화_idphotokr.md) | ⏳ |
 | 11/05 | ?/? | **ORDER** idphoto-kr 사진 올리기 열기 — 촬영 강제 해제(갤러리 업로드 → 기존 분석실 흐름 합류). 결제·생성 과금 불변. dev 배포까지, prod는 2번 지시서(결제 후 생성)와 함께 | [ORDER_20261105_iMac쌍아_막내_IDPHOTO_kr업로드열기](../../orders/2026-11/ORDER_20261105_iMac쌍아_막내_IDPHOTO_kr업로드열기.md) | ⏳ |
 | 11/05 | iMac/쌍아-막내8 | kr 재정비 1/4 사진 올리기 열기 — prep 갤러리 업로드·카메라 실패 우회·촬영 규격(512·0.6) 정규화·dev 00007-lgd 사전 판정 3장 OK·HEIC 안내 · prod는 2번과 묶음 | [COMPLETION_20261105_iMac쌍아-막내8_IDPHOTO_kr업로드열기](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내8_IDPHOTO_kr업로드열기.md) | 진행 |
+| 11/06 | iMac/민아 | GA4 계측 강화(민아 주관): purchase는 이미 수신 중(09-28·10-09) 확인 · ga-init.js 공통화(내부 트래픽 traffic_type=internal·결제 복귀 ignore_referrer·AI 유입 전 페이지) · 퍼널 교정(download_click/download_complete 실수령/generate_fail/download_fail/thankyou_view/login) · 측정기준 10종 등록은 SA 403 → 작가님 결정(A~D). dev 배포, prod는 업로드 열기와 묶음 대기 | [COMPLETION_20261106_iMac민아_IDPHOTO_GA4계측강화_idphotokr](../../reports/2026-11/COMPLETION_20261106_iMac민아_IDPHOTO_GA4계측강화_idphotokr.md) | ⏳ |
 
 ### Phase 1 — idphoto-kr/jp 웹 서비스 (01/16~02/14)
 

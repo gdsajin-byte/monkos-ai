@@ -4,14 +4,7 @@
 <meta name="naver-site-verification" content="63680f93023b11a865d8c4333fa4dcc9d556ec70" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JPZWSJ3323"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-JPZWSJ3323');
-  (function(){var d=['chatgpt.com','perplexity','claude.ai','gemini.google','copilot'];var r=document.referrer||'';if(d.some(function(s){return r.includes(s)})){var e=r.includes('chatgpt')?'chatgpt':r.includes('perplexity')?'perplexity':r.includes('claude.ai')?'claude':r.includes('gemini.google')?'gemini':r.includes('copilot')?'copilot':'other_ai';gtag('event','ai_referral_landing',{'ai_engine':e,'landing_page':location.pathname})}})();
-  if(!sessionStorage.getItem('landing_referrer')){sessionStorage.setItem('landing_referrer',document.referrer||'direct');sessionStorage.setItem('landing_url',location.href);}
-</script>
+<script src="/ga-init.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MONKOS AI 증명사진 | AI 코칭으로 완벽한 증명사진</title>
@@ -1108,7 +1101,7 @@ function handleGoogleTokenCallback(tokenResponse) {
   .then(function(data) {
     if (data.success && data.user) {
       updateAuthUI(data.user);
-      gtag('config', 'G-JPZWSJ3323', { user_id: data.user.id });
+      gtag('config', 'G-JPZWSJ3323', { user_id: data.user.id, send_page_view: false });
       if (data.isNewUser) {
         showToast((data.user.name || '') + '님, MONKOS에 오신 것을 환영합니다!', 'info');
       }
@@ -1145,7 +1138,7 @@ function listenAuthMessage() {
     if (e.origin !== (window.MONKOS_PORTAL_URL || 'https://monkos.ai')) return;
     if (e.data && e.data.type === 'auth-success') {
       updateAuthUI(e.data.user);
-      if (e.data.user && e.data.user.id) gtag('config', 'G-JPZWSJ3323', { user_id: e.data.user.id });
+      if (e.data.user && e.data.user.id) gtag('config', 'G-JPZWSJ3323', { user_id: e.data.user.id, send_page_view: false });
       window.removeEventListener('message', handler);
     }
   }
@@ -1172,7 +1165,7 @@ function downloadGate() {
     .then(function(data) {
       if (data && data.user && data.user.id) {
         updateAuthUI(data.user);
-        gtag('config', 'G-JPZWSJ3323', { user_id: data.user.id });
+        gtag('config', 'G-JPZWSJ3323', { user_id: data.user.id, send_page_view: false });
       }
     })
     .catch(function() {});

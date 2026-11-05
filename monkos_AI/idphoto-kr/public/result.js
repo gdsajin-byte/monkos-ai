@@ -206,6 +206,7 @@ async function confirmAndGenerate() {
     Monk.log(`사전분석: ${preCheck.score}점 ${preCheck.suitable ? 'OK' : 'NG'}`);
 
     if (!preCheck.suitable) {
+      if (typeof gtag === 'function') gtag('event', 'generate_fail', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr', fail_stage: 'precheck', fail_code: 'SCORE_' + (preCheck.score ?? 'NA') });
       store.statusText = `사전분석: ${preCheck.score}점 — ${preCheck.suggestion || '재촬영을 권장합니다'}`;
       store.resultTitle = '재촬영을 권장합니다';
       store.resultSubtitle = preCheck.suggestion || '촬영 환경을 개선해 주세요';
@@ -220,6 +221,7 @@ async function confirmAndGenerate() {
 
   // ─── 잔고 사전 체크 (시머링 시작 전) ───
   if (store.user.credits < CREDIT_COST.generate) {
+    if (typeof gtag === 'function') gtag('event', 'generate_fail', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr', fail_stage: 'credit', fail_code: 'INSUFFICIENT' });
     showChargeModal();
     store.showStep2Actions = true;
     store.resultTitle = TX.resultConfirm;
@@ -298,6 +300,7 @@ async function confirmAndGenerate() {
 
   } catch (err) {
     hideGenOverlay();
+    if (typeof gtag === 'function') gtag('event', 'generate_fail', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr', fail_stage: err.status === 402 ? 'credit' : 'generate', fail_code: String(err.status || err.code || 'ERR').slice(0, 40) });
     if (err.status === 402) {
       showChargeModal();
       store.showStep2Actions = true;
@@ -324,7 +327,7 @@ function showGenerateError(error) {
 async function downloadResult() {
   if (!store.generated) return;
 
-  if (typeof gtag === 'function') gtag('event', 'begin_checkout', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr' });
+  if (typeof gtag === 'function') gtag('event', 'download_click', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr' });
 
   // C2 핫픽스: 연속 클릭 방지
   const btn = document.querySelector('#btn-download');
@@ -431,6 +434,7 @@ async function doDownload() {
     const data = await res.json();
 
     if (!res.ok) {
+      if (typeof gtag === 'function') gtag('event', 'download_fail', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr', fail_stage: res.status === 402 ? 'credit' : 'server', fail_code: 'HTTP_' + res.status });
       if (res.status === 402) {
         showChargeModal();
         return;
@@ -439,6 +443,8 @@ async function doDownload() {
     }
 
     store.user = { ...store.user, credits: data.credits };
+    // 실제 수령 완료 = 서버 차감·원본 URL 발급 성공 시점 (이전엔 thankyou 페이지 열람을 download_complete로 셌다 — 2026-11-06)
+    if (typeof gtag === 'function') gtag('event', 'download_complete', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr', value: CREDIT_COST.download, currency: 'KRW' });
 
     // 보정 원본 (노크롭) → thankyou + 크롭앱 전달용
     saveSessionData('image', data.image);
