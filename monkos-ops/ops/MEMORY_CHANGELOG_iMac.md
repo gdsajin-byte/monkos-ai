@@ -751,3 +751,4 @@
 - **[2026-11-05 23:11 KST]** iMac/쌍아 — 갱신: project_monkos_sovereignty (SaaS→모듈러, 작가님 23:11)
 - **[2026-11-05 23:16 KST]** iMac/쌍아 — 갱신: project_records_as_system_correction (기록=시대 잇는 통로, 작가님 23:16)
 - **[2026-11-05 23:59 KST]** iMac/쌍아 — 갱신: project_monkos_sovereignty (SaaS 링크 목록 vs 자체 모듈 오케스트레이션, 작가님 23:59)
+- 2026-11-06 06:17 iMac/쌍아: project_app_ops_routine_vision 신설(작가님 앱 다수 출시 후 운영 루틴 구상) + MEMORY.md 1행
