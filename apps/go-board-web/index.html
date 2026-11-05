@@ -905,7 +905,7 @@ function buildSounds(state) {
     for (let i = 1; i <= 11; i++) count[i] = one('count' + i);
     // 11-05 12:11 작가님 "두번부터만 하자 세번 네번은 필요 없겠어" — 남은 2회(두 번 남았습니다)·1회(마지막입니다)만. 3회 이상은 안내 없이(하나 +1.5초)
     for (let i = 1; i <= REMAIN_MAX; i++) remain[i] = one('remain' + i);
-    SND = { stone: urls(['stone0', 'stone0s']), cap: cap[1].length ? cap : null, overlay: [], count, remain, byo: one('byo'),
+    SND = { stone: urls(['stone0', 'stone0s']), cap: cap[1].length ? cap : null, overlay: [], count, remain, byo: one('byo'), timeout: one('timeout'),
             start: one('start'), counting: one('counting'), note: pack.note };
   } else {
     packName = 'builtin';
@@ -915,7 +915,7 @@ function buildSounds(state) {
     SND = { stone: st, cap: null, overlay: ov, count: {}, remain: {}, start: null, counting: null, note: '' };
   }
   const all = [...SND.stone, ...SND.overlay, ...(SND.cap ? [...SND.cap[1], ...SND.cap[2], ...SND.cap[3]] : []),
-               ...Object.values(SND.count), ...Object.values(SND.remain), SND.byo, SND.start, SND.counting].filter(Boolean);
+               ...Object.values(SND.count), ...Object.values(SND.remain), SND.byo, SND.timeout, SND.start, SND.counting].filter(Boolean);
   for (const u of all) {
     if (decoded[u] !== undefined) continue;
     decoded[u] = null;
@@ -1528,6 +1528,7 @@ function speechSpan(b) {
 let ANN_MODE = 'after';  // 12:14 확정(fixed는 시험값으로만)
 // 11-05 12:14 작가님 "초읽기를 시작합니다 끝나고 1.5초 주고 하나로 들어가도 돼 … 기록경기도 아니고" — 안내 끝 → 하나(초). 착수 뒤 1.5초와 같은 박자
 const ANN_TO_HANA = 1.5;
+const TIMEOUT_AFTER = 1.5;  // 마지막 열 → '시간패하셨습니다'(초)
 try { if (new URLSearchParams(location.search).get('ann') === 'fixed') ANN_MODE = 'fixed'; } catch (e) {}
 // 11-05 12:01 작가님 "그냥 당기지 말고 두번남았습니다 1초 하나 이런식으로 마지막 입니다 1초 하나 이렇게"
 // 회 넘김·초읽기 진입: 열(0:00) → 안내 → 안내 끝 + 1초에 하나. 새 회의 0:10 유예 = 안내 끝 − 회 시작(초). 숫자·화면·시간패는 한 시간축
@@ -1649,7 +1650,7 @@ function tickClock(c, dt, emit) {
   cross(before, c.period);
   if (c.period <= 0) {
     c.left -= 1;
-    if (c.left <= 0) { c.flagged = true; c.period = 0; emit('flag'); return; }
+    if (c.left <= 0) { const over = -c.period; c.flagged = true; c.period = 0; emit('flag', -over); return; }  // 사건 시각 = 마지막 열(0:00)
     const over = -c.period;  // 회 끝을 지난 만큼(이번 틱 안)
     const g = emit('remain' + c.left, -over);  // 열 → 안내 → 안내 끝 + 1초에 하나
     const full = c.byo + (typeof g === 'number' ? g : byoGrace());
@@ -1679,7 +1680,11 @@ function clockTick() {
       if (e.startsWith('count')) sayOnce(`${left || c.left}:${e}`, SND.count[Number(e.slice(5))], d);
       else if (e.startsWith('remain')) return sayOnce(`${c.left}:${e}`, SND.remain[Number(e.slice(6))], d);
       else if (e === 'byo') return sayOnce(`${c.left}:byo`, SND.byo, d);
-      else if (e === 'flag') call('/api/timeout', { color: S.user });
+      else if (e === 'flag') {
+        // 11-05 12:20 작가님 "마지막 초읽기 열 읽은후엔 1.5초 후에 '시간패하셨습니다' 멘트" — 시간패한 본인 화면에서만. 판정·결과 표시는 0:00 그대로
+        if (SND.timeout) voice(SND.timeout, Math.max(0, TIMEOUT_AFTER + (d || 0)));
+        call('/api/timeout', { color: S.user });
+      }
     });
   }
   renderClocks();
