@@ -1496,22 +1496,26 @@ let clocks = null, clockTimer = null, clockLast = 0, clockMv = -1;
 // 5초 핑마다 서버 값으로 내 시계를 갈아 끼우면 그 사이 지난 초의 음성이 빠지거나(앞으로) 되풀이됐다(뒤로) — REPORT 초읽기끊김.
 // → 내 차례 같은 회에서 오차가 1초 안이면 내 시계를 그대로 두고, 같은 (회·숫자)는 한 번만 읽는다. 박자 계산은 원본 그대로.
 const SAID = { mv: -1, set: new Set() };
-let annEnd = 0;  // 남은 횟수 안내 말소리가 끝나는 시각(performance.now 기준 ms) — 그 사이 '하나'는 안내 뒤로
-function sayOnce(key, url) {
+// 11-05 11:10 작가님 "0.1초 짧다 사람의 한숨 들어가는 느낌 1초로 가봐" — 착수 화면 반영 → '하나'까지(초). 조정은 이 값 하나
+const HANA_DELAY = 1.0;
+const CLOCK_LOOKAHEAD = 0.1;  // 다음 틱 안에 올 숫자는 미리 정확한 시각으로 예약(±0.05초). 착수하면 예약분만 취소
+let annEnd = 0, cntEnd = 0;  // 안내·숫자 말소리가 끝나는 시각(performance.now ms)
+function sayOnce(key, url, delay) {
   if (!S) return;
-  if (SAID.mv !== S.moveNo) { SAID.mv = S.moveNo; SAID.set.clear(); annEnd = 0; }
+  if (SAID.mv !== S.moveNo) { SAID.mv = S.moveNo; SAID.set.clear(); annEnd = 0; cntEnd = 0; }
   if (SAID.set.has(key)) return;
   SAID.set.add(key);
-  const now = performance.now();
-  if (key.includes(':remain')) {  // 안내: 말소리 끝(파일 길이 − 끝 무음 0.15초 — 맞춤 도구가 말 끝 뒤 150ms로 자름)
-    const b = url && decoded[url];
-    annEnd = now + (b ? Math.max(0, b.duration - 0.15) * 1000 : 0);
-    voice(url);
-    return;
+  const now = performance.now(), b = url && decoded[url];
+  let at = now + (delay || 0) * 1000;
+  if (key.includes(':remain')) {  // 안내: 회 끝의 '열'이 끝난 뒤. 말소리 끝 = 파일 길이 − 0.15초(맞춤 도구가 말 끝 뒤 150ms로 자름)
+    at = Math.max(at, cntEnd);
+    annEnd = at + (b ? Math.max(0, b.duration - 0.15) * 1000 : 0);
+  } else {
+    // 순서 "안내 → 하나 → 둘": 안내가 아직 나오는 중이면 '하나'만 안내 끝으로(최대 0.95초). 둘부터는 격자 그대로
+    if (key.endsWith(':count1') && annEnd > at) at = Math.min(at + 950, annEnd);
+    cntEnd = at + (b ? Math.max(0, b.duration - 0.08) * 1000 : 0);
   }
-  // 11-05 10:55 작가님 순서 "마지막 → 하나 → 둘": 안내가 아직 나오는 중이면 '하나'만 안내 끝으로 미룬다(최대 0.95초). 둘부터는 격자 그대로
-  const wait = key.endsWith(':count1') && annEnd > now ? Math.min(0.95, (annEnd - now) / 1000) : 0;
-  voice(url, wait);
+  voice(url, Math.max(0, (at - now) / 1000));
 }
 function makeClock(t) {
   return t ? { main: t.main * 60, byo: t.byo, periods: t.periods, left: t.periods, period: t.byo, inByo: t.main === 0, flagged: false } : null;
@@ -1541,11 +1545,11 @@ function syncClocks() {
   } else if (clocks && S && clockMv !== S.moveNo && clockMv !== -1 && k.running === S.user && !S.result && !S.stale) {
     // 11-05 10:59 작가님 "착수 순간에 바로 초를 읽으니 하나가 매번 빠지고 때론 셋부터 … 착수하고 약 0.1초 후에 시작해도 돼"
     // 상대 수가 화면에 반영된 지금을 내 회의 시작점으로 — 서버 응답 지연만큼 이미 지나간 것으로 치지 않는다.
-    // 0.1초 뒤 '하나', 그 시점이 1초 격자의 기준. 초읽기 중일 때만(기본 시간은 서버 값 그대로)
+    // 반영 + HANA_DELAY초에 '하나', 1초 격자(11:10 0.1→1.0초). 초읽기 중일 때만(기본 시간은 서버 값 그대로)
     const c = clocks[S.user], v = k[S.user];
     if (c && c.inByo && v.inByo && !c.flagged && c.left === v.left && k.elapsed < Math.min(3, t.byo)) {
       const before = rem(c);
-      c.period = t.byo; c.hold = 0.1;
+      c.period = t.byo;
       c.off = rem(c) - before;  // 서버보다 늦게 세는 만큼(응답 지연) — 같은 회 보정 때 뺀다
     }
   }
@@ -1562,24 +1566,29 @@ function tickClock(c, dt, emit) {
     if (c.main > 0) return;
     c.inByo = true; dt = -c.main; c.main = 0; c.period = c.byo; emit('byo');
   }
-  if (c.hold > 0) { const h = Math.min(c.hold, dt); c.hold -= h; dt -= h; if (dt <= 0) return; }  // 착수 반영 뒤 0.1초 쉼
   const before = c.period;
   c.period -= dt;
-  // 마지막 10초는 '하나'부터 센다(10-23 작가님 "초읽기 하나부터"): 10초 남음=하나 … 1초 남음=열
-  // 11-05 10:55 작가님 "하나는 매번 생략이네" — before > k 이면 회가 정확히 10초로 시작할 때 '하나'를 못 셈 → before >= k && < k
-  for (let k = 10; k >= 1; k--) if (before >= k && c.period < k) emit('count' + (11 - k));
+  // 숫자 n = 남은 (11 − n − HANA_DELAY)초. 다음 틱(CLOCK_LOOKAHEAD) 안에 올 경계는 지금 정확한 시각으로 예약한다
+  const LA = CLOCK_LOOKAHEAD, cross = (from, to) => {
+    for (let n = 1; n <= 10; n++) {
+      const thr = 11 - n - HANA_DELAY;
+      if (thr < 0 || thr >= c.byo) continue;
+      if (from - LA >= thr && to - LA < thr) emit('count' + n, Math.max(0, to - thr));
+    }
+  };
+  cross(before, c.period);
   if (c.period <= 0) {
     c.left -= 1;
     if (c.left <= 0) { c.flagged = true; c.period = 0; emit('flag'); return; }
-    c.period += c.byo; emit('remain' + c.left);
-    for (let k = 10; k >= 1; k--) if (c.byo >= k && c.period < k) emit('count' + (11 - k));  // 새 회 첫 경계(10초 초읽기의 '하나')
+    c.period += c.byo; emit('remain' + c.left, 0);
+    cross(c.byo + LA, c.period);  // 새 회 첫 틱 안의 경계
   }
 }
 
 function clockMoved(color) {  // 한 수를 두면 초읽기 한 회가 처음부터
   cancelPendingVoice();  // 예정된 다음 숫자만 취소 — 재생 중인 음성은 건드리지 않음
   const c = clocks && clocks[color];
-  if (c && c.inByo) { c.period = c.byo; c.hold = 0; c.off = 0; }
+  if (c && c.inByo) { c.period = c.byo; c.off = 0; }
 }
 
 function clockTick() {
@@ -1593,9 +1602,9 @@ function clockTick() {
     tickClock(c, dt, () => {});
     if (c.flagged) { c.flagged = false; c.left = 1; c.period = 1; }
   } else {
-    tickClock(c, dt, e => {
-      if (e.startsWith('count')) sayOnce(`${c.left}:${e}`, SND.count[Number(e.slice(5))]);
-      else if (e.startsWith('remain')) sayOnce(`${c.left}:${e}`, SND.remain[Number(e.slice(6))]);
+    tickClock(c, dt, (e, d) => {
+      if (e.startsWith('count')) sayOnce(`${c.left}:${e}`, SND.count[Number(e.slice(5))], d);
+      else if (e.startsWith('remain')) sayOnce(`${c.left}:${e}`, SND.remain[Number(e.slice(6))], d);
       else if (e === 'flag') call('/api/timeout', { color: S.user });
     });
   }
