@@ -91,6 +91,7 @@ domain: "presentation, 3d-avatar, tts, content-pipeline"
 | 05/17 | 작가님 | **SwiftUI 코드 애니메이션 → PT 자동화 인사이트** — IDPASS Landing 데모(상태머신+타이머+선언적 UI)가 macOS 네이티브로 KeyNote 없이 프레젠테이션 가능함을 입증. 코드=슬라이드 패턴. ImageRenderer 프레임 캡처→mp4 자동 출력으로 영상화도 가능. PF_VIDEO와 공통 패턴. macOS 전용(Apple 생태계) | — | 💡 인사이트 |
 | 10/25 | iMac/쌍아 | **데모** 에이전트 프리젠테이션 기반 — 바둑 해설 60초 쇼츠: 캐릭터 구간(유니, Kling 4.0 Omni-Ref 이미지+자체 음성, 720p 초당 10크레딧)은 앞뒤만 + 본문은 데이터 기반 모션그래픽(기보 재현·승률 그래프·배지·자막, 0크레딧) + ElevenLabs 유니 음색. 작가님 17:46 '에이전트 프리젠테이션의 기반이 잡혀가는 느낌' | `scratchpad demo_mid.mp4(47초, 레포 밖)` | 🔄 |
 | 11/05 | iMac/쌍아 | 바둑 해설 아바타 연결 — 유니(캐스터)·작가님(해설위원) 아바타 해설자 구상이 PT 엔진(apps/monkos-3d, 3D 캐릭터·TTS 립싱크)의 다음 단계로 편입. 대본 원천=PF_GO 형세봇·해설 LLM·캐스터–해설 대담 연구 (작가님 11-05 21:55·22:07) | [DESIGN_20261105_GO_형세봇_계가정답지_MONKOS성장](../../../tech/designs/2026-11/DESIGN_20261105_GO_형세봇_계가정답지_MONKOS성장.md) | 📝 |
+| 11/05 | iMac/쌍아 | **DESIGN** 바둑 해설 영상 자체 제작 — 판 위주 화면 + 사이드 얼굴(유니·작가님 아바타) + 목소리(ElevenLabs vs 오픈소스) + 자동 편집, 4060(8GB)이 어디까지 덮는지 | [DESIGN_20261105_PRESENTATION_바둑해설영상_자체제작_4060](../../../tech/designs/2026-11/DESIGN_20261105_PRESENTATION_바둑해설영상_자체제작_4060.md) | ⏳ |
 
 ---
 
