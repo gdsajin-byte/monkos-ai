@@ -738,3 +738,6 @@
 - 2026-11-02 21:38 KST MEMORY 추가: feedback_header_time_last_measured (헤더 시각=마지막 실측 복사, 작가님 21:37)
 - **[2026-11-05 14:50 KST]** iMac/쌍아 — 추가: project_idphoto_kr_trunk_lineage (증명사진 축 계보, 작가님 14:50)
 - **[2026-11-05 14:55 KST]** iMac/쌍아 — 갱신: feedback_audit_is_mina_role (마케팅·보안·검수=민아 메인, 작가님 14:54)
+- **[2026-11-05 15:16 KST]** iMac/쌍아 — 추가: project_idphoto_kr_direct_pay_pivot (kr 직접 결제 전환 4항, 작가님 15:16)
+- **[2026-11-05 15:32 KST]** iMac/쌍아 — 갱신: project_idphoto_kr_direct_pay_pivot (무료 생성 폐지·첫 가입 첫 결제 보너스, 작가님 15:32)
+- **[2026-11-05 15:33 KST]** iMac/쌍아 — 갱신: project_idphoto_kr_direct_pay_pivot (1컷 결제→다른 컷 크레딧 마케팅, 작가님 15:33)
