@@ -49,6 +49,8 @@ MONKOS_VERSIONS = [
      "samples": "4,154만", "saved": "11-04", "sha256": "2ba167f4"},  # 4060 eval b10-s41211392-d12492409
     {"key": "monkos-v2", "ver": "v2", "model": "monk_b10_s83M.bin.gz", "tag": "MONKOS-Go-b10-s83M", "stage": "b10·8,344만",
      "samples": "8,344만", "saved": "11-05", "sha256": "b05657e9"},  # 4060 b10-s83435776-d44718443(11-05 14:50 마감 최종 평가 변환본)
+    {"key": "monkos-v3", "ver": "v3", "model": "monk_b10_s95M.bin.gz", "tag": "MONKOS-Go-b10-s95M", "stage": "b10·9,542만",
+     "samples": "9,542만", "saved": "11-06", "sha256": "db3efa11"},  # 4060 b10-s95446016-d44718443(11-06 02:51 목표 도달, export_latest 변환본 — 최종 평가 보류)
 ]
 if os.environ.get("GO_BOARD_TEST") == "1" and os.environ.get("GO_BOARD_TEST_VERSIONS"):
     # 테스트 인스턴스 전용 — 공존·상한·유휴 정리 검증용 추가 버전(JSON 목록). 실사용 포트는 TEST 가 아니라 읽지 않는다
