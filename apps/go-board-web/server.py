@@ -23,6 +23,7 @@ import os
 import random
 import re
 import secrets
+import ssl
 import subprocess
 import sys
 import threading
@@ -581,6 +582,25 @@ PORTAL_TOKEN_RE = re.compile(r"[A-Za-z0-9_-]{20,400}")
 EMAIL_SHAPE_RE = re.compile(r"[^\s@]{1,64}@[^\s@]{1,253}\.[A-Za-z]{2,24}")
 
 
+def _ssl_ctx():
+    """python.org 파이썬은 인증서 묶음이 비어 있다(Install Certificates 미실행 — 11-05 실측 CERTIFICATE_VERIFY_FAILED).
+    기본 묶음이 비면 macOS 시스템 묶음(/etc/ssl/cert.pem)을 쓴다. 검증은 끄지 않는다"""
+    ctx = ssl.create_default_context()
+    if not ctx.cert_store_stats().get("x509_ca"):
+        for f in ("/etc/ssl/cert.pem", "/private/etc/ssl/cert.pem"):
+            if os.path.exists(f):
+                ctx.load_verify_locations(cafile=f)
+                break
+    return ctx
+
+
+_SSL_CTX = _ssl_ctx()
+
+
+def _urlopen(req, timeout):
+    return urllib.request.urlopen(req, timeout=timeout, context=_SSL_CTX)
+
+
 def portal_verify(token, opener=None):
     """포털 세션·교차 토큰(같은 형식) → 포털 사용자 {id, provider, name} 또는 None. 이메일은 버린다."""
     token = str(token or "").strip()
@@ -588,7 +608,7 @@ def portal_verify(token, opener=None):
         return None
     req = urllib.request.Request(PORTAL_URL + "/api/auth/verify-cookie", headers={"Cookie": f"monkos_session={token}", "User-Agent": "monk-go-board"})
     try:
-        with (opener or urllib.request.urlopen)(req, timeout=8) as r:
+        with (opener or _urlopen)(req, timeout=8) as r:
             u = (json.loads(r.read().decode()) or {}).get("user") or {}
     except (urllib.error.URLError, OSError, ValueError) as e:
         print(f"❌ go-board: 포털 토큰 확인 실패 — {type(e).__name__}", file=sys.stderr, flush=True)
@@ -621,7 +641,7 @@ def portal_email_available(opener=None, now=None):
     req = urllib.request.Request(PORTAL_URL + "/api/auth/email/start", data=b"{}", method="POST",
                                  headers={"Content-Type": "application/json", "User-Agent": "monk-go-board"})
     try:
-        with (opener or urllib.request.urlopen)(req, timeout=8) as r:
+        with (opener or _urlopen)(req, timeout=8) as r:
             ok = r.status < 500
     except urllib.error.HTTPError as e:
         ok = e.code == 400
@@ -637,7 +657,7 @@ def portal_email_start(email, lang, opener=None, origin=None):
     req = urllib.request.Request(PORTAL_URL + "/api/auth/email/start", data=body, method="POST",
                                  headers={"Content-Type": "application/json", "User-Agent": "monk-go-board"})
     try:
-        with (opener or urllib.request.urlopen)(req, timeout=15) as r:
+        with (opener or _urlopen)(req, timeout=15) as r:
             return r.status, json.loads(r.read().decode() or "{}")
     except urllib.error.HTTPError as e:
         try:

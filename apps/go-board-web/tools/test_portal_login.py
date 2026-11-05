@@ -58,7 +58,7 @@ class PortalLogin(unittest.TestCase):
         self.assertIsNone(S.portal_verify("bad token with spaces " * 3))
         op = opener_for({"id": "g123", "provider": "google", "name": "Shin", "email": "x@y.com"})
         u = S.portal_verify(TOK, opener=op)
-        self.assertEqual(u, {"id": "g123", "provider": "google", "name": "Shin"})  # 이메일은 버린다
+        self.assertEqual(u, {"id": "g123", "provider": "google", "name": "Shin", "emailMasked": "x***@y***.com"})  # 원 주소는 버리고 가린 표시만
         self.assertEqual(op.seen["cookie"], f"monkos_session={TOK}")
         self.assertTrue(op.seen["url"].endswith("/api/auth/verify-cookie"))
         self.assertIsNone(S.portal_verify(TOK, opener=opener_for({"id": "agent_mina"})))  # 에이전트 세션 불가
@@ -112,6 +112,35 @@ class PortalLogin(unittest.TestCase):
         self.assertEqual(body["redirectApp"], "http://127.0.0.1:8799/")
         self.assertTrue(op.seen["url"].endswith("/api/auth/email/start"))
         self.assertEqual(S.portal_email_start("me@example.com", "ko", opener=opener_for(code=429))[0], 429)
+
+
+class Revisit(unittest.TestCase):
+    """11-05 08:30 — 재방문 카드용 표시 정보 · 이메일 버튼 탐침 · 인증서 묶음"""
+    def test_mask_email(self):
+        self.assertEqual(S.mask_email("shin.jakka@gmail.com"), "s***@g***.com")
+        self.assertEqual(S.mask_email("a@b.co.kr"), "a***@b***.co.kr")
+        self.assertEqual(S.mask_email(""), "")
+        self.assertEqual(S.mask_email(None), "")
+        self.assertEqual(S.mask_email("noat"), "")
+
+    def _probe(self, code=None, exc=None):
+        S._EMAIL_CAP.update(ok=None, at=0.0)
+        def op(req, timeout=None):
+            if exc:
+                raise exc
+            raise urllib.error.HTTPError(req.full_url, code, "x", {}, io.BytesIO(b"{}"))
+        return S.portal_email_available(opener=op, now=1000.0)
+
+    def test_email_probe(self):
+        self.assertTrue(self._probe(400))    # invalid_email = 엔드포인트 있음
+        self.assertFalse(self._probe(404))   # prod 배포 전
+        self.assertFalse(self._probe(exc=urllib.error.URLError("ssl")))
+        # 캐시: 실패는 60초, 성공은 600초
+        self._probe(404)
+        self.assertFalse(S.portal_email_available(opener=lambda *a, **k: 1 / 0, now=1030.0))
+
+    def test_ssl_ctx_has_ca(self):
+        self.assertGreater(S._SSL_CTX.cert_store_stats().get("x509_ca", 0), 0)
 
 
 if __name__ == "__main__":

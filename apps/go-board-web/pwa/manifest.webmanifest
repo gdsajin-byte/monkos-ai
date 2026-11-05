@@ -1,6 +1,6 @@
 {
-  "name": "MONK 바둑",
-  "short_name": "MONK 바둑",
+  "name": "MONKOS 바둑",
+  "short_name": "MONKOS 바둑",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
