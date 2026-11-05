@@ -114,6 +114,23 @@ class PortalLogin(unittest.TestCase):
         self.assertEqual(S.portal_email_start("me@example.com", "ko", opener=opener_for(code=429))[0], 429)
 
 
+class LinkOld(unittest.TestCase):
+    """11-05 10:37 — 아이디 정하기 화면에서 기존 아이디 연결: 티켓 1회 소모 + 1포털=1계정"""
+    def test_take_ticket_once_and_link(self):
+        a = S.Auth()
+        a.users = [{"uid": "u-a", "nick": "신작가", "rank": "6d", "created": "x"},
+                   {"uid": "u-b", "nick": "꿈속연인", "rank": "5d", "created": "y", "portal": "g9", "portal_provider": "google"}]
+        t = a.portal_ticket("k1", "kakao")
+        self.assertEqual(a.take_ticket(t), ("k1", "kakao"))
+        self.assertIsNone(a.take_ticket(t))          # 두 번은 안 된다
+        self.assertIsNone(a.take_ticket("없는티켓"))
+        self.assertIsNone(a.link_portal("u-a", "k1", "kakao"))
+        self.assertEqual(a.get("u-a")["portal"], "k1")
+        # 이미 꿈속연인에 붙은 구글은 신작가에 못 붙인다(둘 다 쓰는 C안 보존)
+        self.assertIsNotNone(a.link_portal("u-a", "g9", "google"))
+        self.assertEqual(a.by_portal("g9")["uid"], "u-b")
+
+
 class Revisit(unittest.TestCase):
     """11-05 08:30 — 재방문 카드용 표시 정보 · 이메일 버튼 탐침 · 인증서 묶음"""
     def test_mask_email(self):

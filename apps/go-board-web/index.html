@@ -165,6 +165,15 @@
     .status #status { grid-column: 1; grid-row: 1; font-size: 15px; }
     .status #topBtns { grid-row: 1; }
   }
+  /* 대기실 상단은 대국실 격자(46px 한 줄) 대상이 아니다 — 제목 | 닉 · 로그아웃 한 줄, 닉은 말줄임(11-05 10:36 작가님 "로그아웃 버튼이 이상한데 가 있어") */
+  @media (max-width: 700px), (pointer: coarse) and (max-width: 1000px) {
+    #lobby .status { display: flex; flex-wrap: nowrap; height: 46px; gap: 8px; padding: 8px 12px; }
+    #lobby .status > span:first-child { flex: 0 0 auto; }
+    #lobby .status .grow { display: block; flex: 1 1 0; min-width: 0; }
+    #lobby .status #lobbyEng:empty { display: none; }
+    #lobby .lobby-me { flex: 0 1 auto; overflow: hidden; }
+    #lobby .lobby-me .nickbtn { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  }
   /* 휴대폰 = 고정 화면·스크롤 없음, 'AI분석'을 누르면 시트로 형세분석·추천수·해설·실시간 분석(10-23 작가님) */
   body.mobile-play { height: 100dvh; overflow: hidden; }
   body.mobile-play .wrap { height: calc(100dvh - 46px); overflow: hidden; align-content: flex-start; }
@@ -257,8 +266,9 @@
   .lobby-row .dot.me { background: var(--blue); }
   .lobby-row .dot.ai { background: var(--line-ui); }
   /* 11-04 작가님 — 테스트 아이디: 대기실 상단 내 닉네임·로그아웃, 로그인/가입 창(신청 창 스타일 재사용) */
-  .lobby-me { font-size: 14px; color: #cfd6e0; display: flex; align-items: center; gap: 8px; }
-  .lobby-me button { font-size: 13px; padding: 3px 10px; }
+  .lobby-me { font-size: 14px; color: #cfd6e0; display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .lobby-me[hidden] { display: none; }  /* display:flex 가 hidden 을 덮어 로그아웃 상태에도 버튼이 보이던 문제(11-05) */
+  .lobby-me #bLogout { background: none; border: 0; box-shadow: none; padding: 2px; font-size: 12px; color: #9aa4b2; text-decoration: underline; flex: 0 0 auto; }
   #authDlg input[type=text] { flex: 1 1 160px; font-size: 17px; padding: 8px; border: 1px solid var(--line-ui); border-radius: 6px; }
   #authMsg { color: #b4462b; min-height: 1.2em; font-size: 15px; }
   #authMsg.ok { color: #2f7d3c; }
@@ -484,6 +494,7 @@
     <div class="small" id="aNote">테스트 중입니다. 누구든 아이디를 만들어 들어올 수 있고, 방은 만든 사람만 봅니다.</div>
     <div class="small" id="aEnterNote" hidden>테스트 기간에는 아이디만으로 입장합니다.</div>
     <button class="linkbtn" id="aSwitch">이미 아이디가 있어요</button>
+    <button class="linkbtn" id="aLinkOld" hidden>이미 바둑 아이디가 있어요 — 그 아이디에 연결</button>
     </div>
     <div id="authMsg" role="status"></div>
   </div>
@@ -1127,12 +1138,14 @@ let authMode = 'signup', nickOk = null, ranksLoaded = false;  // nickOk = 중복
 function authMsg(t, ok) { $a('authMsg').textContent = t || ''; $a('authMsg').classList.toggle('ok', !!ok); }
 function authSync() {  // 모드·확인 상태에 맞춰 버튼·칸을 맞춘다
   const su = authMode === 'signup', nick = $a('aNick').value.trim();
-  $a('aTitle').textContent = su ? 'MONKOS 바둑 — 아이디 만들기' : 'MONKOS 바둑 — 입장';
+  $a('aTitle').textContent = portalTicket ? (su ? 'MONKOS 바둑 — 바둑 아이디 정하기' : 'MONKOS 바둑 — 기존 아이디에 연결')
+                                          : (su ? 'MONKOS 바둑 — 아이디 만들기' : 'MONKOS 바둑 — 입장');
   $a('aCheck').hidden = !su; $a('aRankRow').hidden = !su; $a('aNote').hidden = !su; $a('aEnterNote').hidden = su;
   $a('aSignup').hidden = !su; $a('aEnter').hidden = su;
   $a('aSwitch').textContent = su ? '이미 아이디가 있어요' : '새 아이디 만들기';
   $a('aSignup').disabled = !(nickOk && nickOk === nick && $a('aRank').value);
   $a('aClaimRow').hidden = nick !== '작가님';  // 인수 코드 칸은 '작가님' 입장·가입 때만
+  if (portalTicket) { $a('aPortal').hidden = true; $a('aPortalNote').hidden = true; $a('aEmailRow').hidden = true; }  // 포털 확인을 마친 뒤 — 아이디만 정하거나 연결
 }
 async function loadRanks() {
   if (ranksLoaded) return;
@@ -1217,16 +1230,17 @@ async function authCheck() {
   } catch (e) { authMsg('서버 연결 실패'); }
 }
 $a('aCheck').onclick = authCheck;
-async function authGo(kind) {
+async function authGo(kind, stay) {
   const nick = $a('aNick').value.trim(), claim = $a('aClaim').value.trim();
   authMsg('');
   try {
     const r = await fetch('/api/auth/' + kind, { method: 'POST', headers: { 'Content-Type': 'application/json' },
                                                  body: JSON.stringify(kind === 'signup' ? { nick, rank: $a('aRank').value, claim } : { nick, claim }) });
     const j = await r.json();
-    if (!r.ok || j.error) { authMsg(j.error || '실패했습니다'); return; }
+    if (!r.ok || j.error) { authMsg(j.error || '실패했습니다'); return false; }
+    if (stay) return true;
     location.reload();
-  } catch (e) { authMsg('서버 연결 실패'); }
+  } catch (e) { authMsg('서버 연결 실패'); return false; }
 }
 $a('aSignup').onclick = async () => {
   if (!portalTicket) return authGo('signup');
@@ -1239,11 +1253,29 @@ $a('aSignup').onclick = async () => {
     location.reload();
   } catch (e) { authMsg('서버 연결 실패'); }
 };
-$a('aEnter').onclick = () => authGo('enter');
+$a('aEnter').onclick = () => (portalTicket ? linkOld() : authGo('enter'));
+// 기존 아이디 연결: 아이디로 입장(세션) → 같은 브라우저 세션으로 포털 티켓 연결. 연결 실패여도 입장은 유지
+$a('aLinkOld').onclick = () => {
+  authMode = 'enter'; nickOk = null; $a('aNick').value = ''; authSync();
+  $a('aSwitch').hidden = true; $a('aLinkOld').hidden = true;
+  $a('aTitle').textContent = 'MONKOS 바둑 — 기존 아이디에 연결';
+  authMsg('연결할 바둑 아이디로 입장해 주세요', true); $a('aNick').focus();
+};
+async function linkOld() {
+  if (!(await authGo('enter', true))) return;
+  try {
+    const r = await fetch('/api/auth/portal/link', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticket: portalTicket }) });
+    const j = await r.json();
+    portalTicket = null;
+    if (!r.ok || j.error) { authMsg(`입장했지만 연결하지 못했습니다 — ${j.error || '실패'}`); setTimeout(() => location.reload(), 2500); return; }
+    if (j.login) lastLoginPending(j.login);
+    location.reload();
+  } catch (e) { authMsg('서버 연결 실패'); }
+}
 authDlg.addEventListener('keydown', e => {
   if (e.key !== 'Enter') return;
   e.preventDefault();
-  if (authMode === 'enter') authGo('enter'); else if (!$a('aSignup').disabled) authGo('signup'); else authCheck();
+  if (authMode === 'enter') (portalTicket ? linkOld() : authGo('enter')); else if (!$a('aSignup').disabled) authGo('signup'); else authCheck();
 });
 const doLogout = async () => {
   try { await fetch('/api/auth/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }); } catch (e) { /* 다시 시도 */ }
@@ -1318,6 +1350,7 @@ async function portalDone(token, viaCookie, quiet) {
       lastLoginPending({ provider: j.provider, emailMasked: j.emailMasked });
       openAuth(`${PORTAL_NAME[j.provider] || '포털'} 계정 확인됨 — 바둑에서 쓸 아이디와 희망 급수를 정해 주세요`);
       $a('aNick').value = j.suggest || ''; $a('aTitle').textContent = 'MONKOS 바둑 — 바둑 아이디 정하기'; $a('aSwitch').hidden = true;
+      $a('aLinkOld').hidden = false;
       return true;
     }
     location.reload();
