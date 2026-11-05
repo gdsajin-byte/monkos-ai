@@ -672,10 +672,16 @@ function render() {
   const g = S.board;
   const sc = S.scoring;
   const dead = new Set(sc ? sc.dead.map(([x, y]) => x + ',' + y) : []);
+  const fin = new Set(sc && S.finish ? S.finish.map(([x, y]) => x + ',' + y) : []);
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
     const c = g[y][x]; if (!c) continue;
-    if (dead.has(x + ',' + y)) continue;  // 사석은 돌을 그리지 않는다 — 잡은 쪽 집 표시(아래 terr)로 대신(11-04)
-    drawStone(x, y, c, 1);
+    // 11-05 18:31 작가님 "계가때 사석을 없애지 말고 있는그대로에서 돌위에 집표시 하면돼" — 사석도 그대로 그리고, 위에 잡은 쪽 집 표시(아래 terr)
+    drawStone(x, y, c, fin.has(x + ',' + y) ? .45 : 1);  // 계가 마무리 돌(AI가 사본에서 둔 수)은 반투명
+  }
+  if (sc && S.finish) for (const [x, y, n, c] of S.finish) {  // 마무리 수순 번호(실제 수와 구분 — 11-05 17:52)
+    if (dead.has(x + ',' + y)) continue;  // 사석 위에는 집 표시가 올라가므로 번호는 생략
+    el('text', { x: P(x), y: P(y) + 3.4, 'font-size': n > 99 ? 8 : 9.5, 'text-anchor': 'middle', 'font-weight': 700,
+                 fill: c === 'B' ? '#fff' : '#222', 'pointer-events': 'none' }).textContent = n;
   }
   if (sc) for (const [x, y, o] of sc.terr) {
     const d = STEP * .18;
@@ -740,12 +746,14 @@ function render() {
   for (const t of ['ai', 'shape', 'hint', 'review', 'more']) document.getElementById('tab-' + t).hidden = t !== tab;
   document.getElementById('secScore').hidden = !sc;
   if (sc) {
-    document.getElementById('scoreSum').textContent = `흑 ${sc.black}집 · 백 ${sc.white}집 → ${sc.resultKo}`;
+    document.getElementById('scoreSum').textContent = (sc.finishN ? `AI 마무리 ${sc.finishN}수 후 계가 · ` : '') + `흑 ${sc.black}집 · 백 ${sc.white}집 → ${sc.resultKo}`;
+    const signed = r => { const m = /^([BW])\+([\d.]+)$/.exec(r || ''); return m ? (m[1] === 'B' ? 1 : -1) * Number(m[2]) : (r === '0' ? 0 : NaN); };
+    const kataOff = !(Math.abs(signed(sc.result) - signed(sc.kata)) <= 1);  // 1집 넘게 다를 때만 안내(11-05 지시서)
     // 결과는 우리 계산 하나 — KataGo 판정과 다를 때만 사석 확인 안내(10-25 B3, 두 값 나란히 표기 폐지)
     document.getElementById('scoreDetail').textContent =
       `흑 = 집 ${sc.terrB} + 따낸 돌·사석 ${sc.prisB} / 백 = 집 ${sc.terrW} + 따낸 돌·사석 ${sc.prisW} + 덤 ${sc.komi}` +
       (sc.dame && sc.dame.length ? ` · 경계가 열린 곳 ${sc.dame.length}점은 공배로 셉니다 — 메울 곳이 남았다면 계가 취소 후 메우고 다시 신청` : '') +
-      (sc.result !== sc.kata ? ` · KataGo 판정(${sc.kataKo})과 다릅니다 — 사석 표시를 확인해 주세요(돌을 누르면 바뀝니다)` : '');
+      (kataOff ? ` · KataGo 판정(${sc.kataKo})과 다릅니다 — 사석 표시를 확인해 주세요(돌을 누르면 바뀝니다)` : '');
   }
 
   // 형세분석 — 막대 + 흐름 그래프
@@ -1509,9 +1517,11 @@ document.getElementById('bSwap').onclick = () => call('/api/swap');
 document.getElementById('bPass').onclick = () => call('/api/play', { pass: true });
 document.getElementById('bScore').onclick = async () => {
   voice(SND && SND.counting);
-  boardToast('집 계산 중…', 0);  // 계가는 엔진 사석·소유권 계산(수 초) — 기다리는 동안 무엇을 하는지 보이게(10-25 B3)
-  await call('/api/score');
-  boardToastOff();
+  boardToast('AI가 끝까지 두는 중…', 0);  // 11-05 17:52 — 중간 계가는 AI가 사본에서 끝까지 둔 뒤 센다(수 초)
+  const poll = setInterval(async () => {  // 마무리 진행 수(서버가 잠금 대신 주는 직전 상태에 finishing)
+    try { const j = await (await fetch(api('/api/state'))).json(); if (j.finishing) boardToast(`AI가 끝까지 두는 중 (${j.finishing}수)`, 0); } catch (e) {}
+  }, 500);
+  try { await call('/api/score'); } finally { clearInterval(poll); boardToastOff(); }
 };
 document.getElementById('bScoreOk').onclick = () => call('/api/score/confirm');
 document.getElementById('bScoreCancel').onclick = () => call('/api/score/cancel');

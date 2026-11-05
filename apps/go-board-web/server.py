@@ -131,6 +131,16 @@ def bot_sgf(level):
     """기보 PB/PW 상대 이름 — 모델 태그+수읽기(학습 단계별 비교용). 옛 판은 옛 태그."""
     return f"{LEGACY_MONK['tag'] if level == 'monk' else monk_ver(level)['tag']}({STRONG_VISITS}v)"
 # 승률 그래프(기보 감상) — 국면당 짧은 분석. 10-24 실측: 200방문 0.2~1.1초/국면
+# 11-05 17:52 작가님 "중간에 계가 신청하면 AI 최선의 수로 종국까지 돌리고 판정" — 계가 마무리 수(사본 국면에서만)
+# 수읽기는 국면 단계별(쌍아 18:11 "수 질 > 속도"): 빈 점이 적은 끝내기는 더 깊게. 환경변수로 시험값 덮어쓰기
+FINISH_VISITS = int(os.environ.get("GO_BOARD_FINISH_VISITS") or 0)  # 0 = 단계별 기본값
+FINISH_TIME = float(os.environ.get("GO_BOARD_FINISH_TIME") or 0)
+FINISH_STAGES = ((100, 200, 0.6), (180, 150, 0.45))  # (빈 점 ≤, 수당 탐색, 수당 상한 초)
+FINISH_EMPTY_MAX = int(os.environ.get("GO_BOARD_FINISH_EMPTY_MAX") or 180)  # 빈 점이 이보다 많으면 마무리 계가 대신 안내(작가님 결정 대기)
+FINISH_MAX = 200  # 마무리 수 상한
+FINISH_BUDGET = float(os.environ.get("GO_BOARD_FINISH_BUDGET") or 40)  # 전체 상한(초) — 목표 10초, 수 질 우선(18:11)
+FINISH_RULES = os.environ.get("GO_BOARD_FINISH_RULES") or "korean"  # 마무리 규칙 — 면적(chinese)은 자기 집 메우기가 집 계산 손해라 비교군
+SCORING_LIGHT_VISITS, SCORING_LIGHT_TIME = 300, 2.0  # 마무리 끝 국면 계가(사석·판정) 탐색  # 마무리 동안만 쓰는 규칙(면적 → 경계가 닫힐 때까지 둔다)
 GRAPH_VISITS, GRAPH_MAX_TIME = 200, 0.8  # 한 걸음 상한 0.8초 = 대국 요청이 기다리는 최대치(양보 +1초 이내)
 GRAPH_YIELD_GAP = 0.5  # 대국 요청 뒤 그래프가 비켜 있는 초 — 착수 1번의 검사·응수 사이에 끼지 않게
 GRAPH_IDLE = 15  # 마지막 그래프 요청 뒤 이 초가 지나면 = 보는 화면 없음 → 그 수를 마치고 멈춘다(10-25 보는 곳에서만)
@@ -547,13 +557,82 @@ class EngineHub:
             self._sync(e, pos)
             return e.cmd("final_score")
 
-    def scoring(self, pos, level):
-        """계가 재료 — 사석·KataGo 판정(11-04: 소유권 추정 폐지)."""
+    def _others_busy(self, e):
+        """다른 엔진(급수·MONKOS 버전)이 지금 계산 중이거나 줄 선 요청이 있나 — 같은 GPU를 나눠 쓰므로 마무리는 비켜 준다
+        (11-05 겹침 실측: 마무리 중 다른 판 응수 1.5초 → 11.5초)."""
+        others = [self.human] + list(self.pool.engines.values())
+        return any(o is not None and o is not e and (o.waiting or o.job.locked()) for o in others)
+
+    def finish(self, pos, level, color, rules=None, progress=None, visits=None, max_time=None):
+        """계가 마무리 — 사본 국면에서 판정 엔진이 양쪽 최선 수를 번갈아 둔다(연속 2패스·상한까지). 실제 판은 건드리지 않는다.
+        줄에 다른 대국 요청이 서면 한 수 끝날 때마다 엔진을 놓아 준다(다른 판 응수를 막지 않음). → (수순, 초, 놓아 준 횟수)"""
+        rules = rules or FINISH_RULES
+        e = self._pick(self._judge(level))
+        moves, out, t0, yields = list(pos["moves"]), [], time.time(), 0
+        prev_pass = bool(moves) and moves[-1][1].lower() == "pass"
+        c = color
+
+        def setup_engine():
+            if rules != "korean":
+                e.cmd(f"kata-set-rules {rules}")
+            e.key = None
+            e.cmd(f"kata-set-param maxVisits {visits or FINISH_VISITS or 150}")
+            e.cmd(f"kata-set-param maxTime {max_time or FINISH_TIME or 0.45}")
+
+        def restore_engine():
+            e.cmd(f"kata-set-param maxVisits {STRONG_VISITS}")
+            e.cmd(f"kata-set-param maxTime {STRONG_TIME}")
+            if rules != "korean":
+                e.cmd("kata-set-rules korean")
+            e.key = None
+
+        done = False
+        while not done:
+            t_wait = time.time()
+            while self._others_busy(e) and time.time() - t_wait < 30:  # 다른 판 수 계산이 끝날 때까지(최대 30초) 쉰다
+                time.sleep(0.05)
+            with self._job(e, record=False):
+                try:
+                    setup_engine()
+                    while True:
+                        self._sync(e, {**pos, "moves": moves})
+                        # genmove는 지는 쪽이 기권(resign)할 수 있다 → 그걸 패스로 바꾸면 상대가 집 안을 마음대로 들어가 판이 무너진다(첫 시험 W+261.5).
+                        # 탐색 최선 수(기권 없음)를 직접 놓는다
+                        cand = e.search(c, 1)
+                        mv = cand[0]["move"] if cand else "pass"
+                        e.cmd(f"play {c} {mv}")
+                        e.key = (pos["komi"], tuple(pos["setup"]), tuple(tuple(m) for m in moves + [(c, mv)]))
+                        moves.append((c, mv))
+                        out.append((c, mv))
+                        is_pass = mv.lower() == "pass"
+                        if (is_pass and prev_pass) or len(out) >= FINISH_MAX or time.time() - t0 > FINISH_BUDGET:
+                            done = True
+                            break
+                        prev_pass, c = is_pass, ("W" if c == "B" else "B")
+                        if progress:
+                            progress(len(out))
+                        if e.waiting or self._others_busy(e):  # 다른 판 대국 요청(같은 엔진·같은 GPU) — 엔진을 놓아 준다
+                            yields += 1
+                            break
+                finally:
+                    restore_engine()
+        return out, round(time.time() - t0, 2), yields
+
+    def scoring(self, pos, level, light=False):
+        """계가 재료 — 사석·KataGo 판정(11-04: 소유권 추정 폐지). light = 마무리 끝난(경계 닫힌) 국면 — 탐색을 줄여 빨리"""
         e = self._pick(self._judge(level))
         with self._job(e):
-            self._sync(e, pos)
-            dead = {to_xy(mv) for mv in e.cmd("final_status_list dead").split()}
-            return {"dead": dead, "kata": e.cmd("final_score")}
+            try:
+                if light:
+                    e.cmd(f"kata-set-param maxVisits {SCORING_LIGHT_VISITS}")
+                    e.cmd(f"kata-set-param maxTime {SCORING_LIGHT_TIME}")
+                self._sync(e, pos)
+                dead = {to_xy(mv) for mv in e.cmd("final_status_list dead").split()}
+                return {"dead": dead, "kata": e.cmd("final_score")}
+            finally:
+                if light:
+                    e.cmd(f"kata-set-param maxVisits {STRONG_VISITS}")
+                    e.cmd(f"kata-set-param maxTime {STRONG_TIME}")
 
     @property
     def human_ok(self):
@@ -1201,7 +1280,8 @@ class Room:
     def to_dict(self):
         sc = None
         if self.scoring:
-            sc = {"dead": sorted(self.scoring["dead"]), "kata": self.scoring["kata"]}
+            sc = {"dead": sorted(self.scoring["dead"]), "kata": self.scoring["kata"], "finish": self.scoring.get("finish") or [],
+                  "finishSecs": self.scoring.get("finishSecs"), "finishRules": self.scoring.get("finishRules")}
         return {"v": 1, "id": self.id, "owner": self.owner, "kind": self.kind, "user": self.user, "level": self.level,
                 "handicap": self.handicap, "time": self.time, "setup": self.setup,
                 "moves": [list(m) for m in self.moves], "scores": [list(s) for s in self.scores],
@@ -1226,7 +1306,8 @@ class Room:
         r.score, r.winrate, r.result = d.get("score"), d.get("winrate"), d.get("result")
         r.final_count = d.get("finalCount")
         sc = d.get("scoring")
-        r.scoring = {"dead": {tuple(p) for p in sc["dead"]}, "kata": sc["kata"]} if sc else None
+        r.scoring = ({"dead": {tuple(p) for p in sc["dead"]}, "kata": sc["kata"], "finish": sc.get("finish") or [],
+                      "finishSecs": sc.get("finishSecs"), "finishRules": sc.get("finishRules")} if sc else None)
         r.message = d.get("message", "")
         r.started = datetime.fromisoformat(d["started"])
         r.updated = d.get("updated", time.time())
@@ -1424,15 +1505,41 @@ class Room:
             raise RuntimeError("이미 끝난 대국입니다.")
         if not self.moves:
             raise RuntimeError("아직 둔 수가 없습니다.")
-        sc = ENGINES.scoring(self.position(), self.level)
+        # 양쪽 패스로 끝난 판이 아니면 사본 국면에서 AI가 끝까지 두고(마무리 수) 그 끝 국면으로 센다. 실제 수순·기보는 그대로
+        ended = len(self.moves) >= 2 and all(m.lower() == "pass" for _, m in self.moves[-2:])
+        finish, secs, yields = [], 0.0, 0
+        if not ended:
+            empty = sum(1 for row in replay(self.moves, self.setup)[0] for v in row if v is None)
+            if empty > FINISH_EMPTY_MAX:  # 11-04 정확도 원칙 — 집이 정해지지 않은 국면을 마무리로 '추정'하지 않는다
+                raise RuntimeError(f"아직 집이 정해지지 않았습니다(빈 곳 {empty}점) — 이어 두거나 'AI 판정'을 보세요.")
+            vis, mt = next(((v, t) for lim, v, t in FINISH_STAGES if empty <= lim), FINISH_STAGES[-1][1:])
+            finish, secs, yields = ENGINES.finish(self.position(), self.level, self.to_move, progress=self._finish_progress,
+                                                  visits=FINISH_VISITS or vis, max_time=FINISH_TIME or mt)
+        pos = self.position()
+        sc = ENGINES.scoring({**pos, "moves": list(pos["moves"]) + finish}, self.level, light=bool(finish))
+        sc.update(finish=[list(m) for m in finish], finishSecs=secs, finishYields=yields, finishRules=FINISH_RULES if finish else None)
         self._charge(reset=False)
         self.scoring = sc
-        self.message = "계가 중 — 사석은 잡은 쪽 집 표시로 바뀝니다. 돌을 누르면 사석/산 돌이 바뀝니다."
+        self.message = ((f"AI가 끝까지 {len(finish)}수 마무리한 국면으로 계가합니다(실제 판은 그대로). " if finish else "")
+                        + "계가 중 — 사석은 잡은 쪽 집 표시로 바뀝니다. 돌을 누르면 사석/산 돌이 바뀝니다.")
+
+    def _finish_progress(self, n):
+        """마무리 중 화면(상태 조회는 잠금 대신 직전 상태를 받는다) — 그 사본에 진행 수만 얹는다."""
+        try:
+            st = json.loads(self.cache) if self.cache else {}
+            st["finishing"] = n
+            self.cache = json.dumps(st, ensure_ascii=False)
+        except Exception:  # noqa: BLE001 — 진행 표시는 부가 기능
+            pass
+
+    def _score_moves(self):
+        """계가에 쓰는 수순 = 실제 수 + 마무리 수(계가 중일 때만)."""
+        return list(self.moves) + [tuple(m) for m in ((self.scoring or {}).get("finish") or [])]
 
     def toggle_dead(self, x, y):
         if not self.scoring:
             raise RuntimeError("계가 중이 아닙니다.")
-        g, _ = replay(self.moves, self.setup)
+        g, _ = replay(self._score_moves(), self.setup)
         if not g[y][x]:
             return
         c = g[y][x]
@@ -1449,7 +1556,7 @@ class Room:
             self.scoring["dead"] |= group
 
     def count(self):
-        g, caps = replay(self.moves, self.setup)
+        g, caps = replay(self._score_moves(), self.setup)  # 마무리 수에서 따낸 돌도 포로
         prisoners = dict(caps)
         for x, y in self.scoring["dead"]:
             c = g[y][x]
@@ -1489,7 +1596,9 @@ class Room:
                 "komi": self.komi, "black": b, "white": w, "result": res, "resultKo": result_ko(res),
                 "kata": self.scoring["kata"], "kataKo": result_ko(self.scoring["kata"]),
                 "dead": sorted(self.scoring["dead"]), "dame": [list(p) for p in sorted(dame)],
-                "terr": [[x, y, "B"] for x, y in terr["B"]] + [[x, y, "W"] for x, y in terr["W"]]}
+                "terr": [[x, y, "B"] for x, y in terr["B"]] + [[x, y, "W"] for x, y in terr["W"]],
+                "finishN": len(self.scoring.get("finish") or []), "finishSecs": self.scoring.get("finishSecs"),
+                "finishRules": self.scoring.get("finishRules"), "finishYields": self.scoring.get("finishYields")}
 
     def confirm_score(self):
         if not self.scoring:
@@ -1498,7 +1607,8 @@ class Room:
         self.result = c["result"]
         self.final_count = c
         self.scoring = None
-        self.message = (f"계가 확정 — 흑 {c['black']:g} · 백 {c['white']:g}(덤 {c['komi']:g} 포함) → {c['resultKo']}"
+        self.message = ((f"AI 마무리 {c['finishN']}수 후 " if c.get("finishN") else "")
+                        + f"계가 확정 — 흑 {c['black']:g} · 백 {c['white']:g}(덤 {c['komi']:g} 포함) → {c['resultKo']}"
                         + (f" · KataGo 판정({c['kataKo']})과 달랐음" if c["result"] != c["kata"] else ""))  # 10-25 B3 결과 한 줄
         self.save_sgf()
 
@@ -1644,7 +1754,8 @@ class Room:
                 + (extra if self.source == "upload" else f"DT[{self.started:%Y-%m-%d}]") + f"PB[{pb}]PW[{pw}]"
                 f"AP[MONK go-board-web]" + (f"RE[{self.result}]" if self.result and self.result != VOID else "")
                 + (f"C[접속 장애패 — {self.owner_nick} 접속이 끊긴 채 {fmt_dur(self.dc_limit)} 초과]" if self.result_reason == "disconnect" else "")
-                + (f"C[{self.message}]" if self.result_reason in ("rule-cleanup", "void") else ""))
+                + (f"C[{self.message}]" if self.result_reason in ("rule-cleanup", "void") else "")
+                + (f"C[AI 마무리 {self.final_count['finishN']}수 후 계가]" if self.result and (self.final_count or {}).get("finishN") else ""))
         return head + "".join(nodes) + ")\n"
 
     def summary(self):
@@ -1667,6 +1778,15 @@ class Room:
 
     def state(self):
         g, caps = replay(self.moves, self.setup)
+        finish = []
+        if self.scoring and self.scoring.get("finish"):  # 계가 중 화면 = 마무리 끝 국면(마무리 돌은 반투명 + 수순 번호)
+            fm = self.scoring["finish"]
+            g, _ = replay(self._score_moves(), self.setup)
+            for i, (c, mv) in enumerate(fm, 1):
+                if mv.lower() != "pass":
+                    x, y = to_xy(mv)
+                    if g[y][x] == c and not any(m[1] == mv for m in fm[i:]):  # 끝 국면에 남은 돌만(같은 자리 재착수는 마지막 것)
+                        finish.append([x, y, i, c])
         last = None
         if self.moves and self.moves[-1][1].lower() != "pass":
             last = list(to_xy(self.moves[-1][1]))
@@ -1692,7 +1812,7 @@ class Room:
             "sgfUrl": f"/api/rooms/{self.id}/sgf" if self.moves else None,
             "review": REVIEWS.status(self),
             "reviews": [{"id": j, "state": REVIEWS.jobs[j]["state"]} for j in self.reviews if j in REVIEWS.jobs],
-            "scoring": self.count() if self.scoring else None,
+            "scoring": self.count() if self.scoring else None, "finish": finish,
             "finalCount": self.final_count if self.result else None,
             "time": self.time,
             "clock": self.clock_state(),
