@@ -35,7 +35,7 @@ status: dev 반영(00008-mrn) · prod 대기
 
 | 파일 | 변경 |
 |---|---|
-| `public/ga-init.js` **신설** | 12개 HTML의 동일 인라인 GA 블록을 공통 스크립트로 교체. ① `traffic_type=internal`+`debug_mode` — localhost·127.0.0.1·`-dev-` 호스트 자동, 수동 `?monk_internal=1`(해당 브라우저 영구, `=0` 해제) ② 토스·카카오·네이버·구글·애플 복귀 page_view에 `ignore_referrer`(GA 공식 10327750: config 명령에 부착, 값 무관) ③ `ai_referral_landing` 전 페이지 ④ 첫 랜딩 리퍼러 보존(기존 index 로직) |
+| `public/ga-init.js` **신설** | 12개 HTML의 동일 인라인 GA 블록을 공통 스크립트로 교체. ① `traffic_type=internal`+`debug_mode` — localhost·127.0.0.1·`-dev-` 호스트 자동, 수동 `?monk_internal=1`(해당 브라우저 영구, `=0` 해제) ② 결제·로그인 **복귀 호스트만**(`*.tosspayments.com` · `nid.naver.com` · `kauth.kakao.com` · `accounts.kakao.com` · `accounts.google.com` · `appleid.apple.com`, 정확 일치) `ignore_referrer`(GA 공식 10327750). 초판의 `naver.com`·`kakao.com` 접미사 일치는 네이버 검색·카카오톡 공유 유입까지 지우는 결함 — 쌍아 검토(00:20)로 교정, 매처 15/15 ③ `ai_referral_landing` 전 페이지 ④ 첫 랜딩 리퍼러 보존(기존 index 로직) |
 | `public/*.html` 12개 | 인라인 블록 → `<script src="/ga-init.js">` (gtag 로더 태그 유지). JS는 서버가 no-cache로 내보내 캐시 잔존 없음 |
 | `public/index.html` | user_id 재config 3곳 `send_page_view:false` |
 | `public/result.js` | 다운로드 버튼 `begin_checkout`→**`download_click`** · 서버 차감 성공 시 **`download_complete`**(value 70, KRW) 신설 · **`generate_fail`**(fail_stage precheck/credit/generate + fail_code) 3분기 · **`download_fail`**(credit/server + HTTP 코드) |

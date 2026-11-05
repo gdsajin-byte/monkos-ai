@@ -7,7 +7,7 @@
  *     - 자동: localhost · 127.0.0.1 · Cloud Run dev 호스트(-dev-)
  *     - 수동: 아무 페이지나 ?monk_internal=1 로 1회 열면 이 브라우저는 계속 internal (해제 ?monk_internal=0)
  *     - GA4 관리 → 데이터 필터 'Internal Traffic'(traffic_type=internal)·'Developer Traffic'(debug_mode)을 Active로 두면 보고서에서 제외
- *  2. 결제·로그인 복귀 리퍼러 무시: 토스·카카오·네이버·구글·애플에서 돌아온 page_view는 새 유입원으로 세지 않는다 (ignore_referrer)
+ *  2. 결제·로그인 복귀 리퍼러 무시: 토스(*.tosspayments.com)·카카오/네이버/구글/애플 **로그인 호스트**에서 돌아온 page_view만 새 유입원으로 세지 않는다 (ignore_referrer). 검색·공유 유입은 건드리지 않는다
  *  3. AI 엔진 유입 랜딩 이벤트(ai_referral_landing)를 index 전용에서 전 페이지로 확장
  *  4. 첫 랜딩 리퍼러·URL을 sessionStorage에 보존(기존 index 로직 유지)
  *
@@ -36,8 +36,10 @@
   var ref = document.referrer || '';
   var refHost = '';
   try { refHost = ref ? new URL(ref).hostname.toLowerCase() : ''; } catch (e) {}
-  var bounceHosts = ['tosspayments.com', 'kakao.com', 'naver.com', 'accounts.google.com', 'appleid.apple.com'];
-  var isBounce = refHost && bounceHosts.some(function (h) { return refHost === h || refHost.slice(-(h.length + 1)) === '.' + h; });
+  // ⚠️ 로그인·결제 복귀 호스트만 정확 일치. 도메인 접미사(naver.com·kakao.com)로 넓히면 네이버 검색(search.naver.com)·카카오톡 공유 유입까지 지워진다 (쌍아 검토 2026-11-06 00:20)
+  var bounceExact = ['nid.naver.com', 'kauth.kakao.com', 'accounts.kakao.com', 'accounts.google.com', 'appleid.apple.com'];
+  var bounceSuffix = ['tosspayments.com'];
+  var isBounce = !!refHost && (bounceExact.indexOf(refHost) !== -1 || bounceSuffix.some(function (h) { return refHost === h || refHost.slice(-(h.length + 1)) === '.' + h; }));
   if (isBounce) cfg.ignore_referrer = true;
 
   gtag('config', ID, cfg);
