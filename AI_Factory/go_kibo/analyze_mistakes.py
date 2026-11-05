@@ -277,9 +277,10 @@ def rank_section(all_rows, gidx=None):
         L.append(f"| {era} | " + " | ".join(cells) + " |")
     if gidx:
         post = sorted([x for x in all_rows if x["who"] == "me" and x["phase"] == "포석" and x["era"] in ("2015-20", "2021-26")
-                       and x["is_best"] and x.get("prior_best") is not None], key=lambda x: x["prior_best"])[:3]
+                       and x["is_best"] and x.get("prior_best") is not None
+                       and x["move_no"] >= 10 and (x.get("gap_lead") or 0) >= 1.0], key=lambda x: x["prior_best"])[:3]  # 빈 판 초반(직감 분산)은 제외
         if post:
-            L.append("\n대표 장면(2015–26 포석, 작가님이 엔진 1순위를 둔 수 중 직감이 가장 낮은 3 — 'AI 이후 포석' 후보, G번호·수순만):\n")
+            L.append("\n대표 장면(2015–26 포석 10수 이후, 1·2순위 차 1집↑, 작가님이 엔진 1순위를 둔 수 중 직감이 가장 낮은 3 — 'AI 이후 포석' 후보, G번호·수순만):\n")
             L.append("| 대국 | 시대 | 수 | 좌표 | 1순위 직감 | 1·2순위 차 |\n|---|---|---|---|---|---|")
             for x in post:
                 L.append(f"| {gidx[x['id']]} | {x['era']} | {x['move_no']} | {x['move']} | {x['prior_best']:.2f} | {x.get('gap_lead') or 0:.1f} |")
