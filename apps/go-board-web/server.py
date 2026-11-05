@@ -132,11 +132,14 @@ def bot_sgf(level):
     return f"{LEGACY_MONK['tag'] if level == 'monk' else monk_ver(level)['tag']}({STRONG_VISITS}v)"
 # 승률 그래프(기보 감상) — 국면당 짧은 분석. 10-24 실측: 200방문 0.2~1.1초/국면
 # 11-05 17:52 작가님 "중간에 계가 신청하면 AI 최선의 수로 종국까지 돌리고 판정" — 계가 마무리 수(사본 국면에서만)
-FINISH_VISITS = int(os.environ.get("GO_BOARD_FINISH_VISITS") or 40)  # 수당 탐색
-FINISH_TIME = float(os.environ.get("GO_BOARD_FINISH_TIME") or 0.15)  # 수당 상한(초)
+# 수읽기는 국면 단계별(쌍아 18:11 "수 질 > 속도"): 빈 점이 적은 끝내기는 더 깊게. 환경변수로 시험값 덮어쓰기
+FINISH_VISITS = int(os.environ.get("GO_BOARD_FINISH_VISITS") or 0)  # 0 = 단계별 기본값
+FINISH_TIME = float(os.environ.get("GO_BOARD_FINISH_TIME") or 0)
+FINISH_STAGES = ((100, 200, 0.6), (180, 150, 0.45))  # (빈 점 ≤, 수당 탐색, 수당 상한 초)
+FINISH_EMPTY_MAX = int(os.environ.get("GO_BOARD_FINISH_EMPTY_MAX") or 180)  # 빈 점이 이보다 많으면 마무리 계가 대신 안내(작가님 결정 대기)
 FINISH_MAX = 200  # 마무리 수 상한
-FINISH_BUDGET = 20.0  # 전체 상한(초) — 목표 10초
-FINISH_RULES = os.environ.get("GO_BOARD_FINISH_RULES") or "chinese"
+FINISH_BUDGET = float(os.environ.get("GO_BOARD_FINISH_BUDGET") or 40)  # 전체 상한(초) — 목표 10초, 수 질 우선(18:11)
+FINISH_RULES = os.environ.get("GO_BOARD_FINISH_RULES") or "korean"  # 마무리 규칙 — 면적(chinese)은 자기 집 메우기가 집 계산 손해라 비교군
 SCORING_LIGHT_VISITS, SCORING_LIGHT_TIME = 300, 2.0  # 마무리 끝 국면 계가(사석·판정) 탐색  # 마무리 동안만 쓰는 규칙(면적 → 경계가 닫힐 때까지 둔다)
 GRAPH_VISITS, GRAPH_MAX_TIME = 200, 0.8  # 한 걸음 상한 0.8초 = 대국 요청이 기다리는 최대치(양보 +1초 이내)
 GRAPH_YIELD_GAP = 0.5  # 대국 요청 뒤 그래프가 비켜 있는 초 — 착수 1번의 검사·응수 사이에 끼지 않게
@@ -554,7 +557,7 @@ class EngineHub:
             self._sync(e, pos)
             return e.cmd("final_score")
 
-    def finish(self, pos, level, color, rules=None, progress=None):
+    def finish(self, pos, level, color, rules=None, progress=None, visits=None, max_time=None):
         """계가 마무리 — 사본 국면에서 판정 엔진이 양쪽 최선 수를 번갈아 둔다(연속 2패스·상한까지). 실제 판은 건드리지 않는다.
         줄에 다른 대국 요청이 서면 한 수 끝날 때마다 엔진을 놓아 준다(다른 판 응수를 막지 않음). → (수순, 초, 놓아 준 횟수)"""
         rules = rules or FINISH_RULES
@@ -567,8 +570,8 @@ class EngineHub:
             if rules != "korean":
                 e.cmd(f"kata-set-rules {rules}")
             e.key = None
-            e.cmd(f"kata-set-param maxVisits {FINISH_VISITS}")
-            e.cmd(f"kata-set-param maxTime {FINISH_TIME}")
+            e.cmd(f"kata-set-param maxVisits {visits or FINISH_VISITS or 150}")
+            e.cmd(f"kata-set-param maxTime {max_time or FINISH_TIME or 0.45}")
 
         def restore_engine():
             e.cmd(f"kata-set-param maxVisits {STRONG_VISITS}")
@@ -1497,7 +1500,12 @@ class Room:
         ended = len(self.moves) >= 2 and all(m.lower() == "pass" for _, m in self.moves[-2:])
         finish, secs, yields = [], 0.0, 0
         if not ended:
-            finish, secs, yields = ENGINES.finish(self.position(), self.level, self.to_move, progress=self._finish_progress)
+            empty = sum(1 for row in replay(self.moves, self.setup)[0] for v in row if v is None)
+            if empty > FINISH_EMPTY_MAX:  # 11-04 정확도 원칙 — 집이 정해지지 않은 국면을 마무리로 '추정'하지 않는다
+                raise RuntimeError(f"아직 집이 정해지지 않았습니다(빈 곳 {empty}점) — 이어 두거나 'AI 판정'을 보세요.")
+            vis, mt = next(((v, t) for lim, v, t in FINISH_STAGES if empty <= lim), FINISH_STAGES[-1][1:])
+            finish, secs, yields = ENGINES.finish(self.position(), self.level, self.to_move, progress=self._finish_progress,
+                                                  visits=FINISH_VISITS or vis, max_time=FINISH_TIME or mt)
         pos = self.position()
         sc = ENGINES.scoring({**pos, "moves": list(pos["moves"]) + finish}, self.level, light=bool(finish))
         sc.update(finish=[list(m) for m in finish], finishSecs=secs, finishYields=yields, finishRules=FINISH_RULES if finish else None)
