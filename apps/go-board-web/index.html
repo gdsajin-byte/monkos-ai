@@ -1395,7 +1395,7 @@ function dlgSync() {
   const unl = document.getElementById('tUnl').checked;
   for (const id of ['tMain', 'tByo', 'tPer']) document.getElementById(id).disabled = unl;
   const lv = document.getElementById('dLevel');
-  document.getElementById('dlgTitle').textContent = `${myNick()} VS ${lv.options[lv.selectedIndex].text}`;
+  document.getElementById('dlgTitle').textContent = `${myNick()} VS ${lv.options[lv.selectedIndex].text.split(' · ')[0]}`;  // 버전 표기는 칸에 — 제목은 'MONKOS Go v2'까지
 }
 // 11-05 07:07 작가님 "대기실엔 카타고 AI라고만, 급수 설정은 대국 설정에서" — 수준 선택 칸을 상대별로 채운다.
 // mode: 'kata' = KataGo 최강+급수 / 'monkos' = MONKOS Go 하나(고정) / 'all' = 대국실 안 [새 대국](기존대로 전체)
