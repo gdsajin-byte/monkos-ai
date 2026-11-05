@@ -138,6 +138,7 @@ status: active
 | 11/06 | iMac/쌍아-막내8 | 계가 결과 동의창 — 판 위 시트 [예]=확정·[아니요]=취소+score_declined, 휴대폰 판 아래 시트(가림 0), 봇 자동 확정, 사석 고침 즉시 갱신 — 8766 검증 | [COMPLETION_20261106_iMac쌍아-막내8_GO_계가_동의창](../../reports/2026-11/COMPLETION_20261106_iMac쌍아-막내8_GO_계가_동의창.md) | 진행 |
 | 11/06 | ?/? | **ORDER** 바둑앱 계가 결과 동의창 — 계가 결과를 판 위 확인 창으로 띄우고 [예]면 확정, [아니요]면 원상 복귀(타이젬식, 근거 표시는 우리 방식 유지) | [ORDER_20261106_iMac쌍아_막내8_GO_계가_동의창](../../orders/2026-11/ORDER_20261106_iMac쌍아_막내8_GO_계가_동의창.md) | ⏳ |
 | 11/06 | ?/? | **ORDER** 실기기 대여 테스트 도구 1단계 — Firebase Test Lab(Google)으로 MONKOS Go 기기별 수읽기 속도 자동 실측(iOS Game Loop 먼저, 안드로이드는 빌드 경로 조사), 무료 한도 가드 내장. AWS Device Farm은 계정 생성 뒤 2단계 | [ORDER_20261106_iMac쌍아_막내8_GO_실기기테스트_FirebaseTestLab도구](../../orders/2026-11/ORDER_20261106_iMac쌍아_막내8_GO_실기기테스트_FirebaseTestLab도구.md) | ⏳ |
+| 11/06 | iMac/쌍아-막내8 | 실기기 테스트 도구 1단계 FTL — ftl.sh(25분 가드·우회 없음, 스모크 8/8)·기종 실측 iOS 6·안드로이드 204·Game Loop 패치/IPA 빌드 스크립트 · 1차 실측은 M1 오프라인으로 보류 · 안드로이드 경로 조사 | [COMPLETION_20261106_iMac쌍아-막내8_GO_실기기테스트_FTL도구](../../reports/2026-11/COMPLETION_20261106_iMac쌍아-막내8_GO_실기기테스트_FTL도구.md) | 진행 |
 
 ## 3. Phase 현황
 
