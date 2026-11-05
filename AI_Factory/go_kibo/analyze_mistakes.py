@@ -52,6 +52,7 @@ def cheb(a, b):
 QUAD_GAP = 6.0     # 외길: 1·2순위 scoreLead 차(집) ≥
 QUAD_EASY = 0.7    # 쉽게 찾음: 1순위 수의 신경망 직감(prior) ≥
 QUAD_HARD = 0.3    # 못 찾음(어려움): prior <
+QUAD_SENSE_MIN = 2.0  # AI식 감각수 하한: 1·2순위 차 ≥ (0집대는 평범 — 쌍아 판정 11-05 21:35)
 GAP_BINS = [(0, 1), (1, 3), (3, 6), (6, 12), (12, 1e9)]
 QUAD_KO = {"obvious": "당연한 수", "brilliant": "묘수", "missed_brilliant": "놓친 묘수", "blunder_obvious": "착각",
            "ai_sense": "AI식 감각수", "normal": "평범"}
@@ -66,12 +67,13 @@ def necessity(a0, sgn, mv):
     s = mis[1] if len(mis) > 1 else None
     mine = next((mi for mi in mis if mi["move"] == mv), None)
     out = {"prior_best": round(b.get("prior", 0.0), 4), "prior_mine": round(mine["prior"], 4) if mine and "prior" in mine else None,
-           "gap_lead": None, "gap_lead_signed": None, "gap_wr": None, "second_visits": None}
+           "gap_lead": None, "gap_lead_signed": None, "gap_lead_abs": None, "gap_wr": None, "second_visits": None}
     if s:
-        # 쌍아 v0(11-05 20:50)와 같은 정의: 탐색 순서 1·2위 scoreLead 차의 절댓값.
-        # 부호 유지값도 남긴다 — 음수 = 2순위(방문 순)가 오히려 집이 많은 국면(저방문 탐색의 순서·평가 불일치).
+        # 필연성 = max(0, 1순위 − 2순위), 두는 쪽 기준(쌍아 판정 11-05 21:35).
+        # 2순위(방문 순)가 더 높게 나온 수는 외길이 아니라 '대안 동등' → 0. 절댓값은 비교 열(쌍아 v0 정의)로만 남긴다.
         out["gap_lead_signed"] = round(sgn * (b["scoreLead"] - s["scoreLead"]), 2)
-        out["gap_lead"] = abs(out["gap_lead_signed"])
+        out["gap_lead"] = max(0.0, out["gap_lead_signed"])
+        out["gap_lead_abs"] = abs(out["gap_lead_signed"])
         wb = b["winrate"] if sgn > 0 else 1 - b["winrate"]
         ws = s["winrate"] if sgn > 0 else 1 - s["winrate"]
         out["gap_wr"] = round(wb - ws, 4)
@@ -92,7 +94,7 @@ def quad_of(x, gap=None, easy=None, hard=None):
         if p < hard:
             return "brilliant" if x["is_best"] else "missed_brilliant"
         return "normal"
-    return "ai_sense" if p < hard else "normal"
+    return "ai_sense" if (p < hard and g >= QUAD_SENSE_MIN) else "normal"
 
 
 def main():
@@ -230,20 +232,22 @@ def quad_section(rows, gidx):
     """사분면 표·구간 곡선·대표 수·임계 민감도 (형세봇 §2-4, 지시서 3/8)."""
     from collections import Counter
     L = ["## 6. 사분면 — 필연성 × 발견 난도 (형세봇 §2-4)\n",
-         f"필연성 = 탐색 1·2순위 scoreLead 차(집, 절댓값 — 쌍아 v0 정의). 난도 = 1순위 수의 신경망 직감(prior). "
-         f"임계: 외길 ≥ {QUAD_GAP:g}집 · 쉬움 prior ≥ {QUAD_EASY:g} · 어려움 < {QUAD_HARD:g}. 2단계(400 visits) 재평가 수는 그 값으로 판정.\n"]
+         f"필연성 = max(0, 1순위 − 2순위) scoreLead(집, 두는 쪽 기준 — 2순위가 더 높으면 '대안 동등' 0). 난도 = 1순위 수의 신경망 직감(prior). "
+         f"임계: 외길 ≥ {QUAD_GAP:g}집 · 쉬움 prior ≥ {QUAD_EASY:g} · 어려움 < {QUAD_HARD:g} · AI식 감각수는 차 ≥ {QUAD_SENSE_MIN:g}집. 2단계(400 visits) 재평가 수는 그 값으로 판정.\n"]
     n = len(rows)
     c = Counter(x["quad"] for x in rows)
     L.append("| 사분면 | 뜻 | 착수 | 비율 | 평균 손해(집) | 평균 1·2순위 차 | 평균 prior(1순위) |\n|---|---|---|---|---|---|---|")
     mean = lambda v: sum(v) / len(v) if v else 0  # noqa: E731
     desc = {"obvious": "외길·쉬움·둠", "blunder_obvious": "외길·쉬움·놓침", "brilliant": "외길·어려움·둠",
-            "missed_brilliant": "외길·어려움·놓침", "ai_sense": "대안 많음·어려움", "normal": "그 밖"}
+            "missed_brilliant": "외길·어려움·놓침", "ai_sense": f"대안 있음(차 {QUAD_SENSE_MIN:g}~{QUAD_GAP:g}집)·어려움", "normal": "그 밖"}
     for q in ("obvious", "blunder_obvious", "brilliant", "missed_brilliant", "ai_sense", "normal"):
         rs = [x for x in rows if x["quad"] == q]
         L.append(f"| {QUAD_KO[q]} | {desc[q]} | {len(rs)} | {len(rs) / n * 100:.1f}% | {mean([max(0, x['loss']) for x in rs]):.2f} | "
                  f"{mean([x.get('gap_lead') or 0 for x in rs]):.1f} | {mean([x.get('prior_best') or 0 for x in rs]):.2f} |")
-    neg = sum(1 for x in rows if (x.get("gap_lead_signed") or 0) <= -QUAD_GAP)
-    L.append(f"\n- 절댓값 정의 주의: 2순위(방문 순)가 1순위보다 {QUAD_GAP:g}집 이상 많은 국면 {neg}수도 '외길'에 들어간다(저방문 탐색의 순서·평가 불일치). 부호 값은 `gap_lead_signed`.\n")
+    fa = [x for x in rows if (x.get("gap_lead_abs") or 0) >= QUAD_GAP]
+    fs = [x for x in rows if (x.get("gap_lead") or 0) >= QUAD_GAP]
+    L.append(f"\n- v0 정정(쌍아 판정 11-05 21:35): 쌍아 v0는 1·2순위 차를 절댓값으로 셌다 → 외길 {len(fa)}수(찾음 {sum(x['is_best'] for x in fa)}·놓침 {sum(not x['is_best'] for x in fa)}). "
+             f"정정 정의(부호·0 하한)로는 외길 {len(fs)}수(찾음 {sum(x['is_best'] for x in fs)}·놓침 {sum(not x['is_best'] for x in fs)}). 절댓값은 비교 열 `gap_lead_abs`.\n")
     L.append("### 6-1. 구간 곡선 — 1·2순위 차별 작가님 1순위 일치율·직감\n")
     L.append("| 1·2순위 차(집) | 착수 | 작가님 1순위 일치 | 평균 prior(1순위) | 평균 prior(작가님 수) |\n|---|---|---|---|---|")
     for lo, hi in GAP_BINS:
