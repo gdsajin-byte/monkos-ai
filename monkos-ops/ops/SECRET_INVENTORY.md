@@ -244,6 +244,7 @@ status: 현행
 | **GOOGLE_ADS_CUSTOMER_ID** | Google Ads MCC ID (663-413-9609, 하이픈 제거) | Ads API login-customer-id | ⭐ **2026-07-19 신설** |
 | **GOOGLE_ADS_CLIENT_CID** | Google Ads 클라이언트 계정 (MonkosAI, 586-642-3846) | Ads API 메트릭 조회 대상 | ⭐ **2026-07-19 신설** |
 | **TOSS_SECRET_KEY** | 토스페이먼츠 라이브 시크릿 키 | portal (KR 결제 서버 검증) | ⭐ **2026-07-13 신설** |
+| **YOUTUBE_DATA_API_KEY** | YouTube Data API v3 키 (GCP 키 `youtube-data-readonly`, keys/c5f7f009-…, **youtube.googleapis.com 전용 제한**) | 공개 영상 메타(설명란·조회수) 목록화 — PF_GO 유튜브 해설 수집(막내2) | ⭐ **2026-11-05 신설** (작가님 22:13 승인·22:15 대행 지시, `secret add` 경유) |
 
 **gdocs 토큰 중앙화 (광역오더 #7)**: iMac 정본 `~/.config/mcp-google-docs/token.json` → `MCP_GDOCS_TOKEN`으로 등록.
 `gdocs_mcp.sh`가 token.json 부재 시 GCP에서 자동 복원 → **타 디바이스(M1 등) 무인증 동작**. 검증 완료(바이트 동일 복원·권한 600).
