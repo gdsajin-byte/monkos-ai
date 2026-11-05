@@ -24,7 +24,8 @@
 | 도구 | 하는 일 | PF | 위치 |
 |---|---|---|---|
 | 셀렉 기록기 | 사진관 셀렉 원본 축소본·대조(컷 선택 정답지) | PF_IDPHOTO | `select_recorder/` |
-| 아이폰 벤치 | MONKOS Go 온디바이스 실측 | PF_GO | `go_ios_bench/` |
+| 아이폰 벤치 | MONKOS Go 온디바이스 실측 (+ Game Loop 패치·IPA 빌드 11-06) | PF_GO | `go_ios_bench/` |
+| 실기기 대여 실측(FTL) | Firebase Test Lab 기종 목록·Game Loop 실행·결과 회수·사용량 원장 — 무료 하루 25분 가드(우회 없음). iOS 6종·안드로이드 실기기 204종(11-06 실측). AWS Device Farm은 계정 생성 후 2단계 | PF_GO | `device_lab/` |
 | 유튜브 해설 수집 | 목록(Data API)·자동 자막·Gemini 정답지·정렬 평가 | PF_GO | `apps/go-commentary-yt/` |
 | specs 제목·다크 실험 | 검색 제목 A/B·다크 테마 | PF_SPECS | `specs_ctr/` · `specs_dark/` |
 
