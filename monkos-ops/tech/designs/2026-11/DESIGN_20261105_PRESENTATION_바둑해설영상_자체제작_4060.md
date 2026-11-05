@@ -62,4 +62,4 @@ subject: 바둑 해설 영상 자체 제작 — 판 위주 화면 + 사이드 �
 
 - **기존 실증(10-25)**: ElevenLabs 유니 음색 'MONKOS Uni host'(계정 저장, voice_id 보유) + 해설 대본 6컷 TTS / Kling 4.0 Omni-Ref로 유니 B 이미지 + 자체 음성 립싱크 성공(포락선 상관 0.85, 720p, 초당 10크레딧 — Standard 월 660) / 60.5초 해설 쇼츠 v1(판 3장면 + 유니 인사·마무리). 기록: PF_VIDEO 10/25, PF_GO 10/25, `PF_MUSE/characters/GEN_LEDGER.md` #2~10.
 - **보정**: 유니 목소리·말하는 얼굴은 '만들 수 있나'가 아니라 **'싸게 양산할 수 있나'** 단계. V0 = ① 유니: ElevenLabs 'MONKOS Uni host' 음색을 기준으로 오픈소스 음성 복제가 같은 음색을 내는지(그 TTS 출력을 학습 음원으로) ② 작가님 목소리 복제. F0 = Kling 결과(기준) 대비 오픈소스 입모양 합성 품질·4060 속도.
-- **자산 보존 공백**: 10-25 쇼츠 v1·Kling 컷 파일은 당시 세션 임시 폴더에 있어 소실(실측 — ~/Downloads Flow 1클립만 잔존). 이후 생성물은 레포 밖 고정 폴더(예: `~/.monkos/uni/`)에 저장 원칙.
+- **자산 위치(23:18 정정 — 소실 아님)**: 10-26 백업으로 보존 — `~/Desktop/iMac_archive/monk_assets/generated/2026-10/session_a0c295e0_1025-1026/`(uni_flow_v1.mp4 · uni_video/cut1·cut2_kling.mp4 · 음성 wav · flow 컷, 130MB) + 구글 드라이브 `MONK_MODELS_BACKUP/2026-10-26_monk_assets/` 동일본, Flow 클립 6개 ~/Downloads. 23:01 '소실' 판정은 쌍아 탐색 깊이 부족(find maxdepth 6) 오판. 이후 생성물도 이 아카이브 규칙(세션별 generated 폴더 + 드라이브 백업)을 따른다.
