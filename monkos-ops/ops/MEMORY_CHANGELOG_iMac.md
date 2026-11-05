@@ -750,3 +750,4 @@
 - **[2026-11-05 23:09 KST]** iMac/쌍아 — 갱신: project_small_ai_plus_code_doctrine (반복 비용 작업=봇 학습, 작가님 23:09)
 - **[2026-11-05 23:11 KST]** iMac/쌍아 — 갱신: project_monkos_sovereignty (SaaS→모듈러, 작가님 23:11)
 - **[2026-11-05 23:16 KST]** iMac/쌍아 — 갱신: project_records_as_system_correction (기록=시대 잇는 통로, 작가님 23:16)
+- **[2026-11-05 23:59 KST]** iMac/쌍아 — 갱신: project_monkos_sovereignty (SaaS 링크 목록 vs 자체 모듈 오케스트레이션, 작가님 23:59)
