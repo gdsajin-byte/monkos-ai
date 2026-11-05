@@ -8,7 +8,7 @@
 #   ftl.sh usage                                      오늘(KST) 쓴 실기기 분(로컬 원장 합계)
 #   ftl.sh run ios --models a[:ver],b --ipa PATH [--scenarios 1] [--timeout 3m] [--dry-run]
 #                                                     Game Loop 실행(gcloud beta) → 원장 기록 → 결과 위치 출력
-#   ftl.sh fetch RESULTS_DIR [OUT]                    결과 버킷의 GameLoopResults/* 내려받기
+#   ftl.sh fetch RESULTS_DIR [OUT]                    결과 버킷 → GameLoopResults(bench·앱 캡처) + FTL 영상 내려받기
 #
 # 무료 한도 가드(우회 플래그 없음): 오늘 누적 + 이번 예상(기종 수 × 기종당 상한 분) > 25분이면 실행 거부.
 #   Blaze 실기기 하루 30분 무료(여유 5분). 넘기려면 작가님 승인 후 아래 LIMIT_MIN 상수를 바꾼다.
@@ -18,6 +18,7 @@ set -u
 PROJECT="monkos-3c6e4"          # Firebase 프로젝트(결제 Blaze) — 다른 프로젝트·결제 설정은 건드리지 않는다
 LIMIT_MIN=25                    # 하루 무료 30분 − 여유 5분. 우회 플래그 없음(상수 변경 = 작가님 승인 사항)
 MAX_TIMEOUT_MIN=3               # 기종당 상한(지시서 §1)
+OVERHEAD_MIN=2                  # 기종당 설치·준비 몫(11-06 실측 runDuration 213~314초 > timeout 180초) — 과금 기준 확인 전까지 보수적으로
 DIR="${HOME}/.monkos/device_lab"
 LEDGER="${FTL_LEDGER:-${DIR}/usage.jsonl}"
 mkdir -p "$DIR"
@@ -92,11 +93,11 @@ cmd_run() {
   local per; per=$(minutes_of "$tmo") || die "--timeout 형식(예: 3m, 180s)"
   [ "$per" -le "$MAX_TIMEOUT_MIN" ] || die "--timeout 기종당 ${MAX_TIMEOUT_MIN}분 이하(지금 ${per}분)"
   local n; n=$(echo "$models" | tr ',' '\n' | grep -c .)
-  local expect=$((n * per)) used; used=$(used_today)
+  local expect=$((n * (per + OVERHEAD_MIN))) used; used=$(used_today)
   if [ $((used + expect)) -gt "$LIMIT_MIN" ]; then
     die "무료 한도 초과 예상 — 오늘 ${used}분 + 예상 ${expect}분 > ${LIMIT_MIN}분 (유료 0)"
   fi
-  echo "가드 통과: 오늘 ${used}분 + 예상 ${expect}분(${n}대 × ${per}분) ≤ ${LIMIT_MIN}분"
+  echo "가드 통과: 오늘 ${used}분 + 예상 ${expect}분(${n}대 × (${per}분 + 준비 ${OVERHEAD_MIN}분)) ≤ ${LIMIT_MIN}분"
   [ "$dry" = 1 ] || [ -f "$ipa" ] || die "IPA 없음: ${ipa:-'(미지정)'}"
   local devs=() m model ver
   for m in $(echo "$models" | tr ',' ' '); do
@@ -105,7 +106,7 @@ cmd_run() {
   done
   local rdir="ftl/$(TZ='Asia/Seoul' date '+%Y%m%d_%H%M%S')"
   local cmd=(gcloud beta firebase test ios run --project "$PROJECT" --type game-loop --app "$ipa" "${devs[@]}"
-             --scenario-numbers "$scen" --timeout "$tmo" --results-dir "$rdir" --no-record-video --format json)
+             --scenario-numbers "$scen" --timeout "$tmo" --results-dir "$rdir" --record-video --format json)  # FTL 자체 녹화도 회수
   if [ "$dry" = 1 ]; then echo "(dry-run) ${cmd[*]}"; return 0; fi
   # 원장 먼저(상한 분) — 실행 중 끊겨도 기록은 남는다(보수적)
   printf '{"date":"%s","at":"%s","os":"ios","models":"%s","minutes":%s,"resultsDir":"%s","basis":"upper-bound"}\n' \
@@ -128,9 +129,18 @@ cmd_fetch() {
   [ -n "$bucket" ] || bucket=$(grep -ho "storage/browser/[^/ ]*" "$log" 2>/dev/null | head -1 | sed 's#storage/browser/#gs://#')
   [ -n "$bucket" ] || die "결과 버킷을 실행 로그에서 찾지 못함(run_${rdir#ftl/}.log)"
   mkdir -p "$out"
-  gcloud storage cp -r "${bucket}/${rdir}/**/GameLoopResults/*" "$out/" 2>"${out}/fetch.err" \
+  # 기기별 폴더 구조를 살려 받는다: GameLoopResults(bench_*.json·screen_*.png 앱 자체 캡처) + FTL 영상(video.mp4)·스크린샷
+  gcloud storage cp -r "${bucket}/${rdir}" "$out/" 2>"${out}/fetch.err" \
     || die "내려받기 실패 — $(tail -1 "${out}/fetch.err")"
-  echo "✅ ftl: GameLoopResults → $out ($(find "$out" -type f ! -name fetch.err | wc -l | tr -d ' ')개)"
+  local nj nv np
+  nj=$(find "$out" -name "bench_*.json" | wc -l | tr -d ' ')  # 버킷에서는 기기별 CustomResults/ 아래(11-06 실측)
+  np=$(find "$out" -name "screen_*.png" | wc -l | tr -d ' ')
+  nv=$(find "$out" -name "*.mp4" | wc -l | tr -d ' ')
+  local ndev nc; ndev=$(find "$out" -maxdepth 3 -type d -name "*-*-*-portrait" | wc -l | tr -d ' ')
+  nc=$(find "$out" -path "*CrashLogs*" -name "*.ips" | wc -l | tr -d ' ')
+  [ "$nj" -gt 0 ] || die "bench_*.json 0개 — 앱이 측정을 끝내지 못했거나 Game Loop 진입 실패(기기 ${ndev} · 크래시 로그 ${nc} · 영상 ${nv})"
+  [ "$nj" -ge "$ndev" ] || echo "⚠️ ftl: 기기 ${ndev}대 중 측정 ${nj}대 — 나머지는 CrashLogs(${nc}개)·영상 확인"
+  echo "✅ ftl: $out — bench ${nj}개 · 앱 캡처 ${np}장 · FTL 영상 ${nv}개"
 }
 
 case "${1:-}" in

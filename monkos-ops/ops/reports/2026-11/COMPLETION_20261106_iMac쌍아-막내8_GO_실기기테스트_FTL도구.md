@@ -93,3 +93,32 @@ cd ~/developer/_ext/katago-ios && bash monk_build_ipa.sh
 - ⏳ M1 온라인 → 패치 복사·적용 → 작가님 화면 터미널 1줄 → IPA → toolresults API 활성 → 1차 실측 3대(9분) → 표 추가
 - ⏳ `references.md` 도구 맵·`AI_Factory/REGISTRY.md` §2 등재 문안(초안, 쌍아 기입):
   - "ftl.sh(device_lab) | 인프라 | `AI_Factory/device_lab/` | 실기기 FTL — models·run·fetch·usage, 무료 25분 가드(우회 없음), 스모크 smoke_ftl.sh 8/8, 실패 가시화 `❌ ftl:`"
+
+## 7. 1차 실측 (05:50~05:56, 쌍아 05:50 전달 — 작가님 M1 빌드 성공)
+
+- IPA: 작가님이 M1에서 빌드(05:50) → iMac `~/.monkos/device_lab/ipa/MONKBench.ipa`(13.1MB). 서명 OK · URL 스킴 OK · 최소 iOS 16.4 · v2 캡처 코드 포함을 확인했다.
+- `toolresults.googleapis.com` 활성(monkos-3c6e4만, 05:51).
+- `ftl.sh run ios --models iphonese3:18.4,iphone8:16.6,iphone11pro:16.6 --timeout 3m` → 매트릭스 6160176604712919866, 3대 모두 outcome Passed. 단, 실제 측정은 SE 3만 성공했다.
+
+| 기기 | 결과 | 1500v 수당 | 1500v visits/s | 자동 수읽기 | 자동 수당 | 자동 visits/s | 첫 측정(autobench 300v) | 산출 |
+|---|---|---|---|---|---|---|---|---|
+| **iPhone SE 3**(iPhone14,6 · iOS 18.4) | ✅ | **3.58초** | 419 | **550** | 1.31초 | 421 | 325 v/s · 9.6초 | bench json · screen_1~3.png · 영상 없음 |
+| iPhone 8(iOS 16.6) | ❌ 실행 직후 충돌 | — | — | — | — | — | — | CrashLogs 2 · video.mp4 1.1MB |
+| iPhone 11 Pro(iOS 16.6) | ❌ 실행 직후 충돌 | — | — | — | — | — | — | CrashLogs 2 · video.mp4 2.3MB |
+
+- 비교: 기존 iPhone18,1(17 Pro) b10 약 **1,000 v/s** → SE 3(A15)는 **약 0.42배**다. 1500v 응수 3.6초는 목표 2초를 넘어서, 자동 결정이 550수읽기(1.3초)로 내려 맞춘다.
+- **충돌 원인**(크래시 로그 실측): `Symbol not found: _$sSa034_makeUniqueAndReserveCapacityIfNotB0yyFyXl_Ts5`
+  - 위치: `KataGoSwift.framework`(built for iOS 17.0 which is newer than running OS) — 앱은 16.4지만 프레임워크가 17.0이었다.
+  - 조치: `build_ipa.sh` 아카이브에 `IPHONEOS_DEPLOYMENT_TARGET=16.4`(전 대상, 명령줄 — pbxproj 무변경)를 넣었다. M1 서명 없는 빌드 BUILD SUCCEEDED · `KataGoSwift minos 16.4`를 확인했고 M1에 반영했다.
+  - → 작가님 **같은 1줄로 재빌드** 후 iPhone 8·11 Pro 재측정(가드: 오늘 14분 + 2대×5분 = 24분 ≤ 25)
+- **캡처**: 앱 자체 3장이 정상 저장됐다(하단 띠 "iPhone14,6 · iOS 18.4 · 1500v 419 v/s").
+  - 다만 측정 시점에 앱 화면은 판이 아니라 GTP 명령 화면("Initializing…" — 엔진 준비 전에 벤치가 돈다)이었다. 판 화면이 필요하면 다음 패치에서 측정 뒤 판 탭으로 전환하는 것을 검토한다.
+  - FTL 영상은 iOS 16.6 두 대에만 생겼고 SE 3(18.4)에는 없다(FTL 동작 — 원인 미상).
+  - 경로(레포 밖): `~/.monkos/device_lab/results/20261106_055057/20261106_055057/{기기}/CustomResults/screen_1~3.png` · `…/video.mp4`
+- **결과 위치**: 버킷 `test-lab-bpyd0sd0hy6s4-hvqwf57yfw5au`에서 GameLoopResults는 기기별 **`CustomResults/`** 로 온다 → `fetch` 판정을 이 경로로 고쳤다(기기 수 대비 측정 수·크래시 수 경고 포함).
+- **과금(무료 30분 포함 여부)**
+  - 공식 요금 문서([usage-quotas-pricing](https://firebase.google.com/docs/test-lab/usage-quotas-pricing))는 "실기기 하루 30분 무료, 초과 $5/시간·분 단위 올림"이라고만 하고, **iOS를 따로 언급하지 않는다**.
+  - toolresults API의 `deviceUsageDuration`은 3대 모두 **0초**이고, `runDuration`은 213·314·295초다(설치·준비 포함, timeout 3분 초과).
+  - → 무료 포함 여부는 **결제 콘솔 Test Lab SKU(하루 뒤 반영)로 확인해야 한다** — 미확정.
+  - 그동안 보수적으로 잡는다: 가드 예상을 기종당 "상한 + 준비 2분"으로 올렸고(스모크 9/9), 오늘 원장에 runDuration 기준 보정 +5분을 더해 **14분**이다.
+- 빌드 진행 표시: `build_ipa.sh`에 단계 시각과 10초마다 "경과 N초 · 로그 N줄 — 진행 중(Ctrl+C 누르지 마세요)"를 넣고 M1에 반영했다(쌍아 05:50 — 작가님이 멈춘 줄 알고 Ctrl+C).
