@@ -887,18 +887,22 @@ function buildSounds(state) {
     const cap = { 1: urls(['stone1', 'stone1s']), 2: urls(['stone2', 'stone2s']), 3: urls(['stone3', 'stone3s']) };
     const count = {}, remain = {};
     for (let i = 1; i <= 11; i++) count[i] = one('count' + i);
-    for (let i = 1; i <= 3; i++) remain[i] = one('remain' + i);
-    SND = { stone: urls(['stone0', 'stone0s']), cap: cap[1].length ? cap : null, overlay: [], count, remain,
-            start: one('start'), counting: one('counting'), note: pack.note };
+    for (let i = 1; i <= 5; i++) remain[i] = one('remain' + i);
+    const c = state.sounds || {}, st = urls(['stone0', 'stone0s']);
+    // 11-05 작가님 "돌소리는 AI로 만들지 않는다" — 목소리 전용 팩(돌 파일 없음)은 기본 녹음 돌소리·따냄 겹침을 쓴다
+    SND = st.length ? { stone: st, cap: cap[1].length ? cap : null, overlay: [] }
+      : { stone: (c.stone && c.stone.length ? c.stone : BUILTIN.stone).map(f => `/sounds/${f}.wav`), cap: null,
+          overlay: (c.capture && c.capture.length ? c.capture : BUILTIN.capture).map(f => `/sounds/${f}.wav`) };
+    Object.assign(SND, { count, remain, byo: one('byo'), start: one('start'), counting: one('counting'), note: pack.note });
   } else {
     packName = 'builtin';
     const c = state.sounds || {};
     const st = (c.stone && c.stone.length ? c.stone : BUILTIN.stone).map(f => `/sounds/${f}.wav`);
     const ov = (c.capture && c.capture.length ? c.capture : BUILTIN.capture).map(f => `/sounds/${f}.wav`);
-    SND = { stone: st, cap: null, overlay: ov, count: {}, remain: {}, start: null, counting: null, note: '' };
+    SND = { stone: st, cap: null, overlay: ov, count: {}, remain: {}, byo: null, start: null, counting: null, note: '' };
   }
   const all = [...SND.stone, ...SND.overlay, ...(SND.cap ? [...SND.cap[1], ...SND.cap[2], ...SND.cap[3]] : []),
-               ...Object.values(SND.count), ...Object.values(SND.remain), SND.start, SND.counting].filter(Boolean);
+               ...Object.values(SND.count), ...Object.values(SND.remain), SND.byo, SND.start, SND.counting].filter(Boolean);
   for (const u of all) {
     if (decoded[u] !== undefined) continue;
     decoded[u] = null;
@@ -1407,13 +1411,16 @@ let clocks = null, clockTimer = null, clockLast = 0, clockMv = -1;
 // 초읽기 음성 v3 — 박자 최우선(11-05 09:22 작가님 "초읽기가 빨라졌다 느려졌다" → 08:28 '밀린 숫자 이어 읽기' 폐기):
 // · 숫자는 로컬 시계의 1초 격자 시각에만 낸다 — 오디오 시계로 0.3초 앞서 예약(100ms 타이머 떨림이 박자에 안 섞임), 몰아 읽기 없음
 // · 서버 보정은 점프 대신 서서히(초당 30ms slew) — 누락·몰아치기 없음. 3초 넘는 오차만 즉시(무음) 맞춘다
-// · 남은 횟수 안내는 새 회 시작 격자에 1칸(1초 안 길이) — 10초 초읽기는 그 회 '하나' 자리를 안내가 대신(박자 유지)
+// · 안내(초읽기를 시작합니다 / N번 남았습니다 / 마지막)는 '하나'(10초 남음)보다 2초 앞(12초 남음) 격자에 시작 —
+//   11-05 09:48 작가님 "하나 전에 넣어야해 마지막 하나 둘 이렇게 마지막을 약 2초전에 시작해".
+//   회가 12초보다 짧으면(10초 초읽기) 회 시작 순간에 안내하고, 안내 시작 2초 안에 오는 숫자(하나·둘)는 건너뛴다 —
+//   숫자 n은 '남은 11−n초'라는 뜻을 지키기 위해(당겨 세면 1초 남음에 '열'이 안 나오고 화면 시계와 어긋남). 첫 숫자는 '셋'(8초 남음)
 // · 같은 (남은 회·숫자)는 한 번만 — 시계가 뒤로 가도 다시 읽지 않는다
-const CD = { said: new Set(), srcs: [], slew: 0, mv: -1, log: null };
+const CD = { said: new Set(), plan: {}, srcs: [], slew: 0, mv: -1, log: null };
 const CD_AHEAD = 0.3, CD_SLEW = 0.03, CD_JUMP = 3;
 function cdReset() {
   for (const x of CD.srcs) { try { x.stop(); } catch (e) { /* 이미 끝남 */ } }
-  CD.srcs = []; CD.said.clear(); CD.slew = 0;
+  CD.srcs = []; CD.said.clear(); CD.plan = {}; CD.slew = 0;
 }
 function cdAt(url, delay, key) {  // 격자 시각에 1회 예약
   CD.said.add(key);
@@ -1435,18 +1442,34 @@ function cdAt(url, delay, key) {  // 격자 시각에 1회 예약
   if (CD.log) CD.log.push([when, key]);  // 테스트 기록(평소 null)
 }
 function cdSchedule(c) {  // 내 차례 — 다음 0.3초 안에 오는 격자만 예약
-  if (!SND || !S || !c || !c.inByo || c.flagged) return;
+  if (!SND || !S || !c || c.flagged) return;
   if (CD.mv !== S.moveNo) { cdReset(); CD.mv = S.moveNo; }
+  const annAt = Math.min(c.byo, 12);  // 안내 시작(남은 초) — '하나'(10초) 2초 앞, 회가 더 짧으면 회 시작
+  const plan = (left, url) => {  // 이 회(left)에 안내가 있다 — 안내 시작 2초 안의 숫자는 건너뜀
+    const key = `${left}:ann`;
+    if (!url || CD.said.has(key) || CD.plan[left]) return;  // 팩에 그 안내가 없으면 숫자도 건너뛰지 않는다
+    CD.plan[left] = { url, key };
+    for (let k = 10; k >= 1; k--) if (annAt - k < 2) CD.said.add(`${left}:count${11 - k}`);
+  };
+  if (!c.inByo) {  // 기본 시간 → 초읽기 진입 직전: '초읽기를 시작합니다'
+    if (c.main <= CD_AHEAD) plan(c.left, SND.byo);
+    if (CD.plan[c.left] && annAt >= c.byo && !CD.said.has(CD.plan[c.left].key)) cdAt(CD.plan[c.left].url, c.main, CD.plan[c.left].key);
+    return;
+  }
+  if (c.left > 1 && c.period <= CD_AHEAD) {  // 회 넘김 직전 — 다음 회 안내 계획(회가 짧으면 회 시작 순간에 예약)
+    const nl = c.left - 1;
+    plan(nl, SND.remain[nl]);
+    const pl = CD.plan[nl];
+    if (pl && annAt >= c.byo && !CD.said.has(pl.key)) cdAt(pl.url, c.period, pl.key);
+  }
+  const pl = CD.plan[c.left];  // 이 회의 안내(12초 남음 격자)
+  if (pl && !CD.said.has(pl.key)) {
+    const d = c.period - annAt;
+    if (d <= CD_AHEAD && d > -0.5) cdAt(pl.url, Math.max(0, d), pl.key);
+  }
   for (let k = 10; k >= 1; k--) {  // 10초 남음=하나 … 1초 남음=열
     const d = c.period - k, key = `${c.left}:count${11 - k}`;
     if (d >= 0 && d <= CD_AHEAD && !CD.said.has(key)) cdAt(SND.count[11 - k], d, key);
-  }
-  if (c.left > 1 && c.period <= CD_AHEAD) {  // 회 넘김 격자 — 다음 회 안내
-    const nl = c.left - 1, key = `${nl}:remain${nl}`;
-    if (!CD.said.has(key)) {
-      if (c.byo <= 10) CD.said.add(`${nl}:count1`);  // 그 회 '하나' 자리를 안내가 대신
-      cdAt(SND.remain[nl], c.period, key);
-    }
   }
 }
 

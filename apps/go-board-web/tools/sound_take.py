@@ -34,8 +34,22 @@ def settings(model):
     return {"stability": 0.85, "similarity_boost": 0.8, "style": 0.0, "use_speaker_boost": True, "speed": 0.95}
 
 
-def tts(vid, model, text, seed):
-    body = {"text": text, "model_id": model, "voice_settings": settings(model), "seed": int(seed)}
+# 기운 프로필(11-05 09:51 작가님 "생기있으면 … 푹 꺼져서 기운 하나도 없는 톤" — 안정성 0.85·스타일 0이 기운을 죽임)
+# TAKE 이름 접두로 고른다: m*=중간, h*=높음, c*=쉼표 문안
+PROFILES = {
+    "m": ({"stability": 0.6, "similarity_boost": 0.8, "style": 0.3, "use_speaker_boost": True, "speed": 1.0}, ". "),
+    "h": ({"stability": 0.45, "similarity_boost": 0.8, "style": 0.5, "use_speaker_boost": True, "speed": 1.05}, "! "),
+    "c": ({"stability": 0.5, "similarity_boost": 0.8, "style": 0.4, "use_speaker_boost": True, "speed": 1.03}, ", "),
+    "x": ({"stability": 0.55, "similarity_boost": 0.8, "style": 0.4, "use_speaker_boost": True, "speed": 1.03}, "! "),  # 중간과 높음 사이
+}
+
+
+def profile(take):
+    return PROFILES.get(str(take)[:1])
+
+
+def tts(vid, model, text, seed, vs=None):
+    body = {"text": text, "model_id": model, "voice_settings": vs or settings(model), "seed": int(seed)}
     return sc.call("POST", f"/v1/text-to-speech/{vid}?output_format=mp3_44100_128", body, raw=True)
 
 
@@ -44,10 +58,12 @@ def gen(slug, vid, model, take, seed):
     name = f"{slug}_{model}_t{take}"
     p = D / f"{name}.mp3"
     if not p.exists():
-        text = SEQ_NL if str(take).startswith("n") else SEQ
-        p.write_bytes(tts(vid, model, text, seed))
+        pf = profile(take)
+        text = SEQ_NL if str(take).startswith("n") else (pf[1].join(WORDS) + pf[1].strip() if pf else SEQ)
+        vs = pf[0] if pf else settings(model)
+        p.write_bytes(tts(vid, model, text, seed, vs))
         (D / f"{name}.json").write_text(json.dumps({"slug": slug, "voice_id": vid, "model": model, "seed": int(seed),
-                                                    "settings": settings(model), "text": text}, ensure_ascii=False))
+                                                    "settings": vs, "text": text}, ensure_ascii=False))
         print(f"tts {name} chars {len(text)}")
 
 
@@ -195,7 +211,28 @@ def listen(name):
     print(f"listen {m4a}")
 
 
+def listen_ann(name, tag="remain1", lead=0.5):
+    """20초 이상 초읽기의 새 회(09:48 작가님 흐름): 안내('마지막!')를 '하나' 2초 앞(12초 남음)에 → 하나~열 1초 격자 → 15초 m4a."""
+    def load(p):
+        with wave.open(str(p)) as w:
+            return np.frombuffer(w.readframes(w.getnframes()), "<i2").astype(np.float64) / 32767
+    out = np.zeros(int(15.0 * SR))
+    def put(t, y):
+        s = max(0, int((t + lead - PRE) * SR)); out[s:s + len(y)] += y[:len(out) - s]
+    put(0.0, load(D / name / f"{tag}.wav"))
+    for i in range(1, 11):
+        put(2.0 + (i - 1), load(D / name / f"count{i}.wav"))
+    out = out / (np.max(np.abs(out)) or 1) * 10 ** (-1 / 20)
+    with tempfile.TemporaryDirectory() as td:
+        w = Path(td) / "l.wav"; write_wav(w, out)
+        m4a = D / f"listen_{name}_{tag}.m4a"
+        subprocess.run(["afconvert", "-f", "m4af", "-d", "aac", str(w), str(m4a)], check=True)
+    print(f"listen {m4a}")
+
+
 if __name__ == "__main__":
     a = sys.argv[1:]
+    if a[0] == "listen_ann":
+        listen_ann(*a[1:3]); sys.exit()
     {"gen": lambda: gen(*a[1:6]), "ann": lambda: ann(*a[1:7]), "split": lambda: split(a[1]), "level": lambda: level(a[1]),
      "stats": lambda: stats(a[1]), "listen": lambda: listen(a[1])}[a[0]]()
