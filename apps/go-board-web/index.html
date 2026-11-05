@@ -218,6 +218,18 @@
                        background: #ffd66b; color: #1d1d1f; box-shadow: 0 2px 6px rgba(0,0,0,.18); }
   .lobby-empty { color: var(--muted); font-size: 15px; padding: 6px 2px; }
   #boardBox { position: relative; }
+  /* 11-06 05:12 작가님 "동의창 도입해야지" — 계가 결과 확인 창(판 아래쪽 반투명 시트, 집 표시가 보이게). 카운트다운 없음 */
+  #scoreDlg { position: absolute; left: 3%; right: 3%; bottom: 2%; z-index: 5; background: rgba(255, 255, 255, 0.86); border-radius: 12px;
+              box-shadow: 0 4px 18px rgba(0,0,0,.28); padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; backdrop-filter: blur(2px); }
+  #scoreDlg[hidden] { display: none; }
+  #scoreDlgTxt { font-size: 15px; font-weight: 700; line-height: 1.45; color: #1d2430; }
+  #scoreDlgNote { color: #5a6270; line-height: 1.4; }
+  #scoreDlg .sd-btns { display: flex; gap: 10px; justify-content: flex-end; }
+  #scoreDlg .sd-btns button { min-width: 96px; padding: 8px 14px; font-size: 15px; }
+  /* 휴대폰: 판 위에 띄우면 절반을 가린다(11-06 실측) — 판 바로 아래 시트로 내려 판·집 표시 전부 보이게, 안내는 한 줄 */
+  @media (max-width: 700px) { #scoreDlg { position: static; margin: 6px 0 0; background: #fff; padding: 8px 10px; gap: 4px; }
+    #scoreDlgTxt { font-size: 13.5px; } #scoreDlgNote { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 12px; }
+    #scoreDlg .sd-btns button { min-width: 84px; padding: 7px 12px; } }
   #boardToast { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); max-width: 86%; padding: 10px 16px;
                 border-radius: 10px; background: rgba(20, 24, 30, .86); color: #fff; font-size: 16px; font-weight: 700; text-align: center;
                 pointer-events: none; opacity: 0; transition: opacity .2s; z-index: 5; }
@@ -385,7 +397,7 @@
   <div class="lobby-foot" id="footMine"><button id="bImport">기보 불러오기</button><input type="file" id="importFile" accept=".sgf,.gib" multiple hidden></div>
 </div>
 <div class="wrap">
-  <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg><div id="boardToast" role="status"></div><div id="judgeBand" role="status" hidden><span></span><button aria-label="판정 닫기">✕</button></div></div>
+  <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg><div id="boardToast" role="status"></div><div id="scoreDlg" role="dialog" aria-label="계가 결과 동의" hidden><div id="scoreDlgTxt"></div><div class="small" id="scoreDlgNote"></div><div class="sd-btns"><button id="bAgreeNo">아니요</button><button id="bAgreeYes" class="hl">예</button></div></div><div id="judgeBand" role="status" hidden><span></span><button aria-label="판정 닫기">✕</button></div></div>
   <div id="playBar"><button id="bPick0" disabled>취소</button><button id="bPlace" disabled>착수</button><span class="pick" id="pickTxt"></span></div>
   <div id="botBar" hidden><button id="bBotPause">일시정지</button><button id="bBotStep">한 수씩</button>
     <select id="bBotPace" aria-label="수 간격"><option value="fast">빠름</option><option value="normal">보통</option><option value="slow">느림</option></select>
@@ -767,7 +779,23 @@ function render() {
   if (!tab) tab = S.result ? 'ai' : 'shape';
   for (const b of document.querySelectorAll('#tabs button')) b.classList.toggle('on', b.dataset.tab === tab);
   for (const t of ['ai', 'shape', 'hint', 'review', 'more']) document.getElementById('tab-' + t).hidden = t !== tab;
-  document.getElementById('secScore').hidden = !sc;
+  document.getElementById('secScore').hidden = true;  // 11-06 — 계가 결과는 판 위 동의창(scoreDlg)으로
+  const dlgOn = !!sc && !S.bots;  // 봇 대 봇은 서버가 자동 확정(창 없음)
+  document.getElementById('scoreDlg').hidden = !dlgOn;
+  if (dlgOn) {
+    const winKo = sc.resultKo;
+    document.getElementById('scoreDlgTxt').textContent =
+      `집계산 결과 — 흑 집 ${sc.terrB} · 사석·따낸 돌 ${sc.prisB} / 백 집 ${sc.terrW} · 사석·따낸 돌 ${sc.prisW} · 덤 ${sc.komi} → ${winKo}. 결과에 동의하시겠습니까?`;
+    const signedK = r => { const m = /^([BW])\+([\d.]+)$/.exec(r || ''); return m ? (m[1] === 'B' ? 1 : -1) * Number(m[2]) : (r === '0' ? 0 : NaN); };
+    const off = !(Math.abs(signedK(sc.result) - signedK(sc.kata)) <= 1);
+    document.getElementById('scoreDlgNote').textContent = [
+      sc.finishN ? `AI가 끝까지 ${sc.finishN}수 마무리한 국면(반투명 번호)으로 셌습니다 — 실제 판은 그대로입니다.` : '',
+      sc.dame && sc.dame.length ? `경계가 열린 곳 ${sc.dame.length}점은 공배로 셉니다.` : '',
+      off ? `KataGo 판정(${sc.kataKo})과 다릅니다 — 사석 표시를 확인해 주세요.` : '',
+      '돌을 누르면 사석/산 돌이 바뀌고 숫자가 다시 계산됩니다. [아니요]는 계가를 취소하고 대국을 이어갑니다.',
+    ].filter(Boolean).join(' ');
+    document.getElementById('bAgreeYes').disabled = busy; document.getElementById('bAgreeNo').disabled = busy;
+  }
   if (sc) {
     document.getElementById('scoreSum').textContent = (sc.finishN ? `AI 마무리 ${sc.finishN}수 후 계가 · ` : '') + `흑 ${sc.black}집 · 백 ${sc.white}집 → ${sc.resultKo}`;
     const signed = r => { const m = /^([BW])\+([\d.]+)$/.exec(r || ''); return m ? (m[1] === 'B' ? 1 : -1) * Number(m[2]) : (r === '0' ? 0 : NaN); };
@@ -1610,6 +1638,8 @@ document.getElementById('bScore').onclick = async () => {
   try { await call('/api/score'); } finally { clearInterval(poll); boardToastOff(); }
 };
 document.getElementById('bScoreOk').onclick = () => call('/api/score/confirm');
+document.getElementById('bAgreeYes').onclick = () => call('/api/score/confirm');  // 예 = 계가 확정(결과·기보·정답 1행)
+document.getElementById('bAgreeNo').onclick = () => call('/api/score/cancel');    // 아니요 = 계가 취소(원상 복귀·대국 재개, 정답 기록 없음)
 document.getElementById('bScoreCancel').onclick = () => call('/api/score/cancel');
 document.getElementById('bJudge').onclick = async () => {
   await call('/api/judge');

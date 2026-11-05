@@ -1862,6 +1862,14 @@ class Room:
             print(f"⚠️ go-board: 계가 정답 기록 실패 — 방 {self.id}: {e}", file=sys.stderr)
 
     def cancel_score(self):
+        """[아니요](11-06 동의창) = 계가 취소 — 마무리 돌·집 표시를 지우고 원래 국면으로. 정답(answers.jsonl)은 남기지 않고 이벤트 1행"""
+        if self.scoring and EVENTS:
+            try:
+                c = self.count()
+                EVENTS.add(self.id, action="score_declined", moveNo=len(self.moves), result=c.get("result"),
+                           black=c.get("black"), white=c.get("white"), finishN=c.get("finishN"), dead=len(c.get("dead") or []))
+            except Exception as ex:  # noqa: BLE001 — 기록 실패로 취소를 막지 않는다
+                print(f"❌ go-board: score_declined 기록 실패 — {ex}", file=sys.stderr, flush=True)
         self.scoring = None
         self.turn_since = time.time()  # 계가 동안 멈춘 시계를 다시
         self.message = "계가를 취소했습니다. 이어서 두세요."
