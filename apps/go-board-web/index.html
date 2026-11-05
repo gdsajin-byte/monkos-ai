@@ -893,6 +893,7 @@ window.addEventListener('pagehide', ev => { adLog('pagehide', { persisted: ev.pe
 window.addEventListener('focus', reviveAudio);
 document.addEventListener('pointerdown', ev => { AD.lastTap = performance.now(); reviveAudio(ev); }, true);
 
+const REMAIN_MAX = 2;  // 안내하는 남은 횟수 상한(팩에 remain3~ 파일이 있어도 쓰지 않음 — 타이젬 팩도 같은 규칙)
 function buildSounds(state) {
   const pack = state.packs && state.packs[packName];
   if (pack) {
@@ -902,7 +903,8 @@ function buildSounds(state) {
     const cap = { 1: urls(['stone1', 'stone1s']), 2: urls(['stone2', 'stone2s']), 3: urls(['stone3', 'stone3s']) };
     const count = {}, remain = {};
     for (let i = 1; i <= 11; i++) count[i] = one('count' + i);
-    for (let i = 1; i <= 5; i++) remain[i] = one('remain' + i);  // 남은 4·5회(12:08) — 파일이 있는 팩만
+    // 11-05 12:11 작가님 "두번부터만 하자 세번 네번은 필요 없겠어" — 남은 2회(두 번 남았습니다)·1회(마지막입니다)만. 3회 이상은 안내 없이(하나 +1.5초)
+    for (let i = 1; i <= REMAIN_MAX; i++) remain[i] = one('remain' + i);
     SND = { stone: urls(['stone0', 'stone0s']), cap: cap[1].length ? cap : null, overlay: [], count, remain, byo: one('byo'),
             start: one('start'), counting: one('counting'), note: pack.note };
   } else {
