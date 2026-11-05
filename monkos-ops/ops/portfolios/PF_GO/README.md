@@ -143,6 +143,7 @@ status: active
 | 11/06 | ?/? | **ORDER** MONKOS Go 안드로이드 빌드 v0 — KataGo CPU(Eigen) arm64 + Game Loop 래퍼 APK → FTL 가상 기기 스모크 → 저가 갤럭시 실기기 실측(무료 한도 안) | [ORDER_20261106_iMac쌍아_막내2_GO_안드로이드빌드_GameLoop](../../orders/2026-11/ORDER_20261106_iMac쌍아_막내2_GO_안드로이드빌드_GameLoop.md) | ⏳ |
 | 11/06 | iMac/쌍아 | **DESIGN** MONKOS Go 앱 설정창 — 수읽기(visits) 조절을 기기 성능 자동 맞춤 + 사람 말 단계 + 고급 숫자 3층으로. 아이폰·안드로이드·웹 공통 | [DESIGN_20261106_GO_앱설정창_수읽기조절](../../../tech/designs/2026-11/DESIGN_20261106_GO_앱설정창_수읽기조절.md) | ⏳ |
 | 11/06 | iMac/쌍아 | **DESIGN** 앱스토어·플레이스토어 제출 자동화 도구(store_kit) — IDPASS 수동 제출 경험을 패턴화. 원본 1장 → 다국어 메타·규격별 스크린샷·업로드·심사 사전 점검·리젝 장부. 첫 적용 MONKOS Go, 공용 도구 | [DESIGN_20261106_INFRA_스토어제출_자동화](../../../tech/designs/2026-11/DESIGN_20261106_INFRA_스토어제출_자동화.md) | ⏳ |
+| 11/06 | iMac/쌍아-막내2 | 안드로이드 빌드 v0 — KataGo Eigen arm64 + Game Loop APK 18.6MB, FTL 가상 Passed ×2(1500v 6.5~7.8초), 실기기 A05s·A15·S24는 내일 | [COMPLETION_20261106_iMac쌍아-막내2_GO_안드로이드빌드_GameLoop](../../reports/2026-11/COMPLETION_20261106_iMac쌍아-막내2_GO_안드로이드빌드_GameLoop.md) | ✅ |
 
 ## 3. Phase 현황
 
