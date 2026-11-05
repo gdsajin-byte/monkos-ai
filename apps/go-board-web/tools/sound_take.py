@@ -23,6 +23,8 @@ SEQ = "하나. 둘. 셋. 넷. 다섯. 여섯. 일곱. 여덟. 아홉. 열."
 SEQ_NL = "\n\n".join(w + "." for w in ["하나", "둘", "셋", "넷", "다섯", "여섯", "일곱", "여덟", "아홉", "열"])
 WORDS = ["하나", "둘", "셋", "넷", "다섯", "여섯", "일곱", "여덟", "아홉", "열"]
 ANN = [("remain3", "초읽기 세 번 남았습니다."), ("remain2", "초읽기 두 번 남았습니다."), ("remain1", "초읽기 마지막 회입니다.")]
+# 짧은 안내(1초 안) — 11-05 09:22 박자 우선: 안내는 새 회 시작 격자에 1칸만 차지(10초 초읽기는 그 회 '하나' 자리). TAKE에 's' 접미
+ANN_SHORT = [("remain3", "세 번 남음."), ("remain2", "두 번 남음."), ("remain1", "마지막 회.")]
 PRE, POST, FIN, FOUT = 0.08, 0.15, 0.005, 0.03
 
 
@@ -49,11 +51,11 @@ def gen(slug, vid, model, take, seed):
         print(f"tts {name} chars {len(text)}")
 
 
-def ann(slug, vid, model, take, seed):
+def ann(slug, vid, model, take, seed, short=""):
     name = f"{slug}_{model}_t{take}"
     n = 0
-    for tag, text in ANN:
-        p = D / f"{name}_{tag}.mp3"
+    for tag, text in (ANN_SHORT if short else ANN):
+        p = D / f"{name}_{tag}{'s' if short else ''}.mp3"
         if not p.exists():
             p.write_bytes(tts(vid, model, text, seed)); n += len(text)
     print(f"ann {name} chars {n}")
@@ -106,7 +108,9 @@ def split(name):
         write_wav(out / f"count{i}.wav", y)
         lens.append(len(y) / SR)
     for tag, _ in ANN:
-        p = D / f"{name}_{tag}.mp3"
+        p = D / f"{name}_{tag}s.mp3"  # 짧은 안내가 있으면 그것을 쓴다
+        if not p.exists():
+            p = D / f"{name}_{tag}.mp3"
         if p.exists():
             z = decode(p); ez = env_db(z); o = np.where(ez > -40)[0]
             a, b = max(0, o[0] - int(PRE * SR)), min(len(z), o[-1] + int(POST * SR))
@@ -167,27 +171,22 @@ def stats(name):
 
 
 def listen(name):
-    """10초 초읽기 실제 재생 흉내: 0~9초 하나~열(1초 간격) → 10초 '마지막 회' 안내 → 안내 끝나면 밀린 숫자 이어 읽기 → 15초까지."""
+    """10초 초읽기 실제 재생 흉내(11-05 박자 우선 규칙 — 앱 cdSchedule과 같음): 0~9초 하나~열(정확히 1초 격자)
+    → 10초 격자에 '마지막 회' 안내(그 회 '하나' 자리를 대신) → 11초부터 둘·셋… 정박 → 15초까지. 몰아 읽기 없음.
+    각 조각은 앞 80ms 여유가 있으므로 격자 시각 − 80ms에 놓아 말소리 시작이 격자에 맞게 한다."""
     def load(p):
         with wave.open(str(p)) as w:
             return np.frombuffer(w.readframes(w.getnframes()), "<i2").astype(np.float64) / 32767
-    out = np.zeros(int(15.5 * SR))
+    out = np.zeros(int(15.6 * SR))
     def put(t, y):
-        s = int(t * SR); out[s:s + len(y)] += y[:len(out) - s]
+        s = max(0, int((t + 0.1 - PRE) * SR)); out[s:s + len(y)] += y[:len(out) - s]
     for i in range(1, 11):
         put(i - 1, load(D / name / f"count{i}.wav"))
-    t = 10.0
     r = D / name / "remain1.wav"
     if r.exists():
-        y = load(r); put(t, y); t += len(y) / SR
-    k, nxt = 1, 10.0  # 새 회: 숫자 k는 원래 10+(k-1)초 — 안내 뒤엔 밀린 것을 차례로
-    while k <= 10:
-        due = 10.0 + (k - 1)
-        y = load(D / name / f"count{k}.wav")
-        start = max(due, t)
-        if start + len(y) / SR > 15.3:
-            break
-        put(start, y); t = start + len(y) / SR; k += 1
+        put(10.0, load(r))
+    for k in range(2, 7):  # 11~15초: 둘~여섯
+        put(10.0 + (k - 1), load(D / name / f"count{k}.wav"))
     out = out / (np.max(np.abs(out)) or 1) * 10 ** (-1 / 20)
     with tempfile.TemporaryDirectory() as td:
         w = Path(td) / "l.wav"; write_wav(w, out)
@@ -198,5 +197,5 @@ def listen(name):
 
 if __name__ == "__main__":
     a = sys.argv[1:]
-    {"gen": lambda: gen(*a[1:6]), "ann": lambda: ann(*a[1:6]), "split": lambda: split(a[1]), "level": lambda: level(a[1]),
+    {"gen": lambda: gen(*a[1:6]), "ann": lambda: ann(*a[1:7]), "split": lambda: split(a[1]), "level": lambda: level(a[1]),
      "stats": lambda: stats(a[1]), "listen": lambda: listen(a[1])}[a[0]]()
