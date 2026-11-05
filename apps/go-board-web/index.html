@@ -1530,7 +1530,7 @@ let clocks = null, clockTimer = null, clockLast = 0, clockMv = -1;
 // → 내 차례 같은 회에서 오차가 1초 안이면 내 시계를 그대로 두고, 같은 (회·숫자)는 한 번만 읽는다. 박자 계산은 원본 그대로.
 const SAID = { mv: -1, set: new Set() };
 // 11-05 11:10 작가님 "0.1초 짧다 사람의 한숨 들어가는 느낌 1초로 가봐" — 착수 화면 반영 → '하나'까지(초). 조정은 이 값 하나
-let HANA_DELAY = 1.0;  // 11-05 11:38 시험용: 주소에 ?hana=1.5 (0.5~2.0) — 작가님 결정 전 기본 1.0
+let HANA_DELAY = 1.5;  // 11-05 11:53 작가님 "1.5초 체감해보자" — 임시 기본 1.5. 되돌려 듣기: 주소에 ?hana=1.0 (0.5~2.0)
 try { const q = Number(new URLSearchParams(location.search).get('hana')); if (q >= 0.5 && q <= 2) HANA_DELAY = q; } catch (e) {}
 const CLOCK_LOOKAHEAD = 0.1;  // 다음 틱 안에 올 숫자는 미리 정확한 시각으로 예약(±0.05초). 착수하면 예약분만 취소
 let annEnd = 0, cntEnd = 0;  // 안내·숫자 말소리가 끝나는 시각(performance.now ms)
