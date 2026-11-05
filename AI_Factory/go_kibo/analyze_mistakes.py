@@ -23,7 +23,7 @@ import sys
 from collections import defaultdict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from kibo_common import ANALYSIS_DIR  # noqa: E402
+from kibo_common import ANALYSIS_DIR, rank_label  # noqa: E402
 
 OUT = os.path.join(ANALYSIS_DIR, "mistakes_v0")
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -143,27 +143,40 @@ def main():
     resp, errors, warnings = read_resp(lines_of(a.dir1, os.path.join(OUT, f"responses_{a.name}.jsonl")))
     resp2 = read_resp(lines_of(a.dir2, None))[0] if a.dir2 else {}
 
-    rows = []
+    # 기력(급수 코드)은 표본 목록에서 — 대국자 아이디·닉은 쓰지 않는다
+    ranks = {}
+    sp = os.path.join(OUT, "sample_2000.jsonl")
+    if os.path.exists(sp):
+        for x in open(sp, encoding="utf-8"):
+            d = json.loads(x)
+            ranks[d["id"]] = (d.get("my_rank"), d.get("opp_rank"))
+
+    rows = []        # 작가님 착수(기존 집계 §1~6의 대상)
+    all_rows = []    # 작가님 + 상대 착수(§7 기력대 비교)
     missing_turns = 0
     for gid, m in meta.items():
         moves = q[gid]
         me = m["my_color"]
-        sgn = 1 if me == "B" else -1
         r = resp.get(gid, {})
+        my_rank, opp_rank = ranks.get(gid, (None, None))
         for t, (c, mv) in enumerate(moves):
-            if c != me:
-                continue
+            who = "me" if c == me else "opp"
+            sgn = 1 if c == "B" else -1  # 두는 쪽 기준
             a0, a1 = r.get(t), r.get(t + 1)
             if not a0 or not a1:
-                missing_turns += 1
+                if who == "me":
+                    missing_turns += 1
                 continue
             best = min(a0["moveInfos"], key=lambda mi: mi["order"]) if a0.get("moveInfos") else None
             l0, l1 = sgn * a0["rootInfo"]["scoreLead"], sgn * a1["rootInfo"]["scoreLead"]
-            w0 = a0["rootInfo"]["winrate"] if me == "B" else 1 - a0["rootInfo"]["winrate"]
-            w1 = a1["rootInfo"]["winrate"] if me == "B" else 1 - a1["rootInfo"]["winrate"]
+            w0 = a0["rootInfo"]["winrate"] if c == "B" else 1 - a0["rootInfo"]["winrate"]
+            w1 = a1["rootInfo"]["winrate"] if c == "B" else 1 - a1["rootInfo"]["winrate"]
             mine = next((mi for mi in a0.get("moveInfos", []) if mi["move"] == mv), None)
-            rows.append({
-                "id": gid, "era": m["era"], "result": m["result"], "move_no": t + 1, "phase": phase(t + 1),
+            rk = my_rank if who == "me" else opp_rank
+            res = m["result"] if who == "me" else {"W": "L", "L": "W"}.get(m["result"], m["result"])
+            all_rows.append({
+                "id": gid, "who": who, "rank": rk, "rank_label": rank_label(rk) if rk else "?",
+                "era": m["era"], "result": res, "move_no": t + 1, "phase": phase(t + 1),
                 "move": mv, "best": best["move"] if best else None, "is_best": bool(best and best["move"] == mv),
                 "lead_before": round(l0, 2), "lead_after": round(l1, 2), "loss": round(l0 - l1, 2),
                 "wr_before": round(w0, 4), "wr_after": round(w1, 4), "wr_loss": round(w0 - w1, 4),
@@ -172,14 +185,16 @@ def main():
                 "mine_loss_same_search": round(sgn * (best["scoreLead"] - mine["scoreLead"]), 2) if (best and mine) else None,
                 **necessity(a0, sgn, mv),
             })
-            r2 = resp2.get(gid, {})
+            if who == "me":
+                rows.append(all_rows[-1])
+            r2 = resp2.get(gid, {}) if who == "me" else {}  # 2단계(400v)는 작가님 수 한정
             if t in r2 and t + 1 in r2:  # 2단계 재평가가 있으면 그 값으로 손해를 바꾼다(1단계 값은 loss64로 보존)
                 b0, b1 = r2[t], r2[t + 1]
                 m0, m1 = sgn * b0["rootInfo"]["scoreLead"], sgn * b1["rootInfo"]["scoreLead"]
-                v0 = b0["rootInfo"]["winrate"] if me == "B" else 1 - b0["rootInfo"]["winrate"]
-                v1 = b1["rootInfo"]["winrate"] if me == "B" else 1 - b1["rootInfo"]["winrate"]
+                v0 = b0["rootInfo"]["winrate"] if c == "B" else 1 - b0["rootInfo"]["winrate"]
+                v1 = b1["rootInfo"]["winrate"] if c == "B" else 1 - b1["rootInfo"]["winrate"]
                 bb = min(b0["moveInfos"], key=lambda mi: mi["order"]) if b0.get("moveInfos") else None
-                x = rows[-1]
+                x = all_rows[-1]
                 x.update(stage2=True, loss64=x["loss"], wr_loss64=x["wr_loss"], best64=x["best"],
                          loss=round(m0 - m1, 2), wr_loss=round(v0 - v1, 4), lead_before=round(m0, 2), lead_after=round(m1, 2),
                          best=bb["move"] if bb else x["best"], is_best=bool(bb and bb["move"] == mv),
@@ -187,10 +202,10 @@ def main():
                 nec = necessity(b0, sgn, mv)  # 2단계(깊은 탐색) 값이 있으면 필연성·직감도 그것으로
                 if nec:
                     x.update(gap_lead64=x.get("gap_lead"), prior_best64=x.get("prior_best"), **nec)
-    for x in rows:
+    for x in all_rows:
         x["quad"] = quad_of(x)
     with open(os.path.join(OUT, f"moves_{a.name}.jsonl"), "w", encoding="utf-8") as f:
-        for x in rows:
+        for x in all_rows:
             f.write(json.dumps(x, ensure_ascii=False) + "\n")
 
     def agg(rs):
@@ -202,7 +217,7 @@ def main():
                 "best_rate": round(sum(x["is_best"] for x in rs) / len(rs) * 100, 1),
                 "avg_wr_loss": round(sum(max(0.0, x["wr_loss"]) for x in rs) / len(rs) * 100, 2)}
 
-    summ = {"name": a.name, "games": len(meta), "games_with_resp": len(resp), "my_moves": len(rows),
+    summ = {"name": a.name, "games": len(meta), "games_with_resp": len(resp), "my_moves": len(rows), "all_moves": len(all_rows),
             "positions_resp": sum(len(v) for v in resp.values()), "engine_errors": len(errors), "engine_warnings": warnings,
             "missing_turns": missing_turns, "errors_sample": errors[:5],
             "overall": agg(rows), "by_phase": {p: agg([x for x in rows if x["phase"] == p]) for p in ("포석", "중반", "끝내기")},
@@ -225,7 +240,46 @@ def main():
     print(json.dumps({k: v for k, v in summ.items() if k != "errors_sample"}, ensure_ascii=False, indent=1))
 
     if a.report:
-        write_report(a, summ, rows, meta)
+        write_report(a, summ, rows, meta, all_rows)
+
+
+def rank_section(all_rows):
+    """§7 기력대별 — 작가님 vs 같은 기력대 상대(아이디 없음, 기력·시대만). 상대는 1단계(64v) 값."""
+    from collections import Counter, defaultdict
+    L = ["## 7. 기력대별 감각 — 작가님 vs 같은 기력대 상대 (타이젬 급수)\n",
+         "상대 착수도 같은 정의(손해·필연성·직감·사분면)로 셌다. 상대는 1단계(64 visits) 값만, 작가님은 2단계 재평가가 있으면 그 값. 대국자 아이디·닉 없음.\n"]
+    g = defaultdict(list)
+    for x in all_rows:
+        g[(x.get("rank") or 0, x["rank_label"], x["who"])].append(x)
+    mean = lambda v: sum(v) / len(v) if v else 0  # noqa: E731
+    L.append("| 기력 | 누구 | 착수 | 평균 손해 | 큰 실수율(3집+) | 1순위 일치 | 포석 손해 | 중반 손해 | 끝내기 손해 | 당연한 수 | 착각 | 묘수 | 놓친 묘수 | AI식 감각수 |")
+    L.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    for (code, lab, who) in sorted(g, key=lambda k: (-k[0], k[2] != "me")):
+        rs = g[(code, lab, who)]
+        cl = [max(0, x["loss"]) for x in rs]
+        ph = {p: mean([max(0, x["loss"]) for x in rs if x["phase"] == p]) for p in ("포석", "중반", "끝내기")}
+        qc = Counter(x["quad"] for x in rs)
+        per = lambda k: f"{qc[k]} ({qc[k] / len(rs) * 1000:.0f}‰)"  # noqa: E731
+        L.append(f"| {lab} | {'작가님' if who == 'me' else '상대'} | {len(rs)} | {mean(cl):.2f} | {sum(v >= BIG for v in cl) / len(rs) * 100:.1f}% | "
+                 f"{sum(x['is_best'] for x in rs) / len(rs) * 100:.1f}% | {ph['포석']:.2f} | {ph['중반']:.2f} | {ph['끝내기']:.2f} | "
+                 f"{per('obvious')} | {per('blunder_obvious')} | {per('brilliant')} | {per('missed_brilliant')} | {per('ai_sense')} |")
+    L.append("\n### 7-1. 자주 놓치는 유형 (큰 실수 3집+ 중 단계×사분면 상위 3)\n")
+    L.append("| 기력 | 누구 | 큰 실수 | 상위 유형 |\n|---|---|---|---|")
+    for (code, lab, who) in sorted(g, key=lambda k: (-k[0], k[2] != "me")):
+        big = [x for x in g[(code, lab, who)] if x["loss"] >= BIG]
+        top = Counter(f"{x['phase']}·{QUAD_KO[x['quad']]}" for x in big).most_common(3)
+        L.append(f"| {lab} | {'작가님' if who == 'me' else '상대'} | {len(big)} | " + " · ".join(f"{k} {v}" for k, v in top) + " |")
+    L.append("\n### 7-2. 시대별 (작가님 vs 상대, 평균 손해·큰 실수율)\n")
+    L.append("| 시대 | 작가님 착수 | 작가님 손해 | 작가님 큰 실수율 | 상대 착수 | 상대 손해 | 상대 큰 실수율 |\n|---|---|---|---|---|---|---|")
+    for era in sorted({x["era"] for x in all_rows}):
+        cells = []
+        for who in ("me", "opp"):
+            rs = [x for x in all_rows if x["era"] == era and x["who"] == who]
+            cl = [max(0, x["loss"]) for x in rs]
+            cells += [str(len(rs)), f"{mean(cl):.2f}", f"{(sum(v >= BIG for v in cl) / len(rs) * 100) if rs else 0:.1f}%"]
+        L.append(f"| {era} | " + " | ".join(cells) + " |")
+    L.append("")
+    return L
 
 
 def quad_section(rows, gidx):
@@ -273,7 +327,7 @@ def quad_section(rows, gidx):
     return L
 
 
-def write_report(a, summ, rows, meta):
+def write_report(a, summ, rows, meta, all_rows=None):
     gidx = {gid: f"G{i + 1:02d}" for i, gid in enumerate(meta)}
     L = []
     now = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -330,6 +384,8 @@ def write_report(a, summ, rows, meta):
     L.append("")
     L.append("<!-- NOTES -->\n<!-- /NOTES -->\n")
     L += quad_section(rows, gidx)
+    if all_rows:
+        L += rank_section(all_rows)
     path = os.path.join(HERE, "reports", f"{a.report_name}.md")
     notes = "<!-- NOTES -->\n<!-- /NOTES -->"
     if os.path.exists(path):
