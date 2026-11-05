@@ -48,14 +48,10 @@ def cheb(a, b):
     return max(abs(pa[0] - pb[0]), abs(pa[1] - pb[1]))
 
 
-# 사분면(형세봇 설계 §2-4) — 임계값은 여기 한 곳. 2,000국 결과로 확정(지시서 3/8).
-QUAD_GAP = 6.0     # 외길: 1·2순위 scoreLead 차(집) ≥
-QUAD_EASY = 0.7    # 쉽게 찾음: 1순위 수의 신경망 직감(prior) ≥
-QUAD_HARD = 0.3    # 못 찾음(어려움): prior <
-QUAD_SENSE_MIN = 2.0  # AI식 감각수 하한: 1·2순위 차 ≥ (0집대는 평범 — 쌍아 판정 11-05 21:35)
+# 사분면 정의는 quadrant.py가 정본(해설 개념 사전과 공유 — 사본 금지)
+from quadrant import QUAD_GAP, QUAD_EASY, QUAD_HARD, QUAD_SENSE_MIN, QUAD_KO, necessity_gap, quad_of as _quad  # noqa: E402
+
 GAP_BINS = [(0, 1), (1, 3), (3, 6), (6, 12), (12, 1e9)]
-QUAD_KO = {"obvious": "당연한 수", "brilliant": "묘수", "missed_brilliant": "놓친 묘수", "blunder_obvious": "착각",
-           "ai_sense": "AI식 감각수", "normal": "평범"}
 
 
 def necessity(a0, sgn, mv):
@@ -72,7 +68,7 @@ def necessity(a0, sgn, mv):
         # 필연성 = max(0, 1순위 − 2순위), 두는 쪽 기준(쌍아 판정 11-05 21:35).
         # 2순위(방문 순)가 더 높게 나온 수는 외길이 아니라 '대안 동등' → 0. 절댓값은 비교 열(쌍아 v0 정의)로만 남긴다.
         out["gap_lead_signed"] = round(sgn * (b["scoreLead"] - s["scoreLead"]), 2)
-        out["gap_lead"] = max(0.0, out["gap_lead_signed"])
+        out["gap_lead"] = necessity_gap(out["gap_lead_signed"])
         out["gap_lead_abs"] = abs(out["gap_lead_signed"])
         wb = b["winrate"] if sgn > 0 else 1 - b["winrate"]
         ws = s["winrate"] if sgn > 0 else 1 - s["winrate"]
@@ -82,19 +78,7 @@ def necessity(a0, sgn, mv):
 
 
 def quad_of(x, gap=None, easy=None, hard=None):
-    gap = QUAD_GAP if gap is None else gap
-    easy = QUAD_EASY if easy is None else easy
-    hard = QUAD_HARD if hard is None else hard
-    g, p = x.get("gap_lead"), x.get("prior_best")
-    if g is None or p is None:
-        return "normal"
-    if g >= gap:
-        if p >= easy:
-            return "obvious" if x["is_best"] else "blunder_obvious"
-        if p < hard:
-            return "brilliant" if x["is_best"] else "missed_brilliant"
-        return "normal"
-    return "ai_sense" if (p < hard and g >= QUAD_SENSE_MIN) else "normal"
+    return _quad(x.get("gap_lead"), x.get("prior_best"), x["is_best"], gap_t=gap, easy=easy, hard=hard)
 
 
 def main():

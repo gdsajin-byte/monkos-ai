@@ -196,6 +196,21 @@ def shapes(board, color, p, prev=None):
             add("tiger", "호구", f"빈 점 {e}")
             break
 
+    # 쌍립: 착점 p와 붙은 자기 돌 q(한 쌍) + 한 줄 건너 평행한 자기 돌 두 점(다른 쌍), 가운데 두 점은 빈 점
+    #   X . X      p·q가 한 쌍, p+2e·q+2e가 다른 쌍(e = p→q와 수직인 단위 방향), p+e·q+e 빈 점
+    #   X . X      → 가운데 하나를 상대가 두면 다른 하나로 이어 끊기지 않는다
+    for q in own_adj:
+        d = (q[0] - x, q[1] - y)
+        for e in ((d[1], d[0]), (-d[1], -d[0])):
+            p2, q2 = (x + 2 * e[0], y + 2 * e[1]), (q[0] + 2 * e[0], q[1] + 2 * e[1])
+            m1, m2 = (x + e[0], y + e[1]), (q[0] + e[0], q[1] + e[1])
+            if all(inb(r) for r in (p2, q2)) and s.get(p2) == color and s.get(q2) == color and m1 not in s and m2 not in s:
+                add("twin", "쌍립", f"맞은편 {p2}·{q2}")
+                break
+        else:
+            continue
+        break
+
     # 두점머리: 상대 돌 두 점이 일렬, p가 그 연장선의 머리
     for o in opp_adj:
         o2 = (2 * o[0] - x, 2 * o[1] - y)

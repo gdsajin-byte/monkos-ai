@@ -102,6 +102,13 @@ CASES = [
 ..X.*..
 .......
 """, ()),
+    ("쌍립", """
+.......
+.......
+..X.X..
+..X.*..
+.......
+""", ()),
     ("두점머리", """
 .......
 ..*....
@@ -183,6 +190,17 @@ def main():
     neg_net = "장문" not in got
     print("PASS" if neg_net else "FAIL", "음성(탈출 가능 — 장문 아님)", sorted(got))
     fails += not neg_net
+    # 음성 대조: 가운데가 상대 돌로 막히면 쌍립이 아니다
+    ok, got = case("""
+.......
+.......
+..X.X..
+..XO*..
+.......
+""", "__none__")
+    neg_twin = "쌍립" not in got
+    print("PASS" if neg_twin else "FAIL", "음성(가운데 막힘 — 쌍립 아님)", sorted(got))
+    fails += not neg_twin
     # 음성 대조: 아무 관계 없는 외딴 수에는 모양 이름이 붙지 않는다
     ok, got = case("""
 X..........
@@ -194,7 +212,7 @@ X..........
     neg = not got
     print("PASS" if neg else "FAIL", "음성(외딴 수)", sorted(got))
     fails += not neg
-    print(f"{len(CASES) + 2 - fails}/{len(CASES) + 2} 통과, 모양 {len(names)}종")
+    print(f"{len(CASES) + 3 - fails}/{len(CASES) + 3} 통과, 모양 {len(names)}종")
     raise SystemExit(1 if fails else 0)
 
 

@@ -6,6 +6,7 @@ d: review.py 정밀 분석 결과 (before·after + pass_own = 그 자리에서 �
 임계값은 전부 lexicon.yaml threshold — 코드에 숫자를 박지 않는다(보정은 YAML만 고친다).
 """
 import os
+import sys
 
 import yaml
 
@@ -15,6 +16,9 @@ from shapes import shapes
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OPP = {"B": "W", "W": "B"}
+# 사분면(외길×발견 난도) 정의 정본 — 실수 사전과 공유(사본 금지): AI_Factory/go_kibo/quadrant.py
+sys.path.insert(0, os.path.join(HERE, "..", "..", "AI_Factory", "go_kibo"))
+from quadrant import QUAD_EASY, necessity_gap, quad_of  # noqa: E402
 
 
 def load_lexicon(path=os.path.join(HERE, "lexicon.yaml")):
@@ -61,7 +65,7 @@ def cut_points(board, color, p, r):
     return n
 
 
-def signals(d, gm):
+def signals(d, gm, T=None):
     pos, before, after = d["pos"], d["before"], d["after"]
     i, color = pos["move_index"], pos["color"]
     sign, opp = (1 if color == "B" else -1), OPP[color]
@@ -76,6 +80,11 @@ def signals(d, gm):
     pol = before.get("policy")
     prior = round(at(pol, p), 4) if pol else None
     rank = (sorted(range(N * N), key=lambda k: -pol[k]).index(p[1] * N + p[0]) + 1) if pol else None
+    bxy = gtp_to_xy(best["move"])
+    prior_best = round(at(pol, bxy), 4) if (pol and bxy) else None
+    is_best = best["move"] == pos["move"]
+    gap_nec = necessity_gap(gap2)
+    quad = quad_of(gap_nec, prior_best, is_best)
 
     vs = [sign * (own_a[k] - own_p[k]) for k in range(N * N)]  # 그 수가 판에 한 일
     local = terr = infl = 0.0
@@ -96,6 +105,23 @@ def signals(d, gm):
 
     own_g = groups_near(b1, color, p, 3)
     opp_g = groups_near(b1, opp, p, 3)
+    opp_g0 = groups_near(b0, opp, p, 3)  # 착수 전 — 급소(상대 활로 감소) 판정용
+
+    # 대세점 근사: 착점이 주인 없는 경계이고 반경 r 안에 양쪽 영향권 점이 함께 있는가.
+    # 기준 소유권 = '여기서 손을 뺐다면(패스)'의 소유권 — 착수 전 루트 소유권은 최선수(=착점)를 둔다고 가정한 예측이라
+    # 착점이 이미 내 땅으로 보인다(11-05 실측 대세점 0건 원인).
+    tb = (T or {}).get("big_point", {})
+    own_b0 = own_p
+    band_r, band_side = tb.get("r", 4), tb.get("side", 0.3)
+    near_mine = near_theirs = 0
+    for yy in range(N):
+        for xx in range(N):
+            q = (xx, yy)
+            if cheb(q, p) > band_r or q in b0.s:
+                continue
+            v = sign * own_b0[yy * N + xx]
+            near_mine += v >= band_side
+            near_theirs += v <= -band_side
     my_g, my_libs = b1.group(p)
 
     def gstat(gs, s):
@@ -141,7 +167,10 @@ def signals(d, gm):
     contact = any(b0.s.get(q) == opp for q in neighbors(p))
     wr = before["rootInfo"]["winrate"] if color == "B" else 1 - before["rootInfo"]["winrate"]
     return {
-        "loss": loss, "gap2": gap2, "prior": prior, "rank": rank, "is_best": best["move"] == pos["move"],
+        "loss": loss, "gap2": gap2, "prior": prior, "rank": rank, "is_best": is_best,
+        "prior_best": prior_best, "gap_nec": gap_nec, "quad": quad,
+        "opp_min_libs": [min((len(lb) for _, lb in opp_g0), default=None), min((len(lb) for _, lb in opp_g), default=None)],
+        "own_at_p": round(sign * at(own_b0, p), 3), "band": [near_mine, near_theirs], "line": edge_line(p),
         "best": best["move"], "wr_before": round(wr, 3),
         "local_gain": round(local, 2), "territory_gain": round(terr, 2), "influence_gain": round(infl, 2),
         "region_vs_pass": {k: round(v, 2) for k, v in by_reg.items()},
@@ -162,10 +191,11 @@ def signals(d, gm):
 
 def analyze_concepts(d, gm, lex, f3_best=None):
     """f3_best: facts F3 data(최선 대비 영역 손익) — 소탐대실 판정용."""
-    s = signals(d, gm)
     T = {e["id"]: e.get("threshold", {}) for k in ("keypoints", "proverbs", "qualities") for e in lex[k]}
+    s = signals(d, gm, T)
     names = {e["id"]: (e["name"], k) for k in ("shapes", "keypoints", "proverbs", "qualities") for e in lex[k]}
     plain = {e["id"]: e.get("plain", e.get("definition", "")) for k in ("keypoints", "proverbs", "qualities", "shapes") for e in lex[k]}
+    phrase = {e["id"]: e["phrase"] for e in lex["shapes"] if e.get("phrase")}  # 해설 문장용 '호구 자리'·'쌍립 자리' 
     hits = []
 
     def hit(cid, mode, ev, why):
@@ -181,24 +211,38 @@ def analyze_concepts(d, gm, lex, f3_best=None):
     for x in s["shapes"]:
         name, _ = names[x["id"]]
         hits.append({"id": x["id"], "name": name, "layer": "shapes", "mode": None, "evidence": {"detail": x["detail"]},
-                     "text": f"모양: {name}" + (f" ({x['detail']})" if x["detail"] else "") + f". 뜻: {plain[x['id']]}"})
+                     "text": f"모양: {name}" + (f" ({x['detail']})" if x["detail"] else "")
+                     + (f". 해설에서는 '{phrase[x['id']]}'라고 부른다" if x["id"] in phrase else "") + f". 뜻: {plain[x['id']]}"})
 
     # (나) 급소·맥
+    # 급소(v1, 작가님 21:47 "상대의 모양이나 사활을 추궁하는 자리"): 엔진 최선 · 외길 성향 · 당연한 수(쉬움) 제외 · 상대 돌뭉치 약화
     t = T["vital"]
     swing_opp = -(onear.get("vs_pass") or 0)
     swing_own = on.get("vs_pass") or 0
-    if s["is_best"] and s["gap2"] >= t["gap2"] and (swing_opp >= t["swing"] or swing_own >= t["swing"]):
-        hit("vital", None, {"gap2": s["gap2"], "상대 약화": round(swing_opp, 2), "자기 강화": round(swing_own, 2)},
-            f"엔진 최선과 같고 차선보다 {s['gap2']}집 낫다, 주변 돌 소유권이 크게 움직인다")
+    l0, l1 = s["opp_min_libs"]
+    libs_cut = l0 is not None and l1 is not None and l1 < l0 and l1 <= t["libs"]
+    not_easy = s["prior_best"] is not None and s["prior_best"] < QUAD_EASY
+    if s["is_best"] and s["gap2"] >= t["gap2"] and not_easy and (swing_opp >= t["swing"] or libs_cut):
+        hit("vital", None, {"gap2": s["gap2"], "1순위 직감": s["prior_best"], "상대 약화": round(swing_opp, 2), "상대 최소 활로": [l0, l1]},
+            "엔진 최선이고 다른 수보다 확실히 낫다, 일감으로 바로 보이는 수는 아니다, "
+            + (f"주변 상대 돌의 활로가 {l0}에서 {l1}로 줄었다" if libs_cut else "주변 상대 돌이 눈에 띄게 약해졌다"))
     t = T["tesuji"]
     if s["is_best"] and s["prior"] is not None and s["prior"] <= t["prior"] and s["gap2"] >= t["gap2"] and s["contact"]:
         hit("tesuji", None, {"prior": s["prior"], "gap2": s["gap2"]},
-            f"엔진 최선인데 직관(정책망) 확률은 {s['prior'] * 100:.0f}%로 찾기 어려운 수")
+            "엔진 최선인데 일감으로는 잘 안 보이는 수")
+
+    # 대세점(v1 근사, 작가님 21:47 "당장 집은 아닌데 세력이 마주보는 자리") — 형세봇 3층 v0가 나오면 성분으로 교체
+    t = T["big_point"]
+    if (abs(s["own_at_p"]) <= t["band"] and s["band"][0] >= t["n"] and s["band"][1] >= t["n"] and s["line"] >= 3
+            and s["territory_gain"] <= t["terr"] and s["local_gain"] >= t["value"] and L <= t["ok"]):
+        hit("big_point", None, {"착점 소유권": s["own_at_p"], "주변 자기·상대 영향권 점": s["band"], "확정집 변화": s["territory_gain"],
+                                "주변 효과": s["local_gain"]},
+            f"착점은 아직 주인이 없고 주변에 양쪽 세력이 맞닿아 있다, 확정집 변화는 작지만 주변 효과가 {s['local_gain']:.1f}집이다")
 
     # (다) 위기십결
     t = T["no_greed"]
     if s["wr_before"] >= t["lead_wr"] and L >= t["loss"] and s["contact"]:
-        hit("no_greed", "break", {"착수 전 승률": s["wr_before"], "loss": L}, f"앞선 상태(승률 {s['wr_before'] * 100:.0f}%)에서 붙여 싸우다 {L}집 손해")
+        hit("no_greed", "break", {"착수 전 승률": s["wr_before"], "loss": L}, f"앞선 상태에서 붙여 싸우다 {L}집 손해")
     t = T["enter_gently"]
     if s["sphere"] <= -t["sphere"]:
         if not s["contact"] and L <= t["ok"]:
@@ -307,11 +351,12 @@ def analyze_concepts(d, gm, lex, f3_best=None):
     if s["sente"] and L <= T["sente_move"]["ok"]:
         hit("sente_move", None, {"상대 최선 응수": s["reply"]}, f"상대 최선 응수 {s['reply']}가 착점 근처")
 
-    # 추임새
+    # 추임새(v1): 와우 = 사분면 묘수·AI식 감각수를 엔진 1순위로 둔 수만. 당연한 수(외길·쉬움)는 '외길'(칭찬 없이 1줄)
     c = lex["cheers"]["threshold"]
-    keyhit = any(h["id"] in ("vital", "tesuji") for h in hits)
-    if L <= c["wow_loss"] and (s["gap2"] >= c["wow_gap2"] or (s["prior"] is not None and s["prior"] <= c["wow_prior"] and s["is_best"]) or keyhit):
+    if L <= c["wow_loss"] and s["is_best"] and s["quad"] in ("brilliant", "ai_sense"):
         cheer = "와우"
+    elif s["quad"] == "obvious" and L <= c["good_loss"]:
+        cheer = "외길"
     elif L <= c["good_loss"]:
         cheer = "좋네요"
     elif L <= c["ok_loss"]:
