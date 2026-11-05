@@ -18,6 +18,7 @@ import argparse
 import datetime as dt
 import json
 import os
+import re
 import subprocess
 import sys
 import threading
@@ -94,10 +95,25 @@ class Runner:
 
     # ---------- b10 ----------
     def b10(self):
+        """b10 status.json + 같은 폴더 stdout.txt 실측 보정.
+        status의 nsamp·state는 train_run.last_nsamp가 검증 줄(nsamp = 검증 샘플 수)을 잡으면 틀린다
+        (11-06 02:51 실제 'Hit max training samples, exit 0'인데 failed_early·437,504로 기록). 학습 줄 nsamp와 종료 문구로 다시 판정한다."""
         try:
-            return json.load(open(self.a.b10_status, encoding="utf-8"))
+            s = json.load(open(self.a.b10_status, encoding="utf-8"))
         except (OSError, ValueError):
             return None
+        log = os.path.join(os.path.dirname(self.a.b10_status), "stdout.txt")
+        try:
+            with open(log, encoding="utf-8", errors="replace") as f:
+                tail = f.read()[-300000:]
+        except OSError:
+            return s
+        m = re.findall(r"nsamp = ([0-9.]+), pslr_batch", tail)
+        if m:
+            s["nsamp_status"], s["nsamp"] = s.get("nsamp"), int(float(m[-1]))
+        if s.get("state") not in ("running", "final_eval") and "Hit max training samples" in tail[-20000:]:
+            s["state_status"], s["state"] = s.get("state"), "done_target"
+        return s
 
     def wait_b10(self, wstart, wend):
         kicked = False
