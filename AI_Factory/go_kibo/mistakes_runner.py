@@ -51,7 +51,10 @@ class Runner:
         sh, sm = map(int, self.a.window_start.split(":"))
         eh, em = map(int, self.a.window_end.split(":"))
         start = n.replace(hour=sh, minute=sm, second=0, microsecond=0)
-        if n < start:
+        if (eh, em) > (sh, sm):  # 같은 날 창(예: 학교 시간 08:30~14:00)
+            end = start.replace(hour=eh, minute=em)
+            return start, end, start <= n < end
+        if n < start:  # 밤 창(예: 23:00~07:30)
             start -= dt.timedelta(days=1)
         end = (start + dt.timedelta(days=1)).replace(hour=eh, minute=em)
         return start, end, start <= n < end
@@ -245,15 +248,20 @@ class Runner:
             return 0
         self.status("started", window=[f"{wstart:%Y-%m-%d %H:%M}", f"{wend:%Y-%m-%d %H:%M}"])
         self.log(f"러너 시작 — 창 {wstart:%m-%d %H:%M} ~ {wend:%m-%d %H:%M}")
-        Q = [json.loads(x) for x in open(os.path.join(self.root, "queries_full.jsonl"), encoding="utf-8")]
-        if all(self.is_done(self.out1, q["id"]) and (self.is_done(self.out2, q["id"]) or
+        Q = [json.loads(x) for x in open(os.path.join(self.root, self.a.queries), encoding="utf-8")]
+        if all(self.is_done(self.out1, q["id"]) and (self.a.stage1_only or self.is_done(self.out2, q["id"]) or
                os.path.exists(os.path.join(self.out1, f"{q['id']}.error.jsonl"))) for q in Q):
             self.log("이미 전체 완료 — GPU 미사용 종료")
             self.status("all_done")
             return 0
-        if not self.wait_b10(wstart, wend):
+        if self.a.no_b10_wait:  # 낮 창 — b10을 기다리지 않되, 돌고 있으면 GPU 동시 사용 금지로 바로 끝낸다
+            s0 = self.b10() or {}
+            if s0.get("state") in ("running", "final_eval"):
+                self.log(f"b10 {s0.get('state')} — GPU 동시 사용 금지, 시작하지 않음")
+                self.status("b10_running_skip")
+                return 0
+        elif not self.wait_b10(wstart, wend):
             return 0
-        meta = {m["id"]: m for m in (json.loads(x) for x in open(os.path.join(self.root, "meta_full.jsonl"), encoding="utf-8"))}
         pend1 = [q for q in Q if not self.is_done(self.out1, q["id"])]
         self.log(f"stage1: 전체 {len(Q)}국 · 완료 {len(Q) - len(pend1)} · 남음 {len(pend1)}")
         self.status("stage1", stage1_total=len(Q), stage1_done_before=len(Q) - len(pend1))
@@ -263,6 +271,11 @@ class Runner:
         left1 = [q["id"] for q in Q if not self.is_done(self.out1, q["id"])]
         if left1:
             raise RuntimeError(f"stage1 미완 {len(left1)}국인데 엔진 종료 — 예: {left1[:3]}")
+        if self.a.stage1_only:
+            self.status("all_done")
+            self.log("전체 완료(1단계만)")
+            return 0
+        meta = {m["id"]: m for m in (json.loads(x) for x in open(os.path.join(self.root, "meta_full.jsonl"), encoding="utf-8"))}
         Q2, exp2 = [], {}
         for q in Q:
             gid = q["id"]
@@ -303,6 +316,9 @@ def main():
     ap.add_argument("--fake-now", default=None, help="시험용 'YYYY-MM-DD HH:MM'")
     ap.add_argument("--time-scale", type=float, default=1.0, help="시험용 시계 배속")
     ap.add_argument("--dry-run", action="store_true", help="schtasks 실행 생략")
+    ap.add_argument("--queries", default="queries_full.jsonl", help="root 안 질의 파일")
+    ap.add_argument("--stage1-only", action="store_true", help="2단계(재평가) 없이 질의만 처리 — 결정 장면 정밀 분석 등")
+    ap.add_argument("--no-b10-wait", action="store_true", help="b10을 기다리지 않음(낮 창). b10이 돌고 있으면 시작하지 않음")
     a = ap.parse_args()
     r = Runner(a)
     try:
