@@ -48,6 +48,53 @@ def cheb(a, b):
     return max(abs(pa[0] - pb[0]), abs(pa[1] - pb[1]))
 
 
+# 사분면(형세봇 설계 §2-4) — 임계값은 여기 한 곳. 2,000국 결과로 확정(지시서 3/8).
+QUAD_GAP = 6.0     # 외길: 1·2순위 scoreLead 차(집) ≥
+QUAD_EASY = 0.7    # 쉽게 찾음: 1순위 수의 신경망 직감(prior) ≥
+QUAD_HARD = 0.3    # 못 찾음(어려움): prior <
+GAP_BINS = [(0, 1), (1, 3), (3, 6), (6, 12), (12, 1e9)]
+QUAD_KO = {"obvious": "당연한 수", "brilliant": "묘수", "missed_brilliant": "놓친 묘수", "blunder_obvious": "착각",
+           "ai_sense": "AI식 감각수", "normal": "평범"}
+
+
+def necessity(a0, sgn, mv):
+    """국면 분석 1건 → 필연성(1·2순위 차)·직감(prior). 작가님 기준 부호."""
+    mis = sorted(a0.get("moveInfos") or [], key=lambda mi: mi["order"])
+    if not mis:
+        return {}
+    b = mis[0]
+    s = mis[1] if len(mis) > 1 else None
+    mine = next((mi for mi in mis if mi["move"] == mv), None)
+    out = {"prior_best": round(b.get("prior", 0.0), 4), "prior_mine": round(mine["prior"], 4) if mine and "prior" in mine else None,
+           "gap_lead": None, "gap_lead_signed": None, "gap_wr": None, "second_visits": None}
+    if s:
+        # 쌍아 v0(11-05 20:50)와 같은 정의: 탐색 순서 1·2위 scoreLead 차의 절댓값.
+        # 부호 유지값도 남긴다 — 음수 = 2순위(방문 순)가 오히려 집이 많은 국면(저방문 탐색의 순서·평가 불일치).
+        out["gap_lead_signed"] = round(sgn * (b["scoreLead"] - s["scoreLead"]), 2)
+        out["gap_lead"] = abs(out["gap_lead_signed"])
+        wb = b["winrate"] if sgn > 0 else 1 - b["winrate"]
+        ws = s["winrate"] if sgn > 0 else 1 - s["winrate"]
+        out["gap_wr"] = round(wb - ws, 4)
+        out["second_visits"] = s.get("visits")
+    return out
+
+
+def quad_of(x, gap=None, easy=None, hard=None):
+    gap = QUAD_GAP if gap is None else gap
+    easy = QUAD_EASY if easy is None else easy
+    hard = QUAD_HARD if hard is None else hard
+    g, p = x.get("gap_lead"), x.get("prior_best")
+    if g is None or p is None:
+        return "normal"
+    if g >= gap:
+        if p >= easy:
+            return "obvious" if x["is_best"] else "blunder_obvious"
+        if p < hard:
+            return "brilliant" if x["is_best"] else "missed_brilliant"
+        return "normal"
+    return "ai_sense" if p < hard else "normal"
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("name")
@@ -121,6 +168,7 @@ def main():
                 "dist_best": cheb(mv, best["move"]) if best else None,
                 "mine_visits": mine["visits"] if mine else 0,
                 "mine_loss_same_search": round(sgn * (best["scoreLead"] - mine["scoreLead"]), 2) if (best and mine) else None,
+                **necessity(a0, sgn, mv),
             })
             r2 = resp2.get(gid, {})
             if t in r2 and t + 1 in r2:  # 2단계 재평가가 있으면 그 값으로 손해를 바꾼다(1단계 값은 loss64로 보존)
@@ -134,6 +182,11 @@ def main():
                          loss=round(m0 - m1, 2), wr_loss=round(v0 - v1, 4), lead_before=round(m0, 2), lead_after=round(m1, 2),
                          best=bb["move"] if bb else x["best"], is_best=bool(bb and bb["move"] == mv),
                          dist_best=cheb(mv, bb["move"]) if bb else x["dist_best"])
+                nec = necessity(b0, sgn, mv)  # 2단계(깊은 탐색) 값이 있으면 필연성·직감도 그것으로
+                if nec:
+                    x.update(gap_lead64=x.get("gap_lead"), prior_best64=x.get("prior_best"), **nec)
+    for x in rows:
+        x["quad"] = quad_of(x)
     with open(os.path.join(OUT, f"moves_{a.name}.jsonl"), "w", encoding="utf-8") as f:
         for x in rows:
             f.write(json.dumps(x, ensure_ascii=False) + "\n")
@@ -171,6 +224,49 @@ def main():
 
     if a.report:
         write_report(a, summ, rows, meta)
+
+
+def quad_section(rows, gidx):
+    """사분면 표·구간 곡선·대표 수·임계 민감도 (형세봇 §2-4, 지시서 3/8)."""
+    from collections import Counter
+    L = ["## 6. 사분면 — 필연성 × 발견 난도 (형세봇 §2-4)\n",
+         f"필연성 = 탐색 1·2순위 scoreLead 차(집, 절댓값 — 쌍아 v0 정의). 난도 = 1순위 수의 신경망 직감(prior). "
+         f"임계: 외길 ≥ {QUAD_GAP:g}집 · 쉬움 prior ≥ {QUAD_EASY:g} · 어려움 < {QUAD_HARD:g}. 2단계(400 visits) 재평가 수는 그 값으로 판정.\n"]
+    n = len(rows)
+    c = Counter(x["quad"] for x in rows)
+    L.append("| 사분면 | 뜻 | 착수 | 비율 | 평균 손해(집) | 평균 1·2순위 차 | 평균 prior(1순위) |\n|---|---|---|---|---|---|---|")
+    mean = lambda v: sum(v) / len(v) if v else 0  # noqa: E731
+    desc = {"obvious": "외길·쉬움·둠", "blunder_obvious": "외길·쉬움·놓침", "brilliant": "외길·어려움·둠",
+            "missed_brilliant": "외길·어려움·놓침", "ai_sense": "대안 많음·어려움", "normal": "그 밖"}
+    for q in ("obvious", "blunder_obvious", "brilliant", "missed_brilliant", "ai_sense", "normal"):
+        rs = [x for x in rows if x["quad"] == q]
+        L.append(f"| {QUAD_KO[q]} | {desc[q]} | {len(rs)} | {len(rs) / n * 100:.1f}% | {mean([max(0, x['loss']) for x in rs]):.2f} | "
+                 f"{mean([x.get('gap_lead') or 0 for x in rs]):.1f} | {mean([x.get('prior_best') or 0 for x in rs]):.2f} |")
+    neg = sum(1 for x in rows if (x.get("gap_lead_signed") or 0) <= -QUAD_GAP)
+    L.append(f"\n- 절댓값 정의 주의: 2순위(방문 순)가 1순위보다 {QUAD_GAP:g}집 이상 많은 국면 {neg}수도 '외길'에 들어간다(저방문 탐색의 순서·평가 불일치). 부호 값은 `gap_lead_signed`.\n")
+    L.append("### 6-1. 구간 곡선 — 1·2순위 차별 작가님 1순위 일치율·직감\n")
+    L.append("| 1·2순위 차(집) | 착수 | 작가님 1순위 일치 | 평균 prior(1순위) | 평균 prior(작가님 수) |\n|---|---|---|---|---|")
+    for lo, hi in GAP_BINS:
+        rs = [x for x in rows if x.get("gap_lead") is not None and lo <= x["gap_lead"] < hi]
+        pm = [x["prior_mine"] for x in rs if x.get("prior_mine") is not None]
+        lab = f"{lo:g}–{hi:g}" if hi < 1e8 else f"{lo:g}+"
+        L.append(f"| {lab} | {len(rs)} | {sum(x['is_best'] for x in rs) / len(rs) * 100:.0f}% | {mean([x['prior_best'] for x in rs]):.2f} | "
+                 f"{mean(pm):.2f} |" if rs else f"| {lab} | 0 | — | — | — |")
+    L.append("\n### 6-2. 사분면별 대표 수 (최대 10, 1·2순위 차 큰 순)\n")
+    L.append("| 사분면 | 대국 | 수순 | 단계 | 작가님 수 | 1순위 | 1·2순위 차 | prior 1순위 | prior 작가님 | 손해 |\n|---|---|---|---|---|---|---|---|---|---|")
+    for q in ("obvious", "blunder_obvious", "brilliant", "missed_brilliant", "ai_sense"):
+        for x in sorted([x for x in rows if x["quad"] == q], key=lambda x: -(x.get("gap_lead") or 0))[:10]:
+            pm = "—" if x.get("prior_mine") is None else f"{x['prior_mine']:.2f}"
+            L.append(f"| {QUAD_KO[q]} | {gidx[x['id']]} | {x['move_no']} | {x['phase']} | {x['move']} | {x['best']} | {x['gap_lead']:.1f} | "
+                     f"{x['prior_best']:.2f} | {pm} | {x['loss']:.1f} |")
+    L.append("\n### 6-3. 임계 민감도 (외길 집 차 × 쉬움 prior, 어려움 < 0.3 고정)\n")
+    L.append("| 외길 ≥ | 쉬움 ≥ | 당연한 수 | 착각 | 묘수 | 놓친 묘수 | AI식 감각수 | 평범 |\n|---|---|---|---|---|---|---|---|")
+    for g in (5.0, 6.0, 8.0):
+        for e in (0.6, 0.7, 0.8):
+            cc = Counter(quad_of(x, gap=g, easy=e) for x in rows)
+            L.append(f"| {g:g}집 | {e:g} | {cc['obvious']} | {cc['blunder_obvious']} | {cc['brilliant']} | {cc['missed_brilliant']} | {cc['ai_sense']} | {cc['normal']} |")
+    L.append("")
+    return L
 
 
 def write_report(a, summ, rows, meta):
@@ -229,6 +325,7 @@ def write_report(a, summ, rows, meta):
         L.append(f"| {gidx[gid]} | {m['era']} | {'승' if m['result'] == 'W' else '패'} | {m['moves']} | {len(rs)} | {avg:.2f} | {len(big)} | {big[0]['move_no'] if big else '—'} |")
     L.append("")
     L.append("<!-- NOTES -->\n<!-- /NOTES -->\n")
+    L += quad_section(rows, gidx)
     path = os.path.join(HERE, "reports", f"{a.report_name}.md")
     notes = "<!-- NOTES -->\n<!-- /NOTES -->"
     if os.path.exists(path):

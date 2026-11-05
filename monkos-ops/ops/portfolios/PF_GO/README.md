@@ -76,6 +76,7 @@ status: active
 | 11/05 | iMac/쌍아-막내3 | MONK 봇(b10) 아이폰 온디바이스 실측 — Metal 1500v 약 1.5초·약 1,000 v/s(b18 약 14초), 앱은 분석판(대국 모드 패치 제안) · 복귀 소리 묵음 진단 장치 main 병합(8765 재기동 대기) | [COMPLETION_20261105_iMac쌍아-막내3_GO_아이폰실측](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내3_GO_아이폰실측.md) | ✅ |
 | 11/05 | iMac/쌍아-막내3 | 바둑앱 복귀 소리 묵음 원인 분석 — 탭 밖 resume() 무한 대기·iOS running-무음 버그 가설, 오디오 진단 기록 main 병합(8765 재기동 대기), 고침안 F1~F6 제안 | [COMPLETION_20261105_iMac쌍아-막내3_GO_앱복귀소리묵음](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내3_GO_앱복귀소리묵음.md) | ⏳ |
 | 11/05 | iMac/쌍아-막내3 | MONKOS Go 기기 사양별 실측 착수 — 첫 실행 자동 측정(2초 수읽기 결정) 구현, 가족 아이폰 3줄 안내, 갤럭시 A 저가형 b10 2초 약 50~150 visits 추정, 대여 서비스 비교(Firebase Game Loop 적합) | [COMPLETION_20261105_iMac쌍아-막내3_GO_기기사양별실측](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내3_GO_기기사양별실측.md) | ⏳ |
+| 11/05 | iMac/쌍아-막내3 | 실수 사전 사분면 라벨(형세봇 3/8) — 필연성·prior·quad 필드, smoke10 쌍아 v0 재현(외길 45: 39/6), AI식 감각수 과다 → 정의 제안 | [COMPLETION_20261105_iMac쌍아-막내3_GO_실수사전_사분면라벨](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내3_GO_실수사전_사분면라벨.md) | ⏳ |
 
 ## 3. Phase 현황
 
