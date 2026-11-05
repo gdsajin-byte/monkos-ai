@@ -12,7 +12,7 @@ const grab = name => {
   if (!m) throw new Error('no ' + name);
   return m[0];
 };
-const decl = src.match(/^const SAID = [^\n]*\n/m)[0] + (src.match(/^(let HANA_DELAY|const HANA_DELAY|try \{ const q = Number|const CLOCK_LOOKAHEAD|let annEnd|const CLOCK_SNAP|const clockTot)[^\n]*\n/gm) || []).join('');
+const decl = src.match(/^const SAID = [^\n]*\n/m)[0] + (src.match(/^(let HANA_DELAY|const HANA_DELAY|try \{ const q = Number|const CLOCK_LOOKAHEAD|let annEnd|const CLOCK_SNAP|const clockTot|const byoGrace|const byoFull)[^\n]*\n/gm) || []).join('');
 const BYO = Number(byoS), PER = Number(perS), PHASE = Number(phaseS);
 let NOW = PHASE;
 const env = `
@@ -22,7 +22,7 @@ function renderClocks() {}
 const location = { search: ${JSON.stringify(process.env.HANA ? '?hana=' + process.env.HANA : '')} };
 function requestAnimationFrame() {}
 function clockFrame() {}
-function call() {}
+function call(p) { LOG("CALL" + p, 0); }
 function cancelPendingVoice() { CANCEL(); }
 function voice(url, delay) { LOG(url, delay || 0); return true; }
 const decoded = new Proxy({}, { get: (o, k) => (DUR[k] ? { duration: DUR[k] } : null) });
