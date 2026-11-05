@@ -22,10 +22,11 @@ def pfile(pack, name):
 
 def durs(pack):
     d = {}
-    for n in [f"count{i}" for i in range(1, 11)] + ["remain1", "remain2", "remain3"]:
+    for n in [f"count{i}" for i in range(1, 11)] + ["remain1", "remain2", "remain3", "byo"]:
         f = pfile(pack, n)
-        if f:
-            d[n] = round(len(load(f.resolve())) / SR, 3)
+        if f:  # 길이 + 말소리 구간(앱 speechSpan과 같은 규칙: 최대의 −30dB 표본)
+            x = load(f.resolve()); a = np.abs(x); idx = np.where(a >= a.max() * 0.0316)[0]
+            d[n] = {"d": round(len(x) / SR, 3), "on": round(idx[0] / SR * 1000, 1), "end": round(idx[-1] / SR * 1000, 1)}
     return d
 
 
