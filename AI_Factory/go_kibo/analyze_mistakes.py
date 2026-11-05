@@ -228,7 +228,7 @@ def main():
         write_report(a, summ, rows, meta, all_rows)
 
 
-def rank_section(all_rows):
+def rank_section(all_rows, gidx=None):
     """§7 기력대별 — 작가님 vs 같은 기력대 상대(아이디 없음, 기력·시대만). 상대는 1단계(64v) 값."""
     from collections import Counter, defaultdict
     L = ["## 7. 기력대별 감각 — 작가님 vs 같은 기력대 상대 (타이젬 급수)\n",
@@ -263,6 +263,26 @@ def rank_section(all_rows):
             cl = [max(0, x["loss"]) for x in rs]
             cells += [str(len(rs)), f"{mean(cl):.2f}", f"{(sum(v >= BIG for v in cl) / len(rs) * 100) if rs else 0:.1f}%"]
         L.append(f"| {era} | " + " | ".join(cells) + " |")
+    # 7-3 시대 × 포석(1–50수) — 알파고(2016) 전후 포석 감각 (작가님 23:33·23:35)
+    L.append("\n### 7-3. 시대별 포석(1–50수) — 작가님 vs 같은 기력대 상대\n")
+    L.append("알파고(2016-03) 이전 2구간·이후 2구간(2015–20은 걸침). 같은 정의(손해·엔진 1순위 일치·큰 실수 3집+).\n")
+    L.append("| 시대 | 작가님 포석 착수 | 손해 | 1순위 일치 | 큰 실수율 | 상대 포석 착수 | 손해 | 1순위 일치 | 큰 실수율 |\n|---|---|---|---|---|---|---|---|---|")
+    for era in sorted({x["era"] for x in all_rows}):
+        cells = []
+        for who in ("me", "opp"):
+            rs = [x for x in all_rows if x["era"] == era and x["who"] == who and x["phase"] == "포석"]
+            cl = [max(0, x["loss"]) for x in rs]
+            cells += [str(len(rs)), f"{mean(cl):.2f}", f"{(sum(x['is_best'] for x in rs) / len(rs) * 100) if rs else 0:.1f}%",
+                      f"{(sum(v >= BIG for v in cl) / len(rs) * 100) if rs else 0:.1f}%"]
+        L.append(f"| {era} | " + " | ".join(cells) + " |")
+    if gidx:
+        post = sorted([x for x in all_rows if x["who"] == "me" and x["phase"] == "포석" and x["era"] in ("2015-20", "2021-26")
+                       and x["is_best"] and x.get("prior_best") is not None], key=lambda x: x["prior_best"])[:3]
+        if post:
+            L.append("\n대표 장면(2015–26 포석, 작가님이 엔진 1순위를 둔 수 중 직감이 가장 낮은 3 — 'AI 이후 포석' 후보, G번호·수순만):\n")
+            L.append("| 대국 | 시대 | 수 | 좌표 | 1순위 직감 | 1·2순위 차 |\n|---|---|---|---|---|---|")
+            for x in post:
+                L.append(f"| {gidx[x['id']]} | {x['era']} | {x['move_no']} | {x['move']} | {x['prior_best']:.2f} | {x.get('gap_lead') or 0:.1f} |")
     L.append("")
     return L
 
@@ -370,7 +390,7 @@ def write_report(a, summ, rows, meta, all_rows=None):
     L.append("<!-- NOTES -->\n<!-- /NOTES -->\n")
     L += quad_section(rows, gidx)
     if all_rows:
-        L += rank_section(all_rows)
+        L += rank_section(all_rows, gidx)
     path = os.path.join(HERE, "reports", f"{a.report_name}.md")
     notes = "<!-- NOTES -->\n<!-- /NOTES -->"
     if os.path.exists(path):
