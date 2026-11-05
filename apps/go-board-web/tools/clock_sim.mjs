@@ -3,7 +3,8 @@
 // 사용: node clock_sim.mjs INDEX_HTML BYO PERIODS [SYNC_ERR_SEC] [TICK_PHASE_MS]
 // 출력: JSON {events:[{t, ev, file, late}]} — t는 내 차례 시작 기준 초, late는 정확한 경계 뒤 몇 ms에 재생했나
 import fs from 'node:fs';
-const [, , html, byoS, perS, errS = '0', phaseS = '0'] = process.argv;
+const [, , html, byoS, perS, errS = '0', phaseS = '0', durS = '{}'] = process.argv;
+const DUR = JSON.parse(durS);  // 팩 파일 길이(초) — 안내 뒤 '하나' 지연 계산용
 const src = fs.readFileSync(html, 'utf8');
 const grab = name => {
   const m = src.match(new RegExp(`^function ${name}\\b[\\s\\S]*?^}\\n`, 'm'));
@@ -21,12 +22,13 @@ let S, clocks = null, clockTimer = null, clockLast = 0, clockMv = -1, busy = fal
 const performance = { now: () => NOW() };
 function renderClocks() {}
 function call() {}
-function voice(url) { LOG(url); return true; }
+function voice(url, delay) { LOG(url, delay || 0); return true; }
+const decoded = new Proxy({}, { get: (o, k) => (DUR[k] ? { duration: DUR[k] } : null) });
 ${decl}${grabOpt('sayOnce')}${grab('tickClock')}${grab('clockTick')}${grab('syncClocks')}
 return { setS: v => { S = v; }, getClocks: () => clocks, syncClocks, clockTick, setSND: v => { SND = v; }, setTimer: v => { clockTimer = v; } };
 `;
 let lastUrl = null;
-const api = new Function('NOW', 'LOG', 'setInterval', env)(() => NOW, u => { lastUrl = u; events.push({ t: +(NOW / 1000).toFixed(3), file: u }); }, () => 1);
+const api = new Function('NOW', 'LOG', 'setInterval', 'DUR', env)(() => NOW, (u, d) => { lastUrl = u; events.push({ t: +(NOW / 1000 + d).toFixed(3), file: u }); }, () => 1, DUR);
 const SND = { count: {}, remain: {} };
 for (let i = 1; i <= 10; i++) SND.count[i] = `count${i}`;
 for (let i = 1; i <= 3; i++) SND.remain[i] = `remain${i}`;

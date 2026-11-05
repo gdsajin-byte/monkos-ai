@@ -68,6 +68,8 @@ def fit(src_dir, out_dir):
         # 길이: 틀 길이로(말소리 끝 뒤만 자르고, 말소리가 길면 그대로)
         sy = shape(y)
         L = t["len"]
+        if n.startswith("remain"):  # 11-05 10:55 "remain 파일 길이는 짧을수록" — 안내는 말소리 끝 + 150ms까지만(채우지 않음)
+            L = min(L, max(sy["end40"] + int(0.15 * SR), len(y) if sy["end40"] + int(0.03 * SR) > L else 0))
         if len(y) >= L and sy["end40"] + int(0.03 * SR) <= L:
             y = y[:L]
         elif len(y) < L:
