@@ -12,18 +12,18 @@ const grab = name => {
   if (!m) throw new Error('no ' + name);
   return m[0];
 };
-const decl = src.match(/^const SAID = [^\n]*\n/m)[0];
+const decl = src.match(/^const SAID = [^\n]*\n/m)[0] + (src.match(/^(const HANA_DELAY|const CLOCK_LOOKAHEAD|let annEnd)[^\n]*\n/gm) || []).join('');
 const BYO = Number(byoS), PER = Number(perS), PHASE = Number(phaseS);
 let NOW = PHASE;
 const env = `
-let S, clocks = null, clockTimer = null, clockLast = 0, clockMv = -1, busy = false, SND, annEnd = 0, actx = null;
+let S, clocks = null, clockTimer = null, clockLast = 0, clockMv = -1, busy = false, SND, actx = null;
 const performance = { now: () => NOW() };
 function renderClocks() {}
 function call() {}
 function cancelPendingVoice() { CANCEL(); }
 function voice(url, delay) { LOG(url, delay || 0); return true; }
 const decoded = new Proxy({}, { get: (o, k) => (DUR[k] ? { duration: DUR[k] } : null) });
-${decl}${grab('sayOnce').replace(/^let annEnd[^\n]*\n/m, '')}${grab('tickClock')}${grab('clockTick')}${grab('syncClocks')}${grab('clockMoved')}
+${decl}${grab('sayOnce')}${grab('tickClock')}${grab('clockTick')}${grab('syncClocks')}${grab('clockMoved')}
 return { setS: v => { S = v; }, syncClocks, clockTick, clockMoved, setSND: v => { SND = v; }, clocks: () => clocks };
 `;
 const said = [];
