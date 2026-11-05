@@ -12,7 +12,7 @@ const grab = name => {
   return m[0];
 };
 const hasSaid = /^function sayOnce\b/m.test(src);
-const decl = hasSaid ? src.match(/^const SAID = [^\n]*\n/m)[0] + (src.match(/^(const HANA_DELAY|const CLOCK_LOOKAHEAD|let annEnd)[^\n]*\n/gm) || []).join('') : '';
+const decl = hasSaid ? src.match(/^const SAID = [^\n]*\n/m)[0] + (src.match(/^(const HANA_DELAY|const CLOCK_LOOKAHEAD|let annEnd|const CLOCK_SNAP|const clockTot)[^\n]*\n/gm) || []).join('') : '';
 const grabOpt = name => (new RegExp(`^function ${name}\\b`, 'm').test(src) ? grab(name) : '');
 const BYO = Number(byoS), PER = Number(perS), ERR = Number(errS), PHASE = Number(phaseS);
 let NOW = 0;  // 가짜 performance.now (ms)
@@ -21,6 +21,8 @@ const env = `
 let S, clocks = null, clockTimer = null, clockLast = 0, clockMv = -1, busy = false, SND;
 const performance = { now: () => NOW() };
 function renderClocks() {}
+function requestAnimationFrame() {}
+function clockFrame() {}
 function call() {}
 function voice(url, delay) { LOG(url, delay || 0); return true; }
 const decoded = new Proxy({}, { get: (o, k) => (DUR[k] ? { duration: DUR[k] } : null) });
