@@ -93,6 +93,7 @@ domain: "presentation, 3d-avatar, tts, content-pipeline"
 | 11/05 | iMac/쌍아 | 바둑 해설 아바타 연결 — 유니(캐스터)·작가님(해설위원) 아바타 해설자 구상이 PT 엔진(apps/monkos-3d, 3D 캐릭터·TTS 립싱크)의 다음 단계로 편입. 대본 원천=PF_GO 형세봇·해설 LLM·캐스터–해설 대담 연구 (작가님 11-05 21:55·22:07) | [DESIGN_20261105_GO_형세봇_계가정답지_MONKOS성장](../../../tech/designs/2026-11/DESIGN_20261105_GO_형세봇_계가정답지_MONKOS성장.md) | 📝 |
 | 11/05 | iMac/쌍아 | **DESIGN** 바둑 해설 영상 자체 제작 — 판 위주 화면 + 사이드 얼굴(유니·작가님 아바타) + 목소리(ElevenLabs vs 오픈소스) + 자동 편집, 4060(8GB)이 어디까지 덮는지 | [DESIGN_20261105_PRESENTATION_바둑해설영상_자체제작_4060](../../../tech/designs/2026-11/DESIGN_20261105_PRESENTATION_바둑해설영상_자체제작_4060.md) | ⏳ |
 | 11/06 | ?/? | **ORDER** 1분 바둑 해설 영상 관통 시험(E2E v0) — 작가님 기보 승부처 1장면 채택 → 캐스터(유니)–해설 대담 대본 → 화자별 음성 → 판 재생·참고도 싱크 → 사이드 얼굴 → 합성 1편 | [ORDER_20261106_iMac쌍아_막내8_PRESENTATION_1분해설영상_관통시험](../../orders/2026-11/ORDER_20261106_iMac쌍아_막내8_PRESENTATION_1분해설영상_관통시험.md) | ⏳ |
+| 11/06 | iMac/쌍아-막내8 | 1분 해설 영상 관통 시험 E2E v0 — G10 17수 사석(작가님 F3) · 유니–해설 9줄 302자 · ElevenLabs 화자별 · 판·참고도 마커 싱크(평균 19ms) · Kling 클립 재사용 · 41.3초 mp4(레포 밖) · 유료 신규 0 | [COMPLETION_20261106_iMac쌍아-막내8_PRESENTATION_1분해설영상_관통시험](../../reports/2026-11/COMPLETION_20261106_iMac쌍아-막내8_PRESENTATION_1분해설영상_관통시험.md) | 완료 |
 
 ---
 
