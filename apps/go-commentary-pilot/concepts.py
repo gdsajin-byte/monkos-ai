@@ -208,8 +208,14 @@ def analyze_concepts(d, gm, lex, f3_best=None):
     shape_names = [x["name"] for x in s["shapes"]]
 
     # (가) 모양
+    shape_t = {e["id"]: e.get("threshold", {}) for e in lex["shapes"]}
     for x in s["shapes"]:
         name, _ = names[x["id"]]
+        ok = shape_t.get(x["id"], {}).get("ok")
+        if ok is not None and L > ok:  # 칭찬 조건 미달(쌍립 등) — 모양 이름만 표기, 해설 근거로 쓰지 않음(쌍아 판정 11-05 22:18)
+            hits.append({"id": x["id"], "name": name, "layer": "shapes", "mode": None, "name_only": True,
+                         "evidence": {"detail": x["detail"], "loss": L, "칭찬 조건": f"손해 ≤ {ok}"}, "text": f"모양: {name}"})
+            continue
         hits.append({"id": x["id"], "name": name, "layer": "shapes", "mode": None, "evidence": {"detail": x["detail"]},
                      "text": f"모양: {name}" + (f" ({x['detail']})" if x["detail"] else "")
                      + (f". 해설에서는 '{phrase[x['id']]}'라고 부른다" if x["id"] in phrase else "") + f". 뜻: {plain[x['id']]}"})
@@ -371,6 +377,9 @@ def analyze_concepts(d, gm, lex, f3_best=None):
     rank = {"keypoints": 0, "proverbs": 1, "shapes": 2, "qualities": 3}
     used, shape_taken = 0, False
     for h in sorted(hits, key=lambda h: rank[h["layer"]]):
+        if h.get("name_only"):
+            h["use"] = False
+            continue
         if h["layer"] == "shapes":
             if shape_taken:
                 h["use"] = False

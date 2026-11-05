@@ -57,7 +57,7 @@ shapes:
   - {id: bump, name: 치받기, patterns: [치받], definition: "자기 돌에서 상대 돌 정면으로 맞부딪치는 수. 상대 행마를 막는다.", rule: "자기 돌–착점–상대 돌 일직선", opposite: null}
   - {id: turn, name: 꼬부리기, patterns: [꼬부리, 꼬부려, 꼬부림], definition: "자기 돌 줄에서 직각으로 꺾어 상대 돌에 닿는 수.", rule: "자기 돌 q의 자기 이웃이 착점 방향과 수직 · 착점이 상대 돌에 닿음", opposite: null}
   - {id: tiger, name: 호구, phrase: 호구 자리, patterns: [호구], definition: "빈 점 하나를 자기 돌 셋이 감싸는 모양. 끊기지 않는 탄력 있는 연결.", rule: "착점 옆 빈 점의 네 이웃 중 셋이 자기 돌", opposite: null}
-  - {id: twin, name: 쌍립, phrase: 쌍립 자리, patterns: [쌍립], definition: "자기 돌 두 점씩 한 줄 띄워 나란히 선 모양. 가운데 두 점 중 하나를 상대가 두면 다른 하나로 이어 끊기지 않는다.", rule: "착점과 붙은 자기 돌 q · 한 줄 건너 두 점(착점·q와 평행) 모두 자기 돌 · 가운데 두 점 빈 점", opposite: null}
+  - {id: twin, name: 쌍립, phrase: 쌍립 자리, patterns: [쌍립], definition: "자기 돌 두 점씩 한 줄 띄워 나란히 선 모양. 가운데 두 점 중 하나를 상대가 두면 다른 하나로 이어 끊기지 않는다.", rule: "착점과 붙은 자기 돌 q · 한 줄 건너 두 점(착점·q와 평행) 모두 자기 돌 · 가운데 두 점 빈 점", threshold: {ok: 1.0}, praise: "손해 ≤ t.ok일 때만 해설 근거, 그 외엔 모양 이름만(쌍아 11-05 22:18 — smoke10 2,177수 중 58회로 흔함)", opposite: null}
   - {id: two_head, name: 두점머리, patterns: [두점머리, 두 점 머리], definition: "일렬로 선 상대 두 점의 머리를 두드리는 수. '두 점 머리는 두들겨라'.", rule: "상대 두 점 일렬의 연장선 머리(세 점째 없음)", opposite: null}
   - {id: atari, name: 단수, patterns: [단수], definition: "상대 그룹의 활로를 하나만 남기는 수.", rule: "착수 후 이웃 상대 그룹 활로 1", opposite: null}
   - {id: capture, name: 따냄, patterns: [따냄, 따내, 따낸], definition: "활로가 없어진 상대 돌을 들어내는 수.", rule: "착수로 상대 돌 제거", opposite: null}
