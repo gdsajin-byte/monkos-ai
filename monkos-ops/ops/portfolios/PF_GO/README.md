@@ -137,6 +137,7 @@ status: active
 | 11/06 | iMac/쌍아-막내2 | 유튜브 해설 B안 — 로컬 판 판독 9편(장면 502/849 board_draw)·Pro 대조(좌표·색은 Pro 오류)·자막 교정 사전 v0(오류율 14.1%)·유료 사전 시험 게이트 (같은 보고서 §7) | [COMPLETION_20261105_iMac쌍아-막내2_GO_유튜브해설_3인_도구비교_목록화](../../reports/2026-11/COMPLETION_20261105_iMac쌍아-막내2_GO_유튜브해설_3인_도구비교_목록화.md) | ✅ |
 | 11/06 | iMac/쌍아-막내8 | 계가 결과 동의창 — 판 위 시트 [예]=확정·[아니요]=취소+score_declined, 휴대폰 판 아래 시트(가림 0), 봇 자동 확정, 사석 고침 즉시 갱신 — 8766 검증 | [COMPLETION_20261106_iMac쌍아-막내8_GO_계가_동의창](../../reports/2026-11/COMPLETION_20261106_iMac쌍아-막내8_GO_계가_동의창.md) | 진행 |
 | 11/06 | ?/? | **ORDER** 바둑앱 계가 결과 동의창 — 계가 결과를 판 위 확인 창으로 띄우고 [예]면 확정, [아니요]면 원상 복귀(타이젬식, 근거 표시는 우리 방식 유지) | [ORDER_20261106_iMac쌍아_막내8_GO_계가_동의창](../../orders/2026-11/ORDER_20261106_iMac쌍아_막내8_GO_계가_동의창.md) | ⏳ |
+| 11/06 | ?/? | **ORDER** 실기기 대여 테스트 도구 1단계 — Firebase Test Lab(Google)으로 MONKOS Go 기기별 수읽기 속도 자동 실측(iOS Game Loop 먼저, 안드로이드는 빌드 경로 조사), 무료 한도 가드 내장. AWS Device Farm은 계정 생성 뒤 2단계 | [ORDER_20261106_iMac쌍아_막내8_GO_실기기테스트_FirebaseTestLab도구](../../orders/2026-11/ORDER_20261106_iMac쌍아_막내8_GO_실기기테스트_FirebaseTestLab도구.md) | ⏳ |
 
 ## 3. Phase 현황
 
