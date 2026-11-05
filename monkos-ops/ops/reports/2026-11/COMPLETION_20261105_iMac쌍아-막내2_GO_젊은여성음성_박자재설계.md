@@ -146,3 +146,20 @@ portfolio: PF_GO
 2. 10초 초읽기 안내 뒤 첫 숫자를 정합니다.
    - (a) 지금 구현: "셋"(8초 남음, 숫자 뜻 유지)
    - (b) 안내 2초 뒤부터 "하나"로 당겨 세기(1초 남음이 "여덟", 화면 시계와 어긋남)
+
+## 8765 반영 (10:02)
+
+**[2026-11-05 10:02 KST]** iMac/쌍아-막내2 → iMac/쌍아 — 작가님 10:01 "두번째로 일단 선택"(기운 높음). 10초 초읽기 첫 숫자는 추천안 (a) "셋"부터(쌍아 전달). ba7e5185 main 병합·공용 체크아웃 갱신 확인
+
+- 재기동 전 상태: 8765 PID 99172(09:36:15 기동 — 다른 세션의 재기동), 공용 index.html에 `annAt` 있음, 진행 중 판 0(재기동 직전 재확인).
+- 팩(이름만 변경, 삭제 없음)
+  - `.staged-monk-annakim-high` → **`monk-annakim`** (18파일)
+  - mid·calm은 숨김 유지
+  - 이전 실패 팩 24개(monk-{daniel,alice,george,river}-{a,b}, monk-v2-…, monk-ko-…) → `.staged-old-…`
+- `launchctl kickstart -k` → PID 2802, 최강·급수·MONK OK, 방 187개 복원(진행 중 0)
+- 라이브 확인(읽기 GET)
+  - `/api/rooms` packs = `monk-annakim`(18) · `tygem-ref`(24)뿐
+  - `/` 화면에 안내 규칙 코드 반영(`annAt`·`byo`·남은 횟수 5회)
+  - `/pack/monk-annakim/{byo,remain1,remain5,count3}.wav` 모두 200 audio/wav
+- 앱 기본 팩은 바꾸지 않았습니다(`DEFAULT_PACK='tygem-ref'`). 작가님이 대국실 "⋯" → "소리"에서 `monk-annakim`을 고르시면 됩니다.
+  - ⚠️ 숨긴 팩(예: monk-ko-…)을 골라 두었던 브라우저는 그 팩이 목록에 없어 기본 녹음(builtin)으로 돌아가고, 초읽기 음성이 나오지 않습니다. `monk-annakim`을 다시 골라야 합니다.
