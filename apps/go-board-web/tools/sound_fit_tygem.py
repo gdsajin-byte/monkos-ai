@@ -14,7 +14,7 @@ import numpy as np
 SR = 22050
 TY = Path.home() / ".monkos" / "go-board-sounds" / "tygem-ref"
 NAMES = [f"count{i}" for i in range(1, 11)] + ["remain1", "remain2", "remain3", "start", "counting"]
-TEMPLATE = {"byo": "start"}  # 타이젬에 없는 파일 → 비슷한 길이 문구의 틀(시작 위치·음량). 길이는 안내 규칙(말 끝 +150ms)
+TEMPLATE = {"byo": "start", "byo_short": "start", "remain4": "remain3", "remain5": "remain3"}  # 타이젬에 없는 파일 → 비슷한 길이 문구의 틀(시작 위치·음량). 길이는 안내 규칙(말 끝 +150ms)
 
 
 def load(p):

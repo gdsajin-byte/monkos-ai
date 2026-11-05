@@ -12,14 +12,14 @@ const grab = name => {
   if (!m) throw new Error('no ' + name);
   return m[0];
 };
-const decl = src.match(/^const SAID = [^\n]*\n/m)[0] + (src.match(/^(let annEnd|const spanCache|let HANA_DELAY|const HANA_DELAY|try \{ const q = Number|const CLOCK_LOOKAHEAD|let annEnd|const CLOCK_SNAP|const clockTot|const byoGrace|const byoFull)[^\n]*\n/gm) || []).join('');
+const decl = src.match(/^const SAID = [^\n]*\n/m)[0] + (src.match(/^(let annEnd|const spanCache|let HANA_DELAY|const HANA_DELAY|try \{ const q = Number|let ANN_MODE|try \{ if \(new URLSearchParams|const CLOCK_LOOKAHEAD|let annEnd|const CLOCK_SNAP|const clockTot|const byoGrace|const byoFull)[^\n]*\n/gm) || []).join('');
 const BYO = Number(byoS), PER = Number(perS), PHASE = Number(phaseS);
 let NOW = PHASE;
 const env = `
 let S, clocks = null, clockTimer = null, clockLast = 0, clockMv = -1, busy = false, SND, actx = null;
 const performance = { now: () => NOW() };
 function renderClocks() {}
-const location = { search: ${JSON.stringify(process.env.HANA ? '?hana=' + process.env.HANA : '')} };
+const location = { search: ${JSON.stringify('?' + (process.env.HANA ? 'hana=' + process.env.HANA + '&' : '') + (process.env.ANN ? 'ann=' + process.env.ANN : ''))} };
 function requestAnimationFrame() {}
 function clockFrame() {}
 function call(p) { LOG("CALL" + p, 0); }
