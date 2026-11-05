@@ -276,6 +276,8 @@ export async function initFromTossResult() {
             market: 'kr',
             auth_method: store.user?.provider || '',
             lang: document.documentElement.lang || 'ko',
+            credits_added: Number(data.creditsAdded) || 0,
+            items: [{ item_id: 'credits_' + (Number(data.creditsAdded) || 0), item_name: 'idphoto-kr 크레딧 ' + (Number(data.creditsAdded) || 0) + 'c', item_category: 'credits', quantity: 1, price: Number(amount) }],
           });
         }
       } catch (e) {}

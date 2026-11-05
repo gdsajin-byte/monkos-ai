@@ -43,6 +43,7 @@ if AUDIO:
 body = {"contents": [{"role": "user", "parts": [media, {"text": prompt}]}],
     "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2, "maxOutputTokens": int(__import__("os").environ.get("GEMINI_MAX_OUT") or 16000),
                          **({"frequencyPenalty": 0.3} if "pro" in model else {}),  # Flash는 벌점 미지원(400)
+                         **({"thinkingConfig": {"thinkingLevel": os.environ["GEMINI_THINK"]}} if os.environ.get("GEMINI_THINK") else {}),  # 11-06 Pro 생각이 출력 상한 16k를 다 먹어 JSON 잘림(27건) — LOW로 줄인다
                          "mediaResolution": "MEDIA_RESOLUTION_LOW"}}  # 11-05 목진석 표본 반복 폭주(65k 출력) 뒤 상한·반복 벌점
 tok = subprocess.run(["gcloud", "auth", "print-access-token"], capture_output=True, text=True, check=True).stdout.strip()
 req = urllib.request.Request(f"https://aiplatform.googleapis.com/v1/projects/monkos/locations/global/publishers/google/models/{model}:generateContent",

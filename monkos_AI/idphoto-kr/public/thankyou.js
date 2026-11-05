@@ -180,7 +180,8 @@ async function init() {
   }
 
   // 2026-09-02: 'purchase'→'download_complete'. 수령은 결제가 아니다(충전 시점이 purchase). 다운로드마다 발화하던 가짜 매출 차단
-  if (typeof gtag === 'function') gtag('event', 'download_complete', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr' });
+  // 2026-11-06: 'download_complete'→'thankyou_view'. 실제 수령 완료는 result.js doDownload 성공 분기에서 발화. 새로고침마다 중복되던 수령 카운트 차단
+  if (typeof gtag === 'function') gtag('event', 'thankyou_view', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr' });
 
   Monk.log('수령처 v6 초기화 완료');
 }

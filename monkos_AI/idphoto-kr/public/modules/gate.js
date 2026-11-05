@@ -206,9 +206,10 @@ function _startGoogleLoginSimple() {
               credits: data.user.credits ?? 0, avatar: data.user.picture || '',
             };
             Monk.log(`Google 로그인 성공: ${data.user.email} (${store.user.credits}c)`);
-            if (data.isNewUser && typeof gtag === 'function') {
-              gtag('event', 'sign_up', {
+            if (typeof gtag === 'function') {
+              gtag('event', data.isNewUser ? 'sign_up' : 'login', {
                 method: 'google',
+                service: 'idphoto-kr',
                 signup_source: window.location.hostname + window.location.pathname
               });
             }
