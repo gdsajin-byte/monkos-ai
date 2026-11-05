@@ -44,7 +44,7 @@ await cdp('Page.navigate', { url: BASE + '/' });
 await sleep(2500);
 if (process.env.PACK) await ev(`localStorage.setItem('goBoardPack', ${JSON.stringify(process.env.PACK)})`);
 const room = await ev(`fetch('/api/rooms', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ level: 'monkos', handicap: 0, time: { main: 0, byo: ${Number(process.env.BYO || 10)}, periods: 5 }, color: 'B' }) }).then(r => r.json()).then(j => j.id || JSON.stringify(j))`);
+  body: JSON.stringify({ level: 'monkos', handicap: 0, time: { main: 0, byo: ${Number(process.env.BYO || 10)}, periods: ${Number(process.env.PER || 5)} }, color: 'B' }) }).then(r => r.json()).then(j => j.id || JSON.stringify(j))`);
 if (!room || room.startsWith('{')) { console.error('❌ jank_probe: 방 생성 실패', room); chrome.kill(); process.exit(1); }
 await cdp('Page.navigate', { url: `${BASE}/room/${room}${process.env.HANA ? "?hana=" + process.env.HANA : ""}` });
 const tRoom = Date.now();
