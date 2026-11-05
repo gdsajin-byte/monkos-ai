@@ -907,7 +907,7 @@ document.addEventListener('pointerdown', ev => { AD.lastTap = performance.now();
 function buildSounds(state) {
   const pack = state.packs && state.packs[packName];
   if (pack) {
-    const base = `/pack/${packName}/`, has = n => pack.files.find(f => f.replace(/\.(mp3|wav)$/, '') === n);
+    const base = `/pack/${packName}/`, has = n => pack.files.find(f => f.replace(/\.(mp3|wav|m4a)$/, '') === n);
     const urls = names => names.map(has).filter(Boolean).map(f => base + f);
     const one = n => (has(n) ? base + has(n) : null);
     const cap = { 1: urls(['stone1', 'stone1s']), 2: urls(['stone2', 'stone2s']), 3: urls(['stone3', 'stone3s']) };
@@ -1555,9 +1555,29 @@ function makeClock(t) {
 }
 
 // 시계 정본은 서버(10-24) — 받은 값에 '지금 차례가 흐른 시간'을 더해 이어서 잰다. 새로고침·재기동에도 같은 시계
+// 11-05 11:19 작가님 "시계가 멈칫도 하고 빠꾸도 하고 … 서로 싱크 맞추려면서 억지로 껴맞추는 느낌" — 한 수 안에서는
+// 로컬 단조 시간축 하나가 화면 시계와 음성을 같이 움직인다. 서버 값과 어긋나도 덮어쓰지 않고(서버가 더 남았다고 하면 무시,
+// 덜 남았다고 해도 2초 이내면 다음 착수 때 자연히 반영), 서버가 2초 넘게 앞설 때만 그쪽으로 당긴다(남은 시간이 줄어드는 쪽만).
+// 시간패 판정은 서버가 한다.
+const CLOCK_SNAP = 2.0;
+const clockTot = c => (c.inByo ? 0 : c.main) + c.period + (c.left - 1) * c.byo;
+let clockRoom = null;
 function syncClocks() {
   const k = S && S.clock, t = S && S.time;
-  const keep = clocks && S && clockMv === S.moveNo && clocks[S.user] ? clocks[S.user] : null, keepLast = clockLast;
+  // 11-05 11:25 작가님 "시간을 서버가 처리해줘야하나? 앱 자체에서 기계적으로 처리하는게 더 정확한거 아니야?"
+  // AI 대국: 시계는 기기가 혼자 잰다. 서버 시계는 화면을 처음 열 때(새로고침·재접속) 한 번만 복원에 쓰고, 그 뒤 핑·응답으로는
+  // 건드리지 않는다. 새 수가 오면 그 수를 둔 쪽의 초읽기 회만 새로 시작한다. 시간패는 기기가 판정해 서버에 알린다(/api/timeout)
+  if (clocks && S && k && t && !S.stale && (S.kind || 'ai') === 'ai' && clockRoom === S.room && clockMv !== -1) {
+    if (clockMv !== S.moveNo) {
+      const mover = S.lastColor && clocks[S.lastColor];
+      if (mover && mover.inByo) { mover.period = mover.byo; mover.off = 0; }  // 한 수(통과 포함)를 두면 그 쪽 회가 처음부터
+      clockLast = performance.now();  // 반영한 이 순간부터 다음 차례가 흐른다(하나 = +HANA_DELAY초)
+      clockMv = S.moveNo;
+    }
+    return;
+  }
+  clockRoom = S && !S.stale ? S.room : null;
+  const old = clocks && S && clockMv === S.moveNo ? clocks : null, oldLast = clockLast;
   clocks = k && t ? { B: null, W: null } : null;
   if (clocks) for (const c of ['B', 'W']) {
     const v = k[c];
@@ -1570,24 +1590,29 @@ function syncClocks() {
     for (let el = k.elapsed; el > 0 && !clocks[k.running].flagged; el -= 1) tickClock(clocks[k.running], Math.min(1, el), onEv);
     if (!isUser && clocks[k.running].flagged) { clocks[k.running].flagged = false; clocks[k.running].left = 1; clocks[k.running].period = 1; }
   }
-  clockLast = performance.now();
-  const rem = c => c.period + (c.left - 1) * c.byo;
-  if (keep && clocks && k.running === S.user && !S.result && keep.inByo && clocks[S.user].inByo && !keep.flagged) {
-    // 내 시계는 '화면 반영 시각' 기준으로 잰다 → 서버 값과의 처음 어긋남(off)을 빼고 1초 안이면 그대로(박자 무변경)
-    if (Math.abs(rem(clocks[S.user]) + (keep.off || 0) - rem(keep)) <= 1) { clocks[S.user] = keep; clockLast = keepLast; }
-  } else if (clocks && S && clockMv !== S.moveNo && clockMv !== -1 && k.running === S.user && !S.result && !S.stale) {
-    // 11-05 10:59 작가님 "착수 순간에 바로 초를 읽으니 하나가 매번 빠지고 때론 셋부터 … 착수하고 약 0.1초 후에 시작해도 돼"
+  const now = performance.now();
+  clockLast = now;
+  if (old && clocks && k.running && !S.result) {
+    const col = k.running, o = old[col], n = clocks[col];
+    if (o && n && !o.flagged) {
+      const local = clockTot(o) - Math.max(0, now - oldLast) / 1000;   // 내 시간축으로 본 지금
+      const ahead = local - (clockTot(n) + (o.off || 0));                 // +면 서버가 그만큼 덜 남았다고 봄
+      if (ahead <= CLOCK_SNAP) { clocks[col] = o; clockLast = oldLast; }  // 로컬 그대로(박자·표시 무변경)
+      else n.off = 0;                                                     // 2초 초과 — 서버 쪽으로 당김(남은 시간 감소 방향만)
+    }
+  } else if (clocks && S && (clockMv !== -1 ? clockMv !== S.moveNo : S.moveNo === 0) && k.running === S.user && !S.result && !S.stale) {  // 첫 수(대국 시작)도
+    // 11-05 10:59 작가님 "착수 순간에 바로 초를 읽으니 하나가 매번 빠지고 때론 셋부터 …"
     // 상대 수가 화면에 반영된 지금을 내 회의 시작점으로 — 서버 응답 지연만큼 이미 지나간 것으로 치지 않는다.
     // 반영 + HANA_DELAY초에 '하나', 1초 격자(11:10 0.1→1.0초). 초읽기 중일 때만(기본 시간은 서버 값 그대로)
     const c = clocks[S.user], v = k[S.user];
     if (c && c.inByo && v.inByo && !c.flagged && c.left === v.left && k.elapsed < Math.min(3, t.byo)) {
-      const before = rem(c);
+      const before = clockTot(c);
       c.period = t.byo;
-      c.off = rem(c) - before;  // 서버보다 늦게 세는 만큼(응답 지연) — 같은 회 보정 때 뺀다
+      c.off = clockTot(c) - before;  // 서버보다 늦게 세는 만큼(응답 지연) — 같은 수 안의 비교 때 뺀다
     }
   }
-  clockMv = S ? S.moveNo : -1;
-  if (!clockTimer) clockTimer = setInterval(clockTick, 100);
+  clockMv = S && !S.stale ? S.moveNo : -1;  // 저장해 둔 직전 판(빠른 시작)은 기준점이 아니다
+  if (!clockTimer) { clockTimer = setInterval(clockTick, 100); requestAnimationFrame(clockFrame); }
   renderClocks();
 }
 const initClocks = syncClocks;
@@ -1627,7 +1652,7 @@ function clockMoved(color) {  // 한 수를 두면 초읽기 한 회가 처음�
 function clockTick() {
   const now = performance.now(), dt = (now - clockLast) / 1000;
   clockLast = now;
-  if (!clocks || !S || S.result || S.scoring) return renderClocks();
+  if (!clocks || !S || S.result || S.scoring) return;
   const eng = S.user === 'B' ? 'W' : 'B';
   const running = busy || S.toMove !== S.user ? eng : S.user;
   const c = clocks[running];
@@ -1649,16 +1674,36 @@ function fmt(sec) {
   return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
 }
 
+// 표시값 = 마지막 틱 이후 흐른 시간까지 뺀 값(rAF마다 계산 — 0.1초 틱에 묶이지 않음). 같은 수·같은 회 안에서는 늘지 않는다
+const shown = { B: null, W: null };
+function clockFrame() { try { renderClocks(); } catch (e) {} requestAnimationFrame(clockFrame); }
+function liveClock(col, running) {
+  const c = clocks && clocks[col];
+  if (!c) return null;
+  const v = { main: c.main, period: c.period, left: c.left, inByo: c.inByo, byo: c.byo };
+  if (running === col && !c.flagged) {
+    let dt = Math.max(0, performance.now() - clockLast) / 1000;
+    if (!v.inByo) { const u = Math.min(dt, v.main); v.main -= u; dt -= u; if (dt > 0) { v.inByo = true; v.period = v.byo; } }
+    if (v.inByo) v.period = Math.max(0, v.period - dt);  // 회 넘김은 틱이 처리(표시는 0에서 멈춤)
+  }
+  const key = `${S.moveNo}:${v.left}:${v.inByo}`, m = shown[col];
+  const val = v.inByo ? v.period : v.main;
+  if (m && m.key === key && val > m.val) { if (v.inByo) v.period = m.val; else v.main = m.val; }
+  else shown[col] = { key, val };
+  return v;
+}
+let clockText = { B: '', W: '' };
 function renderClocks() {
   if (!S) return;
   const t = S.time;
-  document.getElementById('timeMode').textContent = t ? `${t.main ? t.main + '분 + ' : ''}${t.byo}초 ${t.periods}회` : '무제한';
+  const tm = t ? `${t.main ? t.main + '분 + ' : ''}${t.byo}초 ${t.periods}회` : '무제한';
+  if (clockText.mode !== tm) { clockText.mode = tm; document.getElementById('timeMode').textContent = tm; }
   const eng = S.user === 'B' ? 'W' : 'B';
   const running = S.result || S.scoring ? null : (busy || S.toMove !== S.user ? eng : S.user);
   for (const col of ['B', 'W']) {
-    const c = clocks && clocks[col], card = document.getElementById('card' + col);
-    document.getElementById('time' + col).textContent = !c ? '무제한' :
-      c.inByo ? `초읽기 ${fmt(c.period)} · ${c.left}회` : `${fmt(c.main)} · ${c.byo}초 ${c.left}회`;
+    const c = liveClock(col, running), card = document.getElementById('card' + col);
+    const txt = !c ? '무제한' : c.inByo ? `초읽기 ${fmt(c.period)} · ${c.left}회` : `${fmt(c.main)} · ${c.byo}초 ${c.left}회`;
+    if (clockText[col] !== txt) { clockText[col] = txt; document.getElementById('time' + col).textContent = txt; }
     card.classList.toggle('run', running === col);
     card.classList.toggle('urgent', !!c && running === col && c.inByo && c.period <= 10);
   }

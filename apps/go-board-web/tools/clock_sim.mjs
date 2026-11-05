@@ -12,7 +12,7 @@ const grab = name => {
   return m[0];
 };
 const hasSaid = /^function sayOnce\b/m.test(src);
-const decl = hasSaid ? src.match(/^const SAID = [^\n]*\n/m)[0] + (src.match(/^(const HANA_DELAY|const CLOCK_LOOKAHEAD|let annEnd)[^\n]*\n/gm) || []).join('') : '';
+const decl = hasSaid ? src.match(/^const SAID = [^\n]*\n/m)[0] + (src.match(/^(const HANA_DELAY|const CLOCK_LOOKAHEAD|let annEnd|const CLOCK_SNAP|const clockTot)[^\n]*\n/gm) || []).join('') : '';
 const grabOpt = name => (new RegExp(`^function ${name}\\b`, 'm').test(src) ? grab(name) : '');
 const BYO = Number(byoS), PER = Number(perS), ERR = Number(errS), PHASE = Number(phaseS);
 let NOW = 0;  // 가짜 performance.now (ms)
@@ -21,6 +21,8 @@ const env = `
 let S, clocks = null, clockTimer = null, clockLast = 0, clockMv = -1, busy = false, SND;
 const performance = { now: () => NOW() };
 function renderClocks() {}
+function requestAnimationFrame() {}
+function clockFrame() {}
 function call() {}
 function voice(url, delay) { LOG(url, delay || 0); return true; }
 const decoded = new Proxy({}, { get: (o, k) => (DUR[k] ? { duration: DUR[k] } : null) });
@@ -39,7 +41,7 @@ const serverAt = tSec => {  // 서버가 보는 내 시계(정확한 값) + 주�
   while (rem <= 0 && left > 1) { left--; rem += BYO; }
   return { B: { main: 0, period: BYO, left: PER, inByo: true }, W: { main: 0, period: BYO, left: PER, inByo: true }, running: 'B', elapsed: tSec + ERR };
 };
-const S = { moveNo: 1, user: 'B', toMove: 'B', time: { main: 0, byo: BYO, periods: PER }, result: null, scoring: false, clock: serverAt(0), stale: false };
+const S = { room: 'r', kind: process.env.KIND || 'ai', moveNo: 1, user: 'B', toMove: 'B', time: { main: 0, byo: BYO, periods: PER }, result: null, scoring: false, clock: serverAt(0), stale: false };
 api.setS(S);
 NOW = PHASE;
 S.clock = serverAt(0); S.clock.elapsed = 0;

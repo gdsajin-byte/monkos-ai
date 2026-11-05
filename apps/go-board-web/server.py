@@ -1929,7 +1929,7 @@ def sound_packs():
         for d in sorted(PACKS_DIR.iterdir()):
             if d.is_dir() and re.fullmatch(r"[A-Za-z0-9_-]+", d.name):
                 files = sorted(f.name for f in d.iterdir()
-                               if f.suffix in (".mp3", ".wav") and re.fullmatch(r"[A-Za-z0-9_-]+\.(mp3|wav)", f.name))
+                               if f.suffix in (".mp3", ".wav", ".m4a") and re.fullmatch(r"[A-Za-z0-9_-]+\.(mp3|wav|m4a)", f.name))
                 note = (d / "README.txt").read_text(encoding="utf-8", errors="ignore").splitlines()[0] \
                     if (d / "README.txt").exists() else ""
                 out[d.name] = {"files": files, "note": note}
@@ -2743,11 +2743,11 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(200, f.read_bytes(), "audio/wav")
             else:
                 self._send(404, '{"error":"없음"}')
-        elif re.fullmatch(r"/pack/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+\.(mp3|wav)", path):
+        elif re.fullmatch(r"/pack/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+\.(mp3|wav|m4a)", path):  # m4a = AAC(11-05 작가님 "파일 압축")
             _, _, pack, name = path.split("/")
             f = PACKS_DIR / pack / name
             if f.exists():
-                self._send(200, f.read_bytes(), "audio/mpeg" if name.endswith(".mp3") else "audio/wav")
+                self._send(200, f.read_bytes(), {".mp3": "audio/mpeg", ".m4a": "audio/mp4"}.get(f.suffix, "audio/wav"))
             else:
                 self._send(404, '{"error":"없음"}')
         elif re.fullmatch(r"/skin/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)", path):
