@@ -269,6 +269,33 @@ class Engine:
                         "score": float(m.group(4)), "order": int(m.group(5))})
         return sorted(out, key=lambda c: c["order"])[:top]
 
+    def search_own(self, color):
+        """kata-search_analyze + ownership — (최선 수, 소유권 361개 흑 기준 +1=흑 · 좌상 A19부터 행 순서)"""
+        with self.lock:
+            if self.proc is None or self.proc.poll() is not None:
+                raise RuntimeError(f"{self.name} 엔진이 꺼져 있음")
+            self.proc.stdin.write(f"kata-search_analyze {color} ownership true\n")
+            self.proc.stdin.flush()
+            info = ""
+            while True:
+                ln = self.proc.stdout.readline()
+                if ln == "":
+                    raise RuntimeError(f"{self.name} 엔진 응답 끊김")
+                ln = ln.strip()
+                if ln.startswith("?"):
+                    raise RuntimeError(f"{self.name}: 소유권 → {ln[1:].strip()}")
+                if "info move" in ln:
+                    info = ln
+                if re.match(r"^(?:=\s*)?play \S+", ln):
+                    while self.proc.stdout.readline().strip() != "":
+                        pass
+                    break
+        best = re.search(r"info move (\S+)", info)
+        own = []
+        if " ownership " in info:
+            own = [float(v) for v in info.split(" ownership ", 1)[1].split()[:SIZE * SIZE]]
+        return (best.group(1) if best else None), own
+
     def genmove(self, color):
         """kata-genmove_analyze — (수, 흑 기준 점수, 흑 승률)."""
         with self.lock:
@@ -545,6 +572,21 @@ class EngineHub:
                 raise
             e.key = key if mv.lower() == "resign" else (key[0], key[1], key[2] + ((color, mv),))
             return mv, score, wr
+
+    def judge_end(self, pos, color, own=False, visits=200, max_time=1.0):
+        """가벼운 판정(최강) — (최선 수, 소유권 또는 []). MONKOS 패스 판단·집 안 가드용"""
+        if not own:
+            return self.top_move(pos, color, visits, max_time), []
+        e = self._pick("strong")
+        with self._job(e, record=False):
+            try:
+                e.cmd(f"kata-set-param maxVisits {visits}")
+                e.cmd(f"kata-set-param maxTime {max_time}")
+                self._sync(e, pos)
+                return e.search_own(color)
+            finally:
+                e.cmd(f"kata-set-param maxVisits {STRONG_VISITS}")
+                e.cmd(f"kata-set-param maxTime {STRONG_TIME}")
 
     def top_move(self, pos, color, visits=200, max_time=1.0):
         """가벼운 최선 수 1개(최강) — 봇 대국 종국 판단용. 사람 판이 최강을 오래 기다리지 않게 탐색을 줄였다가 대국 설정으로 되돌린다"""
@@ -1241,6 +1283,31 @@ BOT_MAX_MOVES = 400  # 넘으면 계가 시도, 안 되면 중단(일시정지)�
 # 우리 학습 모델은 패스를 거의 하지 않는다(11-05 v1 vs v2 400수 패스 0 실측) — 이 수부터 N수마다 판정 엔진(최강)에게 물어
 # 최선 수가 패스면(더 둘 곳 없음) 사람 판 '계가 신청'과 같은 흐름(최강 마무리 → 계가 확정)으로 끝낸다
 BOT_SCORE_FROM, BOT_SCORE_EVERY = 150, 10
+# 11-05 21:31 작가님 "권장안으로 진행" — MONKOS 패스 임시 조치(사람 판·봇 판 공통): MONKOS 차례에서 ① 상대가 방금 패스했거나
+# ② BOT_SCORE_FROM 수부터 BOT_SCORE_EVERY 수마다 판정 엔진(최강)에 가볍게 묻고, 최선 수가 패스면 MONKOS도 패스. 근본 조치(패스 학습)는 별도
+# 집 안 가드(시험): MONKOS 수가 판정 엔진 소유권 ≥ MONK_OWN_GUARD 인 자기 집 안이면 패스로 바꾼다 — 기본 꺼짐(채택은 판정 표로)
+MONK_OWN_GUARD = float(os.environ.get("GO_BOARD_MONK_OWN_GUARD") or 0) if TEST_MODE else 0.0
+
+
+def monk_move(pos, level, color, moves):
+    """MONKOS 한 수 — 패스 판단(판정 엔진) 포함. (수, 흑 기준 점수, 흑 승률, 사유) · 사유 None=엔진 수 그대로.
+    질의는 조건부(상대 패스 직후 · BOT_SCORE_FROM 수부터 BOT_SCORE_EVERY 수마다) — 사람 판 응수 지연을 매 수 더하지 않는다"""
+    n = len(moves)
+    opp_passed = bool(moves) and moves[-1][1].lower() == "pass"
+    periodic = n >= BOT_SCORE_FROM and n % BOT_SCORE_EVERY == 0
+    if opp_passed or periodic:
+        best, _ = ENGINES.judge_end(pos, color)
+        if best and best.lower() == "pass":
+            return "pass", None, None, "판정 엔진 패스" + (" — 상대 패스 응답" if opp_passed else "")
+    mv, score, wr = ENGINES.move(pos, level, color)
+    if MONK_OWN_GUARD and mv.lower() not in ("pass", "resign") and n >= BOT_SCORE_FROM:
+        _, own = ENGINES.judge_end({**pos, "moves": list(pos["moves"])}, color, own=True)
+        if own:
+            x, y = to_xy(mv)
+            o = own[y * SIZE + x] * (1 if color == "B" else -1)
+            if o >= MONK_OWN_GUARD:
+                return "pass", score, wr, f"집 안 가드(소유권 {o:.2f})"
+    return mv, score, wr, None
 
 
 def bot_name(level):
@@ -1584,7 +1651,12 @@ class Room:
             return self._bot_move(c)
         if c == self.user:
             return
-        mv, score, wr = ENGINES.move(self.position(), self.level, c)
+        if self.level in BOT_LEVELS:  # MONKOS — 패스 판단 포함(11-05 21:31 임시 조치)
+            mv, score, wr, why = monk_move(self.position(), self.level, c, self.moves)
+            if why:
+                EVENTS.add(self.id, action="monk-pass", reason=why, moveNo=len(self.moves))
+        else:
+            mv, score, wr = ENGINES.move(self.position(), self.level, c)
         self._charge(reset=True)
         if score is not None:
             self.score, self.winrate = score, wr
@@ -1599,7 +1671,12 @@ class Room:
 
     def _bot_move(self, c):
         """봇 대국 한 수 — 차례인 쪽 레벨로 둔다. 기권은 엔진 규칙대로, 양쪽 패스면 계가 확정까지(사람 확인 없음)"""
-        mv, score, wr = ENGINES.move(self.position(), self.bots[c], c)
+        if self.bots[c] in BOT_LEVELS:
+            mv, score, wr, why = monk_move(self.position(), self.bots[c], c, self.moves)
+            if why:
+                EVENTS.add(self.id, action="monk-pass", reason=why, moveNo=len(self.moves), color=c)
+        else:
+            mv, score, wr = ENGINES.move(self.position(), self.bots[c], c)
         if score is not None:
             self.score, self.winrate = score, wr
             self.scores.append((len(self.moves) + 1, round(score, 1)))
@@ -2971,10 +3048,7 @@ class BotRunner:
                 r.thinking = True
                 n0 = len(r.moves)
                 try:
-                    r.engine_move()
-                    n = len(r.moves)
-                    if not r.result and n >= BOT_SCORE_FROM and n % BOT_SCORE_EVERY == 0:
-                        r.bot_try_score()
+                    r.engine_move()  # MONKOS 쪽 패스 판단은 monk_move 안에서(양쪽 패스면 계가 확정)
                 except RuntimeError as ex:
                     r.bot_paused = True
                     r.message = f"봇 대국 멈춤 — {ex}"
