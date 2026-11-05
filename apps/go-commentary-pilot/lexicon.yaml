@@ -21,19 +21,27 @@
 #   cuts_own/opp  착점 반경 4 안 끊음점 수(빈 점이 같은 색 서로 다른 그룹 2개 이상에 닿음), 착수 전후 차
 #   sente         상대 최선 응수가 착점 반경 3 안이면 참(받아야 하는 수 = 선수)
 #   prev_dist     직전 상대 수와의 거리(체비쇼프)
+#   prior_best    1순위 수의 직감(정책망) — 사분면 발견 난도
+#   quad          사분면(외길×발견 난도) — 정의·상수 정본 AI_Factory/go_kibo/quadrant.py (실수 사전과 공유, 사본 금지)
+#
+# v1 (2026-11-05 iMac/쌍아-막내3) — 출처: 작가님 11-05 20:25 "와우 수가 단수 잇는 당연한 수", 20:27 당연한 수 정의,
+#   21:44 "'6단이라면'은 AI 티 — '일감인데 이런 수가 있습니다'", 21:47 대세점·급소·쌍립 정의. 지시서 ORDER_20261105 해설사전v1.
+# 문장 규칙(21:44): 템플릿·근거 문장에 기력·급수·확률·퍼센트를 쓰지 않는다. 시청자 예상 수 = "일감으로는 ~", 대비 = "이런 수가 있습니다".
+#   "찾으셨네요" 계열은 와우(실제 묘수·AI식 감각수)일 때만.
 
-version: v0
+version: v1
 
 cheers:
   good:
-    - {level: 와우, rule: "loss ≤ 0.3 and (gap2 ≥ 2.0 or prior ≤ 0.10 or 급소·맥 발동)", words: ["와우", "멋진 수네요", "이걸 찾으셨네요"]}
+    - {level: 와우, rule: "loss ≤ 0.3 · 둔 수 = 엔진 1순위 · 사분면 묘수(외길·어려움) 또는 AI식 감각수(차 2~6집·어려움)", words: ["와우", "멋진 수네요", "이걸 찾으셨네요", "일감으로는 안 보이는데, 이런 수가 있습니다"]}
+    - {level: 외길, rule: "loss ≤ 0.5 · 사분면 당연한 수(외길·쉬움·둠) — 칭찬 추임새 없이 1줄", words: ["외길입니다"]}
     - {level: 좋네요, rule: "loss ≤ 0.5", words: ["좋네요", "좋은 수예요"]}
     - {level: 무난, rule: "loss ≤ 1.5", words: ["무난해요", "괜찮은 수예요"]}
   bad:
     - {level: 살짝 아쉬움, rule: "1.5 < loss < 2.0", words: ["조금 아쉬워요"]}
     - {level: 아쉬워요, rule: "2.0 ≤ loss < 5.0", words: ["아쉬워요"]}
     - {level: 큰 실수, rule: "loss ≥ 5.0", words: ["여기가 크게 아팠어요"]}
-  threshold: {wow_loss: 0.3, wow_gap2: 2.0, wow_prior: 0.10, good_loss: 0.5, ok_loss: 1.5, regret_loss: 2.0, big_loss: 5.0}
+  threshold: {wow_loss: 0.3, good_loss: 0.5, ok_loss: 1.5, regret_loss: 2.0, big_loss: 5.0}  # 외길·난도 임계는 quadrant.py
 
 # ── (가) 모양·수 이름 — shapes.py 규칙과 1:1, 테스트 test_shapes.py ──
 shapes:
@@ -48,7 +56,8 @@ shapes:
   - {id: hane, name: 젖히기, patterns: [젖히, 젖혀, 젖힘], definition: "상대 돌 머리 쪽으로 대각선 자기 돌에서 돌아 막는 수.", rule: "대각 자기 돌 · 그 돌과의 공통 이웃에 상대 돌", opposite: null}
   - {id: bump, name: 치받기, patterns: [치받], definition: "자기 돌에서 상대 돌 정면으로 맞부딪치는 수. 상대 행마를 막는다.", rule: "자기 돌–착점–상대 돌 일직선", opposite: null}
   - {id: turn, name: 꼬부리기, patterns: [꼬부리, 꼬부려, 꼬부림], definition: "자기 돌 줄에서 직각으로 꺾어 상대 돌에 닿는 수.", rule: "자기 돌 q의 자기 이웃이 착점 방향과 수직 · 착점이 상대 돌에 닿음", opposite: null}
-  - {id: tiger, name: 호구, patterns: [호구], definition: "빈 점 하나를 자기 돌 셋이 감싸는 모양. 끊기지 않는 탄력 있는 연결.", rule: "착점 옆 빈 점의 네 이웃 중 셋이 자기 돌", opposite: null}
+  - {id: tiger, name: 호구, phrase: 호구 자리, patterns: [호구], definition: "빈 점 하나를 자기 돌 셋이 감싸는 모양. 끊기지 않는 탄력 있는 연결.", rule: "착점 옆 빈 점의 네 이웃 중 셋이 자기 돌", opposite: null}
+  - {id: twin, name: 쌍립, phrase: 쌍립 자리, patterns: [쌍립], definition: "자기 돌 두 점씩 한 줄 띄워 나란히 선 모양. 가운데 두 점 중 하나를 상대가 두면 다른 하나로 이어 끊기지 않는다.", rule: "착점과 붙은 자기 돌 q · 한 줄 건너 두 점(착점·q와 평행) 모두 자기 돌 · 가운데 두 점 빈 점", opposite: null}
   - {id: two_head, name: 두점머리, patterns: [두점머리, 두 점 머리], definition: "일렬로 선 상대 두 점의 머리를 두드리는 수. '두 점 머리는 두들겨라'.", rule: "상대 두 점 일렬의 연장선 머리(세 점째 없음)", opposite: null}
   - {id: atari, name: 단수, patterns: [단수], definition: "상대 그룹의 활로를 하나만 남기는 수.", rule: "착수 후 이웃 상대 그룹 활로 1", opposite: null}
   - {id: capture, name: 따냄, patterns: [따냄, 따내, 따낸], definition: "활로가 없어진 상대 돌을 들어내는 수.", rule: "착수로 상대 돌 제거", opposite: null}
@@ -64,11 +73,11 @@ keypoints:
   - id: vital
     name: 급소
     patterns: [급소]
-    definition: "양쪽 모두에게 가장 중요한 한 점. 사활·연결이 그 한 점에 걸린 자리."
-    plain: "여기 하나에 돌들의 삶과 연결이 걸려 있는 자리예요."
-    rule: "실제 수 = 엔진 최선 · gap2 ≥ t.gap2 · (opp_near 약화 ≥ t.swing 또는 own_near 강화 ≥ t.swing)"
-    threshold: {gap2: 1.5, swing: 0.2}
-    templates: ["{move}가 급소였어요 — {why}.", "여기가 바로 급소예요. {why}.", "급소를 정확히 짚었네요, {why}."]
+    definition: "상대의 모양이나 사활을 추궁하는 자리(작가님 11-05 21:47). 그 한 점에 상대 돌의 연결·삶이 걸려 있다."
+    plain: "상대 돌의 모양과 삶을 정면으로 추궁하는 자리예요."
+    rule: "실제 수 = 엔진 최선 · gap2 ≥ t.gap2 · 1순위 직감 < 사분면 '쉬움'(당연한 수 제외) · 착수 후 상대 돌뭉치 약화(opp_near 소유권 하락 ≥ t.swing 또는 주변 상대 그룹 최소 활로가 줄어 ≤ t.libs)"
+    threshold: {gap2: 1.5, swing: 0.2, libs: 2}
+    templates: ["{move}가 급소였어요 — {why}.", "여기가 바로 급소예요. {why}.", "일감으로는 다른 곳이 먼저 보이지만, {move}처럼 상대를 추궁하는 수가 있습니다."]
     opposite: null
   - id: tesuji
     name: 맥
@@ -77,7 +86,16 @@ keypoints:
     plain: "얼핏 안 보이지만 딱 들어맞는 기술이에요."
     rule: "실제 수 = 엔진 최선 · prior ≤ t.prior · gap2 ≥ t.gap2 · 상대 돌에 닿는 수"
     threshold: {prior: 0.15, gap2: 1.0}
-    templates: ["맥을 찾으셨네요 — {why}.", "직관으로는 잘 안 보이는 {move}, 이게 맥이에요.", "{move}, 바둑판 위의 기술이죠. {why}."]
+    templates: ["맥을 찾으셨네요 — {why}.", "일감으로는 잘 안 보이는데, {move} 같은 맥이 있습니다.", "{move}, 바둑판 위의 기술이죠. {why}."]
+    opposite: null
+  - id: big_point
+    name: 대세점
+    patterns: [대세점]
+    definition: "당장 집은 아닌데 양쪽 세력이 마주보는 자리(작가님 11-05 21:47). 판 전체의 흐름을 가르는 큰 곳."
+    plain: "아직 집은 아니지만 양쪽 세력이 맞닿는 자리라 판의 흐름이 여기서 갈려요."
+    rule: "v1 근사(형세봇 3층 전): 착점 소유권 |여기서 손을 뺐다면(패스) 기준| ≤ t.band(주인 없는 경계) · 반경 t.r 안에 자기 영향권(≥ t.side) 점과 상대 영향권(≤ −t.side) 점이 각각 t.n개↑ · 3선 이상 · 확정집 변화 territory_gain ≤ t.terr · 착점 주변 효과 local_gain ≥ t.value · loss ≤ t.ok"
+    threshold: {band: 0.5, r: 4, side: 0.3, n: 4, terr: 1.0, value: 2.0, ok: 1.0}  # band 0.3은 smoke10 61국면 중 1건 — 0.5로(11-05 막내3, 작가님 라벨로 보정 예정)
+    templates: ["{move}가 대세점이었어요 — {why}.", "당장 집은 아니지만 세력이 마주보는 자리, {move}가 대세점이에요.", "일감으로는 작은 곳에 손이 가지만, 이런 대세점이 있습니다."]
     opposite: null
 
 # ── (다) 위기십결 — 원리별 정량 근사. 준수(follow)·위반(break) 두 방향 ──

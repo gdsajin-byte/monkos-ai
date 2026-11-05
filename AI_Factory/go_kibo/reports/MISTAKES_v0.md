@@ -7,7 +7,7 @@ source: AI_Factory/go_kibo/analyze_mistakes.py
 
 # 실수 사전 v0 — 10국
 
-> 생성 2026-11-05 21:41 KST · 엔진 KataGo v1.18.2 + b18(kata1-b18c384nbt) · visits 64 · 4060
+> 생성 2026-11-05 21:49 KST · 엔진 KataGo v1.18.2 + b18(kata1-b18c384nbt) · visits 64 · 4060
 > 대국은 G01~ 번호로만 표기(아이디·기보 원문 없음). 원자료 `~/.monkos/go-board/analysis/mistakes_v0/moves_smoke10.jsonl`.
 > 손해 = 착수 직전 국면 평가 − 착수 직후 국면 평가 (작가님 기준 집, KaTrain 방식). 큰 실수 = 3집 이상.
 
