@@ -15,6 +15,7 @@ FLIP_WR = 0.4        # 그 수의 승률 손해 ≥
 LEAD_WR = 0.7        # 우세 기준 승률
 BEHIND_WR = 0.3      # 열세 기준 승률
 CLOSE_FROM = 150     # 박빙 끝내기: 이 수순 시점 승률이 열세~우세 사이
+HOLD_PLIES = 20      # 역전 판정: 열세(우세)가 연속 이 수(양쪽 착수 합)만큼 유지돼야 함 — 64v 승률 한 번 흔들림 제외(쌍아 승인 11-06 07:42)
 QUAD_KO = {"obvious": "당연한 수", "brilliant": "묘수", "missed_brilliant": "놓친 묘수", "blunder_obvious": "착각",
            "ai_sense": "AI식 감각수", "normal": "평범"}
 
@@ -36,6 +37,14 @@ def loss_size(l):
     return "3~5집" if l < 5 else "5~10집" if l < 10 else "10~15집" if l < 15 else "15집+"
 
 
+def longest_run(vals, cond):
+    best = cur = 0
+    for v in vals:
+        cur = cur + 1 if cond(v) else 0
+        best = max(best, cur)
+    return best
+
+
 def game_flow(rows, result):
     """작가님 승률 궤적 → 유형. rows = 한 판의 착수(작가님·상대)."""
     traj = []
@@ -50,9 +59,9 @@ def game_flow(rows, result):
     if flipped and worst["who"] == loser_who:
         return "대마 사망 결판", worst
     after50 = [w for n, w in traj if n > 50]
-    if result == "W" and after50 and min(after50) <= BEHIND_WR:
+    if result == "W" and longest_run(after50, lambda w: w <= BEHIND_WR) >= HOLD_PLIES:
         return "역전승", worst
-    if result == "L" and after50 and max(after50) >= LEAD_WR:
+    if result == "L" and longest_run(after50, lambda w: w >= LEAD_WR) >= HOLD_PLIES:
         return "역전패", worst
     by80 = [w for n, w in traj if n <= 80]
     if by80 and ((result == "W" and by80[-1] >= LEAD_WR and min(after50 or [1]) >= 0.5)
@@ -99,7 +108,7 @@ def profile_section(all_rows, meta, gidx):
         flows[gid] = (res,) + game_flow(rs, res)
     L.append("### 8-2. 판 흐름 유형 (작가님 승률 궤적)\n")
     L.append(f"분류 순서: 대마 사망 결판(진 쪽이 한 수에 {COLLAPSE:g}집↑·승률 {FLIP_WR * 100:.0f}%p↑ 손해) → 역전승/역전패(51수 이후 "
-             f"{BEHIND_WR * 100:.0f}% 이하/{LEAD_WR * 100:.0f}% 이상을 거침) → 초반 우세·열세 유지(80수 시점 {LEAD_WR * 100:.0f}%/{BEHIND_WR * 100:.0f}% 넘고 이후 뒤집히지 않음) "
+             f"{BEHIND_WR * 100:.0f}% 이하/{LEAD_WR * 100:.0f}% 이상이 연속 {HOLD_PLIES}수 유지) → 초반 우세·열세 유지(80수 시점 {LEAD_WR * 100:.0f}%/{BEHIND_WR * 100:.0f}% 넘고 이후 뒤집히지 않음) "
              f"→ 박빙 끝내기 결판({CLOSE_FROM}수 시점 {BEHIND_WR * 100:.0f}~{LEAD_WR * 100:.0f}%) → 기타.\n")
     L.append("| 유형 | 판 | 작가님 승 | 승률 | 대표 판(결정 수) |\n|---|---|---|---|---|")
     ft = defaultdict(list)

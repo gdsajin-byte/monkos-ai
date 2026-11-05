@@ -145,6 +145,7 @@ status: active
 | 11/06 | iMac/쌍아 | **DESIGN** 앱스토어·플레이스토어 제출 자동화 도구(store_kit) — IDPASS 수동 제출 경험을 패턴화. 원본 1장 → 다국어 메타·규격별 스크린샷·업로드·심사 사전 점검·리젝 장부. 첫 적용 MONKOS Go, 공용 도구 | [DESIGN_20261106_INFRA_스토어제출_자동화](../../../tech/designs/2026-11/DESIGN_20261106_INFRA_스토어제출_자동화.md) | ⏳ |
 | 11/06 | iMac/쌍아-막내2 | 안드로이드 빌드 v0 — KataGo Eigen arm64 + Game Loop APK 18.6MB, FTL 가상 Passed ×2(1500v 6.5~7.8초), 실기기 A05s·A15·S24는 내일 | [COMPLETION_20261106_iMac쌍아-막내2_GO_안드로이드빌드_GameLoop](../../reports/2026-11/COMPLETION_20261106_iMac쌍아-막내2_GO_안드로이드빌드_GameLoop.md) | ✅ |
 | 11/06 | iMac/쌍아-막내3 | v3 b10-s95M 회수·변환(sha db3efa11) + 실수 사전 v1 1차 1,641국(포석 0.63/중반 1.82/끝내기 1.84집, 약구간 141–160수) + 낮 창 GO-day-run 등록 | [COMPLETION_20261106_iMac쌍아-막내3_GO_b10마무리_실수사전v1](../../reports/2026-11/COMPLETION_20261106_iMac쌍아-막내3_GO_b10마무리_실수사전v1.md) | ✅ |
+| 11/06 | iMac/쌍아-막내3 | b10 v3(95.42M, 02:51 정상 종료·monk_b10_s95M sha db3efa11) · 실수 사전 1단계 1,641/2,000국(21.8국면/초) → MISTAKES_v1 1차, 낮 창 GO-day-run(잔여 359국→결정 장면 2,532) 등록 | [COMPLETION_20261106_iMac쌍아-막내3_GO_b10마무리_실수사전v1](../../reports/2026-11/COMPLETION_20261106_iMac쌍아-막내3_GO_b10마무리_실수사전v1.md) | ⏳ |
 
 ## 3. Phase 현황
 
