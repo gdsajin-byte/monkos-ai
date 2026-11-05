@@ -99,5 +99,29 @@ class Levels(unittest.TestCase):
             self.assertTrue(v["tag"].startswith("MONKOS-Go-"))  # 기보 가져오기 판정 접두
 
 
+class Bots(unittest.TestCase):
+    """11-05 20:10 흑·백 대국자 각각 · 봇 대 봇 — 이름·기보 태그·동작 막기·저장 왕복"""
+    def test_names(self):
+        self.assertEqual(S.bot_name("monkos"), "MONKOS Go v1")
+        self.assertEqual(S.bot_name("strong"), "KataGo 최강")
+        self.assertEqual(S.bot_name("5k"), "KataGo 5급")
+        self.assertEqual(S.bot_sgf_name("monkos"), "MONKOS-Go-b10-s41M(1500v)")
+        self.assertEqual(S.bot_sgf_name("5k"), "KataGo(KataGo 5급)")
+
+    def test_blocked_and_roundtrip(self):
+        for a in ("play", "resign", "undo", "score", "timeout"):
+            self.assertIn(a, S.BOT_BLOCKED)
+        for a in ("bot/pause", "bot/resume", "bot/step", "bot/pace", "judge", "ping"):
+            self.assertNotIn(a, S.BOT_BLOCKED)
+        r = S.Room("t-bots")
+        r.bots, r.bot_pace, r.bot_paused, r.kind, r.time, r.clock = {"B": "monkos", "W": "strong"}, "fast", True, "bots", None, None
+        S.REVIEWS = S.REVIEWS or S.Reviews()
+        d = r.to_dict()
+        r2 = S.Room.from_dict(d)
+        self.assertEqual((r2.bots, r2.bot_pace, r2.bot_paused), ({"B": "monkos", "W": "strong"}, "fast", True))
+        self.assertFalse(r2.presence())  # 봇 대국은 접속 장애패 없음
+        self.assertEqual(r2.level_label(), "MONKOS Go v1 vs KataGo 최강")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

@@ -544,6 +544,20 @@ class EngineHub:
             e.key = key if mv.lower() == "resign" else (key[0], key[1], key[2] + ((color, mv),))
             return mv, score, wr
 
+    def top_move(self, pos, color, visits=200, max_time=1.0):
+        """가벼운 최선 수 1개(최강) — 봇 대국 종국 판단용. 사람 판이 최강을 오래 기다리지 않게 탐색을 줄였다가 대국 설정으로 되돌린다"""
+        e = self._pick("strong")
+        with self._job(e, record=False):
+            try:
+                e.cmd(f"kata-set-param maxVisits {visits}")
+                e.cmd(f"kata-set-param maxTime {max_time}")
+                self._sync(e, pos)
+                c = e.search(color, 1)
+            finally:
+                e.cmd(f"kata-set-param maxVisits {STRONG_VISITS}")
+                e.cmd(f"kata-set-param maxTime {STRONG_TIME}")
+        return c[0]["move"] if c else None
+
     def analyze(self, pos, color, top=3):
         """engine.analyze — 후보 상위 N(늘 최강 엔진)."""
         e = self._pick("strong")
@@ -1221,7 +1235,10 @@ STATUS_KO = {"waiting": "대기", "playing": "대국", "ended": "종료"}
 # 봇 대 봇(11-05 20:10 작가님 "흑백 진영 대국자를 각각도 새팅가능하게해서 봇들끼리 두는것도 실시간으로 볼수있게")
 # 수 사이 간격(초) — 엔진 계산 시간은 따로. 보는 화면(ping)이 OFFLINE_AFTER 넘게 없으면 멈추고, 다시 열면 그 수부터
 BOT_PACES = {"fast": 0.5, "normal": 1.5, "slow": 3.0}
-BOT_MAX_MOVES = 400  # 넘으면 중단(일시정지)·기록
+BOT_MAX_MOVES = 400  # 넘으면 계가 시도, 안 되면 중단(일시정지)·기록
+# 우리 학습 모델은 패스를 거의 하지 않는다(11-05 v1 vs v2 400수 패스 0 실측) — 이 수부터 N수마다 판정 엔진(최강)에게 물어
+# 최선 수가 패스면(더 둘 곳 없음) 사람 판 '계가 신청'과 같은 흐름(최강 마무리 → 계가 확정)으로 끝낸다
+BOT_SCORE_FROM, BOT_SCORE_EVERY = 150, 10
 
 
 def bot_name(level):
@@ -1592,6 +1609,25 @@ class Room:
             self.start_scoring()
             self.confirm_score()
         self.save_sgf()
+
+    def bot_try_score(self, force=False):
+        """봇 대국 종국 판단 — 판정 엔진 최선 수가 패스면(force 면 묻지 않고) 마무리 계가 → 확정. 끝냈으면 True"""
+        if not self.bots or self.result or self.scoring:
+            return False
+        if not force:
+            top = ENGINES.top_move(self.position(), self.to_move)
+            if not top or str(top).lower() != "pass":
+                return False
+        try:
+            self.start_scoring()
+        except RuntimeError as ex:
+            self.message = f"계가 시도 — {ex}"
+            return False
+        self.confirm_score()
+        why = f"{BOT_MAX_MOVES}수 상한 — 판정 엔진(KataGo 최강) 마무리 계가" if force else "판정 엔진(KataGo 최강)이 둘 곳이 없다고 봐 계가"
+        self.message = f"{why} — {self.message}"
+        self.save_sgf()
+        return True
 
     def _check_end(self):
         if len(self.moves) >= 2 and all(m.lower() == "pass" for _, m in self.moves[-2:]):
@@ -2875,8 +2911,16 @@ class BotRunner:
             if len(r.moves) >= BOT_MAX_MOVES:
                 if r.lock.acquire(blocking=False, name="bot"):
                     try:
-                        r.bot_paused = True
-                        r.message = f"{BOT_MAX_MOVES}수 상한 — 중단했습니다(기보 저장됨)."
+                        r.thinking = True
+                        try:
+                            done = r.bot_try_score(force=True)  # 상한 — 마무리 계가를 먼저 시도
+                        except RuntimeError:
+                            done = False
+                        finally:
+                            r.thinking = False
+                        if not done:
+                            r.bot_paused = True
+                            r.message = f"{BOT_MAX_MOVES}수 상한 — 계가를 끝내지 못해 중단했습니다(기보 저장됨). " + (r.message or "")
                         r.save_sgf()
                         ROOMS.save(r)
                         r.cache = json.dumps(r.state(), ensure_ascii=False)
@@ -2896,6 +2940,9 @@ class BotRunner:
                 n0 = len(r.moves)
                 try:
                     r.engine_move()
+                    n = len(r.moves)
+                    if not r.result and n >= BOT_SCORE_FROM and n % BOT_SCORE_EVERY == 0:
+                        r.bot_try_score()
                 except RuntimeError as ex:
                     r.bot_paused = True
                     r.message = f"봇 대국 멈춤 — {ex}"
@@ -3378,6 +3425,17 @@ class Handler(BaseHTTPRequestHandler):
         # 엔진이 이 방에서 생각 중이면 줄 세우지 않고 버린다 — 대기 클릭이 나중에 착수로 바뀌는 경합 차단(10-23).
         # 그 밖의 보유자(상태 조회·ping·감시 저장 등)는 거부 사유가 아니다 — LOCK_WAIT 까지 기다렸다 처리(10-24 첫 수 busy)
         if not room.lock.acquire(blocking=False, name=action):
+            if room.bots and action in ("bot/pause", "bot/resume", "bot/pace"):  # 봇이 한 수 계산 중이어도 바로 — 다음 수부터 반영(깃발만 바꾼다)
+                if action == "bot/pause":
+                    room.bot_paused = True
+                    room.message = "일시정지 — 지금 계산 중인 한 수까지 두고 멈춥니다."
+                elif action == "bot/resume":
+                    room.bot_paused, room.bot_next, room.message = False, 0.0, ""
+                elif body.get("pace") in BOT_PACES:
+                    room.bot_pace = body["pace"]
+                st = json.loads(room.cache) if room.cache else {}
+                st.update(botPaused=room.bot_paused, botPace=room.bot_pace, message=room.message)
+                return self._json(st)
             if action == "ping":
                 room.seen = time.time()  # 잠금 없이 — 엔진이 이 방에서 생각 중이어도 접속은 살아 있다
                 return self._send(200, room.cache or json.dumps({"busy": True, "room": room.id}, ensure_ascii=False))
