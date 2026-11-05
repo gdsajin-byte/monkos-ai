@@ -902,7 +902,7 @@ function buildSounds(state) {
     const cap = { 1: urls(['stone1', 'stone1s']), 2: urls(['stone2', 'stone2s']), 3: urls(['stone3', 'stone3s']) };
     const count = {}, remain = {};
     for (let i = 1; i <= 11; i++) count[i] = one('count' + i);
-    for (let i = 1; i <= 3; i++) remain[i] = one('remain' + i);
+    for (let i = 1; i <= 5; i++) remain[i] = one('remain' + i);  // 남은 4·5회(12:08) — 파일이 있는 팩만
     SND = { stone: urls(['stone0', 'stone0s']), cap: cap[1].length ? cap : null, overlay: [], count, remain, byo: one('byo'),
             start: one('start'), counting: one('counting'), note: pack.note };
   } else {
@@ -1521,6 +1521,10 @@ function speechSpan(b) {
   spanCache.set(b, r);
   return r;
 }
+// 안내 방식: 'after' = 안내 끝 + 1초에 하나(기본, 12:01) / 'fixed' = 쌍아 12:08 통일안 — 모든 회 시작에서 하나는 항상 +HANA_DELAY,
+// 안내는 열이 끝나자마자 시작해 그 안에 끝나야 한다(길면 겹침 경고). 결정 전 시험: 주소에 ?ann=fixed
+let ANN_MODE = 'after';
+try { if (new URLSearchParams(location.search).get('ann') === 'fixed') ANN_MODE = 'fixed'; } catch (e) {}
 // 11-05 12:01 작가님 "그냥 당기지 말고 두번남았습니다 1초 하나 이런식으로 마지막 입니다 1초 하나 이렇게"
 // 회 넘김·초읽기 진입: 열(0:00) → 안내 → 안내 끝 + 1초에 하나. 새 회의 0:10 유예 = 안내 끝 − 회 시작(초). 숫자·화면·시간패는 한 시간축
 function sayOnce(key, url, delay) {
@@ -1535,6 +1539,11 @@ function sayOnce(key, url, delay) {
     at = Math.max(at, cntEnd + 40 - sp.on);  // 열 말소리가 끝난 뒤
     annEnd = at + sp.end;
     voice(url, Math.max(0, (at - now) / 1000));
+    if (ANN_MODE === 'fixed') {
+      const hanaAt = base + HANA_DELAY * 1000;
+      if (b && annEnd > hanaAt - 200) console.warn(`[초읽기] 통일안: 안내가 하나 0.2초 전까지 끝나지 않음(${Math.round(annEnd - (hanaAt - 200))}ms 넘침)`);
+      return undefined;  // 기본 유예 → 하나 = 회 시작 + HANA_DELAY
+    }
     return b ? Math.max(0, (annEnd - base) / 1000) : undefined;  // 새 회 유예(초). 파일이 없으면 기본 유예
   }
   cntEnd = at + sp.end;  // 숫자는 미루지 않는다(11:38 — 회 안 숫자 = 한 격자)
