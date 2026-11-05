@@ -557,6 +557,12 @@ class EngineHub:
             self._sync(e, pos)
             return e.cmd("final_score")
 
+    def _others_busy(self, e):
+        """다른 엔진(급수·MONKOS 버전)이 지금 계산 중이거나 줄 선 요청이 있나 — 같은 GPU를 나눠 쓰므로 마무리는 비켜 준다
+        (11-05 겹침 실측: 마무리 중 다른 판 응수 1.5초 → 11.5초)."""
+        others = [self.human] + list(self.pool.engines.values())
+        return any(o is not None and o is not e and (o.waiting or o.job.locked()) for o in others)
+
     def finish(self, pos, level, color, rules=None, progress=None, visits=None, max_time=None):
         """계가 마무리 — 사본 국면에서 판정 엔진이 양쪽 최선 수를 번갈아 둔다(연속 2패스·상한까지). 실제 판은 건드리지 않는다.
         줄에 다른 대국 요청이 서면 한 수 끝날 때마다 엔진을 놓아 준다(다른 판 응수를 막지 않음). → (수순, 초, 놓아 준 횟수)"""
@@ -582,6 +588,9 @@ class EngineHub:
 
         done = False
         while not done:
+            t_wait = time.time()
+            while self._others_busy(e) and time.time() - t_wait < 30:  # 다른 판 수 계산이 끝날 때까지(최대 30초) 쉰다
+                time.sleep(0.05)
             with self._job(e, record=False):
                 try:
                     setup_engine()
@@ -602,7 +611,7 @@ class EngineHub:
                         prev_pass, c = is_pass, ("W" if c == "B" else "B")
                         if progress:
                             progress(len(out))
-                        if e.waiting:  # 다른 판 대국 요청 — 엔진을 놓아 준다(돌아오면 다시 맞춘다)
+                        if e.waiting or self._others_busy(e):  # 다른 판 대국 요청(같은 엔진·같은 GPU) — 엔진을 놓아 준다
                             yields += 1
                             break
                 finally:
