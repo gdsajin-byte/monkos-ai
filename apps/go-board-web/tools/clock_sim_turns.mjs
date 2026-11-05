@@ -12,7 +12,7 @@ const grab = name => {
   if (!m) throw new Error('no ' + name);
   return m[0];
 };
-const decl = src.match(/^const SAID = [^\n]*\n/m)[0] + (src.match(/^(let HANA_DELAY|const HANA_DELAY|try \{ const q = Number|const CLOCK_LOOKAHEAD|let annEnd|const CLOCK_SNAP|const clockTot|const byoGrace|const byoFull)[^\n]*\n/gm) || []).join('');
+const decl = src.match(/^const SAID = [^\n]*\n/m)[0] + (src.match(/^(let annEnd|const spanCache|let HANA_DELAY|const HANA_DELAY|try \{ const q = Number|const CLOCK_LOOKAHEAD|let annEnd|const CLOCK_SNAP|const clockTot|const byoGrace|const byoFull)[^\n]*\n/gm) || []).join('');
 const BYO = Number(byoS), PER = Number(perS), PHASE = Number(phaseS);
 let NOW = PHASE;
 const env = `
@@ -25,8 +25,8 @@ function clockFrame() {}
 function call(p) { LOG("CALL" + p, 0); }
 function cancelPendingVoice() { CANCEL(); }
 function voice(url, delay) { LOG(url, delay || 0); return true; }
-const decoded = new Proxy({}, { get: (o, k) => (DUR[k] ? { duration: DUR[k] } : null) });
-${decl}${grab('sayOnce')}${grab('tickClock')}${grab('clockTick')}${grab('syncClocks')}${grab('clockMoved')}
+const decoded = new Proxy({}, { get: (o, k) => { const v = DUR[k]; if (!v) return null; return typeof v === 'object' ? { duration: v.d, span: { on: v.on, end: v.end } } : { duration: v, span: { on: 70, end: v * 1000 - 150 } }; } });
+${decl}${grab('speechSpan')}${grab('sayOnce')}${grab('tickClock')}${grab('clockTick')}${grab('syncClocks')}${grab('clockMoved')}
 return { setS: v => { S = v; }, syncClocks, clockTick, clockMoved, setSND: v => { SND = v; }, clocks: () => clocks };
 `;
 const said = [];
@@ -39,10 +39,13 @@ const api = new Function('NOW', 'LOG', 'CANCEL', 'setInterval', 'DUR', env)(
 const SND = { count: {}, remain: {} };
 for (let i = 1; i <= 10; i++) SND.count[i] = `count${i}`;
 for (let i = 1; i <= 3; i++) SND.remain[i] = `remain${i}`;
+if (DUR.byo) SND.byo = 'byo';
 api.setSND(SND);
 const clk = (running, elapsed, left) => ({
   B: { main: 0, period: BYO, left, inByo: true }, W: { main: 0, period: BYO, left: PER, inByo: true }, running, elapsed });
+const MAIN0 = Number(process.env.MAIN || 0);  // 기본 시간(초) — 첫 복원에만(기기 시계는 그 뒤 서버 값을 쓰지 않음)
 const S = { room: 'r', kind: process.env.KIND || 'ai', lastColor: null, moveNo: 0, user: 'B', toMove: 'W', time: { main: 0, byo: BYO, periods: PER }, result: null, scoring: false, stale: false, clock: clk('W', 0, PER) };
+if (MAIN0) { S.clock.B = { main: MAIN0, period: BYO, left: PER, inByo: false }; S.time.main = MAIN0 / 60; }
 api.setS(S);
 api.syncClocks();
 const out = [];

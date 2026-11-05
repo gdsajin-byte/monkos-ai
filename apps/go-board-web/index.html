@@ -914,7 +914,7 @@ function buildSounds(state) {
     const count = {}, remain = {};
     for (let i = 1; i <= 11; i++) count[i] = one('count' + i);
     for (let i = 1; i <= 3; i++) remain[i] = one('remain' + i);
-    SND = { stone: urls(['stone0', 'stone0s']), cap: cap[1].length ? cap : null, overlay: [], count, remain,
+    SND = { stone: urls(['stone0', 'stone0s']), cap: cap[1].length ? cap : null, overlay: [], count, remain, byo: one('byo'),
             start: one('start'), counting: one('counting'), note: pack.note };
   } else {
     packName = 'builtin';
@@ -924,7 +924,7 @@ function buildSounds(state) {
     SND = { stone: st, cap: null, overlay: ov, count: {}, remain: {}, start: null, counting: null, note: '' };
   }
   const all = [...SND.stone, ...SND.overlay, ...(SND.cap ? [...SND.cap[1], ...SND.cap[2], ...SND.cap[3]] : []),
-               ...Object.values(SND.count), ...Object.values(SND.remain), SND.start, SND.counting].filter(Boolean);
+               ...Object.values(SND.count), ...Object.values(SND.remain), SND.byo, SND.start, SND.counting].filter(Boolean);
   for (const u of all) {
     if (decoded[u] !== undefined) continue;
     decoded[u] = null;
@@ -1538,20 +1538,39 @@ const CLOCK_LOOKAHEAD = 0.1;
 const byoGrace = () => Math.max(0, HANA_DELAY - 1);
 const byoFull = c => c.byo + byoGrace();  // 다음 틱 안에 올 숫자는 미리 정확한 시각으로 예약(±0.05초). 착수하면 예약분만 취소
 let annEnd = 0, cntEnd = 0;  // 안내·숫자 말소리가 끝나는 시각(performance.now ms)
+// 파일 안 말소리 구간(ms) — 최대의 −30dB를 넘는 첫·끝 표본. 버퍼마다 한 번만 잰다
+const spanCache = new WeakMap();
+function speechSpan(b) {
+  if (!b) return { on: 0, end: 0 };
+  if (b.span) return b.span;  // 시뮬레이터
+  let r = spanCache.get(b);
+  if (r) return r;
+  const x = b.getChannelData(0); let mx = 0;
+  for (let i = 0; i < x.length; i++) { const v = Math.abs(x[i]); if (v > mx) mx = v; }
+  const th = mx * 0.0316; let i = 0, j = x.length - 1;
+  while (i < x.length && Math.abs(x[i]) < th) i++;
+  while (j > i && Math.abs(x[j]) < th) j--;
+  r = { on: i / b.sampleRate * 1000, end: j / b.sampleRate * 1000 };
+  spanCache.set(b, r);
+  return r;
+}
+// 11-05 12:01 작가님 "그냥 당기지 말고 두번남았습니다 1초 하나 이런식으로 마지막 입니다 1초 하나 이렇게"
+// 회 넘김·초읽기 진입: 열(0:00) → 안내 → 안내 끝 + 1초에 하나. 새 회의 0:10 유예 = 안내 끝 − 회 시작(초). 숫자·화면·시간패는 한 시간축
 function sayOnce(key, url, delay) {
   if (!S) return;
   if (SAID.mv !== S.moveNo) { SAID.mv = S.moveNo; SAID.set.clear(); annEnd = 0; cntEnd = 0; }
   if (SAID.set.has(key)) return;
   SAID.set.add(key);
-  const now = performance.now(), b = url && decoded[url];
-  let at = now + (delay || 0) * 1000;
-  if (key.includes(':remain')) {  // 안내: 회 끝의 '열'이 끝난 뒤. 말소리 끝 = 파일 길이 − 0.15초(맞춤 도구가 말 끝 뒤 150ms로 자름)
-    at = Math.max(at, cntEnd);
-    annEnd = at + (b ? Math.max(0, b.duration - 0.15) * 1000 : 0);
-  } else {
-    // 11-05 11:38 작가님 "하나 둘 사이가 짧아질 때도 있어" — 숫자는 미루지 않는다. 회 안 모든 숫자 = 하나 시각 + 정확히 1초 간격
-    cntEnd = at + (b ? Math.max(0, b.duration - 0.08) * 1000 : 0);
+  const now = performance.now(), b = url && decoded[url], sp = speechSpan(b);
+  const base = now + (delay || 0) * 1000;  // 사건 시각(회 넘김은 지난 틱 사이였을 수 있어 과거일 수 있다)
+  let at = Math.max(base, now);
+  if (key.includes(':remain') || key.endsWith(':byo')) {
+    at = Math.max(at, cntEnd + 40 - sp.on);  // 열 말소리가 끝난 뒤
+    annEnd = at + sp.end;
+    voice(url, Math.max(0, (at - now) / 1000));
+    return b ? Math.max(0, (annEnd - base) / 1000) : undefined;  // 새 회 유예(초). 파일이 없으면 기본 유예
   }
+  cntEnd = at + sp.end;  // 숫자는 미루지 않는다(11:38 — 회 안 숫자 = 한 격자)
   voice(url, Math.max(0, (at - now) / 1000));
 }
 function makeClock(t) {
@@ -1629,7 +1648,9 @@ function tickClock(c, dt, emit) {
   if (!c.inByo) {
     c.main -= dt;
     if (c.main > 0) return;
-    c.inByo = true; dt = -c.main; c.main = 0; c.period = c.byo; emit('byo');
+    c.inByo = true; dt = -c.main; c.main = 0;
+    const g = emit('byo', -dt);  // "초읽기를 시작합니다" → 1초 → 하나. 안내가 없으면 기본 유예(12:00 — 기본 시간 자체엔 유예 없음)
+    c.period = c.byo + (typeof g === 'number' ? g : byoGrace());
   }
   const before = c.period;
   c.period -= dt;
@@ -1644,14 +1665,16 @@ function tickClock(c, dt, emit) {
       if (carry && !c.carry) continue;  // 넘어온 숫자는 회가 시간으로 넘어갔을 때만(착수로 새 회면 없음)
       if (from - LA >= at && to - LA < at) emit('count' + n, Math.max(0, to - at), carry ? c.left + 1 : c.left);
     }
-    if (c.annDue && to - LA < byoFull(c) + tail) { c.annDue = false; emit('remain' + c.left, Math.max(0, to - (byoFull(c) + tail))); }
   };
   cross(before, c.period);
   if (c.period <= 0) {
     c.left -= 1;
     if (c.left <= 0) { c.flagged = true; c.period = 0; emit('flag'); return; }
-    c.period += byoFull(c); c.carry = true; c.annDue = true;  // 새 회도 유예부터
-    cross(byoFull(c) + LA, c.period);  // 새 회 첫 틱 안의 경계(넘어온 숫자·안내 포함)
+    const over = -c.period;  // 회 끝을 지난 만큼(이번 틱 안)
+    const g = emit('remain' + c.left, -over);  // 열 → 안내 → 안내 끝 + 1초에 하나
+    const full = c.byo + (typeof g === 'number' ? g : byoGrace());
+    c.period += full; c.carry = true;
+    cross(full + LA, c.period);  // 새 회 첫 틱 안의 경계(넘어온 숫자·안내 포함)
   }
 }
 
@@ -1674,7 +1697,8 @@ function clockTick() {
   } else {
     tickClock(c, dt, (e, d, left) => {
       if (e.startsWith('count')) sayOnce(`${left || c.left}:${e}`, SND.count[Number(e.slice(5))], d);
-      else if (e.startsWith('remain')) sayOnce(`${c.left}:${e}`, SND.remain[Number(e.slice(6))], d);
+      else if (e.startsWith('remain')) return sayOnce(`${c.left}:${e}`, SND.remain[Number(e.slice(6))], d);
+      else if (e === 'byo') return sayOnce(`${c.left}:byo`, SND.byo, d);
       else if (e === 'flag') call('/api/timeout', { color: S.user });
     });
   }
@@ -1695,7 +1719,7 @@ function liveClock(col, running) {
   const v = { main: c.main, period: c.period, left: c.left, inByo: c.inByo, byo: c.byo };
   if (running === col && !c.flagged) {
     let dt = Math.max(0, performance.now() - clockLast) / 1000;
-    if (!v.inByo) { const u = Math.min(dt, v.main); v.main -= u; dt -= u; if (dt > 0) { v.inByo = true; v.period = v.byo; } }
+    if (!v.inByo) { const u = Math.min(dt, v.main); v.main -= u; dt -= u; if (dt > 0) { v.inByo = true; v.period = v.byo + byoGrace(); } }
     if (v.inByo) v.period = Math.max(0, v.period - dt);  // 회 넘김은 틱이 처리(표시는 0에서 멈춤)
   }
   if (v.inByo) v.period = Math.min(v.period, v.byo);  // 숨 고르기 유예 동안은 가득 찬 값(0:10)

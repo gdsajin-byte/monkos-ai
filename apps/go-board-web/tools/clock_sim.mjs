@@ -12,7 +12,7 @@ const grab = name => {
   return m[0];
 };
 const hasSaid = /^function sayOnce\b/m.test(src);
-const decl = hasSaid ? src.match(/^const SAID = [^\n]*\n/m)[0] + (src.match(/^(let HANA_DELAY|const HANA_DELAY|try \{ const q = Number|const CLOCK_LOOKAHEAD|let annEnd|const CLOCK_SNAP|const clockTot|const byoGrace|const byoFull)[^\n]*\n/gm) || []).join('') : '';
+const decl = hasSaid ? src.match(/^const SAID = [^\n]*\n/m)[0] + (src.match(/^(let annEnd|const spanCache|let HANA_DELAY|const HANA_DELAY|try \{ const q = Number|const CLOCK_LOOKAHEAD|let annEnd|const CLOCK_SNAP|const clockTot|const byoGrace|const byoFull)[^\n]*\n/gm) || []).join('') : '';
 const grabOpt = name => (new RegExp(`^function ${name}\\b`, 'm').test(src) ? grab(name) : '');
 const BYO = Number(byoS), PER = Number(perS), ERR = Number(errS), PHASE = Number(phaseS);
 let NOW = 0;  // 가짜 performance.now (ms)
@@ -26,8 +26,8 @@ function requestAnimationFrame() {}
 function clockFrame() {}
 function call() {}
 function voice(url, delay) { LOG(url, delay || 0); return true; }
-const decoded = new Proxy({}, { get: (o, k) => (DUR[k] ? { duration: DUR[k] } : null) });
-${decl}${grabOpt('sayOnce')}${grab('tickClock')}${grab('clockTick')}${grab('syncClocks')}
+const decoded = new Proxy({}, { get: (o, k) => { const v = DUR[k]; if (!v) return null; return typeof v === 'object' ? { duration: v.d, span: { on: v.on, end: v.end } } : { duration: v, span: { on: 70, end: v * 1000 - 150 } }; } });
+${decl}${grabOpt('speechSpan')}${grabOpt('sayOnce')}${grab('tickClock')}${grab('clockTick')}${grab('syncClocks')}
 return { setS: v => { S = v; }, getClocks: () => clocks, syncClocks, clockTick, setSND: v => { SND = v; }, setTimer: v => { clockTimer = v; } };
 `;
 let lastUrl = null;
@@ -35,6 +35,7 @@ const api = new Function('NOW', 'LOG', 'setInterval', 'DUR', env)(() => NOW, (u,
 const SND = { count: {}, remain: {} };
 for (let i = 1; i <= 10; i++) SND.count[i] = `count${i}`;
 for (let i = 1; i <= 3; i++) SND.remain[i] = `remain${i}`;
+if (DUR.byo) SND.byo = 'byo';
 api.setSND(SND);
 // 내 차례 시작: 서버 시계 = 초읽기 회 시작
 const serverAt = tSec => {  // 서버가 보는 내 시계(정확한 값) + 주입 오차

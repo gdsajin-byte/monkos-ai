@@ -3,7 +3,7 @@
 
 10초 초읽기 순서 "마지막 → 하나 → 둘": '하나'는 안내 말소리가 끝난 뒤, '둘'은 회 시작 +1초 격자 →
 안내 말소리가 약 0.45초를 넘으면 '하나'와 '둘'이 겹친다. 그래서 remain2·3을 "두 번."·"세 번."으로 줄인다.
-  sound_ann_short.py VOICE_ID MODEL TAKE SEED OUT_DIR
+  sound_ann_short.py VOICE_ID MODEL TAKE SEED OUT_DIR [--full]   (--full = 온전한 문구 4개, 12:01)
 """
 import sys
 from pathlib import Path
@@ -13,6 +13,10 @@ import sound_take as T
 from sound_count_split import decode, write as write_wav
 
 PHRASES = [("remain1", "마지막!"), ("remain2", "두 번!"), ("remain3", "세 번!")]
+# 11-05 12:01 작가님 "두번남았습니다 1초 하나 … 마지막 입니다 1초 하나" — 안내 뒤 1초 쉬고 하나(유예가 안내 길이만큼 늘어남) → 온전한 문구
+PHRASES_FULL = [("remain1", "마지막입니다."), ("remain2", "두 번 남았습니다."), ("remain3", "세 번 남았습니다."), ("byo", "초읽기를 시작합니다.")]
+if "--full" in sys.argv:
+    sys.argv.remove("--full"); PHRASES = PHRASES_FULL
 
 
 def main(vid, model, take, seed, out):

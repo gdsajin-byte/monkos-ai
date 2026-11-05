@@ -14,6 +14,7 @@ import numpy as np
 SR = 22050
 TY = Path.home() / ".monkos" / "go-board-sounds" / "tygem-ref"
 NAMES = [f"count{i}" for i in range(1, 11)] + ["remain1", "remain2", "remain3", "start", "counting"]
+TEMPLATE = {"byo": "start"}  # 타이젬에 없는 파일 → 비슷한 길이 문구의 틀(시작 위치·음량). 길이는 안내 규칙(말 끝 +150ms)
 
 
 def load(p):
@@ -50,8 +51,8 @@ def fit(src_dir, out_dir):
     src, out = Path(src_dir), Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     rows = []
-    for n in NAMES:
-        t = shape(load(TY / f"{n}.mp3"))
+    for n in NAMES + list(TEMPLATE):
+        t = shape(load(TY / f"{TEMPLATE.get(n, n)}.mp3"))
         p = src / f"{n}.wav"
         if not p.exists():
             rows.append(f"{n:9s} 원본 없음"); continue
@@ -68,7 +69,7 @@ def fit(src_dir, out_dir):
         # 길이: 틀 길이로(말소리 끝 뒤만 자르고, 말소리가 길면 그대로)
         sy = shape(y)
         L = t["len"]
-        if n.startswith("remain"):  # 11-05 10:55 "remain 파일 길이는 짧을수록" — 안내는 말소리 끝 + 150ms까지만(채우지 않음)
+        if n.startswith("remain") or n in TEMPLATE:  # 11-05 10:55 "remain 파일 길이는 짧을수록" — 안내는 말소리 끝 + 150ms까지만(채우지 않음)
             L = min(L, max(sy["end40"] + int(0.15 * SR), len(y) if sy["end40"] + int(0.03 * SR) > L else 0))
         if len(y) >= L and sy["end40"] + int(0.03 * SR) <= L:
             y = y[:L]
