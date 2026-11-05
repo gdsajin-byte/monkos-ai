@@ -505,6 +505,7 @@
   <div class="dlg-body">
     <h4>● 인공지능 설정</h4>
     <label>컴퓨터 수준 <select id="dLevel"></select></label>
+    <div class="small" id="dWarm" hidden></div>
     <h4>● 기본설정</h4>
     <label>대국방법
       <label><input type="radio" name="dWay" value="even" checked> 호선</label>
@@ -728,7 +729,7 @@ function render() {
     const mine = col === S.user;
     document.getElementById('name' + col).textContent = mine ? (S.ownerDisplay || S.ownerNick || '나') : (S.oppShort || 'KataGo');
     document.getElementById('rank' + col).textContent = mine ? '' :
-      (S.level === 'strong' ? '최강' : (S.level === 'monkos' || S.level === 'monk') ? ((S.bot && S.bot.stage) || '') : `${(S.ranks.find(r => r.v === S.level) || {}).label || S.level}`);
+      (S.level === 'strong' ? '최강' : isMonk(S.level) ? (S.botStage || (S.bot && S.bot.stage) || '') : `${(S.ranks.find(r => r.v === S.level) || {}).label || S.level}`);
     document.getElementById('cap' + col).textContent = S.captures[col];
   }
 
@@ -1399,15 +1400,39 @@ function dlgSync() {
 // 11-05 07:07 작가님 "대기실엔 카타고 AI라고만, 급수 설정은 대국 설정에서" — 수준 선택 칸을 상대별로 채운다.
 // mode: 'kata' = KataGo 최강+급수 / 'monkos' = MONKOS Go 하나(고정) / 'all' = 대국실 안 [새 대국](기존대로 전체)
 function botName() { return (S && S.bot && S.bot.name) || 'MONKOS Go'; }
+// 11-05 12:33 작가님 "각각 버전 모델로 공존하자" — MONKOS Go는 학습 버전별 선택지(v1 4,154만 · v2 …). 엔진은 고를 때 미리 띄운다
+const monkVersions = () => ((S && S.bot && S.bot.versions) || [{ key: 'monkos', label: botName(), ok: S && S.monkOk }]);
+const isMonk = v => v === 'monk' || /^monkos(-v\d+)?$/.test(v || '');
+function lastMonkVer() {  // 마지막에 고른 버전 → 없거나 못 쓰면 최신
+  let v = null;
+  try { v = localStorage.getItem('goBoardMonkVer'); } catch (e) { /* 저장소 불가 */ }
+  const vs = monkVersions().filter(x => x.ok);
+  return (vs.find(x => x.key === v) || vs[vs.length - 1] || monkVersions()[0]).key;
+}
+let warmTimer = null;
+async function monkWarm() {  // 고른 버전의 엔진 상태 — 꺼져 있으면 띄우고 '준비 중'을 보인다
+  clearTimeout(warmTimer);
+  const box = document.getElementById('dWarm'), v = document.getElementById('dLevel').value;
+  if (!isMonk(v) || !dlg.open) { box.hidden = true; return; }
+  try {
+    const j = await (await fetch('/api/monkos/warm?key=' + encodeURIComponent(v))).json();
+    if (document.getElementById('dLevel').value !== v) return;
+    box.hidden = false;
+    if (j.error) { box.textContent = j.error; return; }
+    if (j.ready) { box.textContent = '엔진 준비됨'; return; }
+    box.textContent = `엔진 준비 중…${j.lastStartMs ? ` (지난번 ${Math.ceil(j.lastStartMs / 1000)}초)` : ''} — 그대로 시작해도 첫 수만 늦습니다`;
+    warmTimer = setTimeout(monkWarm, 1500);
+  } catch (e) { box.hidden = true; }
+}
 function fillLevels(mode) {
   const lv = document.getElementById('dLevel');
   lv.length = 0;
   if (mode !== 'monkos') lv.add(new Option('KataGo 최강', 'strong'));
-  if (mode !== 'kata') lv.add(new Option(botName(), 'monkos'));  // 우리 학습 모델 — 최강과 같은 1500수읽기
+  if (mode !== 'kata') for (const v of [...monkVersions()].reverse()) lv.add(new Option(v.label || botName(), v.key));  // 최신 버전부터 — 최강과 같은 1500수읽기
   // 강한 쪽부터(최강 → 9단 … 20급) — 10-23 작가님 "저급부터 나오니 힘들어". 표기 'KataGo 9단'(10-24)
   if (mode !== 'monkos') for (const r of [...S.ranks].reverse()) lv.add(new Option(`KataGo ${r.label}`, r.v));
-  lv.disabled = mode === 'monkos';
-  for (const o of lv.options) if (o.value === 'monkos') o.disabled = !S.monkOk; else if (o.value !== 'strong') o.disabled = !S.humanOk;
+  lv.disabled = false;  // MONKOS Go 신청도 버전을 고른다
+  for (const o of lv.options) if (isMonk(o.value)) o.disabled = !(monkVersions().find(x => x.key === o.value) || {}).ok; else if (o.value !== 'strong') o.disabled = !S.humanOk;
 }
 function lastKataLevel() {  // 마지막에 고른 KataGo 수준 → 없으면 기존 기본값(지난 판 수준, MONKOS 판이었으면 최강)
   let v = null;
@@ -1422,8 +1447,8 @@ document.getElementById('bNew').onclick = () => {
   const preLv = window.__preLevel; window.__preLevel = null;
   const mode = preLv === 'kata' ? 'kata' : preLv === 'monkos' ? 'monkos' : 'all';
   fillLevels(mode);
-  document.getElementById('dLevel').value = mode === 'kata' ? lastKataLevel() : mode === 'monkos' ? 'monkos'
-    : (S.level === 'monk' ? 'monkos' : S.level);
+  document.getElementById('dLevel').value = mode === 'kata' ? lastKataLevel() : mode === 'monkos' ? lastMonkVer()
+    : (isMonk(S.level) ? lastMonkVer() : S.level);
   document.querySelector(`input[name="dWay"][value="${S.handicap ? 'handi' : 'even'}"]`).checked = true;
   document.getElementById('handicap').value = S.handicap || 2;
   // 흑백선택은 지난번 고른 값(자동 돌가림 포함)을 기억 — 지난 판 결과색으로 덮지 않는다(10-23 작가님 "돌가리기가 적용 안 되는 듯")
@@ -1435,10 +1460,13 @@ document.getElementById('bNew').onclick = () => {
   document.getElementById('tPer').value = t.periods; document.getElementById('tUnl').checked = !S.time;
   dlgSync();
   dlg.showModal();
+  monkWarm();
   // 첫 포커스는 제목 — 선택 상자(#dLevel)가 포커스를 받으면 아이폰이 수준 선택 팝업을 저절로 띄운다(10-24 작가님 "중복 설정")
   document.getElementById('dlgTitle').focus({ preventScroll: true });
 };
 dlg.addEventListener('change', dlgSync);
+document.getElementById('dLevel').addEventListener('change', monkWarm);
+dlg.addEventListener('close', () => clearTimeout(warmTimer));
 document.getElementById('dCancel').onclick = () => dlg.close();
 // 신청 = 새 방(10-24): 서버가 방을 만들면 그 대국실로 옮긴다 — 첫 수가 엔진이면 대국실이 빈 판부터 그리고 엔진을 부른다
 document.getElementById('dOk').onclick = async () => {
@@ -1450,7 +1478,7 @@ document.getElementById('dOk').onclick = async () => {
       periods: Number(document.getElementById('tPer').value) };
   const colorPick = document.getElementById('dColor').value;
   try { localStorage.setItem('goBoardColorPick', colorPick); } catch (e) { /* 이번 창에서만 */ }
-  if (level !== 'monkos') { try { localStorage.setItem('goBoardKataLevel', level); } catch (e) { /* 이번 창에서만 */ } }
+  try { localStorage.setItem(isMonk(level) ? 'goBoardMonkVer' : 'goBoardKataLevel', level); } catch (e) { /* 이번 창에서만 */ }
   notice('대국실을 여는 중…');
   try {
     const r = await fetch('/api/rooms', { method: 'POST', headers: { 'Content-Type': 'application/json' },

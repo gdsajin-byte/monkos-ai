@@ -41,15 +41,38 @@ KATA_DIR = Path.home() / ".monkos" / "katago"
 KATAGO = KATA_DIR / "katago-ocl"
 MAIN_MODEL = KATA_DIR / "kata1-b18c384nbt-s9996604416-d4316597426.bin.gz"
 HUMAN_MODEL = KATA_DIR / "b18c384nbt-humanv0.bin.gz"
-# 우리 학습 모델(PF_GO, 4060 b10 학습분) — 교체는 이 세 줄만(파일·기보 태그·화면 표기). 11-05 작가님 "대국 테스트할 수 있게"
-MONK_MODEL = KATA_DIR / "monk_b10_s41M.bin.gz"  # 4060 eval b10-s41211392-d12492409 (sha256 2ba167f4…)
-# 화면 이름 정본(11-05 07:07 작가님 "몽크봇은 몽코스 고로 네이밍") — 이름은 여기 한 곳. 새 판 레벨 키 = "monkos"
+# 우리 학습 모델(PF_GO, 4060 b10 학습분) — 11-05 12:33 작가님 "각각 버전 모델로 공존하자"(ORDER_20261105 버전 공존).
+# 버전 하나 = 레벨 키 하나. v1 키는 옛 판 호환을 위해 "monkos" 그대로, 이후는 "monkos-vN". 새 버전은 목록 끝에 한 줄 추가(덮어쓰기 금지 — 새 파일명).
+# tag = 기보 PB/PW·파일명(학습 단계 식별자), stage = 화면 보조 표기, samples = 학습 샘플(화면), saved = 저장일
+MONKOS_VERSIONS = [
+    {"key": "monkos", "ver": "v1", "model": "monk_b10_s41M.bin.gz", "tag": "MONKOS-Go-b10-s41M", "stage": "b10·4,154만",
+     "samples": "4,154만", "saved": "11-04", "sha256": "2ba167f4"},  # 4060 eval b10-s41211392-d12492409
+]
+if os.environ.get("GO_BOARD_TEST") == "1" and os.environ.get("GO_BOARD_TEST_VERSIONS"):
+    # 테스트 인스턴스 전용 — 공존·상한·유휴 정리 검증용 추가 버전(JSON 목록). 실사용 포트는 TEST 가 아니라 읽지 않는다
+    MONKOS_VERSIONS = MONKOS_VERSIONS + json.loads(os.environ["GO_BOARD_TEST_VERSIONS"])
+MONK_BY_KEY = {v["key"]: v for v in MONKOS_VERSIONS}
+MONK_LATEST = MONKOS_VERSIONS[-1]
+MONK_IDLE = 600  # 버전 엔진은 요청이 있을 때만 띄우고, 이 초 동안 안 쓰면 내린다
+if os.environ.get("GO_BOARD_TEST") == "1" and os.environ.get("GO_BOARD_MONK_IDLE"):
+    MONK_IDLE = int(os.environ["GO_BOARD_MONK_IDLE"])  # 테스트만 — 유휴 정리를 짧게 시험
+MONK_MAX = 2  # 동시에 떠 있는 MONKOS Go 엔진 상한(iMac 인텔 OpenCL — 최강·급수 상주 2개 + 이것)
+# 화면 이름 정본(11-05 07:07 작가님 "몽크봇은 몽코스 고로 네이밍") — 이름은 여기 한 곳
 BOT_NAME, BOT_NAME_KO = "MONKOS Go", "몽코스 고"
-BOT_STAGE = "b10·4,154만"  # 학습 단계(화면 보조 표기) — 모델 교체 때 MONK_MODEL·MONK_TAG와 함께 바꾼다
-MONK_TAG = "MONKOS-Go-b10-s41M"  # 기보 PB/PW·파일명 — 학습 단계 식별자 유지
+BOT_STAGE = MONK_LATEST["stage"]  # 대기실 한 줄 보조 표기 = 최신 버전
+MONK_TAG = MONK_LATEST["tag"]
+
+
+def monk_ver(level):
+    """MONKOS Go 레벨 → 버전 사전(옛 'monk' 판 = v1 모델). 아니면 None"""
+    return MONKOS_VERSIONS[0] if level == "monk" else MONK_BY_KEY.get(level)
+
+
+def monk_label(v):
+    return f"{BOT_NAME} {v['ver']} · {v['samples']} ({v['saved']})"
 # 옛 판(레벨 "monk", 11-05 05:3x~07:0x) 표기는 그대로 둔다 — 저장된 방·기보를 새 이름으로 바꾸지 않는다(지시서 §1-4)
 LEGACY_MONK = {"label": "MONK 봇 (b10·4,154만)", "name": "MONK 봇", "tag": "MONK-b10-s41M"}
-BOT_LEVELS = ("monkos", "monk")  # 같은 엔진 — monk는 옛 판 복원용(새 판 선택지에는 없음)
+BOT_LEVELS = ("monk",) + tuple(MONK_BY_KEY)  # monk는 옛 판 복원용(v1 모델, 새 판 선택지에는 없음)
 PLAY_CFG = KATA_DIR / "gtp_play.cfg"
 HUMAN_CFG = KATA_DIR / "configs" / "gtp_human5k_example.cfg"
 HERE = Path(__file__).resolve().parent
@@ -99,7 +122,7 @@ STRONG_OVR = COMMON_OVR + f",maxVisits={STRONG_VISITS},maxTime={STRONG_TIME}"
 MONK_OVR = STRONG_OVR  # MONK 봇 = 최강과 같은 수읽기(11-05 작가님 "1500수읽기로 동일하게") — 사본 숫자 금지
 def bot_sgf(level):
     """기보 PB/PW 상대 이름 — 모델 태그+수읽기(학습 단계별 비교용). 옛 판은 옛 태그."""
-    return f"{LEGACY_MONK['tag'] if level == 'monk' else MONK_TAG}({STRONG_VISITS}v)"
+    return f"{LEGACY_MONK['tag'] if level == 'monk' else monk_ver(level)['tag']}({STRONG_VISITS}v)"
 # 승률 그래프(기보 감상) — 국면당 짧은 분석. 10-24 실측: 200방문 0.2~1.1초/국면
 GRAPH_VISITS, GRAPH_MAX_TIME = 200, 0.8  # 한 걸음 상한 0.8초 = 대국 요청이 기다리는 최대치(양보 +1초 이내)
 GRAPH_YIELD_GAP = 0.5  # 대국 요청 뒤 그래프가 비켜 있는 초 — 착수 1번의 검사·응수 사이에 끼지 않게
@@ -141,6 +164,18 @@ class Engine:
     @property
     def ok(self):
         return self.proc is not None and self.proc.poll() is None
+
+    def stop(self):
+        """GTP quit → 3초 안에 안 끝나면 종료. 버전 엔진 유휴 정리용"""
+        p, self.proc = self.proc, None
+        if p is None:
+            return
+        try:
+            p.stdin.write("quit\n")
+            p.stdin.flush()
+            p.wait(timeout=3)
+        except Exception:  # noqa: BLE001
+            p.kill()
 
     def cmd(self, line):
         """응답 본문(= 뒤)을 돌려준다. 실패(?)는 RuntimeError."""
@@ -259,15 +294,111 @@ def build_engines():
         human = Engine("급수", [str(KATAGO), "gtp", "-config", str(HUMAN_CFG),
                                "-model", str(MAIN_MODEL), "-human-model", str(HUMAN_MODEL),
                                "-override-config", HUMAN_OVR])
-    monk, monk_reason = None, None
-    if not MONK_MODEL.exists():
-        monk_reason = f"MONK 모델 없음 — {MONK_MODEL.name}을 {KATA_DIR}에 둬야 함"
-    elif not KATAGO.exists():
-        monk_reason = f"엔진 실행 파일 없음: {KATAGO}"
-    else:
-        monk = Engine("MONK", [str(KATAGO), "gtp", "-config", str(PLAY_CFG),
-                              "-model", str(MONK_MODEL), "-override-config", MONK_OVR])
-    return strong, human, human_reason, monk, monk_reason
+    return strong, human, human_reason
+
+
+class MonkPool:
+    """MONKOS Go 버전별 GTP 엔진 — 요청이 있을 때만 띄우고(get), MONK_IDLE 초 안 쓰면 내리며(reap), 동시 MONK_MAX 개.
+    자리가 없으면 줄에 선 요청·계산 중이 아닌 것 중 가장 오래 안 쓴 엔진을 내린다. 모두 바쁘면 오류(대기 아님)"""
+
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.engines = {}  # key → Engine
+        self.used = {}  # key → 마지막 사용 시각
+        self.start_ms = {}  # key → 마지막 기동에 걸린 ms(실측 — 화면 '준비 중' 안내)
+        self.starting = set()
+
+    @staticmethod
+    def why(key):
+        v = MONK_BY_KEY.get(key)
+        if not v:
+            return f"없는 {BOT_NAME} 버전입니다"
+        if not KATAGO.exists():
+            return f"엔진 실행 파일 없음: {KATAGO}"
+        if not (KATA_DIR / v["model"]).exists():
+            return f"{BOT_NAME} {v['ver']} 모델 없음 — {v['model']}을 {KATA_DIR}에 둬야 함"
+        return None
+
+    def running(self):
+        return sorted(k for k, e in self.engines.items() if e.ok)
+
+    def _evict(self, keep):
+        """자리 만들기 — 쉬는 엔진 중 가장 오래 안 쓴 것. 내렸으면 True"""
+        idle = [(self.used.get(k, 0), k) for k, e in self.engines.items()
+                if k != keep and not e.job.locked() and not e.waiting]
+        if not idle:
+            return False
+        _, k = min(idle)
+        self.engines.pop(k).stop()
+        print(f"✅ go-board: {BOT_NAME} {MONK_BY_KEY[k]['ver']} 엔진 내림(자리 양보)", flush=True)
+        return True
+
+    def get(self, key):
+        why = self.why(key)
+        if why:
+            raise RuntimeError(why)
+        e = self.engines.get(key)  # 떠 있는 엔진은 잠금 없이 — 다른 버전이 뜨는 몇 초 동안 진행 중인 판을 막지 않는다
+        if e and e.ok:
+            self.used[key] = time.time()
+            return e
+        with self.lock:
+            e = self.engines.get(key)
+            if e and e.ok:
+                self.used[key] = time.time()
+                return e
+            if e:  # 죽은 엔진 — 정리 후 다시
+                self.engines.pop(key, None)
+            while len([k for k in self.engines if self.engines[k].ok]) >= MONK_MAX:
+                if not self._evict(key):
+                    raise RuntimeError(f"{BOT_NAME} 엔진 자리가 없습니다 — 다른 버전 대국이 끝난 뒤 다시 해 주세요")
+            v = MONK_BY_KEY[key]
+            e = Engine(f"{BOT_NAME} {v['ver']}", [str(KATAGO), "gtp", "-config", str(PLAY_CFG),
+                                                  "-model", str(KATA_DIR / v["model"]), "-override-config", MONK_OVR])
+            self.starting.add(key)
+            t0 = time.time()
+            try:
+                e.start()
+            finally:
+                self.starting.discard(key)
+            if not e.ok:
+                raise RuntimeError(e.error or f"{BOT_NAME} {v['ver']} 엔진 기동 실패")
+            self.start_ms[key] = round((time.time() - t0) * 1000)
+            self.engines[key], self.used[key] = e, time.time()
+            print(f"✅ go-board: {BOT_NAME} {v['ver']} 엔진 기동 {self.start_ms[key]}ms (떠 있음 {self.running()})", flush=True)
+            return e
+
+    def warm(self, key):
+        """미리 띄우기(대국 설정에서 버전을 고를 때) — 백그라운드. 상태를 돌려준다"""
+        why = self.why(key)
+        if why:
+            return {"key": key, "ready": False, "error": why}
+        ready = key in self.engines and self.engines[key].ok  # 상태 조회는 잠금 없이(기동 중에도 바로 답한다)
+        busy = key in self.starting
+        if not ready and not busy:
+            def run():
+                try:
+                    self.get(key)
+                except RuntimeError as ex:
+                    print(f"❌ go-board: {BOT_NAME} 미리 띄우기 실패 — {ex}", file=sys.stderr, flush=True)
+            threading.Thread(target=run, daemon=True).start()
+        return {"key": key, "ready": ready, "starting": not ready, "lastStartMs": self.start_ms.get(key)}
+
+    def reap(self, now=None):
+        """쉬는 엔진 내리기 — MONK_IDLE 초 넘게 안 쓰고, 계산·줄 서기 없는 것"""
+        now = now or time.time()
+        with self.lock:
+            for k in [k for k, e in self.engines.items()
+                      if now - max(self.used.get(k, 0), e.last_game) > MONK_IDLE and not e.job.locked() and not e.waiting]:
+                self.engines.pop(k).stop()
+                print(f"✅ go-board: {BOT_NAME} {MONK_BY_KEY[k]['ver']} 엔진 내림(유휴 {MONK_IDLE}s)", flush=True)
+
+    def loop(self):
+        while True:
+            time.sleep(30)
+            try:
+                self.reap()
+            except Exception as ex:  # noqa: BLE001
+                print(f"❌ go-board: 엔진 정리 실패 — {ex}", file=sys.stderr, flush=True)
 
 
 def level_ok(level):
@@ -280,9 +411,9 @@ class EngineHub:
     job 잠금으로 줄 세운다(다른 방 상태 조회는 잠금 밖). 엔진 주소 교체(RunPod·4060)는 이 클래스만 바꾼다.
     position = {"moves": [(색, 수)…], "setup": [치석…], "komi": 덤}"""
 
-    def __init__(self, strong, human, human_reason, monk=None, monk_reason=None):
+    def __init__(self, strong, human, human_reason, pool=None):
         self.strong, self.human, self.human_reason = strong, human, human_reason
-        self.monk, self.monk_reason = monk, monk_reason  # MONK 봇 — 착수·착수 검사만. 판정·힌트·그래프는 최강
+        self.pool = pool or MonkPool()  # MONKOS Go 버전별 — 착수·착수 검사만. 판정·힌트·그래프는 최강
         self.wait_lock = threading.Lock()
         self.waits = []  # 대국 요청이 엔진 줄에서 기다린 초(최근 50) — 그래프 계산 양보 실측용
 
@@ -329,7 +460,7 @@ class EngineHub:
 
     def _pick(self, level):
         if level in BOT_LEVELS:
-            e, why, name = self.monk, self.monk_reason, BOT_NAME
+            return self.pool.get("monkos" if level == "monk" else level)
         else:
             e = self.strong if level == "strong" else self.human
             why, name = self.human_reason, ("최강" if level == "strong" else "급수")
@@ -426,10 +557,17 @@ class EngineHub:
 
     @property
     def monk_ok(self):
-        return self.monk is not None and self.monk.ok
+        """쓸 수 있는 버전이 하나라도 있다(엔진은 필요할 때 뜬다)"""
+        return any(MonkPool.why(v["key"]) is None for v in MONKOS_VERSIONS)
 
     def monk_why(self):
-        return None if self.monk_ok else ((self.monk.error if self.monk else self.monk_reason) or f"{BOT_NAME} 엔진이 꺼져 있음")
+        return None if self.monk_ok else MonkPool.why(MONK_LATEST["key"])
+
+    def monk_versions(self):
+        run = set(self.pool.running())
+        return [{"key": v["key"], "ver": v["ver"], "label": monk_label(v), "stage": v["stage"], "tag": v["tag"],
+                 "ok": MonkPool.why(v["key"]) is None, "why": MonkPool.why(v["key"]), "running": v["key"] in run,
+                 "lastStartMs": self.pool.start_ms.get(v["key"])} for v in MONKOS_VERSIONS]
 
 
 # ---------------------------------------------------------------- 판 규칙(따낸 돌·표시용)
@@ -1030,7 +1168,7 @@ class Room:
         r = cls(rid)
         r.owner = owner
         level = "monkos" if level == "monk" else level  # 새 판은 새 이름(옛 화면 캐시가 'monk'를 보내도)
-        r.sgf_path = GAMES_DIR / f"{r.started:%Y%m%d_%H%M%S}_{r.owner_nick}_vs_{MONK_TAG if level == 'monkos' else 'KataGo'}.sgf"
+        r.sgf_path = GAMES_DIR / f"{r.started:%Y%m%d_%H%M%S}_{r.owner_nick}_vs_{monk_ver(level)['tag'] if level in MONK_BY_KEY else 'KataGo'}.sgf"
         if not level_ok(level):
             raise RuntimeError("알 수 없는 수준")
         if level != "strong":
@@ -1133,7 +1271,8 @@ class Room:
 
     def opp_short(self):
         """대국 화면·결과 문구의 상대 짧은 이름."""
-        return BOT_NAME if self.level == "monkos" else LEGACY_MONK["name"] if self.level == "monk" else "KataGo"
+        return (f"{BOT_NAME} {MONK_BY_KEY[self.level]['ver']}" if self.level in MONK_BY_KEY
+                else LEGACY_MONK["name"] if self.level == "monk" else "KataGo")
 
     def opp_name(self):
         """기보·대국자 표기의 상대 이름 — MONK 봇은 모델 태그+수읽기(학습 단계별 비교용)."""
@@ -1144,8 +1283,8 @@ class Room:
             p = self.players or {}
             rk = lambda c: f"({p.get(c + 'R')})" if p.get(c + "R") else ""
             return f"흑 {p.get('B', '흑')}{rk('B')} vs 백 {p.get('W', '백')}{rk('W')}"
-        if self.level == "monkos":
-            return BOT_NAME
+        if self.level in MONK_BY_KEY:
+            return monk_label(MONK_BY_KEY[self.level])
         if self.level == "monk":
             return LEGACY_MONK["label"]
         return "KataGo 최강" if self.level == "strong" else f"KataGo {RANK_KO[self.level]}"  # 10-24 표기 단순화(옛 '사람형 N단')
@@ -1526,7 +1665,8 @@ class Room:
             "lastColor": self.moves[-1][0] if self.moves else None,
             "toMove": self.to_move, "user": self.user, "level": self.level,
             "handicap": self.handicap, "komi": self.komi, "handicaps": HANDICAPS,
-            "levelLabel": self.level_label(), "oppShort": self.opp_short(), "score": self.score, "winrate": self.winrate,
+            "levelLabel": self.level_label(), "oppShort": self.opp_short(),
+            "botStage": (monk_ver(self.level) or {}).get("stage"), "botVer": (MONK_BY_KEY.get(self.level) or {}).get("ver"), "score": self.score, "winrate": self.winrate,
             "scores": self.scores, "result": self.result,
             # 기보 감상(10-24): 화면이 수순을 직접 재생한다 — 국면 계산은 화면 쪽 1벌
             "moveList": [list(m) for m in self.moves], "setup": self.setup, "source": self.source,
@@ -1569,7 +1709,8 @@ def common_state():
     return {"strongOk": ENGINES.strong.ok, "strongError": ENGINES.strong.error,
             "humanOk": ENGINES.human_ok, "humanReason": ENGINES.human_why(),
             "monkOk": ENGINES.monk_ok, "monkReason": ENGINES.monk_why(),
-            "bot": {"name": BOT_NAME, "nameKo": BOT_NAME_KO, "stage": BOT_STAGE, "legacy": LEGACY_MONK},
+            "bot": {"name": BOT_NAME, "nameKo": BOT_NAME_KO, "stage": BOT_STAGE, "legacy": LEGACY_MONK,
+                    "versions": ENGINES.monk_versions(), "latest": MONK_LATEST["key"], "maxEngines": MONK_MAX},
             "ranks": [{"v": r, "label": RANK_KO[r]} for r in RANKS], "handicaps": HANDICAPS,
             "sounds": custom_sounds(), "packs": sound_packs(), "skins": skin_packs(), "testMode": TEST_MODE,
             "build": build_id()}
@@ -1661,7 +1802,8 @@ def parse_sgf_room(path):
     r.user = "W" if prop("PW") == "작가님" else "B"
     opp = prop("PW" if r.user == "B" else "PB") or ""
     mr = re.search(r"KataGo (?:사람형 )?(\d+[급단])\)?$", opp)  # 옛 표기 '사람형 5급' · 새 표기 '5급' 둘 다
-    r.level = "monkos" if opp.startswith(MONK_TAG.split("-b")[0] + "-") else "monk" if opp.startswith("MONK-") else next((k for k, v in RANK_KO.items() if mr and v == mr.group(1)), "strong")
+    r.level = (next((v["key"] for v in reversed(MONKOS_VERSIONS) if opp.startswith(v["tag"])), "monkos")
+               if opp.startswith(BOT_NAME.replace(" ", "-") + "-") else "monk" if opp.startswith("MONK-") else next((k for k, v in RANK_KO.items() if mr and v == mr.group(1)), "strong"))
     tm, ot = prop("TM"), re.match(r"(\d+)x(\d+)", prop("OT") or "")
     r.time = {"main": int(float(tm)) // 60, "byo": int(ot.group(2)), "periods": int(ot.group(1))} if tm and ot else None
     r.result = prop("RE")
@@ -2680,6 +2822,10 @@ class Handler(BaseHTTPRequestHandler):
             # 대기실·대국실은 같은 화면 파일 — 주소로 갈린다(PWA 보관본 1개). 화면에 자기 판본을 새겨 보낸다
             page = (HERE / "index.html").read_bytes().replace(b"__GO_BUILD__", build_id().encode())
             self._send(200, page, "text/html; charset=utf-8")
+        elif path == "/api/monkos/warm":  # 대국 설정에서 버전을 고르면 미리 띄운다(첫 수 지연을 줄임) · 상태 조회 겸용
+            if self._need():
+                key = urllib.parse.parse_qs(query).get("key", [""])[0]
+                self._json({**ENGINES.pool.warm(key), "running": ENGINES.pool.running()})
         elif path == "/api/version":  # 화면 판본 확인(대기실·대국실·감상 공통, 가벼움)
             self._json({"build": build_id()})
         elif path == "/api/auth/portal/config":  # 로그인 창의 포털 버튼(언어권 순서)·포털 주소
@@ -3009,13 +3155,14 @@ def main():
     global ENGINES, ROOMS
     if TEST_MODE and PORT == LIVE_PORT:
         sys.exit(f"❌ go-board: 테스트 모드는 실사용 포트 {LIVE_PORT}를 쓸 수 없음")
-    strong, human, human_reason, monk, monk_reason = build_engines()
-    ths = [threading.Thread(target=e.start) for e in (strong, human, monk) if e and not e.error]
+    strong, human, human_reason = build_engines()
+    ths = [threading.Thread(target=e.start) for e in (strong, human) if e and not e.error]
     for t in ths:
         t.start()
     for t in ths:
         t.join()
-    ENGINES = EngineHub(strong, human, human_reason, monk, monk_reason)
+    ENGINES = EngineHub(strong, human, human_reason)
+    threading.Thread(target=ENGINES.pool.loop, daemon=True).start()
     ROOMS = Rooms(LocalRoomStore(ROOMS_DIR))
     global AUTH, EVENTS
     AUTH = Auth()  # 11-04 작가님 — 테스트 아이디 개방(단계 ②-1)
@@ -3031,7 +3178,8 @@ def main():
     srv = ThreadingHTTPServer((HOST, PORT), Handler)
     print(f"✅ go-board: http://{HOST}:{PORT}/  (최강 {'OK' if strong.ok else '실패'}, "
           f"급수 {'OK' if ENGINES.human_ok else '비활성: ' + str(ENGINES.human_why())}, "
-          f"MONK {'OK' if ENGINES.monk_ok else '비활성: ' + str(ENGINES.monk_why())}) · "
+          f"MONK {'OK' if ENGINES.monk_ok else '비활성: ' + str(ENGINES.monk_why())}"
+          f"(버전 {len(MONKOS_VERSIONS)}·필요할 때 기동·최대 {MONK_MAX})) · "
           f"방 {len(ROOMS.rooms)}개 복원(진행 중 {live}, 이전 기보 가져옴 {imported}) · 저장소 {ROOMS_DIR}",
           flush=True)
     for line in migrated:  # 기동 줄 뒤에(run.sh 는 첫 줄만 보인다)
