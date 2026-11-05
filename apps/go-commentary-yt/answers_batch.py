@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """유료 정답지 일괄 — selection.json 30편: Flash 3.8 음성만(60분, 10분 조각) + 해설자별 3편 Pro 3.1 영상(20분, 10분 2호출) (PF_GO, 11-05 23:06 작가님 ₩25,000)
   answers_batch.py [--dry-run]     → ~/.monkos/go-commentary-yt/answers/{ID}/{flash|pro}_{시작초}/gemini_full.json + ledger.jsonl
+사전 시험 게이트(11-06 쌍아 B안 5항 — Pro 25건 과금 실패 교훈): 모델마다 '같은 지시문·설정'으로 1건 시험(--pilot)이 STOP·출력 여유 20%↑로
+  통과한 플래그(answers/pilot/{모델}_{지문}.json)가 없으면 일괄을 거부한다. 지문 = gemini_full.py 내용 + 모델 + 출력 상한 + 생각 수준 — 하나라도 바꾸면 다시 시험.
+  answers_batch.py --pilot   → 모델마다 미완료 첫 조각 1건만 호출(재시도 없음), 합격 시 플래그
 하드 상한 $17: 매 호출 전 (원장 누적 + 진행 중 예약 + 이번 호출 예상 상한)이 $17을 넘으면 호출하지 않고 멈춘다. 실패는 1회 재시도.
 조각 음성(32k mp3)·자동 자막은 남긴다 — 다음 단계(같은 30편 로컬 무료 경로 대조) 입력.
 """
@@ -17,6 +20,8 @@ HERE = Path(__file__).parent
 B = Path.home() / ".monkos" / "go-commentary-yt" / "answers"
 LEDGER = B / "ledger.jsonl"
 DRY = "--dry-run" in sys.argv
+PILOT = "--pilot" in sys.argv
+MAX_OUT = 16000
 sel = json.loads((B / "selection.json").read_text())
 lock = threading.Lock()
 reserved = [0.0]
@@ -27,6 +32,17 @@ def spent():
     if not LEDGER.exists():
         return 0.0
     return sum(json.loads(l)["usd"] for l in LEDGER.read_text().splitlines() if l.strip())
+
+
+def fingerprint(model):
+    import hashlib
+    h = hashlib.sha256((HERE / "gemini_full.py").read_bytes())
+    h.update(f"|{model}|{MAX_OUT}|{os.environ.get('GEMINI_THINK', '')}".encode())
+    return h.hexdigest()[:12]
+
+
+def pilot_flag(model):
+    return B / "pilot" / f"{model}_{fingerprint(model)}.json"
 
 
 def usd(model, u):
@@ -77,7 +93,7 @@ def call(job):
     out = B / vid / f"{kind}_{s0}"
     if (out / "gemini_full.json").exists():
         return "skip"
-    for attempt in (1, 2):
+    for attempt in ((1,) if PILOT else (1, 2)):
         with lock:
             if stop.is_set():
                 return "stopped"
@@ -88,7 +104,7 @@ def call(job):
                 return "stopped"
             reserved[0] += EST[model]
         try:
-            env = dict(os.environ, GEMINI_MAX_OUT="16000")
+            env = dict(os.environ, GEMINI_MAX_OUT=str(MAX_OUT))
             if mp3:
                 env["GEMINI_AUDIO"] = str(mp3)
             (out / "gemini_full_usage.json").unlink(missing_ok=True) if out.exists() else None
@@ -130,7 +146,28 @@ def main():
                 jobs_p.append((r, "pro", s, min(e20, s + 600), "gemini-3.1-pro-preview"))
     est = len(jobs_f) * 0.053 + len(jobs_p) * 0.395
     print(f"Flash {len(jobs_f)}호출 · Pro {len(jobs_p)}호출 (Pro 대상 {pro}) · 실측 단가 기준 예상 ${est:.2f} · 원장 누적 ${spent():.2f} · 상한 ${CAP}", flush=True)
+    for m, js in (("gemini-3.8-flash", jobs_f), ("gemini-3.1-pro-preview", jobs_p)):
+        todo = [j for j in js if not (B / j[0]["id"] / f"{j[1]}_{j[2]}" / "gemini_full.json").exists()]
+        print(f"  {m}: 남은 {len(todo)}조각 · 사전 시험 플래그 {'있음' if pilot_flag(m).exists() else '없음'} ({pilot_flag(m).name})", flush=True)
+        if todo and not PILOT and not DRY and not pilot_flag(m).exists():
+            sys.exit(f"❌ answers_batch: {m} 사전 시험 미통과 — 지금 지시문·설정으로 1건 시험이 먼저다: answers_batch.py --pilot (일괄 거부, 유료 호출 0)")
     if DRY:
+        return
+    if PILOT:
+        (B / "pilot").mkdir(exist_ok=True)
+        for m, js in (("gemini-3.8-flash", jobs_f), ("gemini-3.1-pro-preview", jobs_p)):
+            j = next((j for j in js if not (B / j[0]["id"] / f"{j[1]}_{j[2]}" / "gemini_full.json").exists()), None)
+            if not j or pilot_flag(m).exists():
+                continue
+            r, k, s0, s1, _ = j
+            mp3 = chunk(r["id"], audio(r["id"]), s0, s1) if k == "flash" else None
+            res = call((r["id"], k, s0, s1, m, r["commentator"], ",".join(r["caster"]), mp3))
+            u = json.loads((B / r["id"] / f"{k}_{s0}" / "gemini_full_usage.json").read_text()) if (B / r["id"] / f"{k}_{s0}" / "gemini_full_usage.json").exists() else {}
+            out_t = ((u.get("usage") or {}).get("candidatesTokenCount", 0) + ((u.get("usage") or {}).get("thoughtsTokenCount") or 0))
+            ok = res == "ok" and u.get("finishReason") == "STOP" and out_t <= MAX_OUT * 0.8
+            print(f"{'✅' if ok else '❌'} 사전 시험 {m} {r['id']} {k} {s0}: {res} · {u.get('finishReason')} · 출력+생각 {out_t}/{MAX_OUT}", flush=True)
+            if ok:
+                pilot_flag(m).write_text(json.dumps({"t": time.strftime("%Y-%m-%d %H:%M:%S"), "job": [r["id"], k, s0, s1], "out_tokens": out_t}, ensure_ascii=False))
         return
     # 음성 받기·조각(무료) — Flash 조각만 필요
     ready = []
@@ -145,4 +182,5 @@ def main():
     print(f"끝 {dict(Counter(res))} · 원장 누적 ${spent():.2f}", flush=True)
 
 
-main()
+if __name__ == "__main__":
+    main()
