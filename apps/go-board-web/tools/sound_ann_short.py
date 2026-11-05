@@ -3,7 +3,7 @@
 
 10초 초읽기 순서 "마지막 → 하나 → 둘": '하나'는 안내 말소리가 끝난 뒤, '둘'은 회 시작 +1초 격자 →
 안내 말소리가 약 0.45초를 넘으면 '하나'와 '둘'이 겹친다. 그래서 remain2·3을 "두 번."·"세 번."으로 줄인다.
-  sound_ann_short.py VOICE_ID MODEL TAKE SEED OUT_DIR [--full|--extra]   (--full = 온전한 문구 4개 12:01, --extra = 남은 4·5회 + 짧은 진입 12:08)
+  sound_ann_short.py VOICE_ID MODEL TAKE SEED OUT_DIR [--full|--extra|--timeout]   (--full = 온전한 문구 4개 12:01, --extra = 남은 4·5회 + 짧은 진입 12:08)
 """
 import sys
 from pathlib import Path
@@ -21,6 +21,9 @@ if "--full" in sys.argv:
     sys.argv.remove("--full"); PHRASES = PHRASES_FULL
 if "--extra" in sys.argv:
     sys.argv.remove("--extra"); PHRASES = PHRASES_EXTRA
+# 12:20 작가님 "마지막 초읽기 열 읽은후엔 1.5초 후에 '시간패하셨습니다' 멘트"
+if "--timeout" in sys.argv:
+    sys.argv.remove("--timeout"); PHRASES = [("timeout", "시간패하셨습니다.")]
 
 
 def main(vid, model, take, seed, out):
