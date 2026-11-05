@@ -18,7 +18,9 @@ NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 def last_nsamp(log_path):
     try:
         with open(log_path, encoding="utf-8", errors="replace") as f:
-            m = re.findall(r"nsamp = ([0-9.]+)", f.read()[-200000:])
+            # 학습 줄만(뒤에 pslr_batch가 붙는다). 검증 줄 "nsamp = 437504, norm_input_batch …"는 검증 샘플 수라 제외
+            # (11-05 23:28 status가 85.39M → 0.44M으로 오표기된 사례 — 종료 직전이면 목표 미달 failed_early로 오판)
+            m = re.findall(r"nsamp = ([0-9.]+), pslr_batch", f.read()[-200000:])
         return int(float(m[-1])) if m else None
     except OSError:
         return None
