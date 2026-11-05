@@ -544,6 +544,20 @@ class EngineHub:
             e.key = key if mv.lower() == "resign" else (key[0], key[1], key[2] + ((color, mv),))
             return mv, score, wr
 
+    def top_move(self, pos, color, visits=200, max_time=1.0):
+        """가벼운 최선 수 1개(최강) — 봇 대국 종국 판단용. 사람 판이 최강을 오래 기다리지 않게 탐색을 줄였다가 대국 설정으로 되돌린다"""
+        e = self._pick("strong")
+        with self._job(e, record=False):
+            try:
+                e.cmd(f"kata-set-param maxVisits {visits}")
+                e.cmd(f"kata-set-param maxTime {max_time}")
+                self._sync(e, pos)
+                c = e.search(color, 1)
+            finally:
+                e.cmd(f"kata-set-param maxVisits {STRONG_VISITS}")
+                e.cmd(f"kata-set-param maxTime {STRONG_TIME}")
+        return c[0]["move"] if c else None
+
     def analyze(self, pos, color, top=3):
         """engine.analyze — 후보 상위 N(늘 최강 엔진)."""
         e = self._pick("strong")
@@ -556,6 +570,29 @@ class EngineHub:
         with self._job(e):
             self._sync(e, pos)
             return e.cmd("final_score")
+
+    def bot_wait(self, level, rooms):
+        """봇 대국 한 수를 미룰 이유(문구) 또는 None — 사람 판이 언제나 먼저(11-05 지시서 §2-3).
+        ① 사람 판이 엔진 계산 중 ② 쓸 엔진(또는 같은 GPU의 다른 엔진)에 줄 선 요청·계산 중 ③ MONKOS 버전 엔진이 꺼져 있고 풀이 차 있음(남의 엔진을 내리지 않는다)"""
+        if any(r.thinking and not r.bots for r in rooms):
+            return "사람 판 계산 중"
+        if level in BOT_LEVELS:
+            key = "monkos" if level == "monk" else level
+            e = self.pool.engines.get(key)
+            if not (e and e.ok):
+                if len(self.pool.running()) >= MONK_MAX:
+                    return "MONKOS 엔진 자리 없음"
+                return None
+        else:
+            try:
+                e = self._pick(level)
+            except RuntimeError as ex:
+                return str(ex)
+        if e.waiting or e.job.locked():
+            return "엔진 사용 중"
+        if self._others_busy(e) or (self.strong is not e and (self.strong.waiting or self.strong.job.locked())):
+            return "다른 판 계산 중"
+        return None
 
     def _others_busy(self, e):
         """다른 엔진(급수·MONKOS 버전)이 지금 계산 중이거나 줄 선 요청이 있나 — 같은 GPU를 나눠 쓰므로 마무리는 비켜 준다
@@ -740,7 +777,7 @@ def charge_clock(c, t, dt, is_user):
 TEST_SLOW_PING = float(os.environ.get("GO_BOARD_TEST_SLOW_PING") or 0) if TEST_MODE else 0.0
 LOCK_WAIT = 5.0  # 엔진이 생각 중이 아닌 보유자(조회·ping·감시 저장 등)면 착수가 이만큼 기다렸다 처리
 SLOW_HOLD = 3.0  # 엔진 생각이 아닌데 이보다 오래 잡으면 이벤트로 남긴다
-THINK_ACTIONS = ("play", "engine", "undo", "swap", "level", "score", "hint", "judge")  # 엔진이 이 방 국면을 계산하는 동작
+THINK_ACTIONS = ("play", "engine", "undo", "swap", "level", "score", "hint", "judge", "bot/step")  # 엔진이 이 방 국면을 계산하는 동작
 
 
 class RoomLock:
@@ -1176,7 +1213,7 @@ def my_stats(uid):
     total = {"win": 0, "loss": 0, "void": 0}
     by = {}
     for r in ROOMS.listing(uid):
-        if r.source == "upload" or not r.result:
+        if r.source == "upload" or not r.result or r.bots:  # 봇 대 봇은 내 전적이 아니다
             continue
         if r.result == VOID:
             k = "void"
@@ -1195,6 +1232,26 @@ def my_stats(uid):
 # ---------------------------------------------------------------- 방(대국 상태)
 
 STATUS_KO = {"waiting": "대기", "playing": "대국", "ended": "종료"}
+# 봇 대 봇(11-05 20:10 작가님 "흑백 진영 대국자를 각각도 새팅가능하게해서 봇들끼리 두는것도 실시간으로 볼수있게")
+# 수 사이 간격(초) — 엔진 계산 시간은 따로. 보는 화면(ping)이 OFFLINE_AFTER 넘게 없으면 멈추고, 다시 열면 그 수부터
+BOT_PACES = {"fast": 0.5, "normal": 1.5, "slow": 3.0}
+BOT_MAX_MOVES = 400  # 넘으면 계가 시도, 안 되면 중단(일시정지)·기록
+# 우리 학습 모델은 패스를 거의 하지 않는다(11-05 v1 vs v2 400수 패스 0 실측) — 이 수부터 N수마다 판정 엔진(최강)에게 물어
+# 최선 수가 패스면(더 둘 곳 없음) 사람 판 '계가 신청'과 같은 흐름(최강 마무리 → 계가 확정)으로 끝낸다
+BOT_SCORE_FROM, BOT_SCORE_EVERY = 150, 10
+
+
+def bot_name(level):
+    """봇 대국자 화면 이름 — MONKOS Go vN · KataGo 최강 · KataGo 5급"""
+    if level in MONK_BY_KEY or level == "monk":
+        return f"{BOT_NAME} {monk_ver(level)['ver']}"
+    return "KataGo 최강" if level == "strong" else f"KataGo {RANK_KO.get(level, level)}"
+
+
+def bot_sgf_name(level):
+    """기보 PB/PW — MONKOS는 모델 태그+수읽기(bot_sgf), KataGo는 기존 표기 KataGo(…)"""
+    return bot_sgf(level) if (level in MONK_BY_KEY or level == "monk") else f"KataGo({bot_name(level)})"
+
 
 
 class Room:
@@ -1242,6 +1299,10 @@ class Room:
         self.record_date = None
         self.komi_value = None
         self.owner = ADMIN_UID  # 11-04 작가님 — 방 주인(uid). 필드 없는 옛 방은 '작가님' 계정 소유(읽을 때 기본값)
+        self.bots = None  # 봇 대 봇이면 {"B": 레벨, "W": 레벨} — 사람 없음, 시계·접속 장애 없음, 방 주인은 보는 사람
+        self.bot_pace = "normal"
+        self.bot_paused = False
+        self.bot_next = 0.0  # 다음 수를 둘 수 있는 시각(간격)
 
     @property
     def owner_nick(self):
@@ -1255,10 +1316,12 @@ class Room:
     # ---- 만들기·저장
 
     @classmethod
-    def create(cls, level, handicap, time_ctl, color, owner=ADMIN_UID):
+    def create(cls, level, handicap, time_ctl, color, owner=ADMIN_UID, bots=None, pace="normal"):
         rid = f"{datetime.now():%Y%m%d-%H%M%S}-{secrets.token_hex(2)}"
         r = cls(rid)
         r.owner = owner
+        if bots:
+            return cls._create_bots(r, bots, handicap, pace)
         level = "monkos" if level == "monk" else level  # 새 판은 새 이름(옛 화면 캐시가 'monk'를 보내도)
         r.sgf_path = GAMES_DIR / f"{r.started:%Y%m%d_%H%M%S}_{r.owner_nick}_vs_{monk_ver(level)['tag'] if level in MONK_BY_KEY else 'KataGo'}.sgf"
         if not level_ok(level):
@@ -1283,6 +1346,27 @@ class Room:
         r.clock = {"B": make_clock(r.time), "W": make_clock(r.time)} if r.time else None
         return r
 
+    @classmethod
+    def _create_bots(cls, r, bots, handicap, pace):
+        b = {c: ("monkos" if str(bots.get(c)) == "monk" else str(bots.get(c) or "")) for c in "BW"}
+        for c in "BW":
+            if not level_ok(b[c]):
+                raise RuntimeError(f"{'흑' if c == 'B' else '백'} 대국자를 고르세요")
+            if b[c] != "strong":
+                ENGINES.check_level(b[c])
+        if handicap not in HANDICAPS:
+            raise RuntimeError("치수는 호선 또는 2~9점입니다.")
+        r.kind, r.bots, r.level, r.user = "bots", b, "strong", "B"  # level = 판정·계가 엔진(최강), user 는 형식값(사람 없음)
+        r.bot_pace = pace if pace in BOT_PACES else "normal"
+        r.handicap, r.time, r.clock = handicap, None, None
+        tag = lambda lv: bot_sgf_name(lv).split("(")[0].replace(" ", "-")
+        r.sgf_path = GAMES_DIR / f"{r.started:%Y%m%d_%H%M%S}_{tag(b['B'])}_vs_{tag(b['W'])}.sgf"
+        if r.sgf_path.exists():
+            r.sgf_path = r.sgf_path.with_name(f"{r.sgf_path.stem}_{r.id[-4:]}.sgf")
+        r.setup = ENGINES.setup(handicap)
+        r.message = f"봇 대국 — 흑 {bot_name(b['B'])} · 백 {bot_name(b['W'])}. 이 화면을 보는 동안 둡니다."
+        return r
+
     def to_dict(self):
         sc = None
         if self.scoring:
@@ -1298,7 +1382,8 @@ class Room:
                 "dcLimit": self.dc_limit, "offline": self.offline, "dcUsed": round(self.dc_spent(), 2),
                 "dcCounting": self.dc_mark is not None, "resultReason": self.result_reason,
                 "source": self.source, "origName": self.orig_name, "players": self.players, "rules": self.rules,
-                "recordDate": self.record_date, "komiValue": self.komi_value}
+                "recordDate": self.record_date, "komiValue": self.komi_value,
+                "bots": self.bots, "botPace": self.bot_pace, "botPaused": self.bot_paused}
 
     @classmethod
     def from_dict(cls, d):
@@ -1327,6 +1412,7 @@ class Room:
         if r.players:  # 이미 불러온 기보의 숫자 급단 코드도 표시는 급단으로(K2 — 파일은 다음 저장 때 반영)
             r.players = {**r.players, "BR": tygem_rank(r.players.get("BR")), "WR": tygem_rank(r.players.get("WR"))}
         r.rules, r.record_date, r.komi_value = d.get("rules") or "korean", d.get("recordDate"), d.get("komiValue")
+        r.bots, r.bot_pace, r.bot_paused = d.get("bots"), d.get("botPace") or "normal", bool(d.get("botPaused"))
         # 서버가 꺼져 있던 시간은 장애 시계에도 깎지 않는다 — 쓴 만큼만 들고 지금부터 다시 센다
         r.offline, r.dc_used = d.get("offline", False), d.get("dcUsed", 0.0)
         r.dc_mark = time.time() if d.get("dcCounting") else None
@@ -1365,6 +1451,8 @@ class Room:
 
     def opp_short(self):
         """대국 화면·결과 문구의 상대 짧은 이름."""
+        if self.bots:
+            return f"{bot_name(self.bots['B'])} vs {bot_name(self.bots['W'])}"
         if monk_gone(self.level):
             return f"{BOT_NAME} {self.level[7:]}"
         return (f"{BOT_NAME} {MONK_BY_KEY[self.level]['ver']}" if self.level in MONK_BY_KEY
@@ -1377,6 +1465,8 @@ class Room:
         return bot_sgf(self.level) if self.level in BOT_LEVELS else f"KataGo({self.level_label()})"
 
     def level_label(self):
+        if self.bots:
+            return f"{bot_name(self.bots['B'])} vs {bot_name(self.bots['W'])}"
         if self.source == "upload":
             p = self.players or {}
             rk = lambda c: f"({p.get(c + 'R')})" if p.get(c + "R") else ""
@@ -1421,6 +1511,8 @@ class Room:
         """끊김 판정·장애 시계 진행 — room.lock 을 잡고 부른다. 저장할 변화가 있으면 True."""
         now = now or time.time()
         changed = False
+        if self.bots:  # 봇 대국 — 보는 사람이 떠나면 진행만 멈춘다(장애패 없음)
+            return False
         if not self.offline and now - self.seen > OFFLINE_AFTER and self._ongoing():
             off = self.seen + OFFLINE_AFTER  # 끊긴 시각 = 마지막 ping + 15초 — 그때까지만 대국 시계를 깎는다
             c = self._running()
@@ -1484,6 +1576,8 @@ class Room:
         if self.scoring or self.result:  # 계가 중·종국 뒤에는 엔진이 두지 않는다
             return
         c = self.to_move
+        if self.bots:
+            return self._bot_move(c)
         if c == self.user:
             return
         mv, score, wr = ENGINES.move(self.position(), self.level, c)
@@ -1498,6 +1592,42 @@ class Room:
             self.moves.append((c, mv))
             self._check_end()
         self._dc_update(time.time())  # 엔진이 둔 사이 대국자가 끊겼으면 이제부터 장애 시계
+
+    def _bot_move(self, c):
+        """봇 대국 한 수 — 차례인 쪽 레벨로 둔다. 기권은 엔진 규칙대로, 양쪽 패스면 계가 확정까지(사람 확인 없음)"""
+        mv, score, wr = ENGINES.move(self.position(), self.bots[c], c)
+        if score is not None:
+            self.score, self.winrate = score, wr
+            self.scores.append((len(self.moves) + 1, round(score, 1)))
+        if mv.lower() == "resign":
+            self.result = f"{'W' if c == 'B' else 'B'}+R"
+            self.message = f"{bot_name(self.bots[c])}({'흑' if c == 'B' else '백'})이 돌을 던졌습니다."
+            self.save_sgf()
+            return
+        self.moves.append((c, mv))
+        if len(self.moves) >= 2 and all(m.lower() == "pass" for _, m in self.moves[-2:]):
+            self.start_scoring()
+            self.confirm_score()
+        self.save_sgf()
+
+    def bot_try_score(self, force=False):
+        """봇 대국 종국 판단 — 판정 엔진 최선 수가 패스면(force 면 묻지 않고) 마무리 계가 → 확정. 끝냈으면 True"""
+        if not self.bots or self.result or self.scoring:
+            return False
+        if not force:
+            top = ENGINES.top_move(self.position(), self.to_move)
+            if not top or str(top).lower() != "pass":
+                return False
+        try:
+            self.start_scoring()
+        except RuntimeError as ex:
+            self.message = f"계가 시도 — {ex}"
+            return False
+        self.confirm_score()
+        why = f"{BOT_MAX_MOVES}수 상한 — 판정 엔진(KataGo 최강) 마무리 계가" if force else "판정 엔진(KataGo 최강)이 둘 곳이 없다고 봐 계가"
+        self.message = f"{why} — {self.message}"
+        self.save_sgf()
+        return True
 
     def _check_end(self):
         if len(self.moves) >= 2 and all(m.lower() == "pass" for _, m in self.moves[-2:]):
@@ -1628,6 +1758,8 @@ class Room:
         self.message = "계가를 취소했습니다. 이어서 두세요."
 
     def play(self, mv):
+        if self.bots:
+            raise RuntimeError("봇 대국입니다 — 지켜보기만 할 수 있습니다.")
         if self.result:
             raise RuntimeError("대국이 끝났습니다. '대국 신청'으로 새 대국을 시작해 주세요.")
         if self.scoring:
@@ -1744,6 +1876,8 @@ class Room:
             return self.sgf_path.read_text(encoding="utf-8")
         me, eng = self.owner_nick, self.opp_name()
         pb, pw = (me, eng) if self.user == "B" else (eng, me)
+        if self.bots:  # 봇 대 봇 — 양쪽 엔진 태그(수읽기 포함). 버전끼리 결과는 기력 비교 자료
+            pb, pw = bot_sgf_name(self.bots["B"]), bot_sgf_name(self.bots["W"])
         extra = ""
         if self.source == "upload":  # 불러온 기보 → 보기용 SGF(대국자·급단·날짜·규칙 그대로)
             p = self.players or {}
@@ -1772,7 +1906,7 @@ class Room:
         """대기실 목록 한 줄."""
         last = REVIEWS.jobs.get(self.reviews[-1]) if self.reviews else None
         win = None
-        if self.result and self.result[0] in "BW" and self.source != "upload":
+        if self.result and self.result[0] in "BW" and self.source != "upload" and not self.bots:
             win = self.result[0] == self.user
         return {"id": self.id, "kind": self.kind, "status": self.status, "statusKo": STATUS_KO[self.status],
                 "moveNo": len(self.moves), "toMove": self.to_move, "user": self.user, "level": self.level,
@@ -1784,7 +1918,7 @@ class Room:
                 "lastReview": {"id": last["id"], "state": last["state"]} if last else None,
                 "dc": self.dc_state(), "resultReason": self.result_reason, "source": self.source,
                 "players": self.players, "origName": self.orig_name, "ownerNick": self.owner_nick,
-                "ownerDisplay": self.owner_display}
+                "ownerDisplay": self.owner_display, "bots": bool(self.bots), "botPaused": self.bot_paused}
 
     def state(self):
         g, caps = replay(self.moves, self.setup)
@@ -1813,8 +1947,13 @@ class Room:
             "scores": self.scores, "result": self.result,
             # 기보 감상(10-24): 화면이 수순을 직접 재생한다 — 국면 계산은 화면 쪽 1벌
             "moveList": [list(m) for m in self.moves], "setup": self.setup, "source": self.source,
-            "players": self.players or ({"B": self.owner_display, "W": self.opp_name()} if self.user == "B"
+            "players": self.players or ({"B": bot_name(self.bots["B"]), "W": bot_name(self.bots["W"])} if self.bots
+                                        else {"B": self.owner_display, "W": self.opp_name()} if self.user == "B"
                                         else {"B": self.opp_name(), "W": self.owner_display}),
+            "bots": ({c: {"level": lv, "name": bot_name(lv), "stage": (monk_ver(lv) or {}).get("stage")}
+                      for c, lv in self.bots.items()} if self.bots else None),
+            "botPace": self.bot_pace, "botPaused": self.bot_paused, "botPaces": BOT_PACES, "botMax": BOT_MAX_MOVES,
+            "botWait": (BOTS.wait.get(self.id) if (BOTS and self.bots) else None),
             "record": {"date": self.record_date or f"{self.started:%Y-%m-%d}", "rules": self.rules,
                        "origName": self.orig_name},
             "resultKo": result_ko(self.result) if self.result else None,
@@ -2035,7 +2174,7 @@ class Rooms:
 
     def defaults(self, owner=ADMIN_UID):
         """새 대국 창 기본값 — 그 사람이 가장 최근에 만든 방의 설정을 기억한다."""
-        last = max((r for r in list(self.rooms.values()) if not r.imported and r.owner == owner), key=lambda r: r.started, default=None)
+        last = max((r for r in list(self.rooms.values()) if not r.imported and not r.bots and r.owner == owner), key=lambda r: r.started, default=None)  # 봇 대국 설정은 기본값으로 쓰지 않는다
         return {"level": last.level if last else "strong", "handicap": last.handicap if last else 0,
                 "time": last.time if last else dict(DEFAULT_TIME), "user": last.user if last else "B",
                 "dcLimit": DC_LIMIT}
@@ -2669,7 +2808,9 @@ ENGINES = None  # EngineHub
 ROOMS = None  # Rooms
 ANALYSES = None  # Analyses(승률 그래프)
 ACTIONS = ("play", "engine", "score", "score/toggle", "score/confirm", "score/cancel", "hint", "judge",
-           "timeout", "resign", "void", "undo", "swap", "level", "review", "ping")
+           "timeout", "resign", "void", "undo", "swap", "level", "review", "ping",
+           "bot/pause", "bot/resume", "bot/step", "bot/pace")
+BOT_BLOCKED = ("play", "engine", "score", "score/toggle", "score/cancel", "timeout", "resign", "void", "undo", "swap", "level")
 # 호환 경로(단계 ① 이전 화면·PWA 보관본·live_view --goboard): /api/state·/api/{동작}은 초점 방을 가리킨다.
 # 대국실은 /api/rooms/{id}/… 만 쓴다. 호환 경로는 보관본이 v3로 바뀐 뒤 제거 예정(단계 ②).
 LEGACY_ACTIONS = ACTIONS + ("new",)
@@ -2685,7 +2826,24 @@ def act(room, action, body):
             if TEST_SLOW_PING:  # 테스트 인스턴스 전용: 잠금을 잡은 채 머무는 비엔진 보유자 흉내
                 time.sleep(TEST_SLOW_PING)
             return None, None, {}
-        if action == "play":
+        if room.bots and action in BOT_BLOCKED:
+            raise RuntimeError("봇 대국에서는 쓸 수 없습니다 — 일시정지·재개·한 수씩만 됩니다.")
+        if action.startswith("bot/") and not room.bots:
+            raise RuntimeError("봇 대국이 아닙니다.")
+        if action == "bot/pause":
+            room.bot_paused = True
+            room.message = "일시정지 — '재개' 또는 '한 수씩'을 눌러 주세요."
+        elif action == "bot/resume":
+            room.bot_paused, room.bot_next = False, 0.0
+            room.message = ""
+        elif action == "bot/step":  # 한 수 — 일시정지 상태로 둔다
+            room.bot_paused = True
+            if len(room.moves) >= BOT_MAX_MOVES:
+                raise RuntimeError(f"{BOT_MAX_MOVES}수 상한에 닿았습니다.")
+            room.engine_move()
+        elif action == "bot/pace":
+            room.bot_pace = body.get("pace") if body.get("pace") in BOT_PACES else room.bot_pace
+        elif action == "play":
             room.play("pass" if body.get("pass") else to_gtp(int(body["x"]), int(body["y"])))
         elif action == "engine":  # 엔진 차례면 둔다(새 방 첫 수 · 복원 뒤 엔진 차례)
             room.engine_move()
@@ -2733,6 +2891,85 @@ def ev_move(body):
         return {}
 
 
+class BotRunner:
+    """봇 대 봇 진행기(스레드 1개) — 보는 화면(ping)이 있고, 일시정지가 아니고, 간격이 지났고, 사람 판이 엔진을 안 쓸 때만 한 수.
+    여러 봇 방은 한 수씩 차례로(엔진 동시 사용 없음). 미룬 사유는 방 상태 botWait 로 보인다"""
+
+    def __init__(self):
+        self.wait = {}  # rid → 미룬 사유(화면 표시)
+        self.moves = 0
+
+    def tick(self, now=None):
+        now = now or time.time()
+        rooms = list(ROOMS.rooms.values())
+        for r in rooms:
+            if not r.bots or r.result or r.scoring or r.bot_paused or r.imported:
+                continue
+            if now - r.seen > OFFLINE_AFTER:  # 보는 화면 없음 → 멈춤(다시 열면 그 수부터)
+                self.wait[r.id] = "보는 화면 없음"
+                continue
+            if len(r.moves) >= BOT_MAX_MOVES:
+                if r.lock.acquire(blocking=False, name="bot"):
+                    try:
+                        r.thinking = True
+                        try:
+                            done = r.bot_try_score(force=True)  # 상한 — 마무리 계가를 먼저 시도
+                        except RuntimeError:
+                            done = False
+                        finally:
+                            r.thinking = False
+                        if not done:
+                            r.bot_paused = True
+                            r.message = f"{BOT_MAX_MOVES}수 상한 — 계가를 끝내지 못해 중단했습니다(기보 저장됨). " + (r.message or "")
+                        r.save_sgf()
+                        ROOMS.save(r)
+                        r.cache = json.dumps(r.state(), ensure_ascii=False)
+                    finally:
+                        r.lock.release()
+                continue
+            if now < r.bot_next:
+                continue
+            why = ENGINES.bot_wait(r.bots[r.to_move], rooms)
+            if why:
+                self.wait[r.id] = why
+                continue
+            if not r.lock.acquire(blocking=False, name="bot"):
+                continue
+            try:
+                r.thinking = True
+                n0 = len(r.moves)
+                try:
+                    r.engine_move()
+                    n = len(r.moves)
+                    if not r.result and n >= BOT_SCORE_FROM and n % BOT_SCORE_EVERY == 0:
+                        r.bot_try_score()
+                except RuntimeError as ex:
+                    r.bot_paused = True
+                    r.message = f"봇 대국 멈춤 — {ex}"
+                    EVENTS.add(r.id, action="bot", result="error", error=str(ex), moveNo=n0)
+                finally:
+                    r.thinking = False
+                self.wait.pop(r.id, None)
+                self.moves += 1
+                r.bot_next = time.time() + BOT_PACES.get(r.bot_pace, 1.5)
+                ROOMS.save(r)
+                r.cache = json.dumps(r.state(), ensure_ascii=False)
+            finally:
+                r.lock.release()
+            return  # 한 tick 에 한 수 — 다음 방·사람 판에 틈을 준다
+
+    def loop(self):
+        while True:
+            time.sleep(0.3)
+            try:
+                self.tick()
+            except Exception as ex:  # noqa: BLE001 — 진행기는 죽지 않는다
+                print(f"❌ go-board: 봇 대국 진행 실패 — {ex}", file=sys.stderr, flush=True)
+
+
+BOTS = None  # BotRunner
+
+
 def new_room(body, base=None, owner=ADMIN_UID):
     """대국 신청 → 방 생성. 첫 수가 엔진이면 대국실이 'engine'으로 부른다(화면은 빈 판부터)."""
     d = ROOMS.defaults(owner)
@@ -2742,11 +2979,13 @@ def new_room(body, base=None, owner=ADMIN_UID):
     if t == "keep":
         t = base.time if base else d["time"]
         t = t or {"unlimited": True}
-    room = Room.create(level, handicap, t, body.get("color") or (base.user if base else d["user"]), owner)  # 장애 한도는 고정 5분
+    bots = body.get("bots") if isinstance(body.get("bots"), dict) else None
+    room = Room.create(level, handicap, t, body.get("color") or (base.user if base else d["user"]), owner,
+                       bots=bots, pace=str(body.get("pace") or "normal"))  # 장애 한도는 고정 5분
     room.cache = json.dumps(room.state(), ensure_ascii=False)  # 첫 조회가 엔진 생각과 겹쳐도 빈 판을 준다
     ROOMS.add(room)
     EVENTS.add(room.id, action="create", user=room.user, level=room.level, handicap=room.handicap,
-               color=body.get("color"), time=room.time, dcLimit=room.dc_limit)
+               color=body.get("color"), time=room.time, dcLimit=room.dc_limit, bots=room.bots, pace=room.bot_pace)
     return room
 
 
@@ -3186,6 +3425,17 @@ class Handler(BaseHTTPRequestHandler):
         # 엔진이 이 방에서 생각 중이면 줄 세우지 않고 버린다 — 대기 클릭이 나중에 착수로 바뀌는 경합 차단(10-23).
         # 그 밖의 보유자(상태 조회·ping·감시 저장 등)는 거부 사유가 아니다 — LOCK_WAIT 까지 기다렸다 처리(10-24 첫 수 busy)
         if not room.lock.acquire(blocking=False, name=action):
+            if room.bots and action in ("bot/pause", "bot/resume", "bot/pace"):  # 봇이 한 수 계산 중이어도 바로 — 다음 수부터 반영(깃발만 바꾼다)
+                if action == "bot/pause":
+                    room.bot_paused = True
+                    room.message = "일시정지 — 지금 계산 중인 한 수까지 두고 멈춥니다."
+                elif action == "bot/resume":
+                    room.bot_paused, room.bot_next, room.message = False, 0.0, ""
+                elif body.get("pace") in BOT_PACES:
+                    room.bot_pace = body["pace"]
+                st = json.loads(room.cache) if room.cache else {}
+                st.update(botPaused=room.bot_paused, botPace=room.bot_pace, message=room.message)
+                return self._json(st)
             if action == "ping":
                 room.seen = time.time()  # 잠금 없이 — 엔진이 이 방에서 생각 중이어도 접속은 살아 있다
                 return self._send(200, room.cache or json.dumps({"busy": True, "room": room.id}, ensure_ascii=False))
@@ -3306,6 +3556,9 @@ def main():
         t.join()
     ENGINES = EngineHub(strong, human, human_reason)
     threading.Thread(target=ENGINES.pool.loop, daemon=True).start()
+    global BOTS
+    BOTS = BotRunner()
+    threading.Thread(target=BOTS.loop, daemon=True).start()
     ROOMS = Rooms(LocalRoomStore(ROOMS_DIR))
     global AUTH, EVENTS
     AUTH = Auth()  # 11-04 작가님 — 테스트 아이디 개방(단계 ②-1)
