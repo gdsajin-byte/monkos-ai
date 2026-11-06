@@ -311,7 +311,13 @@ def enclosed_status(b, col, stones, v=None, strong=frozenset()):
 def evaluate(moves, setup=(), komi=6.5, dil=5, ero=21, use_life=True):
     """국면 평가 → dict(lead: 흑 기준 집 차, own: 361 칸 소유(1·-1·0), dead: 사석 칸, undecided: 미정 칸, terrB·terrW·prisB·prisW)"""
     b, caps = replay(moves, setup)
-    st = life(b) if use_life else {}
+    if use_life == "staged":  # 단계식 사활(lifestage.py) — {칸: (판정, 단계)}
+        from lifestage import life_staged
+        stg = life_staged(b)
+        st = {p: r[0] for p, r in stg.items()}
+    else:
+        stg = None
+        st = life(b) if use_life else {}
     dead = [p for p, s in st.items() if s == "죽음"]
     und = [p for p, s in st.items() if s == "미정"]
     nb = b[:]
@@ -332,7 +338,7 @@ def evaluate(moves, setup=(), komi=6.5, dil=5, ero=21, use_life=True):
     lead = terr[1] + pris[1] - terr[-1] - pris[-1] - komi
     # 미정 무리 반영값 — 미정 돌 하나 = 죽으면 상대 +2(포로 1 + 집 1), 살면 0 → 기대값 절반 = 1집씩 상대 쪽
     lead_mid = lead - sum(b[p] for p in und)
-    return {"lead": lead, "leadMid": lead_mid, "own": own, "dead": dead, "undecided": und, "terrB": terr[1], "terrW": terr[-1], "prisB": pris[1], "prisW": pris[-1]}
+    return {"lead": lead, "leadMid": lead_mid, "stages": stg, "own": own, "dead": dead, "undecided": und, "terrB": terr[1], "terrW": terr[-1], "prisB": pris[1], "prisW": pris[-1]}
 
 
 if __name__ == "__main__":  # 속도 시험: python3 -I codeeval.py

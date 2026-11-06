@@ -13,8 +13,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import codeeval as ce  # noqa: E402
 
 H = os.path.expanduser("~/.monkos/go-board")
-VARIANTS = {"V1 Bouzy 5/21+사활(미정=삶)": dict(dil=5, ero=21, use_life=True), "V1m Bouzy 5/21+사활(미정=절반)": dict(dil=5, ero=21, use_life=True, mid=True),
-            "V2 Bouzy 5/21(사활 없음)": dict(dil=5, ero=21, use_life=False), "V4m Bouzy 3/3+사활(미정=절반)": dict(dil=3, ero=3, use_life=True, mid=True)}
+VARIANTS = {"S Bouzy 5/21+단계식 사활": dict(dil=5, ero=21, use_life="staged"), "V1 Bouzy 5/21+기본 사활": dict(dil=5, ero=21, use_life=True),
+            "V2 Bouzy 5/21(사활 없음)": dict(dil=5, ero=21, use_life=False)}
 SEGS = (("~100", 0, 100), ("101~200", 101, 200), ("201~", 201, 10 ** 6))
 
 
@@ -89,10 +89,71 @@ def main():
                 lines.append(f"| {dict(handi='접바둑 실판', even='호선 표본', even64='호선 대표본(64탐색)')[sname]} | {sg} | {stats(err[k])} | "
                              + (f"{100 * om[0] / om[1]:.1f}% ({om[1]}칸)" if om and om[1] else "—") + " |")
         lines.append("")
+    # 무리 단위 사활 판정표(단계식) — 정답: b18 소유권으로 본 무리 평균(자기 색 기준) ≥0.5 삶 · ≤-0.5 죽음 · 그 사이 불분명
+    tab = {}
+    for r in pos:
+        b, _ = ce.replay([tuple(m) for m in r["moves"]], r["setup"])
+        e = ce.evaluate([tuple(m) for m in r["moves"]], r["setup"], r["komi"], use_life="staged")
+        for col, stones in ce.dragons(b):
+            p0 = next(iter(stones))
+            stt, stage = e["stages"].get(p0, ("?", "?"))
+            o = sum(r["own"][p] * col for p in stones) / len(stones)
+            truth = "삶" if o >= 0.5 else "죽음" if o <= -0.5 else "불분명"
+            k = (seg(r["n"]), stage)
+            t = tab.setdefault(k, {"n": 0, "stones": 0, "ok": 0, "bad": 0, "unk": 0, "und": 0})
+            t["n"] += 1
+            t["stones"] += len(stones)
+            if stt == "미정":
+                t["und"] += 1
+            elif truth == "불분명":
+                t["unk"] += 1
+            elif (stt in ("삶", "세키")) == (truth == "삶"):
+                t["ok"] += 1
+            else:
+                t["bad"] += 1
+    lines += ["## 무리 단위 사활 판정표(단계식, 정답 = b18 소유권 무리 평균 ±0.5)", "",
+              "| 구간 | 단계 | 무리 수(돌) | b18 일치 | 불일치 | b18 불분명 | 미정 |", "|---|---|---|---|---|---|---|"]
+    for sg, _, _ in SEGS:
+        tot = sum(t["n"] for (g, _), t in tab.items() if g == sg)
+        und = sum(t["und"] for (g, _), t in tab.items() if g == sg)
+        for (g, stage), t in sorted(tab.items()):
+            if g != sg:
+                continue
+            dec = t["ok"] + t["bad"]
+            lines.append(f"| {sg} | {stage} | {t['n']}({t['stones']}) | " + (f"{100 * t['ok'] / dec:.0f}% ({t['ok']}/{dec})" if dec else "—")
+                         + f" | {t['bad']} | {t['unk']} | {t['und']} |")
+        if tot:
+            lines.append(f"| {sg} | **합계** | {tot} | | | | **미정 {100 * und / tot:.1f}%** |")
+    lines.append("")
+    # d32d 백 대마 — 종국 b18 사석(백) 돌들이 몇 수째 어느 단계에서 '죽음'으로 잡히나
+    fin = next((r for r in finals if r["game"].endswith("d32d")), None)
+    if fin:
+        dead_w = {y * 19 + x for x, y in fin["dead"]}
+        lines += ["## d32d 백 대마(종국 b18 사석 38돌) — 수별 코드 판정(단계식)", "", "| 수 | 판 위 해당 돌 | 코드 죽음 | 미정 | 삶 | 주된 단계 | b18 소유권 사석(≥0.5) |", "|---|---|---|---|---|---|---|"]
+        first = None
+        for r in sorted([r for r in pos if r["game"].endswith("d32d")], key=lambda r: r["n"]):
+            b, _ = ce.replay([tuple(m) for m in r["moves"]], r["setup"])
+            e = ce.evaluate([tuple(m) for m in r["moves"]], r["setup"], r["komi"], use_life="staged")
+            here = [p for p in dead_w if b[p] == -1]
+            if not here:
+                continue
+            cnt = {"죽음": 0, "미정": 0, "삶": 0}
+            stg = {}
+            for p in here:
+                s_, g_ = e["stages"].get(p, ("?", "?"))
+                cnt[s_ if s_ in cnt else "삶"] += 1
+                stg[g_] = stg.get(g_, 0) + 1
+            b18d = sum(1 for p in here if r["own"][p] >= 0.5)
+            main = max(stg, key=stg.get)
+            if first is None and cnt["죽음"] >= len(here) / 2:
+                first = (r["n"], main)
+            if r["n"] % 20 == 0 or r["n"] >= 240 or (first and first[0] == r["n"]):
+                lines.append(f"| {r['n']} | {len(here)} | {cnt['죽음']} | {cnt['미정']} | {cnt['삶']} | {main} | {b18d} |")
+        lines += ["", f"- 코드가 그 돌들의 과반을 처음 '죽음'으로 잡은 수: **{first[0]}수({first[1]})**" if first else "- 끝까지 과반을 잡지 못함", ""]
     # 종국 사석
-    lines += ["## 종국 10판 사석(V1) — 코드 vs b18 final_status_list dead", "", "| 방 | b18 사석 | 맞음 | 미정(b18 사석) | 놓침 | 헛짚음(코드만 사석) | 코드 집 차 vs b18 |", "|---|---|---|---|---|---|---|"]
+    lines += ["## 종국 10판 사석(단계식) — 코드 vs b18 final_status_list dead", "", "| 방 | b18 사석 | 맞음 | 미정(b18 사석) | 놓침 | 헛짚음(코드만 사석) | 코드 집 차 vs b18 |", "|---|---|---|---|---|---|---|"]
     for r in finals:
-        e = ce.evaluate([tuple(m) for m in r["moves"]], r["setup"], r["komi"])
+        e = ce.evaluate([tuple(m) for m in r["moves"]], r["setup"], r["komi"], use_life="staged")
         bd = {y * 19 + x for x, y in r["dead"]}
         cd, cu = set(e["dead"]), set(e["undecided"])
         lines.append(f"| {r['game'][-4:]} | {len(bd)} | {len(bd & cd)} | {len(bd & cu)} | {len(bd - cd - cu)} | {len(cd - bd)} | {e['lead']:+.1f} vs {r['kata']} |")
@@ -101,7 +162,7 @@ def main():
     d = sorted([r for r in pos if r["game"].endswith("d32d")], key=lambda r: r["n"])
     pts = []
     for r in d:
-        e = ce.evaluate([tuple(m) for m in r["moves"]], r["setup"], r["komi"])
+        e = ce.evaluate([tuple(m) for m in r["moves"]], r["setup"], r["komi"], use_life="staged")
         b, _ = ce.replay([tuple(m) for m in r["moves"]], r["setup"])
         w_dead_b18 = sum(1 for i in range(361) if b[i] == -1 and r["own"][i] >= 0.5)
         w_dead_code = sum(1 for i in e["dead"] if b[i] == -1)
