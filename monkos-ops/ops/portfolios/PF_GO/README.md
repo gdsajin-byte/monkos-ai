@@ -160,6 +160,7 @@ status: active
 | 11/07 | iMac/쌍아 | 정해도·실패도 시범 10장면 지시서 발행 | [ORDER_20261107_iMac쌍아_막내1_GO_정해도실패도_시범10](../../orders/2026-11/ORDER_20261107_iMac쌍아_막내1_GO_정해도실패도_시범10.md) | ⏳ |
 | 11/07 | ?/? | **COMPLETION** COMPLETION_20261107_iMac쌍아-막내1_GO_정해도실패도_시범10 | [COMPLETION_20261107_iMac쌍아-막내1_GO_정해도실패도_시범10](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내1_GO_정해도실패도_시범10.md) | ✅ |
 | 11/07 | ?/? | **COMPLETION** COMPLETION_20261107_iMac쌍아-막내1_GO_해설장면사전_용어임베딩_1단계 | [COMPLETION_20261107_iMac쌍아-막내1_GO_해설장면사전_용어임베딩_1단계](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내1_GO_해설장면사전_용어임베딩_1단계.md) | ✅ |
+| 11/07 | ?/? | **COMPLETION** COMPLETION_20261107_iMac쌍아-막내1_GO_대화록정제분류30편_발화DB_v0 | [COMPLETION_20261107_iMac쌍아-막내1_GO_대화록정제분류30편_발화DB_v0](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내1_GO_대화록정제분류30편_발화DB_v0.md) | ✅ |
 
 ## 3. Phase 현황
 
