@@ -159,6 +159,7 @@ status: active
 | 11/06 | iMac/쌍아-막내8 | 코드 형세 시제품(go_codeeval) — 단계식 사활·Bouzy·패 표시 · 계가 사석 첫 표시 적합(헛짚음 1/158)·실시간 막대 부적합(중반 미정 68~74%) · 미정 메우기=소형 소유권 모델 별건 제안 | `ops/reports/2026-11/COMPLETION_20261106_iMac쌍아-막내8_GO_코드형세_시제품.md` | ✅ |
 | 11/07 | iMac/쌍아 | 정해도·실패도 시범 10장면 지시서 발행 | [ORDER_20261107_iMac쌍아_막내1_GO_정해도실패도_시범10](../../orders/2026-11/ORDER_20261107_iMac쌍아_막내1_GO_정해도실패도_시범10.md) | ⏳ |
 | 11/07 | ?/? | **COMPLETION** COMPLETION_20261107_iMac쌍아-막내1_GO_정해도실패도_시범10 | [COMPLETION_20261107_iMac쌍아-막내1_GO_정해도실패도_시범10](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내1_GO_정해도실패도_시범10.md) | ✅ |
+| 11/07 | ?/? | **COMPLETION** COMPLETION_20261107_iMac쌍아-막내1_GO_해설장면사전_용어임베딩_1단계 | [COMPLETION_20261107_iMac쌍아-막내1_GO_해설장면사전_용어임베딩_1단계](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내1_GO_해설장면사전_용어임베딩_1단계.md) | ✅ |
 
 ## 3. Phase 현황
 
