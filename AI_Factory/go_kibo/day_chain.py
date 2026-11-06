@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """4060 낮 창(학교 시간) 연쇄 — ① 실수 사전 남은 국(1단계+2단계) → ② 결정 장면 정밀 분석. 각 단계 앞에 하교 가드.
 
-쌍아 확정 11-06 06:12(작가님 "ㅇㅇ"): 1순위 실수 사전 잔여, 2순위 결정 장면, 14:00 하드 마감.
+쌍아 확정 11-06 06:12(작가님 "ㅇㅇ"): 1순위 실수 사전 잔여, 2순위 결정 장면. 마감 15:30(작가님 10:02 "너덧 시쯤 하교" → 쌍아 보수 15:30, 구 14:00).
 각 단계는 mistakes_runner.py가 창 판정·잠금·대국 단위 체크포인트·창 끝 엔진 중단을 한다. 이 스크립트는 순서와 가드만 맡는다.
-  python day_chain.py --start 08:30 --end 14:00
+  python day_chain.py --start 08:30 --end 15:30
 상태: C:\\Users\\smuse73\\go_kibo\\day_chain.log
 """
 import argparse
@@ -25,7 +25,7 @@ def log(msg):
 
 
 def in_window(start, end, now=None):
-    """창 안인가 — 같은 날 창(08:30~14:00)과 밤 창(23:05~07:30) 모두. 러너 window()와 같은 규칙."""
+    """창 안인가 — 같은 날 창(08:30~15:30)과 밤 창(23:05~07:30) 모두. 러너 window()와 같은 규칙."""
     now = now or dt.datetime.now()
     sh, sm = map(int, start.split(":"))
     eh, em = map(int, end.split(":"))
@@ -56,7 +56,7 @@ def run(root, extra, a):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--start", default="08:30")
-    ap.add_argument("--end", default="14:00")
+    ap.add_argument("--end", default="15:30")
     ap.add_argument("--runner-arg", action="append", default=[], help="시험용: 러너에 그대로 넘길 인자(여러 번, 예: --runner-arg=--dry-run)")
     a = ap.parse_args()
     full, scenes = os.path.join(HERE, "full"), os.path.join(HERE, "scenes")

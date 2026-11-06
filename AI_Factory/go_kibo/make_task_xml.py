@@ -39,7 +39,7 @@ def main():
     ap.add_argument("--b10-until", required=True, help="YYYY-MM-DD_HH:MM")
     ap.add_argument("--no-final-eval", action="store_true", help="b10 인자에서 --final-eval 제거(평가가 07:30을 넘길 수 있을 때)")
     ap.add_argument("--day-at", default=None, help="낮 창 연쇄 1회 예약 YYYY-MM-DDTHH:MM:SS (GO-day-run.xml 추가 생성 — 실수 사전 잔여 → 결정 장면)")
-    ap.add_argument("--day-end", default="14:00", help="낮 창 끝(하교 가드·러너 엔진 중단 시각)")
+    ap.add_argument("--day-end", default="15:30", help="낮 창 끝(하교 가드·러너 엔진 중단 시각)")
     ap.add_argument("--day-name", default="GO-day-run", help="연쇄 1회 작업 이름(밤 창은 GO-night-run — 쌍아 11-06 09:56)")
     ap.add_argument("--mistakes-at", default=None, help="매일 시작 기준 YYYY-MM-DDTHH:MM:SS (기본 b10-at 날짜 23:05)")
     a = ap.parse_args()
