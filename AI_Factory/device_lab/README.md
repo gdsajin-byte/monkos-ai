@@ -12,6 +12,9 @@ AI_Factory/device_lab/ftl.sh usage               # 오늘(KST) 쓴 실기기 분
 AI_Factory/device_lab/ftl.sh run ios --models iphonese3,iphone8,iphone11pro --ipa MONKBench.ipa [--timeout 3m] [--dry-run]
 AI_Factory/device_lab/ftl.sh fetch ftl/YYYYMMDD_HHMMSS   # 결과 버킷 GameLoopResults/* → ~/.monkos/device_lab/results/…
 AI_Factory/device_lab/smoke_ftl.sh               # 가드 스모크(시험 원장만, gcloud 실행 없음)
+AI_Factory/device_lab/smoke_ftl_android.sh       # 안드로이드 가드 스모크(막내2) — 시험 원장 + 가짜 gcloud(PATH), FTL 실호출 0·실제 원장 불변을 끝에 검증
+AI_Factory/device_lab/ftl.sh run android --models MediumPhone.arm:34 --apk APK [--timeout 3m] [--dry-run]   # 가상/실기기 따로 가드(가상 50·실기기 25분)
+AI_Factory/device_lab/ftl.sh fetch-android ftl/YYYYMMDD_HHMMSS_android
 ```
 
 - 프로젝트 `monkos-3c6e4`(Blaze) 고정. 기종 버전 지정은 `model:version`(예: `iphonese3:18.4`).
