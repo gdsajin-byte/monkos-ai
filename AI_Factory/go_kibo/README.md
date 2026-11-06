@@ -25,6 +25,7 @@
 | `run_4060.sh` | iMac → 4060 질의 전송·엔진 실행·응답 회수·b10 처리량 전후·집계 |
 | `analyze_mistakes.py` | 응답 → 작가님 수별 손해 `moves_{name}.jsonl` + `reports/MISTAKES_v0.md` |
 | `b10_rate.py` | b10 학습 stdout에서 샘플/s 전후 비교 |
+| `diagrams.py` | 정해도·실패도 시범 — moves_full(400v 유지분) + out2 PV → 장면 선정·SGF 분기·판 그림 SVG(`~/.monkos/go-board/analysis/commentary_v0/`, 레포 밖) + `reports/DIAGRAMS_v0.md·.html`(11-07 막내1) |
 
 ## 실행
 
