@@ -1693,7 +1693,10 @@ class Room:
         self.moves.append((c, mv))
         if len(self.moves) >= 2 and all(m.lower() == "pass" for _, m in self.moves[-2:]):
             self.start_scoring()
-            self.confirm_score()
+            if self.scoring:
+                self.confirm_score()
+            else:
+                self._bot_judge_end()
         self.save_sgf()
 
     def bot_try_score(self, force=False):
@@ -1709,16 +1712,29 @@ class Room:
         except RuntimeError as ex:
             self.message = f"계가 시도 — {ex}"
             return False
+        if not self.scoring:  # 마무리 끊김 → AI 판정(봇 대 봇은 양쪽 자동 동의)
+            return self._bot_judge_end(force)
         self.confirm_score()
         why = f"{BOT_MAX_MOVES}수 상한 — 판정 엔진(KataGo 최강) 마무리 계가" if force else "판정 엔진(KataGo 최강)이 둘 곳이 없다고 봐 계가"
         self.message = f"{why} — {self.message}"
         self.save_sgf()
         return True
 
+    def _bot_judge_end(self, force=False):
+        """봇 대 봇 마무리 끊김 → 판정 결과로 종국(양쪽 봇 자동 동의). 끝냈으면 True"""
+        pj = self._live_judge()
+        if not (pj and pj["canEnd"]):
+            return False
+        self.confirm_judge()
+        if force:
+            self.message = f"{BOT_MAX_MOVES}수 상한 — {self.message}"
+        return True
+
     def _check_end(self):
         if len(self.moves) >= 2 and all(m.lower() == "pass" for _, m in self.moves[-2:]):
             self.start_scoring()
-            self.message = "양쪽이 패스했습니다 — 사석을 확인하고 '계가 확정'을 눌러 주세요."
+            if self.scoring:  # 끊기면 start_scoring 이 AI 판정 동의 문구를 남긴다
+                self.message = "양쪽이 패스했습니다 — 사석을 확인하고 '계가 확정'을 눌러 주세요."
 
     # ---- 계가(한국 규칙 = 집 계산: 집 + 따낸 돌 + 사석, 백은 덤 더함)
 
@@ -1740,7 +1756,11 @@ class Room:
             if why != "passes":  # 쌍아 19:40 — 연속 2패스로 끝나지 않은(시간·수 상한) 국면은 경계가 덜 닫혔을 수 있다 → 세지 않는다
                 print(f"⚠️ go-board: 계가 마무리 끊김 — 방 {self.id} 사유 {why} · {len(finish)}수 {secs}초", file=sys.stderr)
                 EVENTS.add(self.id, action="score-finish-cut", reason=why, n=len(finish), secs=secs)
-                raise RuntimeError(f"마무리를 끝내지 못했습니다({'시간' if why == 'budget' else '수'} 상한, {len(finish)}수) — 이어 두거나 'AI 판정'을 보세요.")
+                # 11-06 작가님 09:41 — 끊기면 막다른 길(이어 두기·기권뿐) 대신 곧바로 AI 판정 동의창으로(사람 판). 봇 판은 호출 쪽이 자동 동의
+                self._set_judge(ENGINES.final_score(self.position(), self.level), "cut")
+                self.message = (f"끝까지 두기엔 남은 곳이 많아 AI 판정으로 계산했습니다(마무리 {'시간' if why == 'budget' else '수'} 상한, {len(finish)}수)"
+                                f" — {self.pending_judge['resultKo']}. 이 결과로 끝낼지 골라 주세요.")
+                return
         pos = self.position()
         sc = ENGINES.scoring({**pos, "moves": list(pos["moves"]) + finish}, self.level, light=bool(finish))
         sc.update(finish=[list(m) for m in finish], finishSecs=secs, finishYields=yields, finishRules=FINISH_RULES if finish else None,
