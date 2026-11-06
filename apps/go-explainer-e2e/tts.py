@@ -17,8 +17,8 @@ VOICES = {
     "host": "nPczCjzI2devNBz1zQrb",  # ElevenLabs 공개 기본 보이스(남성 내레이터 'Brian') — 임시 해설, 계정 저장 없음
 }
 MODEL = "eleven_multilingual_v2"
-# v0 마커(move·ref·real) + 판 단독 렌더러(render_scene.py) 마커(fail·ok·pos·hl·lib·arrow·diff·clear) — 11-07 막내1
-MARK = re.compile(r"<((?:move|ref|fail|ok):\d+|real|pos|diff|clear|(?:hl|lib):[A-T]\d{1,2}|arrow:[A-T]\d{1,2},[A-T]\d{1,2})>")
+# v0 마커(move·ref·real) + 판 단독 렌더러(render_scene.py) 마커(fail·ok·pos·hl·lib·arrow·zone·diff·clear) — 11-07 막내1
+MARK = re.compile(r"<((?:move|ref|fail|ok):\d+|real|pos|diff|clear|(?:hl|lib):[A-T]\d{1,2}|zone:[a-z_0-9]+|arrow:[A-T]\d{1,2},[A-T]\d{1,2})>")
 
 sc = json.load(open(SCRIPT, encoding="utf-8"))
 lines = []
