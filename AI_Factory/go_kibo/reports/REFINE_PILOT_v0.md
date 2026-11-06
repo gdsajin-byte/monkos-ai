@@ -7,7 +7,7 @@ source: AI_Factory/go_kibo/refine_assemble.py
 
 # 대화록 정제·분류 pilot v0 — rDXb5uPMJMg
 
-> 생성 2026-11-07 05:12 KST. 방법: LLM 일꾼(Claude, 구독 범위·외부 API 0)이 맥락 묶음 `COMMENTARY_CONTEXT_v0.md`를 읽고 구간마다 판단. 원문·표본은 레포 밖 `commentary_v0/refine/`.
+> 생성 2026-11-07 05:16 KST. 방법: LLM 일꾼(Claude, 구독 범위·외부 API 0)이 맥락 묶음 `COMMENTARY_CONTEXT_v0.md`를 읽고 구간마다 판단. 원문·표본은 레포 밖 `commentary_v0/refine/`.
 
 ## 1. 형식 검사
 
@@ -49,6 +49,15 @@ source: AI_Factory/go_kibo/refine_assemble.py
 - Q&A 쌍(Q와 A가 모두 있는 qa 번호): 57
 - 용어 꼬리표 상위: 끊다 66, 젖히다 51, 붙이다 37, 막다 30, 행마 29, 늘다 28, 끝내기 27, 단수 21, 살다 18, 잇다 17, 잡다 16, 공격 15
 - 개념 꼬리표 상위: 두텁다 40, 선수 28, 형세 15, 손빼다 14, 후수 10, 약점 8, 악수 8, 실리 8, 대마 8, 큰곳 6
+
+### 보정 지표
+
+| 지표 | 값 |
+|---|---|
+| 짝 없는 A(Q 없이 A) | 9 |
+| 사람을 가리키는 '선수'가 개념 꼬리표로 | 26 |
+| 넓은 말(행마·공격·압박 등) 용어 꼬리표 | 135 |
+| 판 의존(board_dep) true / 표시된 행 | 0 / 0 |
 
 ## 4. 검토 표본
 
