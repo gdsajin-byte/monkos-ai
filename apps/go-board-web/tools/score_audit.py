@@ -134,6 +134,41 @@ def count_own(g, caps, own, komi):
             "result": res(b - w), "dead": sorted(dead)}
 
 
+def count_code(g, caps, own, komi):
+    """타이젬식 코드 계가 모의(11-06 작가님 17:21) — 실제 최종 국면(마무리 없음)에서 소유권 사석(반대 소유 ≥ OWN_DEAD)을 들어내고
+    닫힌 집만 센다. 양색에 닿은 빈 영역 중 소유권 ≥ OWN_TERR 칸이 있으면 '열린 경계'(마저 둘 곳)로 따로 센다"""
+    dead = [(x, y) for y in range(SIZE) for x in range(SIZE)
+            if (g[y][x] == "B" and own[y * SIZE + x] <= -OWN_DEAD) or (g[y][x] == "W" and own[y * SIZE + x] >= OWN_DEAD)]
+    c = count_board(g, caps, dead, komi)
+    h = [row[:] for row in g]
+    for x, y in dead:
+        h[y][x] = None
+    seen, open_pts, open_regions = set(), [], 0
+    for y0 in range(SIZE):
+        for x0 in range(SIZE):
+            if h[y0][x0] or (x0, y0) in seen:
+                continue
+            reg, bord, st = [], set(), [(x0, y0)]
+            seen.add((x0, y0))
+            while st:
+                x, y = st.pop()
+                reg.append((x, y))
+                for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                    if 0 <= nx < SIZE and 0 <= ny < SIZE:
+                        if h[ny][nx]:
+                            bord.add(h[ny][nx])
+                        elif (nx, ny) not in seen:
+                            seen.add((nx, ny))
+                            st.append((nx, ny))
+            if len(bord) == 2:
+                hot = [(x, y) for x, y in reg if abs(own[y * SIZE + x]) >= OWN_TERR]
+                if hot:
+                    open_regions += 1
+                    open_pts += hot
+    c.update(dead=len(dead), openRegions=open_regions, openPts=len(open_pts), openSample=sorted(open_pts)[:6])
+    return c
+
+
 class B18:
     def __init__(self, visits):
         ovr = f"rules=korean,reportAnalysisWinratesAs=BLACK,logDir={os.path.expanduser('~/.claude/jobs/66441cd2/tmp/go/klog')},maxVisits={visits},maxTime=30"
@@ -217,6 +252,8 @@ def main():
             own, lead = eng.own(to)
             row["leadK"] = lead
             row["O"] = count_own(g, caps, own, komi)
+            row["T"] = count_code(g, caps, own, komi)
+            print(f"   T(코드 계가) {row['T']['black']}·{row['T']['white']} {row['T']['result']} · 사석 {row['T']['dead']} · 열린 경계 {row['T']['openRegions']}곳 {row['T']['openPts']}칸 · 공배 {row['T']['dame']}", flush=True)
             if a:  # 기록 사석 vs 소유권 사석(실제 판 기준) vs 마무리 뒤 판에서 사라진 돌
                 rec = {tuple(p) for p in a.get("dead") or []}
                 od = {tuple(p) for p in row["O"]["dead"]}
