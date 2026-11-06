@@ -481,6 +481,8 @@
         <label>판·돌 디자인 <select id="skin"></select>
           <select id="skinBoard" hidden></select> <select id="skinStones" hidden></select></label>
         <label>소리 <select id="pack"></select> <label><input type="checkbox" id="sound" checked> 켜기</label></label>
+        <label id="botResignRow">봇 기권 <label><input type="checkbox" id="botResign" checked> 켜기</label></label>
+        <div class="small">MONKOS Go가 크게 뒤진 형세가 흔들림 없이 이어지고 큰 돌이 모두 살거나 죽었을 때 돌을 던집니다. 끄면 끝까지 둡니다(이 판에만).</div>
       </section>
     </div>
     <!-- 실시간 분석판(10-23 작가님 "아까 만든 분석판을 사이드바에") — 레포 밖 live_view.py --goboard(8770)를 끼워 넣는다 -->
@@ -777,6 +779,8 @@ function render() {
   // 탭
   // 첫 화면 탭(10-25 B7): 대국 중엔 형세분석 — AI분석(해설 만들기)은 종국 뒤 기능이라 끝난 판에서만 먼저 연다
   if (!tab) tab = S.result ? 'ai' : 'shape';
+  document.getElementById('botResign').checked = S.botResign !== false;  // 방 설정 '봇 기권'(11-06)
+  { const rr = document.getElementById('botResignRow'); rr.hidden = rr.nextElementSibling.hidden = !(S.bots || /^monk/.test(S.level || '')); }  // MONKOS 판에만(KataGo는 엔진 자체 기권)
   for (const b of document.querySelectorAll('#tabs button')) b.classList.toggle('on', b.dataset.tab === tab);
   for (const t of ['ai', 'shape', 'hint', 'review', 'more']) document.getElementById('tab-' + t).hidden = t !== tab;
   document.getElementById('secScore').hidden = true;  // 11-06 — 계가 결과는 판 위 동의창(scoreDlg)으로
@@ -1673,6 +1677,7 @@ document.getElementById('bJudge').onclick = async () => {
     render();
   }
 };
+document.getElementById('botResign').onchange = (e) => call('/api/bot/resign', { on: e.target.checked });
 document.getElementById('bJudgeX').onclick = () => { document.getElementById('judgeBand').hidden = true; };
 document.getElementById('bJudgeEnd').onclick = () => { judgeAsk = true; render(); };  // 동의창(판정 모드)을 연다
 document.getElementById('bHint').onclick = async () => {

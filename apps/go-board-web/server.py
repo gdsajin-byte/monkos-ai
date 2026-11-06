@@ -1287,6 +1287,21 @@ BOT_MAX_MOVES = 400  # 넘으면 계가 시도, 안 되면 중단(일시정지)�
 # 우리 학습 모델은 패스를 거의 하지 않는다(11-05 v1 vs v2 400수 패스 0 실측) — 이 수부터 N수마다 판정 엔진(최강)에게 물어
 # 최선 수가 패스면(더 둘 곳 없음) 사람 판 '계가 신청'과 같은 흐름(최강 마무리 → 계가 확정)으로 끝낸다
 BOT_SCORE_FROM, BOT_SCORE_EVERY = 150, 10
+# 봇 기권(11-06 작가님 09:41 — 지고 있는 MONKOS가 끝까지 두어 사람이 기권·장애패로만 나가던 문제).
+# 09:50 "접바둑은 2% 이하는 흔해" → 승률 단독 조건 폐기 / 09:54 "승률은 증감폭이 더 중요. 100·150·200수 이상 기준이 달라야.
+# 100집 차도 대마 전투로 뒤집힐 수 있으니" → 세 축 AND, 기준값은 추정하지 않고 실수 사전에서 보정한 표(resign_table.json)를 쓴다:
+#  ① 구간(~150 / 151~200 / 201~)·치석 유무별 집 차 기준(표의 lead) — MONKOS 착수 직전 판정 엔진 기준, 최근 window 착수 내내
+#  ② 그 window 동안 집 차·승률 흔들림이 표의 swingLead·swingWr 이하(직전에 출렁였으면 안 던짐)
+#  ③ 소유가 불확실한 큰 돌 무리(대마 미생)가 없을 것 — 판정 엔진 소유권, BOT_RESIGN_DAMA_* (보수 방향 상수: 이 조건은 기권을 줄이기만 한다)
+# 표가 없거나 칸이 비면(null = 데이터 부족) 기권 안 함. 표 생성: tools/resign_calib.py. 방 설정 '봇 기권' 끄면 안 던짐. KataGo 급수·최강은 엔진 자체 기권 그대로
+RESIGN_TABLE_FILE = HERE / "resign_table.json"
+try:
+    RESIGN_TABLE = json.loads(RESIGN_TABLE_FILE.read_text(encoding="utf-8"))
+except (OSError, ValueError) as _e:
+    print(f"⚠️ go-board: 봇 기권 기준표 없음 — 기권하지 않습니다({_e})", file=sys.stderr)
+    RESIGN_TABLE = {"window": 10, "segments": [], "cells": {}}
+BOT_RESIGN_DAMA_MIN, BOT_RESIGN_DAMA_OWN = 6, 0.8  # 돌 6개 이상 무리의 평균 |소유권| < 0.8 이면 대마 미생으로 본다
+BOT_RESIGN_VISITS = GRAPH_VISITS  # 승률 그래프와 같은 탐색(200) — 판정 한 번 0.8초 상한
 # 11-05 21:31 작가님 "권장안으로 진행" — MONKOS 패스 임시 조치(사람 판·봇 판 공통): MONKOS 차례에서 ① 상대가 방금 패스했거나
 # ② BOT_SCORE_FROM 수부터 BOT_SCORE_EVERY 수마다 판정 엔진(최강)에 가볍게 묻고, 최선 수가 패스면 MONKOS도 패스. 근본 조치(패스 학습)는 별도
 # 집 안 가드(시험): MONKOS 수가 판정 엔진 소유권 ≥ MONK_OWN_GUARD 인 자기 집 안이면 패스로 바꾼다 — 기본 꺼짐(채택은 판정 표로)
@@ -1375,6 +1390,8 @@ class Room:
         self.bots = None  # 봇 대 봇이면 {"B": 레벨, "W": 레벨} — 사람 없음, 시계·접속 장애 없음, 방 주인은 보는 사람
         self.bot_pace = "normal"
         self.bot_paused = False
+        self.bot_resign = True  # 방 설정 '봇 기권'(기본 켜기, 11-06 09:50)
+        self.resign_hist = {"B": [], "W": []}  # 봇 기권 — 최근 봇 착수 (수 번호, 뒤진 집, 승률)(저장 안 함, 재기동 시 처음부터 = 보수적)
         self.pending_judge = None  # AI 판정 결과(종국 동의 대기) {"result","resultKo","moveNo","why"} — 수가 바뀌면 무효(저장 안 함)
         self.bot_next = 0.0  # 다음 수를 둘 수 있는 시각(간격)
 
@@ -1458,7 +1475,7 @@ class Room:
                 "dcCounting": self.dc_mark is not None, "resultReason": self.result_reason,
                 "source": self.source, "origName": self.orig_name, "players": self.players, "rules": self.rules,
                 "recordDate": self.record_date, "komiValue": self.komi_value,
-                "bots": self.bots, "botPace": self.bot_pace, "botPaused": self.bot_paused}
+                "bots": self.bots, "botPace": self.bot_pace, "botPaused": self.bot_paused, "botResign": self.bot_resign}
 
     @classmethod
     def from_dict(cls, d):
@@ -1489,6 +1506,7 @@ class Room:
             r.players = {**r.players, "BR": tygem_rank(r.players.get("BR")), "WR": tygem_rank(r.players.get("WR"))}
         r.rules, r.record_date, r.komi_value = d.get("rules") or "korean", d.get("recordDate"), d.get("komiValue")
         r.bots, r.bot_pace, r.bot_paused = d.get("bots"), d.get("botPace") or "normal", bool(d.get("botPaused"))
+        r.bot_resign = d.get("botResign") is not False  # 필드 없는 옛 방 = 켜기
         # 서버가 꺼져 있던 시간은 장애 시계에도 깎지 않는다 — 쓴 만큼만 들고 지금부터 다시 센다
         r.offline, r.dc_used = d.get("offline", False), d.get("dcUsed", 0.0)
         r.dc_mark = time.time() if d.get("dcCounting") else None
@@ -1656,6 +1674,8 @@ class Room:
             return self._bot_move(c)
         if c == self.user:
             return
+        if self._bot_resign(c, self.level):  # MONKOS 기권(11-06) — 두기 전에
+            return
         if self.level in BOT_LEVELS:  # MONKOS — 패스 판단 포함(11-05 21:31 임시 조치)
             mv, score, wr, why = monk_move(self.position(), self.level, c, self.moves)
             if why:
@@ -1674,8 +1694,86 @@ class Room:
             self._check_end()
         self._dc_update(time.time())  # 엔진이 둔 사이 대국자가 끊겼으면 이제부터 장애 시계
 
+    def _resign_cell(self, n):
+        """기준표 칸(구간·치석 유무) — 없으면 None(기권 안 함)"""
+        seg = next((name for name, lo, hi in RESIGN_TABLE.get("segments") or [] if lo <= n <= hi), None)
+        return (RESIGN_TABLE.get("cells") or {}).get(f"{'handi' if self.handicap else 'even'}|{seg}") if seg else None
+
+    def _dama_unsettled(self, c):
+        """대마 미생 — 판정 엔진 소유권으로 돌 BOT_RESIGN_DAMA_MIN 개 이상 무리의 평균 |소유권|이 BOT_RESIGN_DAMA_OWN 미만인 무리가 있으면 True.
+        소유권을 못 얻으면 True(불확실 = 던지지 않는다)"""
+        try:
+            _, own = ENGINES.judge_end(self.position(), c, own=True, visits=BOT_RESIGN_VISITS, max_time=GRAPH_MAX_TIME)
+        except RuntimeError:
+            return True
+        if not own or len(own) < SIZE * SIZE:
+            return True
+        g, _ = replay(self.moves, self.setup)
+        seen = set()
+        for y0 in range(SIZE):
+            for x0 in range(SIZE):
+                col = g[y0][x0]
+                if not col or (x0, y0) in seen:
+                    continue
+                grp, st = [], [(x0, y0)]
+                seen.add((x0, y0))
+                while st:
+                    x, y = st.pop()
+                    grp.append((x, y))
+                    for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                        if 0 <= nx < SIZE and 0 <= ny < SIZE and g[ny][nx] == col and (nx, ny) not in seen:
+                            seen.add((nx, ny))
+                            st.append((nx, ny))
+                if len(grp) >= BOT_RESIGN_DAMA_MIN and sum(abs(own[y * SIZE + x]) for x, y in grp) / len(grp) < BOT_RESIGN_DAMA_OWN:
+                    return True
+        return False
+
+    def _bot_resign(self, c, level):
+        """봇 기권 판단(MONKOS 차례, 두기 전) — 끝냈으면 True. 세 축 AND(위 BOT_RESIGN 주석) — 칸이 비면 판정 엔진을 부르지도 않는다"""
+        if level not in BOT_LEVELS or self.result or not self.bot_resign:
+            return False
+        n = len(self.moves)
+        cell = self._resign_cell(n)
+        hist = self.resign_hist.setdefault(c, [])
+        if not cell:
+            hist.clear()
+            return False
+        try:
+            wr, sc = ENGINES.quick(self.position(), c, visits=BOT_RESIGN_VISITS, urgent=True)
+        except RuntimeError as ex:  # 판정 엔진이 없으면 기권하지 않는다(대국은 계속)
+            print(f"⚠️ go-board: 봇 기권 판정 실패 — 방 {self.id}: {ex}", file=sys.stderr)
+            return False
+        if wr is None or sc is None:
+            return False
+        mine = wr if c == "B" else 1 - wr  # 흑 기준 → 봇 기준
+        behind = -sc if c == "B" else sc
+        if hist and n - hist[-1][0] != 2:  # 봇 착수가 이어지지 않았으면(무르기·복원) 처음부터
+            hist.clear()
+        hist.append((n, behind, mine))
+        win = int(RESIGN_TABLE.get("window") or 10)
+        del hist[:-win]
+        if len(hist) < win:
+            return False
+        bs, ws = [x[1] for x in hist], [x[2] for x in hist]
+        if min(bs) < cell["lead"] or max(bs) - min(bs) > cell["swingLead"] or max(ws) - min(ws) > cell["swingWr"]:
+            return False
+        if self._dama_unsettled(c):
+            EVENTS.add(self.id, action="bot_resign_hold", reason="dama", color=c, moveNo=n, behind=round(behind, 1))
+            return False
+        self._charge(reset=False)
+        self.result, self.result_reason = f"{'W' if c == 'B' else 'B'}+R", "bot_resign"
+        who = BOT_NAME + (f"({'흑' if c == 'B' else '백'})" if self.bots else "")
+        self.message = (f"{who}가 돌을 던졌습니다." + ("" if self.bots else " 이기셨어요!")
+                        + f" (판정 엔진 기준 {min(bs):.1f}집 이상 뒤짐이 {win}수 동안 흔들림 없이 이어짐)")
+        EVENTS.add(self.id, action="bot_resign", color=c, moveNo=n, winrate=round(mine, 4), behind=round(behind, 1),
+                   minBehind=round(min(bs), 1), swingLead=round(max(bs) - min(bs), 1), swingWr=round(max(ws) - min(ws), 4))
+        return True
+
     def _bot_move(self, c):
-        """봇 대국 한 수 — 차례인 쪽 레벨로 둔다. 기권은 엔진 규칙대로, 양쪽 패스면 계가 확정까지(사람 확인 없음)"""
+        """봇 대국 한 수 — 차례인 쪽 레벨로 둔다. 기권은 엔진 규칙대로(MONKOS는 _bot_resign), 양쪽 패스면 계가 확정까지(사람 확인 없음)"""
+        if self._bot_resign(c, self.bots[c]):
+            self.save_sgf()
+            return
         if self.bots[c] in BOT_LEVELS:
             mv, score, wr, why = monk_move(self.position(), self.bots[c], c, self.moves)
             if why:
@@ -2096,7 +2194,7 @@ class Room:
                 + (extra if self.source == "upload" else f"DT[{self.started:%Y-%m-%d}]") + f"PB[{pb}]PW[{pw}]"
                 f"AP[MONK go-board-web]" + (f"RE[{self.result}]" if self.result and self.result != VOID else "")
                 + (f"C[접속 장애패 — {self.owner_nick} 접속이 끊긴 채 {fmt_dur(self.dc_limit)} 초과]" if self.result_reason == "disconnect" else "")
-                + (f"C[{self.message}]" if self.result_reason in ("rule-cleanup", "void") else "")
+                + (f"C[{self.message}]" if self.result_reason in ("rule-cleanup", "void", "bot_resign") else "")
                 + (f"C[AI 판정 종국(수순 {len(self.moves)}, 소유 추정)]" if self.result_reason == "ai_judge" else "")
                 + (f"C[AI 마무리 {self.final_count['finishN']}수 후 계가]" if self.result and (self.final_count or {}).get("finishN") else ""))
         return head + "".join(nodes) + ")\n"
@@ -2152,6 +2250,7 @@ class Room:
             "bots": ({c: {"level": lv, "name": bot_name(lv), "stage": (monk_ver(lv) or {}).get("stage")}
                       for c, lv in self.bots.items()} if self.bots else None),
             "botPace": self.bot_pace, "botPaused": self.bot_paused, "botPaces": BOT_PACES, "botMax": BOT_MAX_MOVES,
+            "botResign": self.bot_resign,
             "botWait": (BOTS.wait.get(self.id) if (BOTS and self.bots) else None),
             "record": {"date": self.record_date or f"{self.started:%Y-%m-%d}", "rules": self.rules,
                        "origName": self.orig_name},
@@ -3020,7 +3119,7 @@ ROOMS = None  # Rooms
 ANALYSES = None  # Analyses(승률 그래프)
 ACTIONS = ("play", "engine", "score", "score/toggle", "score/confirm", "score/cancel", "hint", "judge", "judge/confirm", "judge/cancel",
            "timeout", "resign", "void", "undo", "swap", "level", "review", "ping",
-           "bot/pause", "bot/resume", "bot/step", "bot/pace")
+           "bot/pause", "bot/resume", "bot/step", "bot/pace", "bot/resign")
 BOT_BLOCKED = ("play", "engine", "score", "score/toggle", "score/cancel", "judge/confirm", "judge/cancel", "timeout", "resign", "void", "undo", "swap", "level")
 # 호환 경로(단계 ① 이전 화면·PWA 보관본·live_view --goboard): /api/state·/api/{동작}은 초점 방을 가리킨다.
 # 대국실은 /api/rooms/{id}/… 만 쓴다. 호환 경로는 보관본이 v3로 바뀐 뒤 제거 예정(단계 ②).
@@ -3039,7 +3138,7 @@ def act(room, action, body):
             return None, None, {}
         if room.bots and action in BOT_BLOCKED:
             raise RuntimeError("봇 대국에서는 쓸 수 없습니다 — 일시정지·재개·한 수씩만 됩니다.")
-        if action.startswith("bot/") and not room.bots:
+        if action.startswith("bot/") and action != "bot/resign" and not room.bots:
             raise RuntimeError("봇 대국이 아닙니다.")
         if action == "bot/pause":
             room.bot_paused = True
@@ -3052,6 +3151,10 @@ def act(room, action, body):
             if len(room.moves) >= BOT_MAX_MOVES:
                 raise RuntimeError(f"{BOT_MAX_MOVES}수 상한에 닿았습니다.")
             room.engine_move()
+        elif action == "bot/resign":  # 방 설정 '봇 기권' 켜기/끄기(사람 판·봇 대 봇 공통)
+            room.bot_resign = bool(body.get("on"))
+            room.resign_hist = {"B": [], "W": []}
+            EVENTS.add(room.id, action="bot-resign-opt", on=room.bot_resign, moveNo=len(room.moves))
         elif action == "bot/pace":
             room.bot_pace = body.get("pace") if body.get("pace") in BOT_PACES else room.bot_pace
         elif action == "play":
