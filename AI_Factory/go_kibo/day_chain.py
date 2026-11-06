@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""4060 낮 창(학교 시간) 연쇄 — ① 실수 사전 남은 국(1단계+2단계) → ② 결정 장면 정밀 분석. 각 단계 앞에 하교 가드.
+"""4060 낮 창(학교 시간) 연쇄 — ① 실수 사전 남은 국(1단계+2단계) → ② 결정 장면 정밀 분석 → ③ 소유권 수집. 각 단계 앞에 하교 가드.
 
 쌍아 확정 11-06 06:12(작가님 "ㅇㅇ"): 1순위 실수 사전 잔여, 2순위 결정 장면. 마감 15:30(작가님 10:02 "너덧 시쯤 하교" → 쌍아 보수 15:30, 구 14:00).
 각 단계는 mistakes_runner.py가 창 판정·잠금·대국 단위 체크포인트·창 끝 엔진 중단을 한다. 이 스크립트는 순서와 가드만 맡는다.
@@ -73,7 +73,17 @@ def main():
     if not os.path.exists(os.path.join(scenes, "scenes_queries.jsonl")):
         log("② 결정 장면 질의 없음 — 건너뜀")
         return
-    run(scenes, ["--queries", "scenes_queries.jsonl", "--stage1-only"], a)  # ② 결정 장면
+    if run(scenes, ["--queries", "scenes_queries.jsonl", "--stage1-only"], a) != "all_done":  # ② 결정 장면
+        log("② 미완 — ③ 소유권은 다음 창으로")
+        return
+    own = os.path.join(HERE, "own")  # ③ 소유권 수집(11-07 ORDER 막내3) — queries_full.jsonl 사본이 있을 때만
+    if not os.path.exists(os.path.join(own, "queries_full.jsonl")):
+        log("③ 소유권 질의 없음 — 건너뜀")
+        return
+    if not in_window(a.start, a.end):
+        log(f"창 가드: {a.start}~{a.end} 밖 — ③ 시작하지 않음")
+        return
+    run(own, ["--ownership"], a)
 
 
 if __name__ == "__main__":
