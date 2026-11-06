@@ -753,3 +753,6 @@
 - **[2026-11-05 23:59 KST]** iMac/쌍아 — 갱신: project_monkos_sovereignty (SaaS 링크 목록 vs 자체 모듈 오케스트레이션, 작가님 23:59)
 - 2026-11-06 06:17 iMac/쌍아: project_app_ops_routine_vision 신설(작가님 앱 다수 출시 후 운영 루틴 구상) + MEMORY.md 1행
 - 2026-11-06 10:02 iMac/쌍아: project_4060_gpu_time_windows 낮 마감 15:30 정정(작가님) + MEMORY.md 행 갱신
+
+## 2026-11-06 21:25 KST — iMac/쌍아
+- 신규 feedback_bg_makne_idle_exit.md + MEMORY.md 1행(bg 막내 대기 종료·시각 지정 위임 규칙)
