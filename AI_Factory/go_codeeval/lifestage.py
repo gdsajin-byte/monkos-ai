@@ -93,8 +93,9 @@ def closed_area(b, col, stones, strong):
     return seen
 
 
-def solve(b, col, anchor, area, first):
-    """닫힌 영역 안에서만 두는 사활 탐색 — 결과: '삶'|'세키'|'죽음'|None(상한). first = 먼저 두는 색. 수비 = col"""
+def solve(b, col, anchor, area, first, ko_free=0):
+    """닫힌 영역 안에서만 두는 사활 탐색 — 결과: '삶'|'세키'|'죽음'|None(상한). first = 먼저 두는 색. 수비 = col.
+    ko_free = 팻감이 무한한 색(그 색은 패 금지점에 바로 되따낼 수 있다 — 순환은 그 색의 승). 0 = 일반 규칙"""
     nodes = [0]
     memo = {}
     cells = sorted(area)
@@ -119,6 +120,8 @@ def solve(b, col, anchor, area, first):
         ko = cap[0] if len(cap) == 1 and len(s) == 1 and len(libs) == 1 else -1
         return nb, ko
 
+    path = set()
+
     def rec(board, to, passes, ko, depth):
         nodes[0] += 1
         if nodes[0] > SEARCH_NODES:
@@ -134,9 +137,12 @@ def solve(b, col, anchor, area, first):
         k = key(board, to, passes, ko)
         if k in memo:
             return memo[k]
+        if ko_free and k[:2] in path:  # 패 순환 — 팻감이 무한한 쪽이 이긴다
+            return 2 if ko_free == col else 0
+        path.add(k[:2])
         best = None
         for mv in cells:
-            if board[mv] != 0 or mv == ko:
+            if board[mv] != 0 or (mv == ko and to != ko_free):
                 continue
             nb, nko = play(board, to, mv)
             if nb is None:
@@ -149,7 +155,9 @@ def solve(b, col, anchor, area, first):
         r = rec(board, -to, passes + 1, -1, depth + 1)
         if best is None or (r > best if to == col else r < best):
             best = r
-        memo[k] = best
+        path.discard(k[:2])
+        if not ko_free:
+            memo[k] = best
         return best
 
     try:
@@ -159,8 +167,26 @@ def solve(b, col, anchor, area, first):
     return {2: "삶", 1: "세키", 0: "죽음"}[r]
 
 
+def active_ko(moves, setup=()):
+    """진행 중 패 — 마지막 수가 돌 1개를 따내고, 그 돌이 1개짜리 덩어리·활로 1(따낸 자리)이면 (패 자리, 따낸 돌 자리) 아니면 None"""
+    from codeeval import replay, idx
+    mv = [m for m in moves if m[1].lower() != "pass"]
+    if not moves or moves[-1][1].lower() == "pass":
+        return None
+    before, _ = replay(moves[:-1], setup)
+    after, _ = replay(moves, setup)
+    gone = [i for i in range(N) if before[i] and not after[i]]
+    if len(gone) != 1:
+        return None
+    i = idx(moves[-1][1])
+    s, libs = block(after, i)
+    if len(s) == 1 and libs == {gone[0]}:
+        return gone[0], i
+    return None
+
+
 def life_staged(b):
-    """{칸: (판정, 단계)} — 돌 칸만. 판정 ∈ 삶·죽음·세키·미정"""
+    """{칸: (판정, 단계)} — 돌 칸만. 판정 ∈ 삶·죽음·세키·패·미정"""
     out = {}
     v = bouzy(b)
     safe = {1: benson(b, 1), -1: benson(b, -1)}
@@ -195,7 +221,13 @@ def life_staged(b):
                 a2 = solve(b, col, anchor, area, col)   # 자기 선
                 if a1 is not None and a2 is not None:
                     if a1 == a2:
-                        res = (a1, "⑤ 세키" if a1 == "세키" else f"④ 탐색({a1})")
+                        # 일반 규칙에선 선수와 무관하게 정해졌다 — 팻감 무한 변형으로 패 여부를 가린다
+                        kd = solve(b, col, anchor, area, -col, ko_free=col)   # 상대 선이어도 우리가 팻감 무한
+                        ka = solve(b, col, anchor, area, col, ko_free=-col)   # 우리 선이어도 상대가 팻감 무한
+                        if kd is not None and ka is not None and kd != ka:
+                            res = ("패", f"⑤ 패(팻감 따라 {ka}~{kd})")
+                        else:
+                            res = (a1, "⑤ 세키" if a1 == "세키" else f"④ 탐색({a1})")
                     else:
                         res = ("미정", f"④ 탐색(선수 — 상대 선 {a1}·자기 선 {a2})")
         # ⑥ 포위·눈 없음(확정 죽음) — 기존 갇힘 판정

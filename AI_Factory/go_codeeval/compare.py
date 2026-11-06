@@ -150,6 +150,24 @@ def main():
             if r["n"] % 20 == 0 or r["n"] >= 240 or (first and first[0] == r["n"]):
                 lines.append(f"| {r['n']} | {len(here)} | {cnt['죽음']} | {cnt['미정']} | {cnt['삶']} | {main} | {b18d} |")
         lines += ["", f"- 코드가 그 돌들의 과반을 처음 '죽음'으로 잡은 수: **{first[0]}수({first[1]})**" if first else "- 끝까지 과반을 잡지 못함", ""]
+    # 패 — 코드 패 칸 vs b18 불확실 칸(|소유권| < 0.3)
+    nko, kocells, hit, unc_tot, unc_hit, kinds = 0, 0, 0, 0, 0, {}
+    for r in pos:
+        e = ce.evaluate([tuple(m) for m in r["moves"]], r["setup"], r["komi"], use_life="staged")
+        cells = {c for k in e["ko"] for c in k["cells"]}
+        unc = {i for i, o in enumerate(r["own"]) if abs(o) < 0.3}
+        unc_tot += len(unc)
+        for k in e["ko"]:
+            kinds[k["kind"]] = kinds.get(k["kind"], 0) + 1
+        if cells:
+            nko += 1
+            kocells += len(cells)
+            hit += len(cells & unc)
+            unc_hit += len(unc & cells)
+    lines += ["## 패 — 코드 '패' 칸 vs b18 소유권 |값|<0.3 칸", "",
+              f"- 패를 검출한 국면 {nko} / {len(pos)} · 종류 {kinds}",
+              f"- 코드 패 칸 {kocells}칸 중 b18 불확실 칸 {hit}칸 = **겹침률 {100 * hit / kocells:.0f}%**" if kocells else "- 코드 패 칸 없음",
+              f"- b18 불확실 칸 {unc_tot}칸 중 코드 패 칸 {unc_hit}칸 = {100 * unc_hit / unc_tot:.2f}%(불확실 칸은 패 말고도 공배·경계·미정 싸움이 대부분)" if unc_tot else "", ""]
     # 종국 사석
     lines += ["## 종국 10판 사석(단계식) — 코드 vs b18 final_status_list dead", "", "| 방 | b18 사석 | 맞음 | 미정(b18 사석) | 놓침 | 헛짚음(코드만 사석) | 코드 집 차 vs b18 |", "|---|---|---|---|---|---|---|"]
     for r in finals:

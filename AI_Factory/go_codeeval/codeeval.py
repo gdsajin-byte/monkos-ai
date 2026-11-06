@@ -308,6 +308,29 @@ def enclosed_status(b, col, stones, v=None, strong=frozenset()):
     return "죽음"
 
 
+def quadrant(cells):
+    xs = [c % SIZE for c in cells]
+    ys = [c // SIZE for c in cells]
+    x, y = sum(xs) / len(xs), sum(ys) / len(ys)
+    h = "좌" if x < 6 else "우" if x > 12 else ""
+    v = "상" if y < 6 else "하" if y > 12 else ""
+    return (h + v) if (h and v) else (h + "변") if h else (v + "변") if v else "중앙"  # 좌하·우상 / 좌변 / 하변 / 중앙
+
+
+def evaluate_core(b, caps, dead, komi, dil=5, ero=21):
+    """사석을 들어낸 집 차만(흑 기준)"""
+    nb = b[:]
+    pris = {1: caps[1], -1: caps[-1]}
+    for p in set(dead):
+        if nb[p]:
+            pris[-nb[p]] += 1
+            nb[p] = 0
+    v = bouzy(nb, dil, ero)
+    tb = sum(1 for i in range(N) if not nb[i] and v[i] > 0)
+    tw = sum(1 for i in range(N) if not nb[i] and v[i] < 0)
+    return tb + pris[1] - tw - pris[-1] - komi
+
+
 def evaluate(moves, setup=(), komi=6.5, dil=5, ero=21, use_life=True):
     """국면 평가 → dict(lead: 흑 기준 집 차, own: 361 칸 소유(1·-1·0), dead: 사석 칸, undecided: 미정 칸, terrB·terrW·prisB·prisW)"""
     b, caps = replay(moves, setup)
@@ -320,6 +343,7 @@ def evaluate(moves, setup=(), komi=6.5, dil=5, ero=21, use_life=True):
         st = life(b) if use_life else {}
     dead = [p for p, s in st.items() if s == "죽음"]
     und = [p for p, s in st.items() if s == "미정"]
+    kos = [p for p, s in st.items() if s == "패"]
     nb = b[:]
     pris = {1: caps[1], -1: caps[-1]}
     for p in dead:
@@ -338,7 +362,32 @@ def evaluate(moves, setup=(), komi=6.5, dil=5, ero=21, use_life=True):
     lead = terr[1] + pris[1] - terr[-1] - pris[-1] - komi
     # 미정 무리 반영값 — 미정 돌 하나 = 죽으면 상대 +2(포로 1 + 집 1), 살면 0 → 기대값 절반 = 1집씩 상대 쪽
     lead_mid = lead - sum(b[p] for p in und)
-    return {"lead": lead, "leadMid": lead_mid, "stages": stg, "own": own, "dead": dead, "undecided": und, "terrB": terr[1], "terrW": terr[-1], "prisB": pris[1], "prisW": pris[-1]}
+    # 패 — 확정하지 않고 걸린 크기를 잰다: 패 무리마다 '죽었을 때' 집 차를 다시 계산 → 형세 범위(작가님 21:02)
+    ko_list = []
+    if use_life == "staged":
+        groups = {}
+        for p in kos:
+            groups.setdefault(stg[p][1], set())
+        seen = set()
+        for p in kos:
+            if p in seen:
+                continue
+            grp, _ = block(b, p)
+            grp = {q for q in kos if b[q] == b[p] and (q in grp or any(q in block(b, r)[0] for r in grp))} or grp
+            seen |= grp
+            alt = evaluate_core(b, caps, dead + list(grp), komi, dil, ero)
+            ko_list.append({"cells": sorted(grp), "color": b[p], "swing": round(abs(alt - lead), 1), "where": quadrant(grp), "kind": "사활 패"})
+        from lifestage import active_ko
+        ak = active_ko(moves, setup)
+        if ak:
+            ko_list.append({"cells": list(ak), "color": b[ak[1]], "swing": 2.0, "where": quadrant(ak), "kind": "진행 중 패"})
+    lo = lead + sum(min(0.0, -k["color"] * k["swing"]) for k in ko_list)
+    hi = lead + sum(max(0.0, -k["color"] * k["swing"]) for k in ko_list)
+    who = lambda x: f"흑 {x:.1f}" if x > 0 else f"백 {-x:.1f}" if x < 0 else "반반"
+    text = (who(lead) + "집" if not ko_list else
+            (f"흑 {lo:.1f}~{hi:.1f}집" if lo > 0 else f"백 {-hi:.1f}~{-lo:.1f}집" if hi < 0 else f"{who(lo)}~{who(hi)}집")
+            + "".join(f", {k['where']} 패 {k['swing']:g}집" for k in ko_list))
+    return {"lead": lead, "leadMid": lead_mid, "stages": stg, "ko": ko_list, "leadRange": (lo, hi), "text": text, "own": own, "dead": dead, "undecided": und, "terrB": terr[1], "terrW": terr[-1], "prisB": pris[1], "prisW": pris[-1]}
 
 
 if __name__ == "__main__":  # 속도 시험: python3 -I codeeval.py
