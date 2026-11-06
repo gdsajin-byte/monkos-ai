@@ -880,6 +880,47 @@ PRESENCE_TTL = 30  # 대기실·대국실에서 이 초 안에 신호가 있으�
 RATE_MAX, RATE_WINDOW = 30, 60  # 가입·입장·중복 확인: IP별 1분 30회
 USERS_FILE = ROOMS_DIR.parent / "users.json"
 SESSIONS_FILE = ROOMS_DIR.parent / "sessions.json"
+# 바둑판 설정 서버 저장(11-06 작가님 15:41 "세팅도 없어지고 … 돌 디자인도 바뀌고" — 포털 어드민 경유 go.monkos.ai 와 로컬은 출처가 달라
+# 브라우저 저장소가 따로였다). 사용자(uid)별 {키: 문자열}. 화면이 쓰는 키만 받는다(아래 목록 = 정본, index.html PREF_KEYS 와 같게)
+PREFS_FILE = ROOMS_DIR.parent / "prefs.json"
+PREF_KEYS = ("goBoardSkin", "goBoardSkinBoard", "goBoardSkinStones", "goBoardPack", "goBoardKataLevel", "goBoardMonkVer", "goBoardBots",
+             "goBoardSound", "goBoardSize", "goBoardColorPick", "goBoardRvNums", "goBoardRvSpeed", "goBoardLiveFolded", "goLobbyTab")
+PREF_MAX = 300  # 값 하나 최대 글자
+
+
+class Prefs:
+    """prefs.json — {uid: {키: 값, "_updated": "시각"}}. 쓰기는 원자적 교체"""
+
+    def __init__(self):
+        self.lock = threading.Lock()
+        try:
+            self.data = json.loads(PREFS_FILE.read_text(encoding="utf-8")) if PREFS_FILE.exists() else {}
+        except (OSError, ValueError) as e:
+            print(f"❌ go-board: 설정 파일 읽기 실패 — 빈 설정으로 시작(파일은 그대로 둔다): {e}", file=sys.stderr, flush=True)
+            self.data, self.broken = {}, True
+
+    def get(self, uid):
+        with self.lock:
+            d = self.data.get(uid)
+            return ({k: v for k, v in d.items() if k in PREF_KEYS} if d else {}), bool(d)
+
+    def put(self, uid, kv, init=False):
+        """kv 반영 → 저장한 키 수. init=True 면 서버 값이 없을 때만(로컬 설정 1회 올리기 — 덮어쓰기 아님)"""
+        clean = {k: str(v)[:PREF_MAX] for k, v in (kv or {}).items() if k in PREF_KEYS and v is not None}
+        if not clean:
+            return 0
+        with self.lock:
+            if getattr(self, "broken", False):
+                raise RuntimeError("설정 파일이 손상돼 저장하지 않습니다")
+            if init and self.data.get(uid):
+                return 0
+            d = self.data.setdefault(uid, {})
+            d.update(clean)
+            d["_updated"] = datetime.now().isoformat(timespec="seconds")
+            write_json_atomic(PREFS_FILE, self.data)
+        return len(clean)
+
+
 CLAIM_FILE = ROOMS_DIR.parent / "admin_claim.txt"
 NICK_RULE = "아이디는 2~12자의 한글·영문·숫자·_ 만 쓸 수 있습니다"
 CLAIM_FAIL = "인수 코드가 맞지 않습니다 — 서버의 인수 코드 파일 값을 확인해 주세요"
@@ -1257,6 +1298,7 @@ class Auth:
 
 
 AUTH = None  # Auth
+PREFS = Prefs()
 
 
 def my_stats(uid):
@@ -2477,7 +2519,8 @@ class Rooms:
     def defaults(self, owner=ADMIN_UID):
         """새 대국 창 기본값 — 그 사람이 가장 최근에 만든 방의 설정을 기억한다."""
         last = max((r for r in list(self.rooms.values()) if not r.imported and not r.bots and r.owner == owner), key=lambda r: r.started, default=None)  # 봇 대국 설정은 기본값으로 쓰지 않는다
-        return {"level": last.level if last else "strong", "handicap": last.handicap if last else 0,
+        # 11-06 작가님 15:45 — 기록이 없으면 MONKOS 최신(최강은 고를 때만)
+        return {"level": last.level if last else MONK_LATEST["key"], "handicap": last.handicap if last else 0,
                 "time": last.time if last else dict(DEFAULT_TIME), "user": last.user if last else "B",
                 "dcLimit": DC_LIMIT}
 
@@ -3484,6 +3527,15 @@ class Handler(BaseHTTPRequestHandler):
                 err = AUTH.set_rank(u["uid"], body.get("rank"))
                 self._json({"error": err} if err else {"ok": True, "me": self._me(AUTH.get(u["uid"]))}, 400 if err else 200)
             return True
+        if path == "/api/prefs":  # 설정 저장 — {"set": {키: 값}} 또는 {"init": {…}}(서버 값 없을 때만)
+            u = self._need()
+            if u:
+                try:
+                    n = PREFS.put(u["uid"], body.get("init") or body.get("set"), init=bool(body.get("init")))
+                    self._json({"ok": True, "saved": n})
+                except RuntimeError as e:
+                    self._json({"error": str(e)}, 500)
+            return True
         if path == "/api/auth/logout":
             AUTH.end_session(self._token())
             self._json({"ok": True}, headers=self._cookie(""))
@@ -3540,6 +3592,11 @@ class Handler(BaseHTTPRequestHandler):
             nick_q = urllib.parse.parse_qs(query).get("nick", [""])[0]
             st, msg = AUTH.check(nick_q)
             self._json({"status": st, "message": msg, "claim": st != "bad" and AUTH.is_admin_nick(nick_q)})
+        elif path == "/api/prefs":  # 내 설정(11-06) — 없으면 has False(화면이 로컬 설정을 1회 올린다)
+            u = self._need()
+            if u:
+                pr, has = PREFS.get(u["uid"])
+                self._json({"prefs": pr, "has": has})
         elif path in ("/api/auth/me", "/api/me"):
             u = self._need()
             if u:

@@ -573,6 +573,35 @@ function el(tag, attrs, parent) {
 }
 const P = i => M + i * STEP;
 
+// ---- 설정 서버 저장(11-06 작가님 15:41 — 포털 어드민 경유 go.monkos.ai·로컬·테일넷·PWA 출처마다 브라우저 저장소가 따로라 설정이 사라졌다)
+// 로그인한 사용자의 설정은 서버(prefs.json)가 정본: 화면을 열 때 서버 값을 이 출처의 저장소로 내려받고(아래 코드는 그대로 localStorage 를 읽는다),
+// 바꿀 때마다 PREF.set 이 저장소와 서버에 함께 쓴다. 서버 값이 없으면 이 출처의 기존 설정을 1회 올린다(덮어쓰기 아님). 서버 불통·미로그인 = 저장소만
+const PREF_KEYS = ['goBoardSkin', 'goBoardSkinBoard', 'goBoardSkinStones', 'goBoardPack', 'goBoardKataLevel', 'goBoardMonkVer', 'goBoardBots',
+  'goBoardSound', 'goBoardSize', 'goBoardColorPick', 'goBoardRvNums', 'goBoardRvSpeed', 'goBoardLiveFolded', 'goLobbyTab'];  // 정본 = server.py PREF_KEYS
+const PREF = (() => {
+  let srv = null;  // 서버 설정(로그인·연결됨) — null 이면 저장소만
+  const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* 저장소 불가 — 이번 창에서만 */ } };
+  const post = body => fetch('/api/prefs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), keepalive: true })
+    .then(r => { if (!r.ok) throw new Error(r.status); }).catch(e => console.warn('설정 서버 저장 실패 — 이 기기에만 남습니다', e));
+  function load() {  // 동기 1회(첫 그리기 전에 스킨·소리가 서버 값이어야 깜빡이지 않는다) — 실패하면 저장소 값 그대로
+    try {
+      const x = new XMLHttpRequest();
+      x.open('GET', '/api/prefs', false);
+      x.send();
+      if (x.status !== 200) return;
+      const j = JSON.parse(x.responseText);
+      srv = j.prefs || {};
+      if (j.has) { for (const k of PREF_KEYS) if (k in srv) lsSet(k, srv[k]); return; }
+      const init = {};
+      for (const k of PREF_KEYS) { const v = lsGet(k); if (v != null) init[k] = v; }
+      if (Object.keys(init).length) { srv = { ...init }; post({ init }); }
+    } catch (e) { srv = null; }
+  }
+  return { load, set(k, v) { v = String(v); lsSet(k, v); if (srv && srv[k] !== v) { srv[k] = v; post({ set: { [k]: v } }); } } };
+})();
+PREF.load();
+
 // ---- 판·돌 디자인(스킨): 기본 = 우리 SVG. 외부 스킨팩 = 레포 밖 ~/.monkos/go-board-skins/<팩>/ (규격 SKINS.md)
 // 판 이미지 위에 격자·화점은 늘 우리가 그린다. 돌은 스프라이트에서 칸을 잘라 판 칸 크기에 맞춰 늘린다.
 // 기본 팩(10-23 작가님 "타이젬에서 받은 소리·판·돌 적용") — 내부 실험 참조본, 출시 전 자체 디자인으로 교체(원장 191)
@@ -668,7 +697,7 @@ function setupWidgets() {  // 첫 상태를 받은 뒤 1회 — 선택지 채우
   pk.value = S.packs && S.packs[packName] ? packName : 'builtin';
   pk.onchange = () => {
     packName = pk.value;
-    try { localStorage.setItem('goBoardPack', packName); } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
+    try { PREF.set('goBoardPack', packName); } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
     buildSounds(S); setTimeout(() => moveSound(0), 300);
   };
   const sk = document.getElementById('skin');
@@ -677,9 +706,9 @@ function setupWidgets() {  // 첫 상태를 받은 뒤 1회 — 선택지 채우
   sk.value = S.skins && S.skins[skinName] ? skinName : 'builtin';
   const save = () => {
     try {
-      localStorage.setItem('goBoardSkin', skinName);
-      if (skinBoard) localStorage.setItem('goBoardSkinBoard', skinBoard);
-      if (skinStones) localStorage.setItem('goBoardSkinStones', skinStones);
+      PREF.set('goBoardSkin', skinName);
+      if (skinBoard) PREF.set('goBoardSkinBoard', skinBoard);
+      if (skinStones) PREF.set('goBoardSkinStones', skinStones);
     } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
   };
   const fillSub = () => {
@@ -1566,7 +1595,7 @@ document.getElementById('bNew').onclick = () => {
   const mode = preLv === 'kata' ? 'kata' : preLv === 'monkos' ? 'monkos' : 'all';
   fillLevels(mode);
   document.getElementById('dLevel').value = mode === 'kata' ? lastKataLevel() : mode === 'monkos' ? lastMonkVer()
-    : (isMonk(S.level) ? lastMonkVer() : S.level);
+    : (S.level && !isMonk(S.level) ? S.level : lastMonkVer());  // 11-06 — 지난 판이 없으면 MONKOS(최강은 고를 때만)
   document.querySelector(`input[name="dWay"][value="${S.handicap ? 'handi' : 'even'}"]`).checked = true;
   document.getElementById('handicap').value = S.handicap || 2;
   // 흑백선택은 지난번 고른 값(자동 돌가림 포함)을 기억 — 지난 판 결과색으로 덮지 않는다(10-23 작가님 "돌가리기가 적용 안 되는 듯")
@@ -1600,7 +1629,7 @@ document.getElementById('dOk').onclick = async () => {
   if (document.getElementById('dWho').value === 'bots') {  // 봇 대 봇 — 시계 없음, 방 주인은 지켜보는 사람
     const B = document.getElementById('dBotB').value, W = document.getElementById('dBotW').value, pace = document.getElementById('dPace').value;
     const handiB = document.querySelector('input[name="dWay"]:checked').value === 'handi' ? Number(document.getElementById('handicap').value) : 0;
-    try { localStorage.setItem('goBoardBots', JSON.stringify({ B, W, pace })); } catch (e) { /* 이번 창에서만 */ }
+    try { PREF.set('goBoardBots', JSON.stringify({ B, W, pace })); } catch (e) { /* 이번 창에서만 */ }
     notice('봇 대국실을 여는 중…');
     try {
       const r = await fetch('/api/rooms', { method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -1617,8 +1646,8 @@ document.getElementById('dOk').onclick = async () => {
     { main: Number(document.getElementById('tMain').value), byo: Number(document.getElementById('tByo').value),
       periods: Number(document.getElementById('tPer').value) };
   const colorPick = document.getElementById('dColor').value;
-  try { localStorage.setItem('goBoardColorPick', colorPick); } catch (e) { /* 이번 창에서만 */ }
-  try { localStorage.setItem(isMonk(level) ? 'goBoardMonkVer' : 'goBoardKataLevel', level); } catch (e) { /* 이번 창에서만 */ }
+  try { PREF.set('goBoardColorPick', colorPick); } catch (e) { /* 이번 창에서만 */ }
+  try { PREF.set(isMonk(level) ? 'goBoardMonkVer' : 'goBoardKataLevel', level); } catch (e) { /* 이번 창에서만 */ }
   notice('대국실을 여는 중…');
   try {
     const r = await fetch('/api/rooms', { method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -1703,7 +1732,7 @@ const soundBox = document.getElementById('sound');
 soundBox.checked = soundOn;
 soundBox.onchange = () => {
   soundOn = soundBox.checked;
-  try { localStorage.setItem('goBoardSound', soundOn ? 'on' : 'off'); } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
+  try { PREF.set('goBoardSound', soundOn ? 'on' : 'off'); } catch (e) { /* 저장소 불가 — 이번 창에서만 */ }
   if (soundOn) moveSound(0);
 };
 
@@ -2057,7 +2086,7 @@ if (ROOM) {
     document.body.classList.toggle('bsized', !isNaN(Number(mode)));
     if (!isNaN(Number(mode))) document.body.style.setProperty('--bw', mode + 'px');
     full.classList.toggle('on', mode === 'full');
-    try { localStorage.setItem('goBoardSize', mode); } catch (e) { /* 이번 창에서만 */ }
+    try { PREF.set('goBoardSize', mode); } catch (e) { /* 이번 창에서만 */ }
   }
   function step(d) {
     const cur = box.getBoundingClientRect().width;
@@ -2088,7 +2117,7 @@ if (ROOM) {
   let folded = false;
   try { folded = localStorage.getItem('goBoardLiveFolded') === '1'; } catch (e) { /* 기본 펼침 */ }
   const setFold = f => { folded = f; box.classList.toggle('folded', f); tg.textContent = f ? '펼치기' : '접기';
-    try { localStorage.setItem('goBoardLiveFolded', f ? '1' : '0'); } catch (e) { /* 이번 창에서만 */ } };
+    try { PREF.set('goBoardLiveFolded', f ? '1' : '0'); } catch (e) { /* 이번 창에서만 */ } };
   tg.onclick = () => setFold(!folded);
   setFold(folded);
   // 11-04 작가님 — 작가님 계정이 아니면(서버 403 forbidden) JSON을 보이지 않게 칸 자체를 숨긴다
@@ -2151,7 +2180,7 @@ setInterval(() => {
   const setTab = t => {
     lbEl.dataset.tab = t;
     document.querySelectorAll('.lobby-tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
-    try { localStorage.setItem('goLobbyTab', t); } catch (e) { /* 저장소 불가 — 이번 화면만 */ }
+    try { PREF.set('goLobbyTab', t); } catch (e) { /* 저장소 불가 — 이번 화면만 */ }
     const body = document.querySelector('.lobby-body'); if (body) body.scrollTop = 0;
   };
   document.querySelectorAll('.lobby-tabs button').forEach(b => { b.onclick = () => setTab(b.dataset.tab); });
@@ -2500,8 +2529,8 @@ function rvInit() {
   };
   RV.play = play;
   document.getElementById('rvPlay').onclick = play;
-  sp.onchange = () => { try { localStorage.setItem('goBoardRvSpeed', sp.value); } catch (e) { /* 이번 창만 */ } if (RV.timer) { rvStop(); play(); } };
-  document.getElementById('rvNums').onchange = e => { try { localStorage.setItem('goBoardRvNums', e.target.value); } catch (x) { /* 이번 창만 */ } rvRender(); };
+  sp.onchange = () => { try { PREF.set('goBoardRvSpeed', sp.value); } catch (e) { /* 이번 창만 */ } if (RV.timer) { rvStop(); play(); } };
+  document.getElementById('rvNums').onchange = e => { try { PREF.set('goBoardRvNums', e.target.value); } catch (x) { /* 이번 창만 */ } rvRender(); };
   document.getElementById('rvTrialUndo').onclick = () => { RV.trial.pop(); RV.evalTxt = ''; if (RV.trial.length) rvEval(); rvRender(); };
   document.getElementById('rvTrialBack').onclick = () => rvGo(RV.k, 'jump');  // 본 수순으로(진입 직전 수)
   document.getElementById('rvExit').onclick = rvLeave;
