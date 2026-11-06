@@ -332,7 +332,7 @@ def draw_frame(sec):
     # 자막
     cur = next((l for l in reversed(timeline) if l["start"] - 0.05 <= sec <= l["end"] + GAP), None)
     if cur:
-        cap_y = H - 330
+        cap_y = H - 350  # 4줄까지(줄 높이 약 60px)
         rows, row = [], ""
         for ch in cur["text"]:
             if d.textlength(row + ch, font=F["cap"]) / SS > W - 140:
@@ -341,7 +341,7 @@ def draw_frame(sec):
             else:
                 row += ch
         rows.append(row)
-        d.multiline_text((s(W / 2), s(cap_y)), "\n".join(rows[:3]), font=F["cap"], fill=(255, 255, 255), anchor="ma", align="center", spacing=s(14))
+        d.multiline_text((s(W / 2), s(cap_y)), "\n".join(rows[:4]), font=F["cap"], fill=(255, 255, 255), anchor="ma", align="center", spacing=s(14))
     # 진행 막대
     d.rectangle([0, s(H - 10), s(W * sec / TOTAL), s(H)], fill=(120, 120, 130))
     return im.resize((W, H), Image.LANCZOS)
