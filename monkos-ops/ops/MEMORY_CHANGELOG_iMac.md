@@ -756,3 +756,6 @@
 
 ## 2026-11-06 21:25 KST — iMac/쌍아
 - 신규 feedback_bg_makne_idle_exit.md + MEMORY.md 1행(bg 막내 대기 종료·시각 지정 위임 규칙)
+
+## 2026-11-07 04:32 KST — iMac/쌍아
+- 신규 feedback_go_commentary_level.md + MEMORY.md 1행(바둑 해설 수준=개념·손익 언어)
