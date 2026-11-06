@@ -157,3 +157,24 @@ cd ~/developer/_ext/katago-ios && bash monk_build_ipa.sh
 - 기본 설정 실측(`default_gtp.cfg`): numSearchThreads 32 · nnMaxBatchSize 16 · nnCacheSizePowerOfTwo 미지정(KataGo 기본) · benchmark는 `addOverrideConfigArg`를 지원한다(소스 확인).
 - M1 적용(백업 .bak-gameloop-20261106-061431) → 서명 없는 빌드(16.4) BUILD SUCCEEDED.
 - 내일: 작가님 재빌드 1줄(아침 1회, 다른 수정과 함께) → 실행 전 `ftl.sh usage` 확인 → iPhone 8 + SE 3 판 캡처(2대 × 5분 = 10분). 막내2 안드로이드 3대(15분)와 한도를 나눈다.
+
+## 10. v4 IPA 회수 · 일일 한도 초기화 기준 (09:05~09:09, 쌍아 09:05)
+
+- **IPA**: 작가님 M1 빌드 09:05 → iMac `~/.monkos/device_lab/ipa/MONKBench_v4.ipa`(13,142,701 B)
+  - sha256 **`67fe2336bcb4927bb9d1a2136b47e4c91d5769f6decbc08eda7e0be7e063fc64`**(M1 원본과 일치)
+  - 서명 OK · KataGoSwift minos 16.4 · 저메모리 설정 문자열 `numSearchThreads=8,nnCacheSizePowerOfTwo=16` · 판 캡처(MONKShowGoban) · `physicalMemoryMB` 포함
+- **측정은 하지 않았다**: 오늘 24/25분이라 가드를 우회하지 않는다. 다음 일자에 `ftl.sh usage` 확인 후 실행한다:
+  `ftl.sh run ios --models iphone8:16.6,iphonese3:18.4 --ipa ~/.monkos/device_lab/ipa/MONKBench_v4.ipa --timeout 3m` (2대 × 5분 = 10분)
+- **초기화 기준(1차 근거)**
+  - Test Lab 요금 문서([usage-quotas-pricing](https://firebase.google.com/docs/test-lab/usage-quotas-pricing))에는 초기화 시각이 없다.
+  - Service Usage API(읽기 전용) 실측: testing.googleapis.com 할당량은 일 단위(`1/d/{project}`) — Blaze 실기기 실행 200회/일 · 가상 300회/일
+  - Google Cloud 할당량 문서([quotas overview](https://docs.cloud.google.com/docs/quotas/overview)): "For per-day quotas, the time period resets at midnight Pacific Time" → 표준시(PST) 기간에는 **매일 17:00 KST**
+  - 무료 30분(과금)이 같은 기준인지는 문서에 없다 — 미확정.
+- **원장 기준 차이 → 가드를 보수적으로**
+  - 원장은 KST 자정 기준이었다. 이제 `used_today` = max(KST 자정 기준 합, 태평양 자정 기준 합)으로 판정한다.
+  - 새 원장 행에 `ts`(epoch)를 남긴다. 시각 없는 옛 행은 두 기준 모두에 넣는다.
+  - `usage` 출력에 두 날짜와 "다음 태평양 초기화 17:00 KST"를 표기한다.
+- **스모크 9/9**: 태평양 사례(KST 어제·태평양 오늘 22분 + 5분 → 거부)를 추가했다.
+  - "안드로이드 run 거부" 사례는 삭제했다 — 막내2 `run_android` 추가 뒤 그 사례가 **실제 원장·실실행 경로**가 됐다. 이번에는 한도 초과로 막혔지만 여유가 있었으면 실실행될 수 있었다.
+- 함수 단위 수정만 했다(`used_today`·`cmd_usage` 출력·원장 기록 1줄). 막내2 `run_android`는 무변경이다.
+- `gcloud alpha` 명령은 구성요소 설치가 필요해 쓰지 않았다(설치 = 승인 사항, 미설치 확인). 대신 Service Usage REST API를 읽기로 썼다.
