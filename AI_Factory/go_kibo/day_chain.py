@@ -24,10 +24,17 @@ def log(msg):
         f.write(f"{dt.datetime.now():%Y-%m-%d %H:%M:%S} {msg}\n")
 
 
-def before_end(end):
+def in_window(start, end, now=None):
+    """창 안인가 — 같은 날 창(08:30~14:00)과 밤 창(23:05~07:30) 모두. 러너 window()와 같은 규칙."""
+    now = now or dt.datetime.now()
+    sh, sm = map(int, start.split(":"))
     eh, em = map(int, end.split(":"))
-    now = dt.datetime.now()
-    return now < now.replace(hour=eh, minute=em, second=0, microsecond=0)
+    s = now.replace(hour=sh, minute=sm, second=0, microsecond=0)
+    if (eh, em) > (sh, sm):
+        return s <= now < s.replace(hour=eh, minute=em)
+    if now < s:
+        s -= dt.timedelta(days=1)
+    return s <= now < (s + dt.timedelta(days=1)).replace(hour=eh, minute=em)
 
 
 def state_of(root):
@@ -53,15 +60,15 @@ def main():
     ap.add_argument("--runner-arg", action="append", default=[], help="시험용: 러너에 그대로 넘길 인자(여러 번, 예: --runner-arg=--dry-run)")
     a = ap.parse_args()
     full, scenes = os.path.join(HERE, "full"), os.path.join(HERE, "scenes")
-    if not before_end(a.end):
-        log(f"하교 가드: {a.end} 이후 — 시작하지 않음")
+    if not in_window(a.start, a.end):
+        log(f"창 가드: {a.start}~{a.end} 밖 — 시작하지 않음")
         return
     st = run(full, [], a)  # ① 실수 사전 잔여(1단계 → 2단계 400v)
     if st != "all_done":
         log(f"① 미완(state {st}) — ② 결정 장면은 다음 창으로")
         return
-    if not before_end(a.end):
-        log(f"하교 가드: {a.end} 이후 — ② 시작하지 않음")
+    if not in_window(a.start, a.end):
+        log(f"창 가드: {a.start}~{a.end} 밖 — ② 시작하지 않음")
         return
     if not os.path.exists(os.path.join(scenes, "scenes_queries.jsonl")):
         log("② 결정 장면 질의 없음 — 건너뜀")
