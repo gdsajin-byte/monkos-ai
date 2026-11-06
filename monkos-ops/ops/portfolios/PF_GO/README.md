@@ -146,6 +146,7 @@ status: active
 | 11/06 | iMac/쌍아-막내2 | 안드로이드 빌드 v0 — KataGo Eigen arm64 + Game Loop APK 18.6MB, FTL 가상 Passed ×2(1500v 6.5~7.8초), 실기기 A05s·A15·S24는 내일 | [COMPLETION_20261106_iMac쌍아-막내2_GO_안드로이드빌드_GameLoop](../../reports/2026-11/COMPLETION_20261106_iMac쌍아-막내2_GO_안드로이드빌드_GameLoop.md) | ✅ |
 | 11/06 | iMac/쌍아-막내3 | v3 b10-s95M 회수·변환(sha db3efa11) + 실수 사전 v1 1차 1,641국(포석 0.63/중반 1.82/끝내기 1.84집, 약구간 141–160수) + 낮 창 GO-day-run 등록 | [COMPLETION_20261106_iMac쌍아-막내3_GO_b10마무리_실수사전v1](../../reports/2026-11/COMPLETION_20261106_iMac쌍아-막내3_GO_b10마무리_실수사전v1.md) | ✅ |
 | 11/06 | iMac/쌍아-막내3 | b10 v3(95.42M, 02:51 정상 종료·monk_b10_s95M sha db3efa11) · 실수 사전 1단계 1,641/2,000국(21.8국면/초) → MISTAKES_v1 1차, 낮 창 GO-day-run(잔여 359국→결정 장면 2,532) 등록 | [COMPLETION_20261106_iMac쌍아-막내3_GO_b10마무리_실수사전v1](../../reports/2026-11/COMPLETION_20261106_iMac쌍아-막내3_GO_b10마무리_실수사전v1.md) | ⏳ |
+| 11/06 | ?/? | **ORDER** 바둑앱 종국 완결 — ① AI 판정 결과로 대국 종료(동의창) ② 계가 마무리가 수 상한에 끊기면 막다른 안내 대신 AI 판정 동의창으로 잇기 ③ 봇 기권(가망 없는 판) | [ORDER_20261106_iMac쌍아_막내8_GO_AI판정종국_봇기권](../../orders/2026-11/ORDER_20261106_iMac쌍아_막내8_GO_AI판정종국_봇기권.md) | ⏳ |
 
 ## 3. Phase 현황
 
