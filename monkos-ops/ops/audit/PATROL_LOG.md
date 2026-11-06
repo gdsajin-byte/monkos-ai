@@ -710,3 +710,11 @@
 > ## secret map (2026-11-05 09:30)
 ```
 - ⚠️ 경보 표식 4건 (스냅샷 /Users/jeong-kyushin/.monkos/patrol/snap_20261105.txt 참조)
+
+## [2026-11-06 09:30 KST] 순찰 감지
+```diff
+< ## secret map (2026-11-05 09:30)
+> ## secret map (2026-11-06 09:30)
+> YOUTUBE_DATA_API_KEY                 2026-11-05  등재
+```
+- ⚠️ 경보 표식 4건 (스냅샷 /Users/jeong-kyushin/.monkos/patrol/snap_20261106.txt 참조)
