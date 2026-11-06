@@ -12,3 +12,10 @@
 
 ## 시범 1편 결과(dFnIMWABxiY, 21:39)
 자막 1,097구간(821초) · 장면 38 · 승부처 7 · Gemini 입력 56k·출력 7k 토큰. 다음: 판 판독 → 수순 복원 → KataGo 사실 결합(엔진 사실 ↔ 해설 발화 짝), 화자 분리.
+
+## 이현욱 개인 영상 장면 해설 짝 (11-07 막내2, `lhw_*.py`)
+판이 화면 대부분인 개인 영상(생중계 제외) → 대화록 문장 ↔ 판 국면(실전 몇 수째·변화도 몇 수째) ↔ 그 사이 놓인 돌. 데이터 `~/.monkos/go-commentary-yt/lhw/<영상ID>/`(커밋 금지).
+1. `lhw_batch.py cands` 후보 표 → `lhw_batch.py fetch ID…` (720p 무음 + 자동 자막 json3 + 1초 프레임)
+2. `lhw_batch.py run ID…` = `lhw_read.py` 판 격자 자동 보정·점 판독(빈·흑·백·번호 돌·마지막 수 세모) → `lhw_events.py` 실전 수순·변화도(바둑 규칙 재현으로 번호)·앞뒤 이동 → `lhw_pair.py` 문장(종결 어미·쉼) × 국면 짝 `pairs.jsonl`·`pairs.md`
+3. `lhw_check.py 폴더 points|vars|moves N seed` 육안 대조 시트 · `lhw_batch.py merge ID…` → `lhw/pairs_v0.jsonl`
+- 화면 두 방식: 세모(마지막 수 노란·남색 세모) / 고리(새 판 화면, 작은 고리 — 가운데가 비면 고리, 획이 지나면 숫자 1). 판 크기가 영상 중간에 바뀌는 영상(Pg7KyHEV_fA)은 고정 격자로 못 읽는다.
