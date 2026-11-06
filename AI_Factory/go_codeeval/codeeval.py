@@ -334,9 +334,9 @@ def evaluate_core(b, caps, dead, komi, dil=5, ero=21):
 def evaluate(moves, setup=(), komi=6.5, dil=5, ero=21, use_life=True):
     """국면 평가 → dict(lead: 흑 기준 집 차, own: 361 칸 소유(1·-1·0), dead: 사석 칸, undecided: 미정 칸, terrB·terrW·prisB·prisW)"""
     b, caps = replay(moves, setup)
-    if use_life == "staged":  # 단계식 사활(lifestage.py) — {칸: (판정, 단계)}
+    if use_life in ("staged", "staged2"):  # 단계식 사활(lifestage.py) — {칸: (판정, 단계)}. staged = 1차(①②③⑥), staged2 = +④⑤ 국지 탐색·세키
         from lifestage import life_staged
-        stg = life_staged(b)
+        stg = life_staged(b, search=use_life == "staged2")
         st = {p: r[0] for p, r in stg.items()}
     else:
         stg = None
@@ -362,32 +362,23 @@ def evaluate(moves, setup=(), komi=6.5, dil=5, ero=21, use_life=True):
     lead = terr[1] + pris[1] - terr[-1] - pris[-1] - komi
     # 미정 무리 반영값 — 미정 돌 하나 = 죽으면 상대 +2(포로 1 + 집 1), 살면 0 → 기대값 절반 = 1집씩 상대 쪽
     lead_mid = lead - sum(b[p] for p in und)
-    # 패 — 확정하지 않고 걸린 크기를 잰다: 패 무리마다 '죽었을 때' 집 차를 다시 계산 → 형세 범위(작가님 21:02)
+    # 패 — 검출·표시만(형세 계산에선 중립 = 들어내지 않는다). 걸린 크기·범위는 쓰지 않는다(작가님 21:08 범위 축소)
     ko_list = []
-    if use_life == "staged":
-        groups = {}
-        for p in kos:
-            groups.setdefault(stg[p][1], set())
+    if use_life in ("staged", "staged2"):
         seen = set()
         for p in kos:
             if p in seen:
                 continue
             grp, _ = block(b, p)
-            grp = {q for q in kos if b[q] == b[p] and (q in grp or any(q in block(b, r)[0] for r in grp))} or grp
             seen |= grp
-            alt = evaluate_core(b, caps, dead + list(grp), komi, dil, ero)
-            ko_list.append({"cells": sorted(grp), "color": b[p], "swing": round(abs(alt - lead), 1), "where": quadrant(grp), "kind": "사활 패"})
+            ko_list.append({"cells": sorted(grp), "where": quadrant(grp), "kind": "사활 패"})
         from lifestage import active_ko
         ak = active_ko(moves, setup)
         if ak:
-            ko_list.append({"cells": list(ak), "color": b[ak[1]], "swing": 2.0, "where": quadrant(ak), "kind": "진행 중 패"})
-    lo = lead + sum(min(0.0, -k["color"] * k["swing"]) for k in ko_list)
-    hi = lead + sum(max(0.0, -k["color"] * k["swing"]) for k in ko_list)
-    who = lambda x: f"흑 {x:.1f}" if x > 0 else f"백 {-x:.1f}" if x < 0 else "반반"
-    text = (who(lead) + "집" if not ko_list else
-            (f"흑 {lo:.1f}~{hi:.1f}집" if lo > 0 else f"백 {-hi:.1f}~{-lo:.1f}집" if hi < 0 else f"{who(lo)}~{who(hi)}집")
-            + "".join(f", {k['where']} 패 {k['swing']:g}집" for k in ko_list))
-    return {"lead": lead, "leadMid": lead_mid, "stages": stg, "ko": ko_list, "leadRange": (lo, hi), "text": text, "own": own, "dead": dead, "undecided": und, "terrB": terr[1], "terrW": terr[-1], "prisB": pris[1], "prisW": pris[-1]}
+            ko_list.append({"cells": list(ak), "where": quadrant(ak), "kind": "진행 중 패"})
+    who = lambda x: f"흑 {x:.1f}집" if x > 0 else f"백 {-x:.1f}집" if x < 0 else "반반"
+    text = who(lead) + "".join(f" · {k['where']} 패" for k in ko_list)
+    return {"lead": lead, "leadMid": lead_mid, "stages": stg, "ko": ko_list, "text": text, "own": own, "dead": dead, "undecided": und, "terrB": terr[1], "terrW": terr[-1], "prisB": pris[1], "prisW": pris[-1]}
 
 
 if __name__ == "__main__":  # 속도 시험: python3 -I codeeval.py

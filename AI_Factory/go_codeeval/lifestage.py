@@ -185,7 +185,7 @@ def active_ko(moves, setup=()):
     return None
 
 
-def life_staged(b):
+def life_staged(b, search=False):
     """{칸: (판정, 단계)} — 돌 칸만. 판정 ∈ 삶·죽음·세키·패·미정"""
     out = {}
     v = bouzy(b)
@@ -212,8 +212,8 @@ def life_staged(b):
             hit = SHAPES.get(_norm(regs[0]))
             if hit and hit[0] in ("삶", "죽음"):
                 res = (hit[0], f"③ 모양 {hit[1]}")
-        # ④·⑤ 국지 사활 탐색
-        if res is None:
+        # ④·⑤ 국지 사활 탐색 — 2차(search=True)만. 1차(기본)는 ①②③⑥까지(작가님 21:08 범위 축소)
+        if res is None and search:
             area = closed_area(b, col, st, strong)
             if area is not None:
                 anchor = min(st)
