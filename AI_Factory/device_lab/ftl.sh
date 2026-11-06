@@ -26,11 +26,18 @@ mkdir -p "$DIR"
 die() { echo "❌ ftl: $*" >&2; exit 1; }
 today() { TZ='Asia/Seoul' date '+%Y-%m-%d'; }
 
-used_today() {  # 오늘 누적 분(정수, 올림)
+used_today() {  # 오늘 누적 분(정수, 올림) = max(KST 자정 기준 합, 태평양 자정 기준 합)
+  # 근거: Google Cloud "For per-day quotas, the time period resets at midnight Pacific Time"(docs.cloud.google.com/docs/quotas/overview).
+  # 무료 30분(과금)이 같은 기준인지는 문서에 없다 → 두 기준 중 큰 쪽으로 막는다(보수적). 11-06 쌍아 09:05
   [ -f "$LEDGER" ] || { echo 0; return; }
-  python3 -I - "$LEDGER" "$(today)" <<'PY'
-import json, math, sys
-tot = 0.0
+  python3 -I - "$LEDGER" <<'PY'
+import json, math, sys, time
+from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
+KST, PT = ZoneInfo("Asia/Seoul"), ZoneInfo("America/Los_Angeles")
+now = datetime.now(timezone.utc)
+k_today, p_today = now.astimezone(KST).date(), now.astimezone(PT).date()
+k = p = 0.0
 for ln in open(sys.argv[1], encoding="utf-8"):
     ln = ln.strip()
     if not ln:
@@ -39,9 +46,22 @@ for ln in open(sys.argv[1], encoding="utf-8"):
         d = json.loads(ln)
     except ValueError:
         continue
-    if d.get("date") == sys.argv[2]:
-        tot += float(d.get("minutes") or 0)
-print(math.ceil(tot))
+    mins = float(d.get("minutes") or 0)
+    if d.get("ts"):
+        t = datetime.fromtimestamp(float(d["ts"]), timezone.utc)
+    elif d.get("date") and d.get("at"):
+        t = datetime.fromisoformat(f"{d['date']}T{d['at']}").replace(tzinfo=KST)
+    elif d.get("date"):  # 시각 없는 옛 행 — 그 KST 날짜면 두 기준 모두에 넣는다(보수적)
+        if d["date"] == str(k_today):
+            k += mins; p += mins
+        continue
+    else:
+        continue
+    if t.astimezone(KST).date() == k_today:
+        k += mins
+    if t.astimezone(PT).date() == p_today:
+        p += mins
+print(math.ceil(max(k, p)))
 PY
 }
 
@@ -63,7 +83,7 @@ cmd_models() {
 }
 
 cmd_usage() {
-  echo "오늘($(today)) 실기기 사용 $(used_today)분 / 가드 ${LIMIT_MIN}분 (무료 30분) · 원장 $LEDGER"
+  echo "오늘($(today) KST · 태평양 $(TZ='America/Los_Angeles' date '+%Y-%m-%d')) 실기기 사용 $(used_today)분(두 기준 중 큰 쪽) / 가드 ${LIMIT_MIN}분 (무료 30분) · 다음 태평양 초기화 17:00 KST(표준시) · 원장 $LEDGER"
 }
 
 minutes_of() {  # 3m · 180s · 180 → 분(올림)
@@ -109,8 +129,8 @@ cmd_run() {
              --scenario-numbers "$scen" --timeout "$tmo" --results-dir "$rdir" --record-video --format json)  # FTL 자체 녹화도 회수
   if [ "$dry" = 1 ]; then echo "(dry-run) ${cmd[*]}"; return 0; fi
   # 원장 먼저(상한 분) — 실행 중 끊겨도 기록은 남는다(보수적)
-  printf '{"date":"%s","at":"%s","os":"ios","models":"%s","minutes":%s,"resultsDir":"%s","basis":"upper-bound"}\n' \
-    "$(today)" "$(TZ='Asia/Seoul' date '+%H:%M:%S')" "$models" "$expect" "$rdir" >> "$LEDGER"
+  printf '{"date":"%s","at":"%s","ts":%s,"os":"ios","models":"%s","minutes":%s,"resultsDir":"%s","basis":"upper-bound"}\n' \
+    "$(today)" "$(TZ='Asia/Seoul' date '+%H:%M:%S')" "$(date +%s)" "$models" "$expect" "$rdir" >> "$LEDGER"
   local log="${DIR}/run_${rdir#ftl/}.log"
   "${cmd[@]}" > "$log" 2>&1
   local rc=$?
