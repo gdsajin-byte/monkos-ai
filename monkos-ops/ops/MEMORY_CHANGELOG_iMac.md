@@ -759,3 +759,6 @@
 
 ## 2026-11-07 04:32 KST — iMac/쌍아
 - 신규 feedback_go_commentary_level.md + MEMORY.md 1행(바둑 해설 수준=개념·손익 언어)
+
+## 2026-11-07 05:21 KST — iMac/쌍아
+- project_monk_models_character_assets.md 1행 추가(발화 DB = 유니·다인 말투·목소리 첫 과정)
