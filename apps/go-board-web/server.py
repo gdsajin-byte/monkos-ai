@@ -1402,7 +1402,8 @@ class Room:
         self.time = dict(DEFAULT_TIME)  # None = 무제한
         self.setup = []  # 치석 좌표
         self.moves = []
-        self.scores = []  # (수 번호, 흑 기준 점수)
+        self.scores = []  # (수 번호, 흑 기준 점수) — 형세 막대·그래프. 11-06 17:05부터 MONKOS 판도 판정 엔진(최강) 값(그 전 MONKOS 판은 봇 자기 평가)
+        self.bot_scores = []  # (수 번호, 흑 기준 점수, 흑 승률) — MONKOS 자기 평가(11-06 17:08 작가님 "분석 자료로 따로 수집"). 화면 메인에는 안 띄운다
         self.score = None
         self.winrate = None
         self.result = None
@@ -1511,7 +1512,7 @@ class Room:
                   "finishWhy": self.scoring.get("finishWhy"), "preLead": self.scoring.get("preLead"), "toggles": self.scoring.get("toggles", 0)}
         return {"v": 1, "id": self.id, "owner": self.owner, "kind": self.kind, "user": self.user, "level": self.level,
                 "handicap": self.handicap, "time": self.time, "setup": self.setup,
-                "moves": [list(m) for m in self.moves], "scores": [list(s) for s in self.scores],
+                "moves": [list(m) for m in self.moves], "scores": [list(s) for s in self.scores], "botScores": [list(s) for s in self.bot_scores],
                 "score": self.score, "winrate": self.winrate, "result": self.result, "finalCount": self.final_count,
                 "scoring": sc, "message": self.message, "started": self.started.isoformat(timespec="seconds"),
                 "updated": self.updated, "sgf": str(self.sgf_path), "clock": self.clock,
@@ -1531,6 +1532,7 @@ class Room:
         r.setup = list(d.get("setup") or [])
         r.moves = [tuple(m) for m in d.get("moves") or []]
         r.scores = [tuple(s) for s in d.get("scores") or []]
+        r.bot_scores = [tuple(s) for s in d.get("botScores") or []]
         r.score, r.winrate, r.result = d.get("score"), d.get("winrate"), d.get("result")
         r.final_count = d.get("finalCount")
         sc = d.get("scoring")
@@ -1728,16 +1730,34 @@ class Room:
         else:
             mv, score, wr = ENGINES.move(self.position(), self.level, c)
         self._charge(reset=True)
-        if score is not None:
-            self.score, self.winrate = score, wr
-            self.scores.append((len(self.moves) + 1, round(score, 1)))
+        n = len(self.moves) + 1
         if mv.lower() == "resign":
+            self._record_eval(self.level, n, score, wr, judge=False)
             self.result = f"{'W' if c == 'B' else 'B'}+R"
             self.message = f"{self.opp_short()}가 돌을 던졌습니다. 이기셨어요!"
         else:
             self.moves.append((c, mv))
+            self._record_eval(self.level, n, score, wr)
             self._check_end()
         self._dc_update(time.time())  # 엔진이 둔 사이 대국자가 끊겼으면 이제부터 장애 시계
+
+    def _record_eval(self, level, n, score, wr, judge=True):
+        """형세 기록(n = 이 수의 번호, 수를 놓은 뒤 부른다). KataGo 판 = 엔진 값 그대로.
+        MONKOS 판 = 봇 자기 평가는 bot_scores 로만 남기고, 막대·scores 는 판정 엔진(최강, 그래프와 같은 200탐색) 값 — 11-06 작가님 17:05
+        "대마 다 죽었는데 형세를 저렇게"(v3 b10 접바둑 포화 오판이 막대에 그대로 나왔다). 판정 실패면 막대는 직전 값 유지(로그 1줄)"""
+        if level in BOT_LEVELS:
+            if score is not None:
+                self.bot_scores.append((n, round(score, 1), round(wr, 4) if wr is not None else None))
+            if not judge:
+                return
+            try:
+                wr, score = ENGINES.quick(self.position(), self.to_move, visits=GRAPH_VISITS, urgent=True)
+            except RuntimeError as ex:
+                print(f"⚠️ go-board: 형세 판정 실패 — 방 {self.id} {n}수: {ex}", file=sys.stderr)
+                return
+        if score is not None:
+            self.score, self.winrate = score, wr
+            self.scores.append((n, round(score, 1)))
 
     def _resign_cell(self, n):
         """기준표 칸(구간·치석 유무) — 없으면 None(기권 안 함)"""
@@ -1825,15 +1845,15 @@ class Room:
                 EVENTS.add(self.id, action="monk-pass", reason=why, moveNo=len(self.moves), color=c)
         else:
             mv, score, wr = ENGINES.move(self.position(), self.bots[c], c)
-        if score is not None:
-            self.score, self.winrate = score, wr
-            self.scores.append((len(self.moves) + 1, round(score, 1)))
+        n = len(self.moves) + 1
         if mv.lower() == "resign":
+            self._record_eval(self.bots[c], n, score, wr, judge=False)
             self.result = f"{'W' if c == 'B' else 'B'}+R"
             self.message = f"{bot_name(self.bots[c])}({'흑' if c == 'B' else '백'})이 돌을 던졌습니다."
             self.save_sgf()
             return
         self.moves.append((c, mv))
+        self._record_eval(self.bots[c], n, score, wr)
         if len(self.moves) >= 2 and all(m.lower() == "pass" for _, m in self.moves[-2:]):
             self.start_scoring()
             if self.scoring:
@@ -2181,6 +2201,7 @@ class Room:
             if c == self.user:
                 break
         self.scores = [s for s in self.scores if s[0] <= len(self.moves)]
+        self.bot_scores = [s for s in self.bot_scores if s[0] <= len(self.moves)]
         k = n0 - len(self.moves)  # 실제로 되돌린 수(10-25 B6 — "한 수"라 했지만 보통 내 수+KataGo 수 2수)
         self.message = "2수(내 수·KataGo 수)를 물렀습니다." if k == 2 else "내 수 1수를 물렀습니다." if k == 1 else f"{k}수를 물렀습니다."
         if self.to_move != self.user:  # 엔진 수만 남은 경우
@@ -2286,7 +2307,7 @@ class Room:
             "handicap": self.handicap, "komi": self.komi, "handicaps": HANDICAPS,
             "levelLabel": self.level_label(), "oppShort": self.opp_short(),
             "botStage": (monk_ver(self.level) or {}).get("stage"), "botVer": (MONK_BY_KEY.get(self.level) or {}).get("ver"), "score": self.score, "winrate": self.winrate,
-            "scores": self.scores, "result": self.result,
+            "scores": self.scores, "botScores": self.bot_scores, "result": self.result,  # botScores = MONKOS 자기 평가(분석용, 화면 메인 미표시)
             # 기보 감상(10-24): 화면이 수순을 직접 재생한다 — 국면 계산은 화면 쪽 1벌
             "moveList": [list(m) for m in self.moves], "setup": self.setup, "source": self.source,
             "players": self.players or ({"B": bot_name(self.bots["B"]), "W": bot_name(self.bots["W"])} if self.bots
