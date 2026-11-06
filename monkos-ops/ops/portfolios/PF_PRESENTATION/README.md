@@ -101,6 +101,7 @@ domain: "presentation, 3d-avatar, tts, content-pipeline"
 | 11/07 | ?/? | **COMPLETION** COMPLETION_20261107_iMac쌍아-막내1_PRESENTATION_해설영상_v1_감수1 | [COMPLETION_20261107_iMac쌍아-막내1_PRESENTATION_해설영상_v1_감수1](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내1_PRESENTATION_해설영상_v1_감수1.md) | ✅ |
 | 11/07 | iMac/쌍아 | **DESIGN** 유니 = 바둑 캐스터 캐릭터 모델 — 지식은 밖(DB·엔진·코드), 모델은 말투·역할 하나. 합성 말뭉치로 초소형 처음부터 학습 vs 소형 사전학습+LoRA 대조. 캐릭터 시트 초안 포함 | [DESIGN_20261107_PRESENTATION_유니캐스터_캐릭터모델](../../../tech/designs/2026-11/DESIGN_20261107_PRESENTATION_유니캐스터_캐릭터모델.md) | ⏳ |
 | 11/07 | iMac/쌍아 | 유니 캐스터 합성 대사 v0 지시서 발행(시트 확정) | [ORDER_20261107_iMac쌍아_막내4_PRESENTATION_유니캐스터_합성대사v0](../../orders/2026-11/ORDER_20261107_iMac쌍아_막내4_PRESENTATION_유니캐스터_합성대사v0.md) | ⏳ |
+| 11/07 | iMac/쌍아 | **DESIGN** 캐릭터 영상 대화 봇(연애 봇) — 다인·유니와 영상 통화하듯 대화. 열린 대화 두뇌 + 사용자 기억 + 캐릭터 말투 + 목소리 + 얼굴 영상 3단계. 유니 캐스터 공정 위에 얹는 구조, TTS 비용 전략 포함 | [DESIGN_20261107_PRESENTATION_캐릭터영상대화봇](../../../tech/designs/2026-11/DESIGN_20261107_PRESENTATION_캐릭터영상대화봇.md) | ⏳ |
 
 ---
 
