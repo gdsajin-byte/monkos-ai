@@ -170,19 +170,33 @@ cmd_fetch() {
 VLIMIT_MIN=50                   # 가상 기기 하루 무료 60분 − 여유 10분(쌍아 11-06 06:02). 우회 플래그 없음
 APK_PKG="ai.monkos.go.bench"
 
-used_virtual_today() {
+used_virtual_today() {  # 가상 기기 오늘 분 = max(KST 자정 기준 합, 태평양 자정 기준 합) — used_today와 같은 규칙(11-06 쌍아 09:09)
   [ -f "$LEDGER" ] || { echo 0; return; }
-  python3 -I - "$LEDGER" "$(today)" <<'PY'
+  python3 -I - "$LEDGER" <<'PY'
 import json, math, sys
-tot = 0.0
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
+KST, PT = ZoneInfo("Asia/Seoul"), ZoneInfo("America/Los_Angeles")
+now = datetime.now(timezone.utc)
+kd, pd = now.astimezone(KST).date(), now.astimezone(PT).date()
+k = p = 0.0
 for ln in open(sys.argv[1], encoding="utf-8"):
     try:
         d = json.loads(ln)
     except ValueError:
         continue
-    if d.get("date") == sys.argv[2]:
-        tot += float(d.get("virtual_minutes") or 0)
-print(math.ceil(tot))
+    v = float(d.get("virtual_minutes") or 0)
+    if not v:
+        continue
+    if d.get("ts"):
+        t = datetime.fromtimestamp(float(d["ts"]), timezone.utc)
+    elif d.get("date") and d.get("at"):
+        t = datetime.fromisoformat(f"{d['date']}T{d['at']}").replace(tzinfo=KST)
+    else:
+        continue
+    k += v if t.astimezone(KST).date() == kd else 0
+    p += v if t.astimezone(PT).date() == pd else 0
+print(math.ceil(max(k, p)))
 PY
 }
 
@@ -211,11 +225,11 @@ cmd_run_android() {
   local kinds; kinds=$(echo "$forms" | tr ' ' '\n' | grep . | sort -u | wc -l | tr -d ' ')
   [ "$kinds" = 1 ] || die "가상·실기기를 한 번에 섞지 않는다($forms) — 따로 실행"
   local n=${#devs[@]}; n=$((n / 2))
-  local expect=$((n * per)) used field limit
+  local expect=$((n * (per + OVERHEAD_MIN))) used field limit  # 기종당 설치·준비 몫 포함(iOS와 같은 규칙)
   if echo "$forms" | grep -q VIRTUAL; then used=$(used_virtual_today); limit=$VLIMIT_MIN; field=virtual_minutes
   else used=$(used_today); limit=$LIMIT_MIN; field=minutes; fi
   [ $((used + expect)) -le "$limit" ] || die "무료 한도 초과 예상(${field}) — 오늘 ${used}분 + 예상 ${expect}분 > ${limit}분 (유료 0)"
-  echo "가드 통과(${field}): 오늘 ${used}분 + 예상 ${expect}분(${n}대 × ${per}분) ≤ ${limit}분"
+  echo "가드 통과(${field}): 오늘 ${used}분 + 예상 ${expect}분(${n}대 × (${per}+${OVERHEAD_MIN})분) ≤ ${limit}분"
   [ "$dry" = 1 ] || [ -f "$apk" ] || die "APK 없음: ${apk:-'(미지정)'}"
   local rdir="ftl/$(TZ='Asia/Seoul' date '+%Y%m%d_%H%M%S')_android"
   local cmd=(gcloud firebase test android run --project "$PROJECT" --type game-loop --app "$apk" "${devs[@]}"
@@ -223,11 +237,11 @@ cmd_run_android() {
              --directories-to-pull "/sdcard/Android/data/${APK_PKG}/files" --format json)
   if [ "$dry" = 1 ]; then echo "(dry-run) ${cmd[*]}"; return 0; fi
   if [ "$field" = minutes ]; then
-    printf '{"date":"%s","at":"%s","os":"android","form":"physical","models":"%s","minutes":%s,"resultsDir":"%s","basis":"upper-bound"}\n' \
-      "$(today)" "$(TZ='Asia/Seoul' date '+%H:%M:%S')" "$models" "$expect" "$rdir" >> "$LEDGER"
+    printf '{"date":"%s","at":"%s","ts":%s,"os":"android","form":"physical","models":"%s","minutes":%s,"resultsDir":"%s","basis":"upper-bound"}\n' \
+      "$(today)" "$(TZ='Asia/Seoul' date '+%H:%M:%S')" "$(date +%s)" "$models" "$expect" "$rdir" >> "$LEDGER"
   else
-    printf '{"date":"%s","at":"%s","os":"android","form":"virtual","models":"%s","minutes":0,"virtual_minutes":%s,"resultsDir":"%s","basis":"upper-bound"}\n' \
-      "$(today)" "$(TZ='Asia/Seoul' date '+%H:%M:%S')" "$models" "$expect" "$rdir" >> "$LEDGER"
+    printf '{"date":"%s","at":"%s","ts":%s,"os":"android","form":"virtual","models":"%s","minutes":0,"virtual_minutes":%s,"resultsDir":"%s","basis":"upper-bound"}\n' \
+      "$(today)" "$(TZ='Asia/Seoul' date '+%H:%M:%S')" "$(date +%s)" "$models" "$expect" "$rdir" >> "$LEDGER"
   fi
   local log="${DIR}/run_${rdir#ftl/}.log"
   "${cmd[@]}" > "$log" 2>&1
