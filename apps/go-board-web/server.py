@@ -146,6 +146,9 @@ def bot_sgf(level):
 FINISH_VISITS = int(os.environ.get("GO_BOARD_FINISH_VISITS") or 0)  # 0 = 단계별 기본값
 FINISH_TIME = float(os.environ.get("GO_BOARD_FINISH_TIME") or 0)
 FINISH_STAGES = ((100, 200, 0.6), (180, 150, 0.45))  # (빈 점 ≤, 수당 탐색, 수당 상한 초)
+# 11-06 작가님 18:15 타이젬 방식 — 계가는 실제 판 그대로(AI 마무리 수 없음). 열린 빈 점은 공배, 동의가 없으면 대국 재개.
+# 옛 방식(사본 국면에서 판정 엔진이 끝까지 둔 뒤 계가)은 GO_BOARD_FINISH=1 일 때만
+FINISH_ON = os.environ.get("GO_BOARD_FINISH") == "1"
 FINISH_EMPTY_MAX = int(os.environ.get("GO_BOARD_FINISH_EMPTY_MAX") or 180)  # 빈 점이 이보다 많으면 마무리 계가 대신 안내(작가님 결정 대기)
 FINISH_MAX = 200  # 마무리 수 상한
 FINISH_BUDGET = float(os.environ.get("GO_BOARD_FINISH_BUDGET") or 40)  # 전체 상한(초) — 목표 10초, 수 질 우선(18:11)
@@ -1914,17 +1917,18 @@ class Room:
             empty = sum(1 for row in replay(self.moves, self.setup)[0] for v in row if v is None)
             if empty > FINISH_EMPTY_MAX:  # 11-04 정확도 원칙 — 집이 정해지지 않은 국면을 마무리로 '추정'하지 않는다
                 raise RuntimeError(f"아직 집이 정해지지 않았습니다(빈 곳 {empty}점) — 이어 두거나 'AI 판정'을 보세요.")
-            vis, mt = next(((v, t) for lim, v, t in FINISH_STAGES if empty <= lim), FINISH_STAGES[-1][1:])
-            finish, secs, yields, why = ENGINES.finish(self.position(), self.level, self.to_move, progress=self._finish_progress,
-                                                       visits=FINISH_VISITS or vis, max_time=FINISH_TIME or mt)
-            if why != "passes":  # 쌍아 19:40 — 연속 2패스로 끝나지 않은(시간·수 상한) 국면은 경계가 덜 닫혔을 수 있다 → 세지 않는다
-                print(f"⚠️ go-board: 계가 마무리 끊김 — 방 {self.id} 사유 {why} · {len(finish)}수 {secs}초", file=sys.stderr)
-                EVENTS.add(self.id, action="score-finish-cut", reason=why, n=len(finish), secs=secs)
-                # 11-06 작가님 09:41 — 끊기면 막다른 길(이어 두기·기권뿐) 대신 곧바로 AI 판정 동의창으로(사람 판). 봇 판은 호출 쪽이 자동 동의
-                self._set_judge(ENGINES.final_score(self.position(), self.level), "cut")
-                self.message = (f"끝까지 두기엔 남은 곳이 많아 AI 판정으로 계산했습니다(마무리 {'시간' if why == 'budget' else '수'} 상한, {len(finish)}수)"
-                                f" — {self.pending_judge['resultKo']}. 이 결과로 끝낼지 골라 주세요.")
-                return
+            if FINISH_ON:  # 11-06 18:15 — 기본은 실제 판 그대로(마무리 없음)
+                vis, mt = next(((v, t) for lim, v, t in FINISH_STAGES if empty <= lim), FINISH_STAGES[-1][1:])
+                finish, secs, yields, why = ENGINES.finish(self.position(), self.level, self.to_move, progress=self._finish_progress,
+                                                           visits=FINISH_VISITS or vis, max_time=FINISH_TIME or mt)
+                if why != "passes":  # 쌍아 19:40 — 연속 2패스로 끝나지 않은(시간·수 상한) 국면은 경계가 덜 닫혔을 수 있다 → 세지 않는다
+                    print(f"⚠️ go-board: 계가 마무리 끊김 — 방 {self.id} 사유 {why} · {len(finish)}수 {secs}초", file=sys.stderr)
+                    EVENTS.add(self.id, action="score-finish-cut", reason=why, n=len(finish), secs=secs)
+                    # 11-06 작가님 09:41 — 끊기면 막다른 길(이어 두기·기권뿐) 대신 곧바로 AI 판정 동의창으로(사람 판). 봇 판은 호출 쪽이 자동 동의
+                    self._set_judge(ENGINES.final_score(self.position(), self.level), "cut")
+                    self.message = (f"끝까지 두기엔 남은 곳이 많아 AI 판정으로 계산했습니다(마무리 {'시간' if why == 'budget' else '수'} 상한, {len(finish)}수)"
+                                    f" — {self.pending_judge['resultKo']}. 이 결과로 끝낼지 골라 주세요.")
+                    return
         pos = self.position()
         sc = ENGINES.scoring({**pos, "moves": list(pos["moves"]) + finish}, self.level, light=bool(finish))
         sc.update(finish=[list(m) for m in finish], finishSecs=secs, finishYields=yields, finishRules=FINISH_RULES if finish else None,
