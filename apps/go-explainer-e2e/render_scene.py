@@ -122,6 +122,8 @@ def overlays_at(sec, st_change):
             continue
         if kd in ("hl", "lib", "arrow"):
             out = [o for o in out if o[0] != kd]
+        if kd == "zone":  # 영역은 겹쳐 쌓인다(같은 이름만 교체)
+            out = [o for o in out if not (o[0] == "zone" and o[1] == arg)]
         if kd == "diff":  # 차이 카드는 판 아래 꼬리표 자리를 쓴다 — 다른 표시는 지움
             out = []
         out.append((kd, arg, te))
@@ -144,8 +146,19 @@ def P(xy):
 
 
 F = {k: ImageFont.truetype(FONT, v * SS) for k, v in {"num": int(STEP * 0.46), "title": 44, "tag": 40, "cap": 46, "small": 30, "diff": 58}.items()}
-BANNER = {None: ("실전 · 37수 국면", (90, 90, 96)), "fail": ("실패도 — 실전 수 그대로라면", (196, 52, 40)),
-          "ok": ("정해도 — 이렇게 뒀어야", (40, 112, 200)), "rewind": ("37수 국면으로 되돌림", (120, 120, 128))}
+_BN = SC.get("banners", {})
+BANNER = {None: (_BN.get("pos", f"실전 · {TURN + 1}수 국면"), (90, 90, 96)), "fail": (_BN.get("fail", "실패도 — 실전 수 그대로라면"), (196, 52, 40)),
+          "ok": (_BN.get("ok", "정해도 — 이렇게 뒀어야"), (40, 112, 200)), "rewind": (_BN.get("rewind", f"{TURN + 1}수 국면으로 되돌림"), (120, 120, 128))}
+# 영역 강조(v1, 작가님 감수 1 — 활로 숫자 대신 두터움·약점·귀/변 영역): {"이름": {"rect": ["A1","C4"], "label": "귀", "color": [r,g,b]}}
+# "rect" = 사각 영역(귀·변) / "points" = 돌 묶음 강조(두터움·약점 — 상대 돌을 덮지 않게)
+ZONES = {k: dict(v, xy=[gtp_to_xy(q) for q in (v.get("rect") or v["points"])]) for k, v in SC.get("zones", {}).items()}
+
+
+def zone_box(z):
+    xs, ys = [q[0] for q in z["xy"]], [q[1] for q in z["xy"]]
+    x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
+    (lx, ty), (rx, by) = P((x0, y0)), P((x1, y1))
+    return lx - STEP * 0.5, ty - STEP * 0.5, rx + STEP * 0.5, by + STEP * 0.5
 
 
 def ease(x):
@@ -192,6 +205,25 @@ def draw_frame(sec):
             if X0 <= hx <= X1 and Y0 <= hy <= Y1:
                 cx, cy = P((hx, hy))
                 d.ellipse([s(cx - 6), s(cy - 6), s(cx + 6), s(cy + 6)], fill=(60, 44, 24))
+    # 영역(돌 아래 깔리는 색면)
+    ovs = overlays_at(sec, ts if kind else -9)
+    zs = [(ZONES[arg], te) for kd, arg, te in ovs if kd == "zone" and arg in ZONES]
+    if zs:
+        lay = Image.new("RGBA", im.size, (0, 0, 0, 0))
+        ld = ImageDraw.Draw(lay)
+        for z, te in zs:
+            a = ease((sec - te) / 0.35)
+            x0_, y0_, x1_, y1_ = zone_box(z)
+            c = tuple(z.get("color", [255, 200, 60]))
+            if "points" in z:
+                rr = R * 1.32
+                for q in z["xy"]:
+                    qx, qy = P(q)
+                    ld.ellipse([s(qx - rr), s(qy - rr), s(qx + rr), s(qy + rr)], fill=c + (int(150 * a),))
+            else:
+                ld.rounded_rectangle([s(x0_), s(y0_), s(x1_), s(y1_)], s(18), fill=c + (int(110 * a),), outline=c + (int(255 * a),), width=s(5))
+        im = Image.alpha_composite(im.convert("RGBA"), lay).convert("RGB")
+        d = ImageDraw.Draw(im)
     # 돌: 현재 판 + 사라지는 돌(직전 판에만 있는 것)
     trans = T_REW if kind == "rewind" else T_OUT
     stones = []
@@ -234,7 +266,22 @@ def draw_frame(sec):
         else:
             d.ellipse([s(cx - R * 1.08), s(cy - R * 1.08), s(cx + R * 1.08), s(cy + R * 1.08)], outline=(255, 210, 60), width=s(5))
     # 표시(겹)
-    for kd, arg, te in overlays_at(sec, ts if kind else -9):
+    for z, te in zs:  # 영역 이름표 — 판 아래 끝에 닿는 사각 영역은 안쪽 아래 줄(빈 1선), 그 밖은 지정 좌표(label_at) 또는 윗변 바깥
+        a = ease((sec - te) / 0.35)
+        x0_, y0_, x1_, y1_ = zone_box(z)
+        c = tuple(z.get("color", [255, 200, 60]))
+        tw = d.textlength(z["label"], font=F["tag"]) / SS + 36
+        cx = (x0_ + x1_) / 2
+        if z.get("label_at"):
+            cx, ly = P(gtp_to_xy(z["label_at"]))
+        elif "rect" in z and max(q[1] for q in z["xy"]) == N - 1:
+            ly = y1_ - STEP * 0.5
+        else:
+            ly = y0_ - 30 if y0_ - 30 > BY - 20 else y0_ + 30
+        if a > 0.2:
+            d.rounded_rectangle([s(cx - tw / 2), s(ly - 28), s(cx + tw / 2), s(ly + 28)], s(14), fill=tuple(int(v * 0.75) for v in c))
+            d.text((s(cx), s(ly)), z["label"], font=F["tag"], fill=(255, 255, 255), anchor="mm")
+    for kd, arg, te in ovs:
         a = ease((sec - te) / 0.25)
         if kd == "hl":
             p = gtp_to_xy(arg)
@@ -369,10 +416,10 @@ if __name__ == "__main__":
     sheet.save(os.path.join(D, "sheet.png"))
     # 큐시트(실제 발화 시각)
     def label(br):
-        return {None: "실전(37수 국면)", "fail": "실패도", "ok": "정해도"}[br]
+        return {None: f"실전({TURN + 1}수 국면)", "fail": "실패도", "ok": "정해도"}[br]
     seqs = {"fail": BR["fail"], "ok": BR["ok"]}
     rows = ["| 시각(초) | 판 상태 | 놓이는 수 | 대사 구간 | 표시 |", "|---|---|---|---|---|",
-            f"| 0.00 | 실전(37수 국면) | — (36수 백 {MOVES[TURN - 1][1]} 빨간 네모) | (무음 {LEAD}초) | 배너 '실전 · 37수 국면' |"]
+            f"| 0.00 | 실전({TURN + 1}수 국면) | — (36수 백 {MOVES[TURN - 1][1]} 빨간 네모) | (무음 {LEAD}초) | 배너 '실전 · 37수 국면' |"]
     brs, kdone = None, {}
     for l in timeline:
         text, marks = l["text"], sorted(l["marks"], key=lambda m: m["char"])
@@ -398,13 +445,17 @@ if __name__ == "__main__":
                        (f" · 앞 수는 {STEP_GAP}초 간격으로 먼저" if kk - k0 > 1 else "")
             elif kd == "pos":
                 brs = None
-                show = "분기 돌 사라짐(0.5초) · 배너 '37수 국면으로 되돌림'"
+                show = f"분기 돌 사라짐(0.5초) · 배너 '{BANNER['rewind'][0]}'"
             elif kd == "hl":
                 show = f"{arg} 강조 고리(맥동)"
             elif kd == "lib":
                 show = f"{arg} 무리 활로 점 + '활로 n' 꼬리표"
             elif kd == "arrow":
                 show = f"화살표 {arg.replace(',', '→')}"
+            elif kd == "zone":
+                z = SC["zones"][arg]
+                show = (f"영역 '{z['label']}' {z['rect'][0]}–{z['rect'][1]}" if "rect" in z
+                        else f"돌 묶음 강조 '{z['label']}' {'·'.join(z['points'])}")
             elif kd == "diff":
                 show = f"차이 카드 '{SC['diff']['text']}'"
             rows.append(f"| {tm:.2f} | {label(brs)} | {put} | {seg} | {show} |")
