@@ -23,6 +23,7 @@ import os
 import random
 import re
 import secrets
+import shutil
 import ssl
 import subprocess
 import sys
@@ -2260,7 +2261,7 @@ class Room:
                 + (extra if self.source == "upload" else f"DT[{self.started:%Y-%m-%d}]") + f"PB[{pb}]PW[{pw}]"
                 f"AP[MONK go-board-web]" + (f"RE[{self.result}]" if self.result and self.result != VOID else "")
                 + (f"C[접속 장애패 — {self.owner_nick} 접속이 끊긴 채 {fmt_dur(self.dc_limit)} 초과]" if self.result_reason == "disconnect" else "")
-                + (f"C[{self.message}]" if self.result_reason in ("rule-cleanup", "void", "bot_resign") else "")
+                + (f"C[{self.message}]" if self.result_reason in ("rule-cleanup", "void", "bot_resign", "score_recount") else "")
                 + (f"C[AI 판정 종국(수순 {len(self.moves)}, 소유 추정)]" if self.result_reason == "ai_judge" else "")
                 + (f"C[AI 마무리 {self.final_count['finishN']}수 후 계가]" if self.result and (self.final_count or {}).get("finishN") else ""))
         return head + "".join(nodes) + ")\n"
@@ -3878,7 +3879,42 @@ MIGRATIONS = [{
     # 기동 시점에 결과 없는 진행 중 방 전부(수 있으면 접속 장애패, 0수면 무효)
     "id": "20261104-no-resume-cleanup",
     "all_ongoing": True,
+}, {
+    # 11-06 작가님 17:21 "정정해" — 계가 재검토(COMPLETION_20261106 GO_계가시스템_전면재검토 §5-1). 11-05 마무리 도입 전 코드가
+    # 열린 경계 126칸을 공배로 세어 승패가 뒤집혔다(기록 B+12.5, 판정 엔진 final_score W+12.5). 현재 결과가 from 과 같을 때만 바꾼다
+    "id": "20261106-recount-0630",
+    "recount": [{"room": "20261105-173818-0630", "from": "B+12.5", "to": "W+12.5",
+                 "why": "11-06 재검산 — 마무리 도입 전 코드가 열린 경계 126칸을 공배로 셈(흑 39·백 26.5), 판정 엔진 final_score W+12.5"}],
 }]
+
+
+def _recount(mg):
+    """재검산 정정 — 방 JSON·SGF 백업(rooms/_backup/) 뒤 결과만 바꾼다. 원 결과는 final_count.recount·이벤트·백업에 남는다"""
+    applied = []
+    bdir = ROOMS_DIR / "_backup"
+    for it in mg["recount"]:
+        rid = it["room"]
+        r = ROOMS.get(rid)
+        if not r:
+            applied.append({"room": rid, "skipped": "없음"}); continue
+        if r.result != it["from"]:
+            applied.append({"room": rid, "skipped": f"결과 다름(현재 {r.result})"}); continue
+        with r.lock.hold("migration"):
+            bdir.mkdir(parents=True, exist_ok=True)
+            src = ROOMS_DIR / f"{rid}.json"
+            if src.exists():
+                shutil.copy2(src, bdir / f"{rid}.{mg['id']}.json")
+            if r.sgf_path and Path(r.sgf_path).exists():
+                shutil.copy2(r.sgf_path, bdir / f"{rid}.{mg['id']}.sgf")
+            r.final_count = {**(r.final_count or {}), "recount": {"from": it["from"], "to": it["to"], "why": it["why"], "migration": mg["id"]}}
+            r.result, r.result_reason = it["to"], "score_recount"
+            r.message = f"재검산 정정 {it['from']} → {it['to']} — {it['why']}"
+            r.save_sgf()
+            r.cache = json.dumps(r.state(), ensure_ascii=False)
+            ROOMS.save(r)
+        EVENTS.add(rid, action="migration", migration=mg["id"], result=r.result, reason="score_recount", before=it["from"])
+        applied.append({"room": rid, "kind": "recount", "result": r.result, "before": it["from"]})
+    return applied
 
 
 def run_migrations():
@@ -3893,8 +3929,11 @@ def run_migrations():
         if mg["id"] in done:
             continue
         applied = []
+        if mg.get("recount"):
+            applied = _recount(mg)
+            mg = {**mg, "forfeit": [], "void": []}
         targets = [("forfeit" if r.moves else "void", r.id) for r in ROOMS.listing() if r._ongoing()] if mg.get("all_ongoing") else None
-        for kind, rid in (targets if targets is not None else [(k, i) for k in ("forfeit", "void") for i in mg[k]]):
+        for kind, rid in (targets if targets is not None else [(k, i) for k in ("forfeit", "void") for i in mg.get(k, [])]):
             r = ROOMS.get(rid)
             if not r or r.result or r.imported:  # 없거나 이미 끝난 방은 건드리지 않음
                 applied.append({"room": rid, "kind": kind, "skipped": "없음" if not r else "이미 끝남"})
