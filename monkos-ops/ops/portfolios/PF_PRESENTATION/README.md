@@ -94,6 +94,7 @@ domain: "presentation, 3d-avatar, tts, content-pipeline"
 | 11/05 | iMac/쌍아 | **DESIGN** 바둑 해설 영상 자체 제작 — 판 위주 화면 + 사이드 얼굴(유니·작가님 아바타) + 목소리(ElevenLabs vs 오픈소스) + 자동 편집, 4060(8GB)이 어디까지 덮는지 | [DESIGN_20261105_PRESENTATION_바둑해설영상_자체제작_4060](../../../tech/designs/2026-11/DESIGN_20261105_PRESENTATION_바둑해설영상_자체제작_4060.md) | ⏳ |
 | 11/06 | ?/? | **ORDER** 1분 바둑 해설 영상 관통 시험(E2E v0) — 작가님 기보 승부처 1장면 채택 → 캐스터(유니)–해설 대담 대본 → 화자별 음성 → 판 재생·참고도 싱크 → 사이드 얼굴 → 합성 1편 | [ORDER_20261106_iMac쌍아_막내8_PRESENTATION_1분해설영상_관통시험](../../orders/2026-11/ORDER_20261106_iMac쌍아_막내8_PRESENTATION_1분해설영상_관통시험.md) | ⏳ |
 | 11/06 | iMac/쌍아-막내8 | 1분 해설 영상 관통 시험 E2E v0 — G10 17수 사석(작가님 F3) · 유니–해설 9줄 302자 · ElevenLabs 화자별 · 판·참고도 마커 싱크(평균 19ms) · Kling 클립 재사용 · 41.3초 mp4(레포 밖) · 유료 신규 0 | [COMPLETION_20261106_iMac쌍아-막내8_PRESENTATION_1분해설영상_관통시험](../../reports/2026-11/COMPLETION_20261106_iMac쌍아-막내8_PRESENTATION_1분해설영상_관통시험.md) | 완료 |
+| 11/06 | ?/? | **ORDER** 작가님 목소리 데이터셋 v0 — 미사한울TV(작가님 채널) 직접 더빙 14편에서 음성 추출·배경음 분리·받아쓰기·깨끗한 구간 선별 → 복제 학습용 묶음. 복제 실행은 다음 단계 | [ORDER_20261106_iMac쌍아_막내2_PRESENTATION_목소리데이터셋_미사한울TV](../../orders/2026-11/ORDER_20261106_iMac쌍아_막내2_PRESENTATION_목소리데이터셋_미사한울TV.md) | ⏳ |
 
 ---
 
