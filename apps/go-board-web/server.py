@@ -2519,7 +2519,8 @@ class Rooms:
     def defaults(self, owner=ADMIN_UID):
         """새 대국 창 기본값 — 그 사람이 가장 최근에 만든 방의 설정을 기억한다."""
         last = max((r for r in list(self.rooms.values()) if not r.imported and not r.bots and r.owner == owner), key=lambda r: r.started, default=None)  # 봇 대국 설정은 기본값으로 쓰지 않는다
-        return {"level": last.level if last else MONK_LATEST["key"],  # 11-06 작가님 15:45 — 기록이 없으면 MONKOS 최신(최강은 고를 때만) "handicap": last.handicap if last else 0,
+        # 11-06 작가님 15:45 — 기록이 없으면 MONKOS 최신(최강은 고를 때만)
+        return {"level": last.level if last else MONK_LATEST["key"], "handicap": last.handicap if last else 0,
                 "time": last.time if last else dict(DEFAULT_TIME), "user": last.user if last else "B",
                 "dcLimit": DC_LIMIT}
 
