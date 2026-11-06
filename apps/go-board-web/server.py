@@ -146,6 +146,31 @@ def bot_sgf(level):
 FINISH_VISITS = int(os.environ.get("GO_BOARD_FINISH_VISITS") or 0)  # 0 = 단계별 기본값
 FINISH_TIME = float(os.environ.get("GO_BOARD_FINISH_TIME") or 0)
 FINISH_STAGES = ((100, 200, 0.6), (180, 150, 0.45))  # (빈 점 ≤, 수당 탐색, 수당 상한 초)
+# 11-06 작가님 18:15 타이젬 방식 — 계가는 실제 판 그대로(AI 마무리 수 없음). 열린 빈 점은 공배, 동의가 없으면 대국 재개.
+# 옛 방식(사본 국면에서 판정 엔진이 끝까지 둔 뒤 계가)은 GO_BOARD_FINISH=1 일 때만
+FINISH_ON = os.environ.get("GO_BOARD_FINISH") == "1"
+SCORE_AGREE_MAX = 2.0  # 봇 동의: 코드 집계와 판정 엔진 final_score 의 승패가 같고 차이가 이 집 이하(작가님 18:15 결정 — 상수는 여기 한 곳)
+
+
+def signed_result(r):
+    """'B+3.5' → 3.5, 'W+2' → -2, '0' → 0, 그 밖 None"""
+    if r == "0":
+        return 0.0
+    m = re.match(r"^([BW])\+([\d.]+)$", r or "")
+    return (1 if m.group(1) == "B" else -1) * float(m.group(2)) if m else None
+
+
+def bot_agrees(code, kata):
+    """봇 계가 동의 — (동의, 사유)"""
+    a, b = signed_result(code), signed_result(kata)
+    if a is None or b is None:
+        return False, f"KataGo 판정({kata})과 비교할 수 없습니다"
+    same = (a > 0) == (b > 0) and (a < 0) == (b < 0)
+    if not same:
+        return False, f"승패가 다릅니다(코드 {code} · KataGo {kata})"
+    if abs(a - b) > SCORE_AGREE_MAX:
+        return False, f"차이가 {abs(a - b):g}집입니다(코드 {code} · KataGo {kata}, 허용 {SCORE_AGREE_MAX:g}집)"
+    return True, f"코드 {code} · KataGo {kata}"
 FINISH_EMPTY_MAX = int(os.environ.get("GO_BOARD_FINISH_EMPTY_MAX") or 180)  # 빈 점이 이보다 많으면 마무리 계가 대신 안내(작가님 결정 대기)
 FINISH_MAX = 200  # 마무리 수 상한
 FINISH_BUDGET = float(os.environ.get("GO_BOARD_FINISH_BUDGET") or 40)  # 전체 상한(초) — 목표 10초, 수 질 우선(18:11)
@@ -1857,10 +1882,7 @@ class Room:
         self._record_eval(self.bots[c], n, score, wr)
         if len(self.moves) >= 2 and all(m.lower() == "pass" for _, m in self.moves[-2:]):
             self.start_scoring()
-            if self.scoring:
-                self.confirm_score()
-            else:
-                self._bot_judge_end()
+            self._bots_settle()
         self.save_sgf()
 
     def bot_try_score(self, force=False):
@@ -1876,13 +1898,23 @@ class Room:
         except RuntimeError as ex:
             self.message = f"계가 시도 — {ex}"
             return False
-        if not self.scoring:  # 마무리 끊김 → AI 판정(봇 대 봇은 양쪽 자동 동의)
-            return self._bot_judge_end(force)
-        self.confirm_score()
-        why = f"{BOT_MAX_MOVES}수 상한 — 판정 엔진(KataGo 최강) 마무리 계가" if force else "판정 엔진(KataGo 최강)이 둘 곳이 없다고 봐 계가"
+        if not self._bots_settle(force):
+            return False
+        why = f"{BOT_MAX_MOVES}수 상한 — 계가" if force else "판정 엔진(KataGo 최강)이 둘 곳이 없다고 봐 계가"
         self.message = f"{why} — {self.message}"
         self.save_sgf()
         return True
+
+    def _bots_settle(self, force=False):
+        """봇 대 봇 계가 — 양쪽 봇이 코드 집계에 동의(bot_agrees)하면 확정, 아니면 판정 결과로 종국(양쪽 자동 동의). 끝냈으면 True"""
+        if self.scoring and self.count()["agree"]:
+            self.confirm_score()
+            return True
+        if self.scoring:
+            kata = self.scoring["kata"]
+            self.scoring = None
+            self._set_judge(kata, "cut")
+        return self._bot_judge_end(force)
 
     def _bot_judge_end(self, force=False):
         """봇 대 봇 마무리 끊김 → 판정 결과로 종국(양쪽 봇 자동 동의). 끝냈으면 True"""
@@ -1914,17 +1946,18 @@ class Room:
             empty = sum(1 for row in replay(self.moves, self.setup)[0] for v in row if v is None)
             if empty > FINISH_EMPTY_MAX:  # 11-04 정확도 원칙 — 집이 정해지지 않은 국면을 마무리로 '추정'하지 않는다
                 raise RuntimeError(f"아직 집이 정해지지 않았습니다(빈 곳 {empty}점) — 이어 두거나 'AI 판정'을 보세요.")
-            vis, mt = next(((v, t) for lim, v, t in FINISH_STAGES if empty <= lim), FINISH_STAGES[-1][1:])
-            finish, secs, yields, why = ENGINES.finish(self.position(), self.level, self.to_move, progress=self._finish_progress,
-                                                       visits=FINISH_VISITS or vis, max_time=FINISH_TIME or mt)
-            if why != "passes":  # 쌍아 19:40 — 연속 2패스로 끝나지 않은(시간·수 상한) 국면은 경계가 덜 닫혔을 수 있다 → 세지 않는다
-                print(f"⚠️ go-board: 계가 마무리 끊김 — 방 {self.id} 사유 {why} · {len(finish)}수 {secs}초", file=sys.stderr)
-                EVENTS.add(self.id, action="score-finish-cut", reason=why, n=len(finish), secs=secs)
-                # 11-06 작가님 09:41 — 끊기면 막다른 길(이어 두기·기권뿐) 대신 곧바로 AI 판정 동의창으로(사람 판). 봇 판은 호출 쪽이 자동 동의
-                self._set_judge(ENGINES.final_score(self.position(), self.level), "cut")
-                self.message = (f"끝까지 두기엔 남은 곳이 많아 AI 판정으로 계산했습니다(마무리 {'시간' if why == 'budget' else '수'} 상한, {len(finish)}수)"
-                                f" — {self.pending_judge['resultKo']}. 이 결과로 끝낼지 골라 주세요.")
-                return
+            if FINISH_ON:  # 11-06 18:15 — 기본은 실제 판 그대로(마무리 없음)
+                vis, mt = next(((v, t) for lim, v, t in FINISH_STAGES if empty <= lim), FINISH_STAGES[-1][1:])
+                finish, secs, yields, why = ENGINES.finish(self.position(), self.level, self.to_move, progress=self._finish_progress,
+                                                           visits=FINISH_VISITS or vis, max_time=FINISH_TIME or mt)
+                if why != "passes":  # 쌍아 19:40 — 연속 2패스로 끝나지 않은(시간·수 상한) 국면은 경계가 덜 닫혔을 수 있다 → 세지 않는다
+                    print(f"⚠️ go-board: 계가 마무리 끊김 — 방 {self.id} 사유 {why} · {len(finish)}수 {secs}초", file=sys.stderr)
+                    EVENTS.add(self.id, action="score-finish-cut", reason=why, n=len(finish), secs=secs)
+                    # 11-06 작가님 09:41 — 끊기면 막다른 길(이어 두기·기권뿐) 대신 곧바로 AI 판정 동의창으로(사람 판). 봇 판은 호출 쪽이 자동 동의
+                    self._set_judge(ENGINES.final_score(self.position(), self.level), "cut")
+                    self.message = (f"끝까지 두기엔 남은 곳이 많아 AI 판정으로 계산했습니다(마무리 {'시간' if why == 'budget' else '수'} 상한, {len(finish)}수)"
+                                    f" — {self.pending_judge['resultKo']}. 이 결과로 끝낼지 골라 주세요.")
+                    return
         pos = self.position()
         sc = ENGINES.scoring({**pos, "moves": list(pos["moves"]) + finish}, self.level, light=bool(finish))
         sc.update(finish=[list(m) for m in finish], finishSecs=secs, finishYields=yields, finishRules=FINISH_RULES if finish else None,
@@ -2009,6 +2042,7 @@ class Room:
                 "kata": self.scoring["kata"], "kataKo": result_ko(self.scoring["kata"]),
                 "dead": sorted(self.scoring["dead"]), "dame": [list(p) for p in sorted(dame)],
                 "terr": [[x, y, "B"] for x, y in terr["B"]] + [[x, y, "W"] for x, y in terr["W"]],
+                "agree": bot_agrees(res, self.scoring["kata"])[0], "agreeWhy": bot_agrees(res, self.scoring["kata"])[1],
                 "finishN": len(self.scoring.get("finish") or []), "finishSecs": self.scoring.get("finishSecs"),
                 "finishRules": self.scoring.get("finishRules"), "finishYields": self.scoring.get("finishYields")}
 
@@ -2016,6 +2050,12 @@ class Room:
         if not self.scoring:
             raise RuntimeError("계가 중이 아닙니다.")
         c = self.count()
+        if not self.bots and not c["agree"]:  # 대 AI 판 — MONKOS·KataGo 가 동의하지 않으면 대국 재개(작가님 18:15)
+            EVENTS.add(self.id, action="score_bot_declined", moveNo=len(self.moves), result=c["result"], kata=c["kata"], why=c["agreeWhy"])
+            self.scoring = None
+            self.turn_since = time.time()
+            self.message = f"{self.opp_short()}가 동의하지 않았습니다 — 경계를 마저 두고 다시 신청해 주세요. ({c['agreeWhy']})"
+            return
         self._record_answer(c)
         self.result = c["result"]
         self.final_count = c
@@ -2043,6 +2083,7 @@ class Room:
                 "terrB": [[x, y] for x, y, o in c["terr"] if o == "B"], "terrW": [[x, y] for x, y, o in c["terr"] if o == "W"],
                 "dame": c["dame"], "black": c["black"], "white": c["white"], "result": c["result"],
                 "kata": c["kata"], "preLead": sc.get("preLead"), "toggles": sc.get("toggles", 0),
+                "method": "finish" if sc.get("finish") else "code", "agree": c.get("agree"),  # 11-06 타이젬식 코드 계가
             }
             ANSWERS_FILE.parent.mkdir(parents=True, exist_ok=True)
             with open(ANSWERS_FILE, "a", encoding="utf-8") as f:

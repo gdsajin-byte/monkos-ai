@@ -109,6 +109,16 @@ def count_board(g, caps, dead, komi):
             "result": res(b - w), "dame": dame}
 
 
+AGREE_MAX = 2.0  # 서버 SCORE_AGREE_MAX 와 같게
+
+
+def sgn(r):
+    if r == "0":
+        return 0.0
+    m = re.match(r"^([BW])\+([\d.]+)$", r or "")
+    return (1 if m.group(1) == "B" else -1) * float(m.group(2)) if m else None
+
+
 def res(d):
     return "0" if d == 0 else (f"B+{d:g}" if d > 0 else f"W+{-d:g}")
 
@@ -248,6 +258,13 @@ def main():
                 row["komiRec"] = a.get("komi")
             eng.pos(moves, setup, komi)
             row["K"] = eng.cmd("final_score")
+            # S = 서버 코드 계가(11-06 18:15 전환)와 같은 방식 — 실제 판·final_status_list dead·닫힌 집·열린 빈 점 공배 + 봇 동의 규칙
+            sdead = [xy(m) for m in eng.cmd("final_status_list dead").split()]
+            row["S"] = count_board(g, caps, sdead, komi)
+            a_, b_ = sgn(row["S"]["result"]), sgn(row["K"])
+            row["S"]["agree"] = a_ is not None and b_ is not None and (a_ > 0) == (b_ > 0) and (a_ < 0) == (b_ < 0) and abs(a_ - b_) <= AGREE_MAX
+            row["S"]["dead"] = len(sdead)
+            print(f"   S(서버 코드 계가) {row['S']['black']}·{row['S']['white']} {row['S']['result']} · 사석 {len(sdead)} · 공배 {row['S']['dame']} · K {row['K']} → 봇 {'동의' if row['S']['agree'] else '거부'}", flush=True)
             to = "W" if moves and moves[-1][0] == "B" else "B"
             own, lead = eng.own(to)
             row["leadK"] = lead
