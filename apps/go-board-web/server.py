@@ -2083,6 +2083,7 @@ class Room:
                 "terrB": [[x, y] for x, y, o in c["terr"] if o == "B"], "terrW": [[x, y] for x, y, o in c["terr"] if o == "W"],
                 "dame": c["dame"], "black": c["black"], "white": c["white"], "result": c["result"],
                 "kata": c["kata"], "preLead": sc.get("preLead"), "toggles": sc.get("toggles", 0),
+                "method": "finish" if sc.get("finish") else "code", "agree": c.get("agree"),  # 11-06 타이젬식 코드 계가
             }
             ANSWERS_FILE.parent.mkdir(parents=True, exist_ok=True)
             with open(ANSWERS_FILE, "a", encoding="utf-8") as f:
