@@ -52,7 +52,7 @@ class Runner:
         sh, sm = map(int, self.a.window_start.split(":"))
         eh, em = map(int, self.a.window_end.split(":"))
         start = n.replace(hour=sh, minute=sm, second=0, microsecond=0)
-        if (eh, em) > (sh, sm):  # 같은 날 창(예: 학교 시간 08:30~14:00)
+        if (eh, em) > (sh, sm):  # 같은 날 창(예: 학교 시간 08:30~15:30)
             end = start.replace(hour=eh, minute=em)
             return start, end, start <= n < end
         if n < start:  # 밤 창(예: 23:00~07:30)
