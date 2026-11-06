@@ -97,6 +97,7 @@ domain: "presentation, 3d-avatar, tts, content-pipeline"
 | 11/06 | ?/? | **ORDER** 작가님 목소리 데이터셋 v0 — 미사한울TV(작가님 채널) 직접 더빙 14편에서 음성 추출·배경음 분리·받아쓰기·깨끗한 구간 선별 → 복제 학습용 묶음. 복제 실행은 다음 단계 | [ORDER_20261106_iMac쌍아_막내2_PRESENTATION_목소리데이터셋_미사한울TV](../../orders/2026-11/ORDER_20261106_iMac쌍아_막내2_PRESENTATION_목소리데이터셋_미사한울TV.md) | ⏳ |
 | 11/06 | iMac/쌍아-막내2 | 목소리 데이터셋 v0 — 미사한울TV 14편 101.7분 → 깨끗한 단일 화자 39.0분·441조각(합격), 견본 5·편별 표, 복제 실행 전 | [COMPLETION_20261106_iMac쌍아-막내2_PRESENTATION_목소리데이터셋_미사한울TV](../../reports/2026-11/COMPLETION_20261106_iMac쌍아-막내2_PRESENTATION_목소리데이터셋_미사한울TV.md) | ✅ |
 | 11/07 | iMac/쌍아 | 해설 영상 한 장면 시험(대본·수순 큐시트·TTS) 지시서 발행 | [ORDER_20261107_iMac쌍아_막내1_PRESENTATION_해설영상_한장면_시험](../../orders/2026-11/ORDER_20261107_iMac쌍아_막내1_PRESENTATION_해설영상_한장면_시험.md) | ⏳ |
+| 11/07 | ?/? | **COMPLETION** COMPLETION_20261107_iMac쌍아-막내1_PRESENTATION_해설영상_한장면_시험 | [COMPLETION_20261107_iMac쌍아-막내1_PRESENTATION_해설영상_한장면_시험](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내1_PRESENTATION_해설영상_한장면_시험.md) | ✅ |
 
 ---
 
