@@ -94,6 +94,8 @@ REVIEW_DIR = GAMES_DIR / "reviews"
 ROOMS_DIR = Path.home() / ".monkos" / "go-board" / ("_test" if TEST_MODE else "") / "rooms"
 # 11-05 21:31 형세봇 1/8 — 계가 정답 기록(레포 밖, append-only). 테스트 인스턴스는 _test 아래
 ANSWERS_FILE = ROOMS_DIR.parent / "scoring" / "answers.jsonl"
+# AI 판정 종국(11-06) 기록은 계가 정답과 분리 — 닫힌 집·사석 확인이 없는 소유 추정 결과라 형세봇 정답지에 섞지 않는다
+AI_JUDGE_FILE = ROOMS_DIR.parent / "scoring" / "ai_judge.jsonl"
 ROOM_ID_RE = r"[A-Za-z0-9_-]{4,64}"
 EMPTY_ROOM_TTL = 600  # 빈 방(0수) 정리 기준 초
 # 접속 장애(10-24 작가님 "일반적으로는 멈추고 별도 시간으로 접속장애패"): 대국실이 5초마다 ping,
@@ -1373,6 +1375,7 @@ class Room:
         self.bots = None  # 봇 대 봇이면 {"B": 레벨, "W": 레벨} — 사람 없음, 시계·접속 장애 없음, 방 주인은 보는 사람
         self.bot_pace = "normal"
         self.bot_paused = False
+        self.pending_judge = None  # AI 판정 결과(종국 동의 대기) {"result","resultKo","moveNo","why"} — 수가 바뀌면 무효(저장 안 함)
         self.bot_next = 0.0  # 다음 수를 둘 수 있는 시각(간격)
 
     @property
@@ -1909,7 +1912,63 @@ class Room:
         if not self.moves:
             raise RuntimeError("아직 둔 수가 없습니다.")
         r = ENGINES.final_score(self.position(), self.level)
-        return {"result": r, "resultKo": result_ko(r), "moveNo": len(self.moves)}
+        return self._set_judge(r, "ask")
+
+    def _set_judge(self, r, why):
+        """판정 결과를 종국 동의 대기로 보관(why: 'ask' = AI 판정 버튼 · 'cut' = 계가 마무리 끊김). 결과가 승패·빅일 때만 끝낼 수 있다"""
+        ok = bool(re.match(r"^(0|[BW]\+\d+(\.\d+)?)$", r or ""))
+        self.pending_judge = {"result": r, "resultKo": result_ko(r), "moveNo": len(self.moves), "why": why, "canEnd": ok}
+        return dict(self.pending_judge)
+
+    def _live_judge(self):
+        """화면에 보낼 동의 대기 판정 — 그 뒤 수가 바뀌었거나 끝난 판이면 없음"""
+        pj = self.pending_judge
+        return pj if (pj and not self.result and not self.scoring and pj["moveNo"] == len(self.moves)) else None
+
+    def confirm_judge(self):
+        """[예](AI 판정 종국) — 판정 결과로 끝낸다. 대 AI 판은 봇이 자동 동의(사람 대 사람 판은 아직 없음 — 생기면 상대 동의 필요).
+        결과 표기 'AI 판정승'(계가승·불계승과 구분) · SGF RE + 주석 · 기록은 ai_judge.jsonl(계가 정답과 분리)"""
+        if self.result:
+            raise RuntimeError("이미 끝난 대국입니다.")
+        pj = self._live_judge()
+        if not pj:
+            raise RuntimeError("판정 뒤에 판이 바뀌었습니다 — 'AI 판정'을 다시 눌러 주세요.")
+        if not pj["canEnd"]:
+            raise RuntimeError(f"판정 결과({pj['resultKo']})로는 끝낼 수 없습니다.")
+        self._charge(reset=False)
+        self.scoring = None
+        self.result, self.result_reason = pj["result"], "ai_judge"
+        self.final_count = None
+        self.pending_judge = None
+        self.message = (("끝까지 두기엔 남은 곳이 많아 AI 판정으로 계산했습니다. " if pj["why"] == "cut" else "")
+                        + f"AI 판정 종국(수순 {pj['moveNo']}) — {result_label(self.result, self.result_reason)}")
+        self._record_judge(pj)
+        EVENTS.add(self.id, action="ai_judge_end", result=self.result, moveNo=pj["moveNo"], why=pj["why"])
+        self.save_sgf()
+
+    def cancel_judge(self):
+        """[아니요](AI 판정 종국) — 대국 계속. 이벤트 1행만"""
+        pj = self.pending_judge
+        self.pending_judge = None
+        if pj:
+            EVENTS.add(self.id, action="ai_judge_declined", result=pj.get("result"), moveNo=pj.get("moveNo"), why=pj.get("why"))
+        self.message = "AI 판정 결과로 끝내지 않았습니다. 이어서 두세요."
+
+    def _record_judge(self, pj):
+        """AI 판정 종국 1행 — 계가 정답(answers.jsonl)과 분리된 ai_judge.jsonl. 실패해도 종국은 유지(로그 1줄)"""
+        try:
+            mv = [list(m) for m in self.moves]
+            row = {"v": 1, "kind": "ai_judge", "room": self.id, "at": datetime.now().isoformat(timespec="seconds"),
+                   "players": ({c: bot_sgf_name(self.bots[c]) for c in "BW"} if self.bots
+                               else {c: ("human" if c == self.user else bot_sgf_name(self.level)) for c in "BW"}),
+                   "level": self.level, "user": None if self.bots else self.user, "komi": self.komi, "handicap": self.handicap,
+                   "moveN": len(mv), "movesHash": hashlib.sha1(json.dumps(mv).encode()).hexdigest()[:16],
+                   "result": pj["result"], "why": pj["why"], "basis": "KataGo final_score(소유 추정)"}
+            AI_JUDGE_FILE.parent.mkdir(parents=True, exist_ok=True)
+            with open(AI_JUDGE_FILE, "a", encoding="utf-8") as f:
+                f.write(json.dumps(row, ensure_ascii=False) + "\n")
+        except Exception as e:  # noqa: BLE001
+            print(f"⚠️ go-board: AI 판정 종국 기록 실패 — 방 {self.id}: {e}", file=sys.stderr)
 
     def timeout(self, color):
         """작가님 시계가 다 됨 → 시간패. 엔진은 시간패 없음(시계 표시만, 화면에서 상한)."""
@@ -2018,6 +2077,7 @@ class Room:
                 f"AP[MONK go-board-web]" + (f"RE[{self.result}]" if self.result and self.result != VOID else "")
                 + (f"C[접속 장애패 — {self.owner_nick} 접속이 끊긴 채 {fmt_dur(self.dc_limit)} 초과]" if self.result_reason == "disconnect" else "")
                 + (f"C[{self.message}]" if self.result_reason in ("rule-cleanup", "void") else "")
+                + (f"C[AI 판정 종국(수순 {len(self.moves)}, 소유 추정)]" if self.result_reason == "ai_judge" else "")
                 + (f"C[AI 마무리 {self.final_count['finishN']}수 후 계가]" if self.result and (self.final_count or {}).get("finishN") else ""))
         return head + "".join(nodes) + ")\n"
 
@@ -2030,7 +2090,7 @@ class Room:
         return {"id": self.id, "kind": self.kind, "status": self.status, "statusKo": STATUS_KO[self.status],
                 "moveNo": len(self.moves), "toMove": self.to_move, "user": self.user, "level": self.level,
                 "levelLabel": self.level_label(), "handicap": self.handicap, "komi": self.komi, "time": self.time,
-                "result": self.result, "resultKo": result_ko(self.result) if self.result else None, "win": win,
+                "result": self.result, "resultKo": result_label(self.result, self.result_reason) if self.result else None, "win": win,
                 "started": self.started.isoformat(timespec="minutes"), "updated": self.updated,
                 "imported": self.imported, "sgfUrl": f"/api/rooms/{self.id}/sgf" if self.moves else None,
                 "review": REVIEWS.status(self),
@@ -2075,7 +2135,8 @@ class Room:
             "botWait": (BOTS.wait.get(self.id) if (BOTS and self.bots) else None),
             "record": {"date": self.record_date or f"{self.started:%Y-%m-%d}", "rules": self.rules,
                        "origName": self.orig_name},
-            "resultKo": result_ko(self.result) if self.result else None,
+            "resultKo": result_label(self.result, self.result_reason) if self.result else None,
+            "resultReason": self.result_reason, "pendingJudge": self._live_judge(),
             "message": self.message, "sgf": str(self.sgf_path) if self.moves else None,
             "sgfUrl": f"/api/rooms/{self.id}/sgf" if self.moves else None,
             "review": REVIEWS.status(self),
@@ -2552,6 +2613,17 @@ def result_ko(r):
     return f"{who} {m.group(2)}집 승"
 
 
+def result_label(r, reason=None):
+    """결과 문구 — AI 판정 종국은 'AI 판정승'으로 계가승과 구분(11-06)"""
+    if reason == "ai_judge" and r:
+        if r == "0":
+            return "빅(AI 판정)"
+        m = re.match(r"([BW])\+([\d.]+)$", r)
+        if m:
+            return f"{'흑' if m.group(1) == 'B' else '백'} {m.group(2)}집 AI 판정승"
+    return result_ko(r)
+
+
 # ---------------------------------------------------------------- 기보 불러오기(SGF · GIB) — 10-24 기보 감상
 
 UPLOAD_MAX = 1024 * 1024  # 1MB
@@ -2926,10 +2998,10 @@ class Analyses:
 ENGINES = None  # EngineHub
 ROOMS = None  # Rooms
 ANALYSES = None  # Analyses(승률 그래프)
-ACTIONS = ("play", "engine", "score", "score/toggle", "score/confirm", "score/cancel", "hint", "judge",
+ACTIONS = ("play", "engine", "score", "score/toggle", "score/confirm", "score/cancel", "hint", "judge", "judge/confirm", "judge/cancel",
            "timeout", "resign", "void", "undo", "swap", "level", "review", "ping",
            "bot/pause", "bot/resume", "bot/step", "bot/pace")
-BOT_BLOCKED = ("play", "engine", "score", "score/toggle", "score/cancel", "timeout", "resign", "void", "undo", "swap", "level")
+BOT_BLOCKED = ("play", "engine", "score", "score/toggle", "score/cancel", "judge/confirm", "judge/cancel", "timeout", "resign", "void", "undo", "swap", "level")
 # 호환 경로(단계 ① 이전 화면·PWA 보관본·live_view --goboard): /api/state·/api/{동작}은 초점 방을 가리킨다.
 # 대국실은 /api/rooms/{id}/… 만 쓴다. 호환 경로는 보관본이 v3로 바뀐 뒤 제거 예정(단계 ②).
 LEGACY_ACTIONS = ACTIONS + ("new",)
@@ -2979,6 +3051,10 @@ def act(room, action, body):
             extra = {"hint": room.hint()}
         elif action == "judge":
             extra = {"judge": room.judge()}
+        elif action == "judge/confirm":
+            room.confirm_judge()
+        elif action == "judge/cancel":
+            room.cancel_judge()
         elif action == "timeout":
             room.timeout(str(body.get("color")))
         elif action == "resign":

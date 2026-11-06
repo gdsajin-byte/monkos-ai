@@ -397,7 +397,7 @@
   <div class="lobby-foot" id="footMine"><button id="bImport">기보 불러오기</button><input type="file" id="importFile" accept=".sgf,.gib" multiple hidden></div>
 </div>
 <div class="wrap">
-  <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg><div id="boardToast" role="status"></div><div id="scoreDlg" role="dialog" aria-label="계가 결과 동의" hidden><div id="scoreDlgTxt"></div><div class="small" id="scoreDlgNote"></div><div class="sd-btns"><button id="bAgreeNo">아니요</button><button id="bAgreeYes" class="hl">예</button></div></div><div id="judgeBand" role="status" hidden><span></span><button aria-label="판정 닫기">✕</button></div></div>
+  <div class="board" id="boardBox"><svg id="svg" viewBox="0 0 400 400" aria-label="바둑판"></svg><div id="boardToast" role="status"></div><div id="scoreDlg" role="dialog" aria-label="계가 결과 동의" hidden><div id="scoreDlgTxt"></div><div class="small" id="scoreDlgNote"></div><div class="sd-btns"><button id="bAgreeNo">아니요</button><button id="bAgreeYes" class="hl">예</button></div></div><div id="judgeBand" role="status" hidden><span></span><button id="bJudgeEnd" hidden>이 결과로 끝내기</button><button id="bJudgeX" aria-label="판정 닫기">✕</button></div></div>
   <div id="playBar"><button id="bPick0" disabled>취소</button><button id="bPlace" disabled>착수</button><span class="pick" id="pickTxt"></span></div>
   <div id="botBar" hidden><button id="bBotPause">일시정지</button><button id="bBotStep">한 수씩</button>
     <select id="bBotPace" aria-label="수 간격"><option value="fast">빠름</option><option value="normal">보통</option><option value="slow">느림</option></select>
@@ -648,7 +648,7 @@ function drawStone(x, y, c, opacity) {
                  stroke: c === 'B' ? '#000' : '#888', 'stroke-width': .6, opacity });
 }
 
-let tab = null, hint = null, judge = null, reviewJob = null;  // 첫 탭은 판을 받은 뒤 정한다(10-25 B7)
+let tab = null, hint = null, judge = null, reviewJob = null, judgeAsk = false;  // judgeAsk = [이 결과로 끝내기]를 눌러 동의창을 연 상태  // 첫 탭은 판을 받은 뒤 정한다(10-25 B7)
 const komiText = k => { const i = Math.floor(k); return k % 1 ? (i ? `${i}집반` : '반집') : `${i}집`; };
 const colorKo = c => (c === 'B' ? '흑' : '백');
 
@@ -780,9 +780,23 @@ function render() {
   for (const b of document.querySelectorAll('#tabs button')) b.classList.toggle('on', b.dataset.tab === tab);
   for (const t of ['ai', 'shape', 'hint', 'review', 'more']) document.getElementById('tab-' + t).hidden = t !== tab;
   document.getElementById('secScore').hidden = true;  // 11-06 — 계가 결과는 판 위 동의창(scoreDlg)으로
-  const dlgOn = !!sc && !S.bots;  // 봇 대 봇은 서버가 자동 확정(창 없음)
+  // AI 판정 종국(11-06): 동의 대기 판정이 있고 [이 결과로 끝내기]를 눌렀거나 계가 마무리가 끊겼으면 같은 창을 판정 모드로
+  const pj = S.pendingJudge;
+  if (!pj) judgeAsk = false;
+  const jdgOn = !sc && !S.bots && !S.result && !!pj && pj.canEnd && (judgeAsk || pj.why === 'cut');
+  const dlgOn = (!!sc && !S.bots) || jdgOn;  // 봇 대 봇은 서버가 자동 확정(창 없음)
   document.getElementById('scoreDlg').hidden = !dlgOn;
-  if (dlgOn) {
+  document.getElementById('scoreDlg').dataset.mode = jdgOn ? 'judge' : 'score';
+  if (jdgOn) {
+    document.getElementById('scoreDlgTxt').textContent = `AI 판정 결과 — ${pj.resultKo}. 이 결과로 대국을 끝내시겠습니까?`;
+    document.getElementById('scoreDlgNote').textContent = [
+      pj.why === 'cut' ? '끝까지 두기엔 남은 곳이 많아 AI 판정으로 계산했습니다.' : '',
+      `${pj.moveNo}수 시점 KataGo 판정(소유 추정)입니다. 상대 AI는 자동 동의합니다 — 기록은 'AI 판정승'으로 남습니다.`,
+      '[아니요]는 대국을 이어갑니다.',
+    ].filter(Boolean).join(' ');
+    document.getElementById('bAgreeYes').disabled = busy; document.getElementById('bAgreeNo').disabled = busy;
+  }
+  if (dlgOn && !jdgOn) {
     const winKo = sc.resultKo;
     document.getElementById('scoreDlgTxt').textContent =
       `집계산 결과 — 흑 집 ${sc.terrB} · 사석·따낸 돌 ${sc.prisB} / 백 집 ${sc.terrW} · 사석·따낸 돌 ${sc.prisW} · 덤 ${sc.komi} → ${winKo}. 결과에 동의하시겠습니까?`;
@@ -1638,8 +1652,15 @@ document.getElementById('bScore').onclick = async () => {
   try { await call('/api/score'); } finally { clearInterval(poll); boardToastOff(); }
 };
 document.getElementById('bScoreOk').onclick = () => call('/api/score/confirm');
-document.getElementById('bAgreeYes').onclick = () => call('/api/score/confirm');  // 예 = 계가 확정(결과·기보·정답 1행)
-document.getElementById('bAgreeNo').onclick = () => call('/api/score/cancel');    // 아니요 = 계가 취소(원상 복귀·대국 재개, 정답 기록 없음)
+const dlgJudge = () => document.getElementById('scoreDlg').dataset.mode === 'judge';
+document.getElementById('bAgreeYes').onclick = async () => {  // 예 = 계가 확정(결과·기보·정답 1행) · 판정 모드면 AI 판정 종국
+  if (dlgJudge()) { await call('/api/judge/confirm'); judgeAsk = false; document.getElementById('judgeBand').hidden = true; render(); }
+  else call('/api/score/confirm');
+};
+document.getElementById('bAgreeNo').onclick = async () => {    // 아니요 = 계가 취소 · 판정 모드면 대국 계속
+  if (dlgJudge()) { judgeAsk = false; await call('/api/judge/cancel'); render(); }
+  else call('/api/score/cancel');
+};
 document.getElementById('bScoreCancel').onclick = () => call('/api/score/cancel');
 document.getElementById('bJudge').onclick = async () => {
   await call('/api/judge');
@@ -1647,11 +1668,13 @@ document.getElementById('bJudge').onclick = async () => {
     judge = S.judge;
     const band = document.getElementById('judgeBand');
     band.querySelector('span').textContent = `AI 판정(${judge.moveNo}수 시점): ${judge.resultKo}`;
+    document.getElementById('bJudgeEnd').hidden = !(judge.canEnd && !S.bots && !S.result);
     band.hidden = false;
     render();
   }
 };
-document.getElementById('judgeBand').querySelector('button').onclick = () => { document.getElementById('judgeBand').hidden = true; };
+document.getElementById('bJudgeX').onclick = () => { document.getElementById('judgeBand').hidden = true; };
+document.getElementById('bJudgeEnd').onclick = () => { judgeAsk = true; render(); };  // 동의창(판정 모드)을 연다
 document.getElementById('bHint').onclick = async () => {
   await call('/api/hint');
   if (S.hint) { hint = S.hint; render(); }
