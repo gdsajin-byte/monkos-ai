@@ -131,6 +131,9 @@ COMMON_OVR = f"rules=korean,reportAnalysisWinratesAs=BLACK,logDir={KATA_DIR / 'g
 STRONG_VISITS, STRONG_TIME = 1500, 17
 STRONG_OVR = COMMON_OVR + f",maxVisits={STRONG_VISITS},maxTime={STRONG_TIME}"
 MONK_OVR = STRONG_OVR  # MONK 봇 = 최강과 같은 수읽기(11-05 작가님 "1500수읽기로 동일하게") — 사본 숫자 금지
+# 11-06 핫픽스(쌍아 10:03·10:08 ← 작가님 10:02 캡처 "5점 첫 수 천원 붙임"): KataGo 기본 접바둑 동적 보정(PDA — 상대를 약하게 가정한 꼬는 수)을 MONKOS 판에서 끈다.
+# 대조(5점 빈 판 1500v): b18 PDA 켬 J9(천원 붙임)·끔 C6(정상) — 원인 확인. 최강(KataGo)은 그대로
+MONK_OVR += ",playoutDoublingAdvantage=0,dynamicPlayoutDoublingAdvantageCapPerOppLead=0"
 def bot_sgf(level):
     """기보 PB/PW 상대 이름 — 모델 태그+수읽기(학습 단계별 비교용). 옛 판은 옛 태그."""
     return f"{LEGACY_MONK['tag'] if level == 'monk' else monk_ver(level)['tag']}({STRONG_VISITS}v)"
