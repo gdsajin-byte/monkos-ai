@@ -33,10 +33,29 @@ def ordinal(n):
     return w + " 번째"
 
 
+CIRC = "①②③④⑤⑥⑦⑧⑨⑩"
+
+
+def marks(c):
+    """v1 수 가리키기(GEN_RULES_v1 §2-3, 작가님 11-07 15:22): 장면 시작점 A, 이후 수순 ①②③. 좌표는 해설자 사실용, 대사엔 쓰지 않는다."""
+    def seq(ms):
+        return [f"{CIRC[i]} {m}" for i, m in enumerate(ms[: len(CIRC)])]
+    if c["type"] == "응징":
+        return {"A": f"{c['prev_move']} ({c['prev_region']}, 상대의 직전 수 — 손해 {c['prev_loss']}집)",
+                "응징": seq([c["move"]])}
+    m = {"A": f"{c['move']} ({c['move_region']}, 실전 수)"}
+    if c["type"] == "실수":
+        m["정해도(A 대신)"] = seq(c.get("pv_correct") or [c["best"]])
+        if c.get("pv_fail") and len(c["pv_fail"]) > 1:
+            m["실패도(A 뒤)"] = seq(c["pv_fail"][1:])
+    return m
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--parts", type=int, default=5)
     ap.add_argument("--sig-ratio", type=float, default=1.0, help="시그니처 허용 장면 중 실제로 쓰게 할 비율 (v0=1.0, v1=0.33)")
+    ap.add_argument("--rules", default="v0", choices=["v0", "v1"], help="v1 = 수 번호 대신 A·①② 표기(marks), move_no_ko 없음")
     a = ap.parse_args()
     cards = [json.loads(x) for x in open(os.path.join(D, "scene_cards_v0.jsonl"), encoding="utf-8")]
     # v1: 시그니처는 허용 장면의 일부만 — 종류별로 같은 비율, 시드 고정
@@ -52,7 +71,11 @@ def main():
     for k in range(a.parts):
         with open(os.path.join(D, "batches", f"part{k}.jsonl"), "w", encoding="utf-8") as f:
             for c in cards[k::a.parts]:
-                c = dict(c, move_no_ko=ordinal(c["move_no"]), signature_use=c["scene_id"] in use)
+                c = dict(c, signature_use=c["scene_id"] in use)
+                if a.rules == "v0":
+                    c["move_no_ko"] = ordinal(c["move_no"])
+                else:
+                    c["marks"] = marks(c)
                 f.write(json.dumps(c, ensure_ascii=False) + "\n")
     print(len(cards), "cards →", a.parts, "parts · signature_use", len(use))
 

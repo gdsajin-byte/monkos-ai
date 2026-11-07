@@ -66,6 +66,9 @@ NUM2 = re.compile(r"([0-9]+)\s*(%|퍼센트)")
 HONOR_BAD = re.compile(r"위원님|선생님|작가님|사부님|프로님")
 HONOR_OK = re.compile(r"해설자(님|께서)")
 COORD = re.compile(r"(?<![A-Za-z])[A-HJ-T](1[0-9]|[1-9])(?![0-9A-Za-z])")
+# v1 수 가리키기(GEN_RULES_v1 §2-3, 작가님 11-07 15:22): 수 번호 읽기·색+차례 도입부 금지 — 유니·해설자 모두
+MOVE_NO = re.compile(r"번째 (?:수|착수)|[0-9가-힣]+ ?수째|(?<![0-9.])[0-9]{1,3} ?수(?=[ ,.입였이를에로는가]|$)")
+COLOR_TURN = re.compile(r"(?:흑|백)(?:이|의)? ?(?:둘 |두는 )?차례")
 PLAYER = re.compile(r"[0-9]+단|G[0-9]+|[0-9]{4}년")
 
 
@@ -149,7 +152,7 @@ def main():
     missing = sorted(set(cards) - set(got))
     dup = sorted(k for k, v in got.items() if v > 1)
 
-    form, judge, sig_bad, honor, coord, player, longm = [], [], [], [], [], [], []
+    form, judge, sig_bad, honor, coord, player, longm, moveread = [], [], [], [], [], [], [], []
     sig_use = Counter()
     uni_texts, uni_sents, n_turn_uni, n_turn_com = [], 0, 0, 0
     acts = Counter()
@@ -172,6 +175,8 @@ def main():
                 coord.append((sid, spk, txt))
             if PLAYER.search(txt):
                 player.append((sid, spk, txt))
+            if MOVE_NO.search(txt) or COLOR_TURN.search(txt):
+                moveread.append((sid, spk, txt))
             if spk != "유니":
                 n_turn_com += 1
                 continue
@@ -219,7 +224,7 @@ def main():
         "per_type": {k: v for k, v in per_type.items()},
         "judge_violation_sentences": len({(x[0], x[2]) for x in judge}), "judge": judge,
         "sig_use": dict(sig_use), "sig_scenes": sig_scenes, "sig_bad": sig_bad,
-        "honor": honor, "coord": coord, "player": player, "long_match": longm, "form": form,
+        "honor": honor, "coord": coord, "player": player, "move_read": moveread, "long_match": longm, "form": form,
         "dist": dist, "uni_profile": up, "real_shingles": len(sh), "real_texts": len(real),
     }
     json.dump(res, open(os.path.join(D, "check_v0.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
@@ -261,6 +266,7 @@ source: apps/uni-caster/check.py
 | **B 유니 선판단 문장** | **{res['judge_violation_sentences']}** (유형: {dict(jcount)}) | 0 |
 | C 시그니처 | 사용 {sig_scenes}편 ({dict(sig_use)}) · 규칙 위반 {len(sig_bad)} | 장면당 ≤1, 허용 장면만 |
 | D 호칭 위반 / 좌표 / 대국자 정보 | {len(honor)} / {len(coord)} / {len(player)} | 0 |
+| G 수 번호·색+차례 읽기(v1, 유니·해설자 턴) | {len(moveread)} 턴 (유니 {sum(1 for x in moveread if x[1] == '유니')}) | 0 (v1부터) |
 | E 실제 방송과 연속 8어절+ 일치 | {len(longm)} (대조 발화 {len(real)} · 8어절 조각 {len(sh)}) | 0 |
 
 B 상위 사유: {', '.join(f'{k} {v}' for k, v in jtop) or '없음'}
@@ -297,7 +303,7 @@ B 상위 사유: {', '.join(f'{k} {v}' for k, v in jtop) or '없음'}
 """
     open(os.path.join(HERE, "reports", "CHECK_v0.md"), "w", encoding="utf-8").write(md)
     print(json.dumps({k: res[k] for k in ("dialogs", "uni_sentences", "judge_violation_sentences", "sig_use", "sig_scenes", "dist")}, ensure_ascii=False))
-    print("form", len(form), "sig_bad", len(sig_bad), "honor", len(honor), "coord", len(coord), "player", len(player), "long", len(longm))
+    print("form", len(form), "sig_bad", len(sig_bad), "honor", len(honor), "coord", len(coord), "player", len(player), "long", len(longm), "move_read", len(moveread))
     print("B top", jtop)
 
 
