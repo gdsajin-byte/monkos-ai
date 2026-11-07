@@ -91,5 +91,17 @@ async function search(q, k) {
   const [cmd, q, k] = process.argv.slice(2);
   if (cmd === 'build') await build();
   else if (cmd === 'search') console.log(JSON.stringify(await search(q, +(k || 8)), null, 1));
-  else console.log('사용: build | search "질의" [k]');
+  else if (cmd === 'embedq') {
+    // 질의 묶음 임베딩(정제본 근거 대조용): embedq <질의 JSON 배열 파일> <출력 .f32> — 비용 상한 검사 후 Float32 LE로 이어 씀
+    const qs = JSON.parse(fs.readFileSync(q, 'utf8'));
+    const usd = qs.reduce((s, t) => s + t.length, 0) * PRICE_PER_CHAR;
+    if (usd > CAP_USD) throw new Error(`비용 상한 초과 예상 $${usd.toFixed(4)}`);
+    const vs = await embedTexts(qs);
+    if (vs.length !== qs.length) throw new Error(`벡터 수 불일치 ${vs.length}/${qs.length}`);
+    const flat = new Float32Array(vs.length * DIM);
+    vs.forEach((v, i) => { if (v.length !== DIM) throw new Error(`차원 불일치 ${v.length}`); flat.set(Array.from(v), i * DIM); });
+    fs.writeFileSync(k, Buffer.from(flat.buffer));
+    console.log(JSON.stringify({ n: qs.length, chars: qs.reduce((s, t) => s + t.length, 0), usd: +usd.toFixed(6) }));
+  }
+  else console.log('사용: build | search "질의" [k] | embedq 질의.json 출력.f32');
 })().catch(e => { console.error('❌ embed:', e.message); process.exit(1); });
