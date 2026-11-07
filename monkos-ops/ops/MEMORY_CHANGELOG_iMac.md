@@ -767,3 +767,4 @@
 - feedback_go_commentary_level.md 표기 관례 추가(시작점 A·수순 동그라미 번호, 수 번호·색 읽기 금지)
 - feedback_go_commentary_level.md 영역 표기 관례 추가(15:29)
 - project_4060_gpu_time_windows.md 무거운 작업 배치 원칙 추가(15:34)
+- 2026-11-07 20:28 iMac/쌍아 — 추가: project_curriculum_book_layered_production (강의록·저서 층별 제작, 작가님 20:28)
