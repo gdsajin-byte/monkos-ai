@@ -62,7 +62,7 @@ def merge(ids):
         ev = json.loads((L / vid / "events.json").read_text())
         rs = [json.loads(x) for x in f.read_text().splitlines()] if f.exists() else []
         rows += rs
-        summ.append({"id": vid, "sentences": len(rs), "with_events": sum(1 for r in rs if r["events"]), "in_var": sum(1 for r in rs if r["pos"]["var"]),
+        summ.append({"id": vid, "sentences": len(rs), "with_events": sum(1 for r in rs if r["go_scene"]["events"]), "in_var": sum(1 for r in rs if r["go_scene"]["var"]),
                      "main": len(ev["main"]), "vars": len(ev["vars"]), "var_stones": sum(len(v["final"]) for v in ev["vars"]), "navs": len(ev["navs"])})
     with open(L / "pairs_v0.jsonl", "w") as fo:
         for r in rows:

@@ -23,7 +23,14 @@ def kof(s):
 
 
 def frame(d, t):
-    return Image.open(Path(d) / "frames1" / f"f_{t + 1:05d}.jpg").convert("RGB")
+    f = Path(d) / "frames1" / f"f_{t + 1:05d}.jpg"
+    if not f.exists():  # 스트리밍 판독 영상(lhw_stream)은 프레임을 남기지 않는다 → 그 초만 영상에서 뽑는다
+        import subprocess, imageio_ffmpeg
+        f = Path(d) / "check" / f"_f_{t}.jpg"; f.parent.mkdir(exist_ok=True)
+        if not f.exists():
+            subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(), "-loglevel", "error", "-ss", f"{t + 0.5}", "-i", str(Path(d) / "video720.mp4"),
+                            "-frames:v", "1", "-vf", "scale=1280:720", "-q:v", "2", str(f)], check=True)
+    return Image.open(f).convert("RGB")
 
 
 def main(d, mode, n, seed):

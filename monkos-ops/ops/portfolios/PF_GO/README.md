@@ -170,6 +170,7 @@ status: active
 | 11/07 | ?/? | **COMPLETION** COMPLETION_20261107_iMac쌍아-막내3_GO_4060_소유권수집_2회차_완료 | [COMPLETION_20261107_iMac쌍아-막내3_GO_4060_소유권수집_2회차_완료](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내3_GO_4060_소유권수집_2회차_완료.md) | ✅ |
 | 11/07 | iMac/쌍아-막내1 | 판독 9편 정제·장면 사전 v1·발화 DB v1·표기 관례(A·①②·▲■·반투명 영역)·G836 v3 | [COMPLETION_20261107_iMac쌍아-막내1_GO_판독9편정제_장면사전v1_DBv1_표기관례](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내1_GO_판독9편정제_장면사전v1_DBv1_표기관례.md) | ✅ |
 | 11/07 | iMac/쌍아-막내1 | 판독 9편 정제 f1(849·남김 815)·장면 사전 v1·발화 DB v1(이현욱 짝 1,713·distill_pair)·G836 대본 v3·표기 관례(A·①②·▲/■·영역) | [COMPLETION_20261107_iMac쌍아-막내1_GO_판독9편정제_장면사전v1_DBv1_표기관례](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내1_GO_판독9편정제_장면사전v1_DBv1_표기관례.md) | ✅ |
+| 11/07 | iMac/쌍아-막내2 | **COMPLETION** COMPLETION_20261107_iMac쌍아-막내2_GO_이현욱_교정사전_수번호_100편 | [COMPLETION_20261107_iMac쌍아-막내2_GO_이현욱_교정사전_수번호_100편](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내2_GO_이현욱_교정사전_수번호_100편.md) | ✅ |
 
 ## 3. Phase 현황
 

@@ -63,6 +63,8 @@ def run(d):
         c = json.loads((Path(d) / "calib.json").read_text())
 
         def hollow(t, k):
+            if "ho" in s:  # 스트리밍 판독(lhw_stream)은 프레임을 남기지 않고 판독 때 가운데 빔 여부를 적어 둔다
+                return k in s["ho"]
             f = Path(d) / "frames1" / f"f_{t + 1:05d}.jpg"
             x, y = int(round(c["x0"] + (k % 19) * c["sx"])), int(round(c["y0"] + (k // 19) * c["sy"]))
             g = np.asarray(Image.open(f).convert("L").crop((x - 2, y - 2, x + 3, y + 3))).astype(int)
@@ -96,6 +98,7 @@ def run(d):
                         x["var"] = None; x.pop("vn", None)
             var = None
 
+    quiet = 0
     for s in st:
         t, S, mk = s["t"], s["g"].lower(), s["mk"]
         num = {k for k, ch in enumerate(s["g"]) if ch in "BW"}
@@ -121,6 +124,28 @@ def run(d):
             for x in navs: x["from"] += 1 if x is not navs[-1] else 0
             tl = [dict(x, p=x["p"] + 1) for x in tl]
             p = 0
+            tl.append({"t": t, "p": p, "var": None}); continue
+        # 다시 잡기: 변화도가 열린 채 번호 돌 없는 초가 3초 이어지면 화면 = 실전으로 본다(1초에 8수↑ 앞으로 감기 등으로 실전 확인을 놓친 경우 — 11-07 Ok3m t=743, 변화도 119수 고착)
+        quiet = quiet + 1 if (var is not None and not num) else 0
+        if quiet >= 3 and add and len(add) <= 60:
+            close_var(t, False)
+            last_c = M[p - 1]["c"] if p > 0 and M[p - 1]["c"] else ("w" if S[add[0]] == "b" else "b")
+            rest = [k for k in add if k != mk]
+            order, want = [], ("w" if last_c == "b" else "b")
+            while rest:
+                pick = next((k for k in rest if S[k] == want), rest[0])
+                order.append(pick); rest.remove(pick); want = "w" if S[pick] == "b" else "b"
+            if mk in add:
+                order.append(mk)
+            if p < len(P) - 1:
+                navs.append({"t": t, "from": p, "to": p, "branch_drop": len(P) - 1 - p})
+                del P[p + 1:]; del M[p:]
+            pos = cur
+            for k in order:
+                nxt = list(pos); nxt[k] = S[k]; pos = "".join(nxt)
+                M.append(new_move(S[k], k, [], t, "reanchor")); P.append(pos)
+            P[-1] = S
+            p = len(P) - 1; quiet = 0
             tl.append({"t": t, "p": p, "var": None}); continue
         # 실전 수: 변화도 밖이거나, 번호 돌이 다 사라지고 세모가 새 돌에 옮겨 간 경우(변화도에서 곧장 다음 실전 수 — 11-07 K9mM t=665)
         main_ok = (var is None and (mk in add or mk < 0) or var is not None and not num and mk in add) and add and not (num & set(add)) and len(add) <= 8
