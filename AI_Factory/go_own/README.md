@@ -40,3 +40,7 @@ python3 -I table.py ~/.monkos/go-board/models/own_v0/run1/val_pred.npz      # iM
 ## 한계
 
 - onnx 내보내기는 4060 venv 에 `onnx` 패키지가 없어 실패한다(설치 금지 범위). 대신 TorchScript `own_v0_ts.pt` 를 저장한다.
+
+## v0 결과 (11-07 23:06~23:49, 4060)
+
+30에폭 43.3분, best = 에폭 25. 검증 200판에서 소유 부호 일치 98.6%(코드 형세 75.6%), 사석 칸 88.4%(24.9%), 집 차 MAE 6.9집(20.3). 상세·에폭표: `monkos-ops/ops/reports/2026-11/COMPLETION_20261107_iMac쌍아-막내5_GO_형세소형망_학습v0.md`. 진단 `own_to_score.py`(소유 합+포로로 집 차 재계산, b18 바닥값).
