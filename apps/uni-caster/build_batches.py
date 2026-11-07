@@ -36,16 +36,25 @@ def ordinal(n):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--parts", type=int, default=5)
+    ap.add_argument("--sig-ratio", type=float, default=1.0, help="시그니처 허용 장면 중 실제로 쓰게 할 비율 (v0=1.0, v1=0.33)")
     a = ap.parse_args()
     cards = [json.loads(x) for x in open(os.path.join(D, "scene_cards_v0.jsonl"), encoding="utf-8")]
+    # v1: 시그니처는 허용 장면의 일부만 — 종류별로 같은 비율, 시드 고정
+    import random
+    rnd = random.Random(20261107)
+    use = set()
+    for kind in ("멋진 수", "뭐가 뭔지"):
+        el = [c["scene_id"] for c in cards if c.get("signature_ok") == kind]
+        rnd.shuffle(el)
+        use |= set(el[: round(len(el) * a.sig_ratio)])
     os.makedirs(os.path.join(D, "batches"), exist_ok=True)
     os.makedirs(os.path.join(D, "gen"), exist_ok=True)
     for k in range(a.parts):
         with open(os.path.join(D, "batches", f"part{k}.jsonl"), "w", encoding="utf-8") as f:
             for c in cards[k::a.parts]:
-                c = dict(c, move_no_ko=ordinal(c["move_no"]))
+                c = dict(c, move_no_ko=ordinal(c["move_no"]), signature_use=c["scene_id"] in use)
                 f.write(json.dumps(c, ensure_ascii=False) + "\n")
-    print(len(cards), "cards →", a.parts, "parts")
+    print(len(cards), "cards →", a.parts, "parts · signature_use", len(use))
 
 
 if __name__ == "__main__":

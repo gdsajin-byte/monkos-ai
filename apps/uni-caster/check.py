@@ -137,6 +137,11 @@ def main():
     ap.add_argument("--gen", default=os.path.join(D, "gen"))
     a = ap.parse_args()
     cards = {json.loads(x)["scene_id"]: json.loads(x) for x in open(os.path.join(D, "scene_cards_v0.jsonl"), encoding="utf-8")}
+    for f in glob.glob(os.path.join(D, "batches", "part*.jsonl")):  # 묶음의 signature_use(v1) 덧씌움
+        for x in open(f, encoding="utf-8"):
+            b = json.loads(x)
+            if b["scene_id"] in cards and "signature_use" in b:
+                cards[b["scene_id"]]["signature_use"] = b["signature_use"]
     gen = load_gen(a.gen)
     bad = [g["_bad"] for g in gen if "_bad" in g]
     gen = [g for g in gen if "_bad" not in g]
@@ -199,6 +204,8 @@ def main():
                 sig_bad.append((sid, f"{k} {v}회"))
             if c.get("signature_ok") != k:
                 sig_bad.append((sid, f"{k} — 이 장면 허용 {c.get('signature_ok')}"))
+            elif c.get("signature_use") is False:
+                sig_bad.append((sid, f"{k} — 이 장면 signature_use false(v1 1/3 축소)"))
         for ti, s, why in judge_violations(g):
             judge.append((sid, ti, s, why))
 
