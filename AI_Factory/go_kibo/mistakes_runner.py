@@ -13,6 +13,10 @@
   5. 2단계: 1단계 손해 3집+ 착수의 직전·직후 국면만 visits 400으로 재평가 → out2/{id}.jsonl.
   6. 07:30이 되면 엔진을 끊고 끝낸다. 미완 대국은 다음 밤에 이어서(완료 파일이 체크포인트).
 상태: runner_status.json · 로그: runner.log (실패 가시화: state=failed + 사유, exit 1)
+
+소유권 모드(--ownership, 11-07 ORDER_20261107 막내3): 같은 질의·같은 국면 순서에 includeOwnership=true, visits --own-visits(64).
+  1단계만 돈다. 국면당 {turnNumber, scoreLead, winrate, visits, own: 361 int(×100, 흑 기준 +100=흑 땅, 행 우선 y→x)}로 줄여 기록.
+  예: python mistakes_runner.py --root C:/Users/smuse73/go_kibo/own --ownership --no-b10-wait --window-start 23:05 --window-end 07:30
 """
 import argparse
 import datetime as dt
@@ -26,6 +30,16 @@ import time
 
 NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 BIG = 3.0
+
+
+def compact_own(d):
+    """KataGo 응답 → 소유권 수집 행. ownership 없으면 실패(무음 강등 금지)."""
+    own = d.get("ownership")
+    if not own or len(own) != 361:
+        raise RuntimeError(f"ownership 없음/길이 {len(own) if own else 0} — id {d.get('id')} turn {d.get('turnNumber')}")
+    ri = d.get("rootInfo", {})
+    return {"id": d["id"], "turnNumber": d["turnNumber"], "scoreLead": round(ri.get("scoreLead", 0.0), 2),
+            "winrate": round(ri.get("winrate", 0.0), 4), "visits": ri.get("visits"), "own": [round(x * 100) for x in own]}
 
 
 class Runner:
@@ -184,6 +198,18 @@ class Runner:
                     continue
                 if "warning" in d or d.get("isDuringSearch"):
                     continue
+                if self.a.ownership:
+                    try:
+                        d = compact_own(d)
+                    except RuntimeError as ex:  # 리더 스레드 사망 → 엔진 정지 방지: 대국을 오류로 기록
+                        self.log(f"❌ {ex}")
+                        self.write(outdir, gid, [{"id": gid, "error": str(ex)}], error=True)
+                        with lock:
+                            done["errors"] += 1
+                            done["games"] += 1
+                            buf.pop(gid, None)
+                        expect.pop(gid, None)
+                        continue
                 with lock:
                     buf.setdefault(gid, []).append(d)
                     done["positions"] += 1
@@ -265,6 +291,13 @@ class Runner:
         self.status("started", window=[f"{wstart:%Y-%m-%d %H:%M}", f"{wend:%Y-%m-%d %H:%M}"])
         self.log(f"러너 시작 — 창 {wstart:%m-%d %H:%M} ~ {wend:%m-%d %H:%M}")
         Q = [json.loads(x) for x in open(os.path.join(self.root, self.a.queries), encoding="utf-8")]
+        if self.a.ownership:
+            self.a.stage1_only = True
+            for q in Q:
+                q["includeOwnership"] = True
+                q["maxVisits"] = self.a.own_visits
+            if self.a.limit:
+                Q = Q[:self.a.limit]
         if all(self.is_done(self.out1, q["id"]) and (self.a.stage1_only or self.is_done(self.out2, q["id"]) or
                os.path.exists(os.path.join(self.out1, f"{q['id']}.error.jsonl"))) for q in Q):
             self.log("이미 전체 완료 — GPU 미사용 종료")
@@ -334,6 +367,9 @@ def main():
     ap.add_argument("--dry-run", action="store_true", help="schtasks 실행 생략")
     ap.add_argument("--queries", default="queries_full.jsonl", help="root 안 질의 파일")
     ap.add_argument("--stage1-only", action="store_true", help="2단계(재평가) 없이 질의만 처리 — 결정 장면 정밀 분석 등")
+    ap.add_argument("--ownership", action="store_true", help="소유권 수집 모드 — includeOwnership, 1단계만, 압축 기록")
+    ap.add_argument("--own-visits", type=int, default=64)
+    ap.add_argument("--limit", type=int, default=0, help="소유권 모드 스모크용: 앞 N국만")
     ap.add_argument("--no-b10-wait", action="store_true", help="b10을 기다리지 않음(낮 창). b10이 돌고 있으면 시작하지 않음")
     a = ap.parse_args()
     r = Runner(a)
