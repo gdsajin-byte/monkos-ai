@@ -168,6 +168,7 @@ status: active
 | 11/07 | ?/? | **COMPLETION** COMPLETION_20261107_iMac쌍아-막내1_GO_대화록정제분류30편_발화DB_v0 | [COMPLETION_20261107_iMac쌍아-막내1_GO_대화록정제분류30편_발화DB_v0](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내1_GO_대화록정제분류30편_발화DB_v0.md) | ✅ |
 | 11/07 | ?/? | **COMPLETION** COMPLETION_20261107_iMac쌍아-막내3_GO_4060_소유권수집_1회차 | [COMPLETION_20261107_iMac쌍아-막내3_GO_4060_소유권수집_1회차](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내3_GO_4060_소유권수집_1회차.md) | ✅ |
 | 11/07 | ?/? | **COMPLETION** COMPLETION_20261107_iMac쌍아-막내3_GO_4060_소유권수집_2회차_완료 | [COMPLETION_20261107_iMac쌍아-막내3_GO_4060_소유권수집_2회차_완료](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내3_GO_4060_소유권수집_2회차_완료.md) | ✅ |
+| 11/07 | iMac/쌍아-막내1 | 판독 9편 정제·장면 사전 v1·발화 DB v1·표기 관례(A·①②·▲■·반투명 영역)·G836 v3 | [COMPLETION_20261107_iMac쌍아-막내1_GO_판독9편정제_장면사전v1_DBv1_표기관례](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내1_GO_판독9편정제_장면사전v1_DBv1_표기관례.md) | ✅ |
 
 ## 3. Phase 현황
 
