@@ -7,7 +7,7 @@ v1 확장(쌍아 11-07 05:50·15:02 지시):
      refine/f1_{영상}_in0·out0(LLM 일꾼 판단: keep·drop·화자·라벨·판 의존·용어·Q&A)으로 다시 넣는다. 장면 = scene_dict_v1.jsonl.
   ② 막내2 이현욱 짝(lhw/pairs_v1.jsonl, 없으면 v0 — 한 행 {utterance, go_scene}, scene_id 1:1) → go_scene(kind='lhw_pair') + 미분류 발화.
      move_no = 실제 대국 수 번호, 정확도는 move_no_basis(sgf·empty_start·stones_lower_bound). move_basis엔 파일 판. 파일이 없으면 건너뛰고 meta에 남긴다.
-  ③ distill_pair(장면 사실 → 목표 문장) 씨앗: 감수 예문 2(gold) + G836 v2 대본(생성, 검토 대기).
+  ③ distill_pair(장면 사실 → 목표 문장) 씨앗: 감수 예문 2(gold) + G836 v3 대본(생성, 표기 관례 반영, 검토 대기).
 """
 import argparse
 import glob
@@ -176,7 +176,8 @@ def main():
         cur.execute("INSERT INTO distill_pair(ref,facts,target_kind,gold_id,target_text,review,reviewer,created_at) VALUES (?,?,?,?,?,?,?,?)",
                     (ref, facts or "{}", "gold", gid, txt, "ok", "작가님", now))
         stat["distill_gold"] += 1
-    v2p = os.path.join(ROOT, "apps", "go-explainer-e2e", "scripts", "s02_v2.json")
+    db.commit()  # 출력 검사 하위 프로세스가 같은 DB를 읽는다(잠금 회피)
+    v2p = os.path.join(ROOT, "apps", "go-explainer-e2e", "scripts", "s02_v3.json")
     v2 = json.load(open(v2p, encoding="utf-8"))
     v2_text = " ".join(re.sub(r"<[^>]+>", "", l["text"]) for l in v2["lines"])
     tmpf = tmp + ".v2.txt"
@@ -184,9 +185,11 @@ def main():
     chk = subprocess.run([sys.executable, os.path.join(HERE, "check_overlap.py"), tmpf, "--n", "6", "--db", tmp], capture_output=True, text=True)
     os.remove(tmpf)
     m = re.search(r"경고\s*(\d+)", chk.stdout)
+    if not m:
+        raise SystemExit(f"❌ load_v1: 출력 검사 실패 {chk.stderr[-300:]}")
     cur.execute("INSERT INTO distill_pair(ref,facts,target_kind,target_text,generator,context_ver,overlap_warn,review,created_at) VALUES (?,?,?,?,?,?,?,?,?)",
-                ("G836 37수", json.dumps(v2.get("facts") or {}, ensure_ascii=False), "generated", v2_text, "claude/s02_v2",
-                 "COMMENTARY_CONTEXT_v1 + GOLD #1·#2", int(m.group(1)) if m else None, "pending", now))
+                ("G836 37수", json.dumps(v2.get("facts") or {}, ensure_ascii=False), "generated", v2_text, "claude/s02_v3",
+                 "COMMENTARY_CONTEXT_v1 + GOLD #1·#2 + 표기 관례 15:22·15:29", int(m.group(1)) if m else None, "pending", now))
     stat["distill_generated"] += 1
     stat["v2_overlap_check"] = chk.stdout.strip().splitlines()[-1] if chk.stdout.strip() else chk.stderr[-200:]
 

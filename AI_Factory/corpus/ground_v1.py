@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""G836 대본 v2 근거 대조 v1 — 정제본 근거. 대본 줄마다 가까운 해설을 찾되, 정제·분류 판단(남김·해설 화자·국면/형세/수순)을 통과한 발화만 근거로 든다.
+"""G836 대본(기본 v3 — 표기 관례 반영) 근거 대조 v1 — 정제본 근거. 대본 줄마다 가까운 해설을 찾되, 정제·분류 판단(남김·해설 화자·국면/형세/수순)을 통과한 발화만 근거로 든다.
 
   python3 AI_Factory/corpus/ground_v1.py [--db …] [--k 3]
 v0(05:05, g836_v2_compare.md)과 다른 점: v0는 원 자막 구간(해설 목소리 추정) 벡터 상위를 그대로 근거로 들었다 — 캐스터 말·잡담·판 지시어 조각이 섞였다.
@@ -27,9 +27,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--db", default=os.path.expanduser("~/.monkos/corpus/monk_corpus.db"))
     ap.add_argument("--k", type=int, default=3)
-    ap.add_argument("--out", default=os.path.expanduser("~/.monkos/corpus/g836_v2_ground_v1.md"))
+    ap.add_argument("--script", default=os.path.join(ROOT, "apps", "go-explainer-e2e", "scripts", "s02_v3.json"))
+    ap.add_argument("--out", default=os.path.expanduser("~/.monkos/corpus/g836_v3_ground_v1.md"))
     a = ap.parse_args()
-    v2 = json.load(open(os.path.join(ROOT, "apps", "go-explainer-e2e", "scripts", "s02_v2.json"), encoding="utf-8"))
+    v2 = json.load(open(a.script, encoding="utf-8"))
     qs = [re.sub(r"<[^>]+>", "", l["text"]).strip() for l in v2["lines"]]
     qf, vf = a.out + ".q.json", a.out + ".q.f32"
     json.dump(qs, open(qf, "w", encoding="utf-8"), ensure_ascii=False)
@@ -52,8 +53,8 @@ def main():
     M = M / np.linalg.norm(M, axis=1, keepdims=True)
     Q = Q / np.linalg.norm(Q, axis=1, keepdims=True)
     S = Q @ M.T
-    L = ["# G836 대본 v2 근거 대조 v1 — 정제본 근거 (레포 밖 — 방송 원문 인용, 외부 공개·커밋 금지)\n",
-         f"> 질의 = v2 대본 {len(qs)}줄 · 후보 = 30편 해설 구간 벡터 {len(ids):,} → 구간 안 발화 중 **남김·해설 화자·{'/'.join(OKL)}**만 · 상위 {a.k} · 질의 임베딩 ${cost['usd']}\n"]
+    L = [f"# G836 대본 {os.path.basename(a.script)} 근거 대조 v1 — 정제본 근거 (레포 밖 — 방송 원문 인용, 외부 공개·커밋 금지)\n",
+         f"> 질의 = 대본 {len(qs)}줄 · 후보 = 30편 해설 구간 벡터 {len(ids):,} → 구간 안 발화 중 **남김·해설 화자·{'/'.join(OKL)}**만 · 상위 {a.k} · 질의 임베딩 ${cost['usd']}\n"]
     stat = Counter()
     for n, q in enumerate(qs):
         order = np.argsort(-S[n])
