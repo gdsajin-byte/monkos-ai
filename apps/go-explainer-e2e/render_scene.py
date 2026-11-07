@@ -257,7 +257,8 @@ def draw_frame(sec):
             tc = (255, 255, 255) if c == "B" else (20, 20, 20)
             if br == "fail" and num == 1:
                 tc = (255, 90, 70)
-            d.text((s(cx), s(cy)), str(num), font=F["num"], fill=tc, anchor="mm")
+            # 표기 관례(작가님 11-07 15:22): 기존 돌 그대로, 시작점 = A, 이후 수순 = 1·2·3(돌 위 = 동그라미 번호), 분기마다 다시 시작
+            d.text((s(cx), s(cy)), "A" if num == 1 else str(num - 1), font=F["num"], fill=tc, anchor="mm")
     # 직전 착점 표시(분기 없을 때 = 36수 백, 분기 중 = 마지막 수)
     if cur_last and not (kind == "place" and dt < T_IN):
         cx, cy = P(cur_last)

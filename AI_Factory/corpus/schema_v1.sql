@@ -3,15 +3,21 @@
 
 -- ① go_scene 확장 — 장면 출처 종류 + 이현욱 짝(자막 문장 ↔ 판 국면) 칸. 판독 9편 장면(board_read)은 기존 칸 그대로.
 ALTER TABLE go_scene ADD COLUMN kind TEXT NOT NULL DEFAULT 'board_read';  -- board_read(판독 9편 Gemini 장면) | lhw_pair(막내2 이현욱 짝)
-ALTER TABLE go_scene ADD COLUMN mv INTEGER;           -- 실전 수 번호(짝 파일 pos.mv — 막내2가 '실전 기준 통일' 작업 중, 기준은 move_basis)
-ALTER TABLE go_scene ADD COLUMN last_move TEXT;       -- 직전 착수 표기(예: 백Q14)
+-- 이현욱 짝 칸 — 막내2 15:08 회신 구조({utterance, go_scene}, scene_id 1:1)에 맞춤. 수 번호는 기존 move_no 칸(실제 대국 수 번호).
+ALTER TABLE go_scene ADD COLUMN scene_key TEXT;       -- 막내2 scene_id "{영상id}:{0000}"
+ALTER TABLE go_scene ADD COLUMN move_no_basis TEXT;   -- sgf(기보 대조·정확) | empty_start(빈 판 시작·정확) | stones_lower_bound(돌 수 하한)
+ALTER TABLE go_scene ADD COLUMN last_move TEXT;       -- 직전 착수(예: 흑Q16)
+ALTER TABLE go_scene ADD COLUMN to_play TEXT;         -- b | w
 ALTER TABLE go_scene ADD COLUMN var_id INTEGER;       -- 참고도 번호(실전이면 NULL)
-ALTER TABLE go_scene ADD COLUMN var_n INTEGER;        -- 참고도 안 몇 번째 수
-ALTER TABLE go_scene ADD COLUMN var_base_mv INTEGER;  -- 참고도가 갈라진 실전 수
-ALTER TABLE go_scene ADD COLUMN events TEXT;          -- JSON 문장 시간 안 판 사건 [{t,kind,s,n,var}]
-ALTER TABLE go_scene ADD COLUMN board_end TEXT;       -- 문장 끝 판(361자 b/w/.)
+ALTER TABLE go_scene ADD COLUMN var_n INTEGER;        -- 참고도 몇 수째
+ALTER TABLE go_scene ADD COLUMN var_base_mv INTEGER;  -- 참고도가 갈라진 실전 수 번호(var.base_move_no)
+ALTER TABLE go_scene ADD COLUMN var_seq TEXT;         -- JSON 참고도 수순 전체
+ALTER TABLE go_scene ADD COLUMN events TEXT;          -- JSON 문장 시간 안 판 사건 [{t,kind 실전|변화도|무르기|이동,s,n|move_no,n_low?}]
+ALTER TABLE go_scene ADD COLUMN board_end TEXT;       -- 판(361자 b/w/.) — 짝 파일 board
 ALTER TABLE go_scene ADD COLUMN region TEXT;          -- 하변·좌상귀 …
-ALTER TABLE go_scene ADD COLUMN move_basis TEXT;      -- 수 번호 기준·파일 판(예: lhw/pairs_v0 · 실전 기준 미통일)
+ALTER TABLE go_scene ADD COLUMN sgf_path TEXT;        -- 기보 생기면(막내2 — 지금 NULL)
+ALTER TABLE go_scene ADD COLUMN move_basis TEXT;      -- 적재한 파일 판(예: lhw/pairs_v1.jsonl@수정 시각)
+-- 엔진 손익은 기존 engine 칸(JSON, 비워 둠)
 CREATE INDEX IF NOT EXISTS ix_scene_kind ON go_scene(kind, source_id);
 
 -- ② 소형 증류 데이터 — 장면 사실(입력) ↔ 목표 문장(감수 예문 또는 생성 문장 + 검토 상태)

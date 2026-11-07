@@ -5,8 +5,8 @@
 v1 확장(쌍아 11-07 05:50·15:02 지시):
   ① 판독 9편 정제본 — v0의 Gemini 전사 장면(labeler=gemini_transcript, 분류 없음)을 지우고
      refine/f1_{영상}_in0·out0(LLM 일꾼 판단: keep·drop·화자·라벨·판 의존·용어·Q&A)으로 다시 넣는다. 장면 = scene_dict_v1.jsonl.
-  ② 막내2 이현욱 짝(lhw/pairs_v0.jsonl — 자막 문장 ↔ 판 국면·참고도·사건) → go_scene(kind='lhw_pair') + 미분류 발화.
-     수 번호는 막내2 '실전 기준 통일' 작업 중이라 move_basis에 파일 판을 적는다. 파일이 없으면 건너뛰고 meta에 남긴다.
+  ② 막내2 이현욱 짝(lhw/pairs_v1.jsonl, 없으면 v0 — 한 행 {utterance, go_scene}, scene_id 1:1) → go_scene(kind='lhw_pair') + 미분류 발화.
+     move_no = 실제 대국 수 번호, 정확도는 move_no_basis(sgf·empty_start·stones_lower_bound). move_basis엔 파일 판. 파일이 없으면 건너뛰고 meta에 남긴다.
   ③ distill_pair(장면 사실 → 목표 문장) 씨앗: 감수 예문 2(gold) + G836 v2 대본(생성, 검토 대기).
 """
 import argparse
@@ -33,8 +33,11 @@ KST = timezone(timedelta(hours=9))
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--db", default=os.path.expanduser("~/.monkos/corpus/monk_corpus.db"))
-    ap.add_argument("--lhw", default=os.path.join(YT, "lhw", "pairs_v0.jsonl"))
+    ap.add_argument("--lhw", default=None, help="기본: lhw/pairs_v1.jsonl, 없으면 pairs_v0.jsonl(막내2 15:08 — 100편 확대분은 v1)")
     a = ap.parse_args()
+    if a.lhw is None:
+        v1 = os.path.join(YT, "lhw", "pairs_v1.jsonl")
+        a.lhw = v1 if os.path.exists(v1) else os.path.join(YT, "lhw", "pairs_v0.jsonl")
     tmp = a.db + ".v1tmp"
     if os.path.exists(tmp):
         os.remove(tmp)
@@ -140,22 +143,28 @@ def main():
         basis = f"{os.path.relpath(a.lhw, YT)}@{datetime.fromtimestamp(os.path.getmtime(a.lhw), KST):%Y-%m-%d %H:%M}"
         n_by = Counter()
         for x in open(a.lhw, encoding="utf-8"):
-            p = json.loads(x)
-            vid = p["id"]
+            row = json.loads(x)
+            if "utterance" not in row or "go_scene" not in row:
+                raise SystemExit(f"❌ load_v1: 짝 행 구조가 {{utterance, go_scene}}가 아님 — {a.lhw}")
+            u, g = row["utterance"], row["go_scene"]
+            vid = u["video_id"]
             com, _ = ensure_source(vid, "이현욱 1인 방송 — 막내2 자막 문장↔판 짝")
             seq = LHW_SEQ0 + n_by[vid]
             n_by[vid] += 1
-            pos = p.get("pos") or {}
+            note = {k: u[k] for k in ("utt_id", "fixes", "asr", "text_raw") if u.get(k)}
             cur.execute("INSERT INTO utterance(source_id,seq,t_start,speaker_id,text,labeler,note) VALUES (?,?,?,?,?,?,?)",
-                        (f"yt:{vid}", seq, p["t_start"], speaker(p.get("commentator") or com, "real", "해설"), p["text"], "lhw_pairs(미분류)",
-                         json.dumps({"fixes": p["fixes"]}, ensure_ascii=False) if p.get("fixes") else None))
+                        (f"yt:{vid}", seq, u["t_start"], speaker(u.get("commentator") or com, "real", "해설"), u["text"], "lhw_pairs(미분류)",
+                         json.dumps(note, ensure_ascii=False)))
             uid = cur.lastrowid
-            cur.execute("INSERT INTO go_scene(source_id,t_start,t_end,mode,utt_id,kind,mv,last_move,var_id,var_n,var_base_mv,events,board_end,region,move_basis) "
-                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                        (f"yt:{vid}", p["t_start"], p["t_end"], "참고도" if pos.get("var") is not None else "실전", uid, "lhw_pair",
-                         pos.get("mv"), pos.get("last"), pos.get("var"), pos.get("var_n"), pos.get("var_base_mv"),
-                         json.dumps(p.get("events") or [], ensure_ascii=False), p.get("board_end"), p.get("region"), basis))
+            var = g.get("var") or {}
+            cur.execute("INSERT INTO go_scene(source_id,t_start,t_end,move_no,mode,utt_id,kind,scene_key,move_no_basis,last_move,to_play,var_id,var_n,var_base_mv,var_seq,"
+                        "events,board_end,region,sgf_path,move_basis) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                        (f"yt:{vid}", g.get("t", u["t_start"]), u["t_end"], g.get("move_no"), "참고도" if g.get("var") else "실전", uid, "lhw_pair",
+                         g.get("scene_id"), g.get("move_no_basis"), g.get("last_move"), g.get("to_play"), var.get("id"), var.get("n"), var.get("base_move_no"),
+                         json.dumps(var.get("seq"), ensure_ascii=False) if var.get("seq") is not None else None,
+                         json.dumps(g.get("events") or [], ensure_ascii=False), g.get("board"), g.get("region"), g.get("sgf_path"), basis))
             stat["go_scene_lhw_pair"] += 1
+            stat["lhw_basis_" + str(g.get("move_no_basis"))] += 1
         stat["lhw_videos"] = len(n_by)
     else:
         stat["lhw_skipped"] = 1
