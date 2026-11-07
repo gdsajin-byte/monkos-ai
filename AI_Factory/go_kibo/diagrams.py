@@ -164,7 +164,7 @@ def play_seq(board, start, seq):
         p = gtp_to_xy(m)
         if p in num or p in b.s:
             if p in num:
-                notes.append(f"{k} = {num[p]} 자리")
+                notes.append(f"{mark(k, True)} = {mark(num[p], True)} 자리")
         got = b.play(c, p)
         if got:
             caps.append((k, c, m, len(got)))
@@ -176,6 +176,16 @@ def play_seq(board, start, seq):
 
 
 # ---------------- SVG ----------------
+
+CIRC = "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳"
+
+
+def mark(k, circled=False):
+    """수순 k(1부터) → 표기. 1 = 'A'(시작점), 2부터 = 1, 2, …(글에서는 ①②③). 작가님 11-07 15:22 관례."""
+    if k == 1:
+        return "A"
+    return CIRC[k - 2] if circled and k - 2 < len(CIRC) else str(k - 1)
+
 
 def view_box(points):
     xs = [p[0] for p in points]
@@ -235,9 +245,11 @@ def svg(board_final, num, box, last_xy=None, accent_first=False, title=""):
         o.append(f'<circle cx="{X(x)}" cy="{Y(y)}" r="{S * 0.47}" fill="{fill}" stroke="{stroke}" stroke-width="0.8"/>')
         k = num.get((x, y))
         if k is not None:
+            # 표기 관례(작가님 11-07 15:22): 기존 돌은 그대로, 시작점 = A, 이후 수순 = ①②③(돌 위 번호 = 동그라미 번호)
             col = "#d22" if (accent_first and k == 1) else tc
-            o.append(f'<text x="{X(x)}" y="{Y(y) + 5}" font-size="{14 if k < 10 else 12}" font-weight="700" '
-                     f'text-anchor="middle" fill="{col}">{k}</text>')
+            lab = mark(k)
+            o.append(f'<text x="{X(x)}" y="{Y(y) + 5}" font-size="{15 if k == 1 else (14 if k < 11 else 12)}" font-weight="700" '
+                     f'text-anchor="middle" fill="{col}">{lab}</text>')
         elif last_xy == (x, y):
             o.append(f'<rect x="{X(x) - 4}" y="{Y(y) - 4}" width="8" height="8" fill="#d22"/>')
     o.append("</svg>")
@@ -281,11 +293,8 @@ def make_sgf(moves, t, komi, sc):
 # ---------------- 해설 초안(사실만) ----------------
 
 def seq_text(start, seq, n=6):
-    c, out = start, []
-    for m in seq[:n]:
-        out.append(f"{KO[c]} {m}")
-        c = opp(c)
-    return " → ".join(out)
+    """도면 수순 글 — A(시작점) → ① → ② …, 좌표는 괄호(관례: 수 번호·색 대신 기호)."""
+    return " → ".join(f"{mark(k, True)}({m})" for k, m in enumerate(seq[:n], 1))
 
 
 def draft(sc):
@@ -297,15 +306,15 @@ def draft(sc):
         s.append(f"최선은 같은 {rb}의 {sc['best']}, 실전은 {sc['move']}.")
     else:
         s.append(f"최선은 {rb} {sc['best']}인데 실전은 {ra} {sc['move']} — 급한 곳이 {rb}{'이었' if (ord(rb[-1]) - 0xAC00) % 28 else '였'}다.")
-    capsc = [f"{k}수째 {KO[c]} {m}로 {KO[opp(c)]} {n}점 따냄" for k, c, m, n in sc["caps_correct"]]
-    capsf = [f"{k}수째 {KO[c]} {m}로 {KO[opp(c)]} {n}점 따냄" for k, c, m, n in sc["caps_fail"]]
+    capsc = [f"{mark(k, True)}({m})로 {n}점 따냄" for k, c, m, n in sc["caps_correct"]]
+    capsf = [f"{mark(k, True)}({m})로 {n}점 따냄" for k, c, m, n in sc["caps_fail"]]
     if capsf:
         s.append("실패도에서 " + ", ".join(capsf) + ".")
     if capsc:
         s.append("정해도에서는 " + ", ".join(capsc) + ".")
     if len(sc["pv_fail"]) > 1:
         rf = region(gtp_to_xy(sc["pv_fail"][1]))
-        s.append(f"상대 응징 첫 수는 {rf} {sc['pv_fail'][1]}.")
+        s.append(f"상대 응징 첫 수는 {rf} ①({sc['pv_fail'][1]}).")
     if len(sc["pv_correct"]) == 1:
         s.append("정해도는 한 수로 정리되고 엔진의 다음 수는 다른 곳이다.")
     s.append(f"차이 {sc['loss']:.1f}집 · 승률 {sc['wr_before'] * 100:.0f}% → {sc['wr_after'] * 100:.0f}% ({KO[me]} 작가님 기준).")
@@ -382,7 +391,7 @@ def write_docs(scenes, n_cand, by_phase, plan):
     md = [f"---\ntype: research\ndate: {now[:10]}\nportfolio: PF_GO\nsource: AI_Factory/go_kibo/diagrams.py\n---\n",
           "# 정해도·실패도 시범 v0 — 10장면\n",
           f"> 생성 {now} KST · 엔진 KataGo b18 400v(실수 사전 v1 2단계 응답 재사용, 새 엔진 실행 없음) · 대국은 G번호(MISTAKES_v1 순번)·수순만.",
-          "> 정해도 = 착수 직전 국면의 최선 수순 · 실패도 = 실전 수(①, 빨간 번호) + 상대 최선 응징 수순 · 차이 = 두 국면 평가 차(작가님 기준).",
+          "> 정해도 = 착수 직전 국면의 최선 수순 · 실패도 = 실전 수(A, 빨간 글자) + 상대 최선 응징 수순. 표기 관례(작가님 11-07 15:22): 기존 돌은 그대로, 시작점 A, 이후 수순 ①②③(정해도·실패도 각각 ①부터) · 차이 = 두 국면 평가 차(작가님 기준).",
           "> **그림 묶음(휴대폰용)**: [DIAGRAMS_v0.html](DIAGRAMS_v0.html) · SGF·SVG 원본 `~/.monkos/go-board/analysis/commentary_v0/`(레포 밖).\n",
           "## 1. 선정 기준\n", "| 항목 | 기준 |", "|---|---|"] + [f"| {k} | {v} |" for k, v in crit] + [
           "\n## 2. 장면 표\n",
@@ -407,7 +416,7 @@ def write_docs(scenes, n_cand, by_phase, plan):
 <h2>{s['sid'][1:]}. {s['g']} · {s['move_no']}수 <small>{s['phase']} · {s['era']} · {'승' if s['result'] == 'W' else '패'}국{' · 결정 장면' if s['decisive'] else ''}</small></h2>
 <p class="k"><b>실전</b> {KO[s['my_color']]} {s['move']} &nbsp;<b>최선</b> {s['best']} &nbsp;<b>차이</b> {s['loss']:.1f}집 · 승률 {s['wr_before'] * 100:.0f}%→{s['wr_after'] * 100:.0f}% (−{s['wr_loss'] * 100:.0f}%p)</p>
 <figure><figcaption>정해도</figcaption>{s['svg_correct']}<p class="seq">{html.escape(s['seq_correct'])}</p></figure>
-<figure><figcaption>실패도 <span class="r">① = 실전 수</span></figcaption>{s['svg_fail']}<p class="seq">{html.escape(s['seq_fail'])}</p></figure>
+<figure><figcaption>실패도 <span class="r">A = 실전 수</span></figcaption>{s['svg_fail']}<p class="seq">{html.escape(s['seq_fail'])}</p></figure>
 {notes}<p class="t">{html.escape(s['text'])}</p>
 <p class="rv">감수: ________</p>
 </section>""")

@@ -151,7 +151,20 @@ BANNER = {None: (_BN.get("pos", f"실전 · {TURN + 1}수 국면"), (90, 90, 96)
           "ok": (_BN.get("ok", "정해도 — 이렇게 뒀어야"), (40, 112, 200)), "rewind": (_BN.get("rewind", f"{TURN + 1}수 국면으로 되돌림"), (120, 120, 128))}
 # 영역 강조(v1, 작가님 감수 1 — 활로 숫자 대신 두터움·약점·귀/변 영역): {"이름": {"rect": ["A1","C4"], "label": "귀", "color": [r,g,b]}}
 # "rect" = 사각 영역(귀·변) / "points" = 돌 묶음 강조(두터움·약점 — 상대 돌을 덮지 않게)
-ZONES = {k: dict(v, xy=[gtp_to_xy(q) for q in (v.get("rect") or v["points"])]) for k, v in SC.get("zones", {}).items()}
+# 표기 관례 2(작가님 11-07 15:29 "죽거나 일정 세력 뭉치는 그 돌들에 모두 세모나 네모 — 집단군… 영역은 반투명 영역 … 색이나 X 표시 …
+#   지도에서 펜으로 영역 잡고 그 안을 칠하는 개념"):
+#   "points" = 돌 무리 — 돌 위에 표식 "mark": "tri"(▲ 사석·약한 무리) | "sq"(■ 세력·두터운 무리, 기본). 수순 기호(A·①)가 있는 돌은 표식을 오른쪽 위 귀퉁이로 비켜 겹치지 않게.
+#   "rect"(사각) 또는 "area"(칸 목록) = 영역 — 윤곽선(바깥 테두리만) + 안쪽 반투명 채움 "fill": "solid"(기본) | "x"(빈 칸에 X 빗금). 흑·백은 채움 색 + 이름표.
+def _cells(v):
+    if "area" in v:
+        return [gtp_to_xy(q) for q in v["area"]]
+    if "rect" in v:
+        (ax, ay), (bx, by) = gtp_to_xy(v["rect"][0]), gtp_to_xy(v["rect"][1])
+        return [(x, y) for x in range(min(ax, bx), max(ax, bx) + 1) for y in range(min(ay, by), max(ay, by) + 1)]
+    return [gtp_to_xy(q) for q in v["points"]]
+
+
+ZONES = {k: dict(v, xy=_cells(v), is_area=("area" in v or "rect" in v)) for k, v in SC.get("zones", {}).items()}
 
 
 def zone_box(z):
@@ -215,13 +228,28 @@ def draw_frame(sec):
             a = ease((sec - te) / 0.35)
             x0_, y0_, x1_, y1_ = zone_box(z)
             c = tuple(z.get("color", [255, 200, 60]))
-            if "points" in z:
-                rr = R * 1.32
-                for q in z["xy"]:
+            if not z["is_area"]:
+                continue  # 돌 무리 표식은 돌 위에(아래 '무리 표식')
+            cells = set(z["xy"])
+            h = STEP / 2
+            xfill = z.get("fill") == "x"
+            for q in cells:  # 안쪽 칠(같은 층에 그리면 픽셀을 덮으므로 X는 칠 다음에)
+                qx, qy = P(q)
+                ld.rectangle([s(qx - h), s(qy - h), s(qx + h), s(qy + h)], fill=c + (int((45 if xfill else 95) * a),))
+            if xfill:  # 빈 칸에 X 표시
+                e = STEP * 0.22
+                for q in cells:
+                    if q in cur_b.s:
+                        continue
                     qx, qy = P(q)
-                    ld.ellipse([s(qx - rr), s(qy - rr), s(qx + rr), s(qy + rr)], fill=c + (int(150 * a),))
-            else:
-                ld.rounded_rectangle([s(x0_), s(y0_), s(x1_), s(y1_)], s(18), fill=c + (int(110 * a),), outline=c + (int(255 * a),), width=s(5))
+                    for (ax_, ay_, bx_, by_) in ((qx - e, qy - e, qx + e, qy + e), (qx - e, qy + e, qx + e, qy - e)):
+                        ld.line([(s(ax_), s(ay_)), (s(bx_), s(by_))], fill=c + (int(235 * a),), width=s(5))
+            for (qx_, qy_) in cells:  # 펜 윤곽 — 무리 바깥 테두리만
+                qx, qy = P((qx_, qy_))
+                for (dx, dy, seg) in ((0, -1, ((-h, -h), (h, -h))), (0, 1, ((-h, h), (h, h))), (-1, 0, ((-h, -h), (-h, h))), (1, 0, ((h, -h), (h, h)))):
+                    if (qx_ + dx, qy_ + dy) not in cells:
+                        (a1, b1), (a2, b2) = seg
+                        ld.line([(s(qx + a1), s(qy + b1)), (s(qx + a2), s(qy + b2))], fill=c + (int(255 * a),), width=s(6))
         im = Image.alpha_composite(im.convert("RGBA"), lay).convert("RGB")
         d = ImageDraw.Draw(im)
     # 돌: 현재 판 + 사라지는 돌(직전 판에만 있는 것)
@@ -257,7 +285,30 @@ def draw_frame(sec):
             tc = (255, 255, 255) if c == "B" else (20, 20, 20)
             if br == "fail" and num == 1:
                 tc = (255, 90, 70)
-            d.text((s(cx), s(cy)), str(num), font=F["num"], fill=tc, anchor="mm")
+            # 표기 관례(작가님 11-07 15:22): 기존 돌 그대로, 시작점 = A, 이후 수순 = 1·2·3(돌 위 = 동그라미 번호), 분기마다 다시 시작
+            d.text((s(cx), s(cy)), "A" if num == 1 else str(num - 1), font=F["num"], fill=tc, anchor="mm")
+    # 무리 표식(▲/■) — 돌 위. 수순 기호(A·①)가 있는 돌은 오른쪽 위 귀퉁이로 비켜 작게
+    for z, te in zs:
+        if z["is_area"]:
+            continue
+        a = ease((sec - te) / 0.35)
+        if a < 0.15:
+            continue
+        c = tuple(z.get("color", [255, 200, 60]))
+        for q in z["xy"]:
+            if q not in cur_b.s or not (X0 <= q[0] <= X1 and Y0 <= q[1] <= Y1):
+                continue
+            qx, qy = P(q)
+            numbered = cur_num.get(q) is not None
+            m = R * (0.34 if numbered else 0.52) * (0.6 + 0.4 * a)
+            if numbered:
+                qx, qy = qx + R * 0.72, qy - R * 0.72
+            edge = (255, 255, 255) if cur_b.s[q] == "B" else (30, 30, 30)
+            if z.get("mark") == "tri":
+                pts = [(s(qx), s(qy - m)), (s(qx - m * 1.05), s(qy + m * 0.75)), (s(qx + m * 1.05), s(qy + m * 0.75))]
+                d.polygon(pts, fill=c, outline=edge, width=s(3))
+            else:
+                d.rectangle([s(qx - m * 0.8), s(qy - m * 0.8), s(qx + m * 0.8), s(qy + m * 0.8)], fill=c, outline=edge, width=s(3))
     # 직전 착점 표시(분기 없을 때 = 36수 백, 분기 중 = 마지막 수)
     if cur_last and not (kind == "place" and dt < T_IN):
         cx, cy = P(cur_last)
@@ -274,7 +325,7 @@ def draw_frame(sec):
         cx = (x0_ + x1_) / 2
         if z.get("label_at"):
             cx, ly = P(gtp_to_xy(z["label_at"]))
-        elif "rect" in z and max(q[1] for q in z["xy"]) == N - 1:
+        elif z["is_area"] and max(q[1] for q in z["xy"]) == N - 1:
             ly = y1_ - STEP * 0.5
         else:
             ly = y0_ - 30 if y0_ - 30 > BY - 20 else y0_ + 30
@@ -362,7 +413,7 @@ if __name__ == "__main__":
     os.makedirs(D, exist_ok=True)
     silent = os.path.join(D, "video_silent.mp4")
     proc = subprocess.Popen([FF, "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS),
-                             "-i", "-", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", silent], stdin=subprocess.PIPE)
+                             "-i", "-", "-c:v", "libx264", "-threads", "2", "-pix_fmt", "yuv420p", "-crf", "20", silent], stdin=subprocess.PIPE)
     cache, shown = {}, {}
     probes = sorted({round(e["t"] + 0.9, 2) for e in raw} | {round(TOTAL - 1, 2)})
     sheet_frames = []
@@ -439,9 +490,9 @@ if __name__ == "__main__":
                 ps = []
                 for j in range(k0 + 1, kk + 1):
                     c = COLOR0 if j % 2 else opp(COLOR0)
-                    ps.append(f"{j} {'흑' if c == 'B' else '백'} {seqs[kd][j - 1]}")
+                    ps.append(f"{'A' if j == 1 else '①②③④⑤⑥⑦⑧⑨⑩'[j - 2]} {seqs[kd][j - 1]}")
                 put = " · ".join(ps)
-                show = "번호" + (" · ① 빨강(실전 수)" if kd == "fail" and kk == 1 else "") + (" · 배너 전환" if k0 == 0 else "") + \
+                show = "기호(A·①②)" + (" · A 빨강(실전 수)" if kd == "fail" and kk == 1 else "") + (" · 배너 전환" if k0 == 0 else "") + \
                        (f" · 앞 수는 {STEP_GAP}초 간격으로 먼저" if kk - k0 > 1 else "")
             elif kd == "pos":
                 brs = None
@@ -454,8 +505,8 @@ if __name__ == "__main__":
                 show = f"화살표 {arg.replace(',', '→')}"
             elif kd == "zone":
                 z = SC["zones"][arg]
-                show = (f"영역 '{z['label']}' {z['rect'][0]}–{z['rect'][1]}" if "rect" in z
-                        else f"돌 묶음 강조 '{z['label']}' {'·'.join(z['points'])}")
+                show = (f"영역 '{z['label']}' 윤곽+{'X 빗금' if z.get('fill') == 'x' else '반투명'} " + (f"{z['rect'][0]}–{z['rect'][1]}" if "rect" in z else f"{len(z['area'])}칸")
+                        if ("rect" in z or "area" in z) else f"무리 표식 {'▲' if z.get('mark') == 'tri' else '■'} '{z['label']}' {'·'.join(z['points'])}")
             elif kd == "diff":
                 show = f"차이 카드 '{SC['diff']['text']}'"
             rows.append(f"| {tm:.2f} | {label(brs)} | {put} | {seg} | {show} |")
