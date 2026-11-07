@@ -768,3 +768,4 @@
 - feedback_go_commentary_level.md 영역 표기 관례 추가(15:29)
 - project_4060_gpu_time_windows.md 무거운 작업 배치 원칙 추가(15:34)
 - 2026-11-07 20:28 iMac/쌍아 — 추가: project_curriculum_book_layered_production (강의록·저서 층별 제작, 작가님 20:28)
+- 2026-11-07 21:43 iMac/쌍아 — 보강: project_process_as_curriculum_continuity (성공·실패 무관 '무엇을 했나'가 자산)
