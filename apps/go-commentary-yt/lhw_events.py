@@ -63,6 +63,8 @@ def run(d):
         c = json.loads((Path(d) / "calib.json").read_text())
 
         def hollow(t, k):
+            if "ho" in s:  # 스트리밍 판독(lhw_stream)은 프레임을 남기지 않고 판독 때 가운데 빔 여부를 적어 둔다
+                return k in s["ho"]
             f = Path(d) / "frames1" / f"f_{t + 1:05d}.jpg"
             x, y = int(round(c["x0"] + (k % 19) * c["sx"])), int(round(c["y0"] + (k // 19) * c["sy"]))
             g = np.asarray(Image.open(f).convert("L").crop((x - 2, y - 2, x + 3, y + 3))).astype(int)
