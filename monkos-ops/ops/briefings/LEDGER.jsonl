@@ -173,3 +173,8 @@
 {"ts": "2026-11-06 06:31 KST", "id": 196, "event": "note", "text": "06:31 patrol 11-05 09:30 정상(gitleaks 누출 0), 미배선 경고 지속", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-11-06 06:31 KST", "id": 183, "event": "note", "text": "06:31 Pages monk-kr 시크릿 6 변동 없음(§E 10 미대조 유지)", "by": "iMac/민아-헤드리스"}
 {"ts": "2026-11-06 06:31 KST", "id": 116, "event": "note", "text": "06:31 BIZINFO_API_KEY SM 없음 유지(대조군 TX_API_KEY 존재)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-08 06:31 KST", "id": 195, "event": "note", "text": "06:31 claude agents 실측 blocked 2 유지(소소 258.7h·막내2 133.1h)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-08 06:31 KST", "id": 116, "event": "note", "text": "06:30 BIZINFO_API_KEY SM 없음 유지(대조군 TELEGRAM_TEAM_BOT_TOKEN 존재)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-08 06:31 KST", "id": 196, "event": "note", "text": "11-07 09:30 patrol 실행·누출 0, 텔레그램 미배선 경고 유지 · MONKOS_PATROL_CHAT_ID SM 없음", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-08 06:31 KST", "id": 183, "event": "note", "text": "06:31 Pages monk-kr 시크릿 6 변동 없음(§E 10 미대조 유지)", "by": "iMac/민아-헤드리스"}
+{"ts": "2026-11-08 06:32 KST", "id": 197, "event": "open", "axis": "infra", "severity": "ℹ️", "title": "11-07 06:30 mina-brief 헤드리스 미실행 — 5시간 한도 429(rc=1·1턴), 11-07 로컬축 브리핑 공백. 실행 시각과 쿼터 창 겹침 확인", "owner": "쌍아", "by": "iMac/민아-헤드리스"}
