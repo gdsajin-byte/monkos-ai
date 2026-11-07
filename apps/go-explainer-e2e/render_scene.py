@@ -285,8 +285,10 @@ def draw_frame(sec):
             tc = (255, 255, 255) if c == "B" else (20, 20, 20)
             if br == "fail" and num == 1:
                 tc = (255, 90, 70)
-            # 표기 관례(작가님 11-07 15:22): 기존 돌 그대로, 시작점 = A, 이후 수순 = 1·2·3(돌 위 = 동그라미 번호), 분기마다 다시 시작
-            d.text((s(cx), s(cy)), "A" if num == 1 else str(num - 1), font=F["num"], fill=tc, anchor="mm")
+            # 표기 관례(작가님 11-07 15:22 + 쌍아 15:38 판정): 기존 돌 그대로, A = 실전 수(문제의 수) 한 자리만.
+            #   실패도 = A 다음 1·2·3 / 정해도 = 첫 수부터 1·2·3 (돌 위 번호 = 동그라미 번호)
+            lab = ("A" if num == 1 else str(num - 1)) if br == "fail" else str(num)
+            d.text((s(cx), s(cy)), lab, font=F["num"], fill=tc, anchor="mm")
     # 무리 표식(▲/■) — 돌 위. 수순 기호(A·①)가 있는 돌은 오른쪽 위 귀퉁이로 비켜 작게
     for z, te in zs:
         if z["is_area"]:
@@ -490,7 +492,7 @@ if __name__ == "__main__":
                 ps = []
                 for j in range(k0 + 1, kk + 1):
                     c = COLOR0 if j % 2 else opp(COLOR0)
-                    ps.append(f"{'A' if j == 1 else '①②③④⑤⑥⑦⑧⑨⑩'[j - 2]} {seqs[kd][j - 1]}")
+                    ps.append(f"{('A' if j == 1 else '①②③④⑤⑥⑦⑧⑨⑩'[j - 2]) if kd == 'fail' else '①②③④⑤⑥⑦⑧⑨⑩'[j - 1]} {seqs[kd][j - 1]}")
                 put = " · ".join(ps)
                 show = "기호(A·①②)" + (" · A 빨강(실전 수)" if kd == "fail" and kk == 1 else "") + (" · 배너 전환" if k0 == 0 else "") + \
                        (f" · 앞 수는 {STEP_GAP}초 간격으로 먼저" if kk - k0 > 1 else "")

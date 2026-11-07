@@ -156,7 +156,7 @@ def pick(cands, plan):
 
 # ---------------- 수순 재현 ----------------
 
-def play_seq(board, start, seq):
+def play_seq(board, start, seq, a_start=False):
     """수순을 두고 (최종 판, 번호표 {xy: 번호}, 겹친 자리 메모, 따냄 메모) 반환."""
     b, c = board.copy(), start
     num, notes, caps = {}, [], []
@@ -164,7 +164,7 @@ def play_seq(board, start, seq):
         p = gtp_to_xy(m)
         if p in num or p in b.s:
             if p in num:
-                notes.append(f"{mark(k, True)} = {mark(num[p], True)} 자리")
+                notes.append(f"{mark(k, True, a_start)} = {mark(num[p], True, a_start)} 자리")
         got = b.play(c, p)
         if got:
             caps.append((k, c, m, len(got)))
@@ -180,11 +180,14 @@ def play_seq(board, start, seq):
 CIRC = "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳"
 
 
-def mark(k, circled=False):
-    """수순 k(1부터) → 표기. 1 = 'A'(시작점), 2부터 = 1, 2, …(글에서는 ①②③). 작가님 11-07 15:22 관례."""
-    if k == 1:
-        return "A"
-    return CIRC[k - 2] if circled and k - 2 < len(CIRC) else str(k - 1)
+def mark(k, circled=False, a_start=False):
+    """수순 k(1부터) → 표기. 작가님 11-07 15:22 관례 + 쌍아 15:38 판정: A는 한 자리(실전 수 = 문제의 수)만.
+    실패도(a_start=True): 1 = 'A', 2부터 = 1, 2, … / 정해도: 1부터 1, 2, …. 글에서는 ①②③."""
+    if a_start:
+        if k == 1:
+            return "A"
+        k -= 1
+    return CIRC[k - 1] if circled and k - 1 < len(CIRC) else str(k)
 
 
 def view_box(points):
@@ -247,7 +250,7 @@ def svg(board_final, num, box, last_xy=None, accent_first=False, title=""):
         if k is not None:
             # 표기 관례(작가님 11-07 15:22): 기존 돌은 그대로, 시작점 = A, 이후 수순 = ①②③(돌 위 번호 = 동그라미 번호)
             col = "#d22" if (accent_first and k == 1) else tc
-            lab = mark(k)
+            lab = mark(k, False, accent_first)
             o.append(f'<text x="{X(x)}" y="{Y(y) + 5}" font-size="{15 if k == 1 else (14 if k < 11 else 12)}" font-weight="700" '
                      f'text-anchor="middle" fill="{col}">{lab}</text>')
         elif last_xy == (x, y):
@@ -292,9 +295,9 @@ def make_sgf(moves, t, komi, sc):
 
 # ---------------- 해설 초안(사실만) ----------------
 
-def seq_text(start, seq, n=6):
-    """도면 수순 글 — A(시작점) → ① → ② …, 좌표는 괄호(관례: 수 번호·색 대신 기호)."""
-    return " → ".join(f"{mark(k, True)}({m})" for k, m in enumerate(seq[:n], 1))
+def seq_text(start, seq, n=6, a_start=False):
+    """도면 수순 글 — 실패도 A(실전 수) → ① → ② … / 정해도 ① → ② …, 좌표는 괄호."""
+    return " → ".join(f"{mark(k, True, a_start)}({m})" for k, m in enumerate(seq[:n], 1))
 
 
 def draft(sc):
@@ -307,7 +310,7 @@ def draft(sc):
     else:
         s.append(f"최선은 {rb} {sc['best']}인데 실전은 {ra} {sc['move']} — 급한 곳이 {rb}{'이었' if (ord(rb[-1]) - 0xAC00) % 28 else '였'}다.")
     capsc = [f"{mark(k, True)}({m})로 {n}점 따냄" for k, c, m, n in sc["caps_correct"]]
-    capsf = [f"{mark(k, True)}({m})로 {n}점 따냄" for k, c, m, n in sc["caps_fail"]]
+    capsf = [f"{mark(k, True, True)}({m})로 {n}점 따냄" for k, c, m, n in sc["caps_fail"]]
     if capsf:
         s.append("실패도에서 " + ", ".join(capsf) + ".")
     if capsc:
@@ -350,7 +353,7 @@ def main():
             b.play(c, gtp_to_xy(m) if m.lower() != "pass" else None)
         c0 = moves[t][0]
         bc, nc, notec, capc = play_seq(b, c0, sc["pv_correct"])
-        bf, nf, notef, capf = play_seq(b, c0, sc["pv_fail"])
+        bf, nf, notef, capf = play_seq(b, c0, sc["pv_fail"], True)
         sc.update(caps_correct=capc, caps_fail=capf, notes_correct=notec, notes_fail=notef)
         pts = [gtp_to_xy(m) for m in sc["pv_correct"] + sc["pv_fail"]]
         box = view_box(pts)
@@ -359,7 +362,7 @@ def main():
         sc["svg_fail"] = svg(bf, nf, box, last, True, f"{sc['g']} {sc['move_no']}수 실패도")
         sc["text"] = draft(sc)
         sc["seq_correct"] = seq_text(c0, sc["pv_correct"], PV_MAX)
-        sc["seq_fail"] = seq_text(c0, sc["pv_fail"], PV_MAX)
+        sc["seq_fail"] = seq_text(c0, sc["pv_fail"], PV_MAX, True)
         open(os.path.join(DST, f"{sc['sid']}.sgf"), "w", encoding="utf-8").write(make_sgf(moves, t, komi, sc))
         open(os.path.join(DST, f"{sc['sid']}_correct.svg"), "w", encoding="utf-8").write(sc["svg_correct"])
         open(os.path.join(DST, f"{sc['sid']}_fail.svg"), "w", encoding="utf-8").write(sc["svg_fail"])
@@ -391,7 +394,7 @@ def write_docs(scenes, n_cand, by_phase, plan):
     md = [f"---\ntype: research\ndate: {now[:10]}\nportfolio: PF_GO\nsource: AI_Factory/go_kibo/diagrams.py\n---\n",
           "# 정해도·실패도 시범 v0 — 10장면\n",
           f"> 생성 {now} KST · 엔진 KataGo b18 400v(실수 사전 v1 2단계 응답 재사용, 새 엔진 실행 없음) · 대국은 G번호(MISTAKES_v1 순번)·수순만.",
-          "> 정해도 = 착수 직전 국면의 최선 수순 · 실패도 = 실전 수(A, 빨간 글자) + 상대 최선 응징 수순. 표기 관례(작가님 11-07 15:22): 기존 돌은 그대로, 시작점 A, 이후 수순 ①②③(정해도·실패도 각각 ①부터) · 차이 = 두 국면 평가 차(작가님 기준).",
+          "> 정해도 = 착수 직전 국면의 최선 수순 · 실패도 = 실전 수(A, 빨간 글자) + 상대 최선 응징 수순. 표기 관례(작가님 11-07 15:22): 기존 돌은 그대로, A = 실전 수(문제의 수) 한 자리, 실패도는 A 다음 ①②③, 정해도는 첫 수부터 ①②③ · 차이 = 두 국면 평가 차(작가님 기준).",
           "> **그림 묶음(휴대폰용)**: [DIAGRAMS_v0.html](DIAGRAMS_v0.html) · SGF·SVG 원본 `~/.monkos/go-board/analysis/commentary_v0/`(레포 밖).\n",
           "## 1. 선정 기준\n", "| 항목 | 기준 |", "|---|---|"] + [f"| {k} | {v} |" for k, v in crit] + [
           "\n## 2. 장면 표\n",

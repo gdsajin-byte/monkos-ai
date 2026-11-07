@@ -27,8 +27,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--db", default=os.path.expanduser("~/.monkos/corpus/monk_corpus.db"))
     ap.add_argument("--k", type=int, default=3)
-    ap.add_argument("--script", default=os.path.join(ROOT, "apps", "go-explainer-e2e", "scripts", "s02_v3.json"))
-    ap.add_argument("--out", default=os.path.expanduser("~/.monkos/corpus/g836_v3_ground_v1.md"))
+    ap.add_argument("--script", default=os.path.join(ROOT, "apps", "go-explainer-e2e", "scripts", "s02_v3_1.json"))
+    ap.add_argument("--out", default=os.path.expanduser("~/.monkos/corpus/g836_v3_1_ground_v1.md"))
     a = ap.parse_args()
     v2 = json.load(open(a.script, encoding="utf-8"))
     qs = [re.sub(r"<[^>]+>", "", l["text"]).strip() for l in v2["lines"]]

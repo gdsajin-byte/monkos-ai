@@ -91,3 +91,15 @@ portfolio: PF_GO
 - `AI_Factory/go_kibo/{refine_sample.py, refine_split_flash.py, scene_dict.py, diagrams.py, embed_commentary.js}` · `reports/{SCENE_DICT_v1.md, DIAGRAMS_v0.md·html, COMMENTARY_GOLD_v0.md}`
 - `AI_Factory/corpus/{schema_v1.sql, load_v1.py, ground_v1.py}`
 - `apps/go-explainer-e2e/{render_scene.py, scripts/s02_v3.json}`
+
+## 추가 — v3.1(쌍아 15:38 판정 결함 2 교정)
+
+**[2026-11-07 15:42 KST]** iMac/쌍아-막내1 → iMac/쌍아
+- ① 색 주어를 되살렸습니다("백이 끼워서 이은", "흑이 변쪽을 밀어올리는"). 금지는 도입부 '색+차례'와 수 번호 읽기뿐입니다. 정규식 검사에서 "번째 수"·"흑 5"·"흑 차례" 잔여는 0입니다.
+- ② A는 실전 수 한 자리만 씁니다. 정해도는 처음 장면에서 1번부터 시작합니다. 대사는 "정수는 1번 … 2번으로 두점머리 … 3번으로 이어서 … 4번으로 귀를 내줌 … 5번, 껴붙임" 순서이고, 판의 돌 번호와 같습니다.
+  - 렌더러: 실패도는 A 다음 1·2·3, 정해도는 1·2·3으로 표시합니다.
+  - 도면: 정해도 ①(F4)부터, 실패도 A(B2) 다음 ①로 고쳤고, DIAGRAMS를 다시 생성했습니다.
+- 대본: `apps/go-explainer-e2e/scripts/s02_v3_1.json`(574자, 원문 겹침 경고 0).
+- 영상: `~/.monkos/presentation/scene_test_v3_1/scene.mp4`(84.9초, 마커 21). 렌더는 1개만 nice로 돌렸습니다. 22초 프레임(실패도 A·1~4)과 52초 프레임(정해도 1~5·껴붙임 ■)을 직접 확인했습니다.
+- DB 재적재: distill_pair의 생성 씨앗을 v3.1로 바꿨습니다. 근거 대조 `g836_v3_1_ground_v1.md`: 12/12, 판 없이 서는 최상위 근거 3줄.
+- 대사에서 ①②는 "1번·2번"으로 읽습니다. TTS가 동그라미 숫자 기호를 제대로 읽는다는 보장이 없어서입니다. 판 위에는 돌 번호로, 큐시트에는 ①②로 적습니다.

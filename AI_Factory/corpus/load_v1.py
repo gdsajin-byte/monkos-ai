@@ -177,7 +177,7 @@ def main():
                     (ref, facts or "{}", "gold", gid, txt, "ok", "작가님", now))
         stat["distill_gold"] += 1
     db.commit()  # 출력 검사 하위 프로세스가 같은 DB를 읽는다(잠금 회피)
-    v2p = os.path.join(ROOT, "apps", "go-explainer-e2e", "scripts", "s02_v3.json")
+    v2p = os.path.join(ROOT, "apps", "go-explainer-e2e", "scripts", "s02_v3_1.json")
     v2 = json.load(open(v2p, encoding="utf-8"))
     v2_text = " ".join(re.sub(r"<[^>]+>", "", l["text"]) for l in v2["lines"])
     tmpf = tmp + ".v2.txt"
@@ -188,7 +188,7 @@ def main():
     if not m:
         raise SystemExit(f"❌ load_v1: 출력 검사 실패 {chk.stderr[-300:]}")
     cur.execute("INSERT INTO distill_pair(ref,facts,target_kind,target_text,generator,context_ver,overlap_warn,review,created_at) VALUES (?,?,?,?,?,?,?,?,?)",
-                ("G836 37수", json.dumps(v2.get("facts") or {}, ensure_ascii=False), "generated", v2_text, "claude/s02_v3",
+                ("G836 37수", json.dumps(v2.get("facts") or {}, ensure_ascii=False), "generated", v2_text, "claude/s02_v3_1",
                  "COMMENTARY_CONTEXT_v1 + GOLD #1·#2 + 표기 관례 15:22·15:29", int(m.group(1)) if m else None, "pending", now))
     stat["distill_generated"] += 1
     stat["v2_overlap_check"] = chk.stdout.strip().splitlines()[-1] if chk.stdout.strip() else chk.stderr[-200:]
