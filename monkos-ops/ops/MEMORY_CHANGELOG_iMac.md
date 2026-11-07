@@ -762,3 +762,6 @@
 
 ## 2026-11-07 05:21 KST — iMac/쌍아
 - project_monk_models_character_assets.md 1행 추가(발화 DB = 유니·다인 말투·목소리 첫 과정)
+
+## 2026-11-07 15:22 KST — iMac/쌍아
+- feedback_go_commentary_level.md 표기 관례 추가(시작점 A·수순 동그라미 번호, 수 번호·색 읽기 금지)
