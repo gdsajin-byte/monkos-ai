@@ -30,3 +30,10 @@ portfolio: PF_GO
 
 ## 3. 준수
 헌법 3조·4조. 반환: COMPLETION(국면 수·분할·망 크기·에폭·소요 시간·평가표·코드 형세 대조) + 브랜치 SHA. 병합은 쌍아.
+
+## 4. 추가 — onnx 변환 (2026-11-08 07:14 KST)
+출처: 작가님 2026-11-08 iMac/쌍아 사람 턴 07:14 "진행해"(07:12 쌍아 제안 "4060 go-train venv에 onnx 설치 → v0 변환 → 출력 대조"에 대한 승인).
+1. 4060 `C:\Users\smuse73\venvs\go-train`에만 `pip install onnx` (필요 시 `onnxruntime`). 시스템·전역 설치 금지. 설치 버전 기록.
+2. best 체크포인트(에폭 25) → `own_v0.onnx` (opset 17 이상, 배치 축 동적). iMac `~/.monkos/go-board/models/own_v0/`에 회수.
+3. 대조: 검증 국면 1,000개에서 TorchScript vs onnxruntime(CPU) 출력 최대 절대 오차·소유 부호 불일치 수, CPU 1국면 지연 실측.
+4. COMPLETION 보강(같은 파일 §추가) + REGISTRY 행 갱신. GPU 불필요 — 주말 아침이라 CPU만.
