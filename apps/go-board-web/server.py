@@ -36,6 +36,8 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+import shape_net  # 11-08 형세 보기(형세망 → 코드 형세)
+
 HOST = "127.0.0.1"
 PORT = int(os.environ.get("GO_BOARD_PORT", "8765"))
 KATA_DIR = Path.home() / ".monkos" / "katago"
@@ -910,7 +912,7 @@ SESSIONS_FILE = ROOMS_DIR.parent / "sessions.json"
 # 브라우저 저장소가 따로였다). 사용자(uid)별 {키: 문자열}. 화면이 쓰는 키만 받는다(아래 목록 = 정본, index.html PREF_KEYS 와 같게)
 PREFS_FILE = ROOMS_DIR.parent / "prefs.json"
 PREF_KEYS = ("goBoardSkin", "goBoardSkinBoard", "goBoardSkinStones", "goBoardPack", "goBoardKataLevel", "goBoardMonkVer", "goBoardBots",
-             "goBoardSound", "goBoardSize", "goBoardColorPick", "goBoardRvNums", "goBoardRvSpeed", "goBoardLiveFolded", "goLobbyTab")
+             "goBoardSound", "goBoardSize", "goBoardColorPick", "goBoardRvNums", "goBoardRvSpeed", "goBoardLiveFolded", "goLobbyTab", "goBoardShapeView")
 PREF_MAX = 300  # 값 하나 최대 글자
 
 
@@ -3681,6 +3683,19 @@ class Handler(BaseHTTPRequestHandler):
             if not self._need(room):
                 return
             self._json(ANALYSES.status(room))  # 덜 끝났으면 계산 줄에 세운다 — 방 파일은 건드리지 않음
+        elif m := re.fullmatch(rf"/api/rooms/({ROOM_ID_RE})/shape", path):
+            # 11-08 형세 보기 — 칸 소유·사석 표시(형세망 → 실패 시 코드 형세). 표시 전용: 집 숫자·막대·계가는 그대로. 방 상태·파일 무변경
+            room = ROOMS.get(m.group(1))
+            if not room:
+                return self._json({"error": "없는 방입니다", "noRoom": True}, 404)
+            if not self._need(room):
+                return
+            try:
+                r = shape_net.evaluate(list(room.moves), room.setup, room.komi)
+            except Exception as e:  # 코드 형세까지 실패 — 표시 없음(대국은 계속)
+                print(f"⚠️ go-board: 형세 보기 실패 — 방 {room.id} {len(room.moves)}수: {e}", file=sys.stderr)
+                return self._json({"error": f"형세 보기 실패: {e}"})
+            return self._json({**r, "moveNo": len(room.moves)})
         elif m := re.fullmatch(rf"/api/rooms/({ROOM_ID_RE})/(state|sgf)", path):
             room = ROOMS.get(m.group(1))
             if not room:
@@ -3785,6 +3800,25 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json({"error": f"❌ 불러오기 실패: {name} — 파일을 읽지 못했습니다({e})"})
             return self._json({"id": room.id, "dup": not fresh, "label": room.level_label(), "moves": len(room.moves),
                                "note": room.message, "url": f"/room/{room.id}?review=1"})
+        if m := re.fullmatch(rf"/api/rooms/({ROOM_ID_RE})/shape", path):
+            # 11-08 형세 보기 — 감상 국면(그 수까지 + 시험수). 엔진 안 씀(형세망·코드 형세 CPU), 방 상태·파일 무변경
+            room = ROOMS.get(m.group(1))
+            if not room:
+                return self._json({"error": "없는 방입니다", "noRoom": True}, 404)
+            if not self._need(room):
+                return
+            try:
+                mv = [(str(c), str(v).upper()) for c, v in body.get("moves", [])][:SIZE * SIZE * 2]
+                for c, v in mv:
+                    if c not in "BW" or (v != "PASS" and not re.fullmatch(r"[A-HJ-T](1[0-9]|[1-9])", v)):
+                        raise ValueError(f"수 형식 {c} {v}")
+                r = shape_net.evaluate(mv, room.setup, room.komi)
+            except ValueError as e:
+                return self._json({"error": str(e)})
+            except Exception as e:
+                print(f"⚠️ go-board: 형세 보기 실패 — 방 {room.id} 감상 {len(mv)}수: {e}", file=sys.stderr)
+                return self._json({"error": f"형세 보기 실패: {e}"})
+            return self._json({**r, "moveNo": len(mv)})
         if m := re.fullmatch(rf"/api/rooms/({ROOM_ID_RE})/eval", path):
             # 시험수 국면 승률(감상) — 방 상태·파일 무변경, 잠금 없음. 엔진은 대국 요청에 양보
             room = ROOMS.get(m.group(1))
