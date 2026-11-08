@@ -39,7 +39,14 @@ python3 -I table.py ~/.monkos/go-board/models/own_v0/run1/val_pred.npz      # iM
 
 ## 한계
 
-- onnx 내보내기는 4060 venv 에 `onnx` 패키지가 없어 실패한다(설치 금지 범위). 대신 TorchScript `own_v0_ts.pt` 를 저장한다.
+- ~~onnx 내보내기는 4060 venv 에 `onnx` 패키지가 없어 실패한다~~ → **11-08 해소**: 작가님 07:14 승인으로 go-train venv 에 onnx 1.23.2 · onnxruntime 1.31.1 설치. `export_onnx.py`(CPU 전용)로 best.pt → `own_v0.onnx`(opset 17, 배치 동적, 입력 `planes`[B,8,19,19] → `own`[B,361] · `score`[B]) + 대조 검증 `own_v0_verify.json`. TorchScript `own_v0_ts.pt` 도 그대로 둔다.
+
+```bash
+# 4060 (CPU만)
+C:\Users\smuse73\venvs\go-train\Scripts\python.exe -X utf8 export_onnx.py --ckpt C:/Users/smuse73/go_train/own_v0/run1/best.pt --data C:/Users/smuse73/go_train/own_v0/data --out C:/Users/smuse73/go_train/own_v0/run1/own_v0.onnx
+```
+
+검증(11-08, 검증 44,075국면 onnxruntime CPU): torch fp32 대비 최대 차이 소유 1.0e-05 · 집 차 1.4e-04, TorchScript 대비 7.7e-06 · 9.9e-05. 정답 대비 소유 부호 98.6% · 소유 MAE 0.084 · 집 차 MAE 6.9 · 승자 79.4%(COMPLETION §4 전체 행과 같다). 배치1 CPU: 4060 9.9ms(스레드 1 = 12.0ms) · iMac 1.87ms(스레드 1 = 5.69ms, onnxruntime 1.23.2).
 
 ## v0 결과 (11-07 23:06~23:49, 4060)
 

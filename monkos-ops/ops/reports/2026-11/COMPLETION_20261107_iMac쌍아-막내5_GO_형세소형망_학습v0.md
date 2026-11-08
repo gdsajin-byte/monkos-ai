@@ -140,3 +140,21 @@ order: monkos-ops/ops/orders/2026-11/ORDER_20261107_iMac쌍아_막내5_GO_형세
 - ⏳ 8765·형세 막대 반영 여부는 쌍아 결정. v1(포로 입력면·b10c128·학습 손실 기록)은 지시 대기
 - 📁 위 산출 표
 - 🔀 브랜치 worktree-makne5-go-own. 병합은 쌍아
+
+---
+
+## 추기 — §5 onnx 해소 (iMac/쌍아-막내6)
+
+**[2026-11-08 10:31 KST]** iMac/쌍아-막내6 → iMac/쌍아
+
+출처: 작가님 2026-11-08 07:14 승인(onnx 변환, 4060 go-train venv 안 pip) → 쌍아 지시(지시서 §1-4만 수행).
+
+- 설치: 4060 `C:\Users\smuse73\venvs\go-train`에 `onnx 1.23.2`·`onnxruntime 1.31.1`(+ 의존 flatbuffers·protobuf·ml_dtypes). venv 밖 설치 없음.
+- 변환: `AI_Factory/go_own/export_onnx.py`(신규, CPU 전용 `CUDA_VISIBLE_DEVICES=""`) — best.pt(에폭 25) → `own_v0.onnx` 4,083,477바이트, opset 17, 배치 축 동적, `planes`[B,8,19,19] → `own`[B,361]·`score`[B]. `onnx.checker` 통과.
+- 대조(검증 44,075국면 전부, onnxruntime CPU 178초):
+  - torch fp32 대비 최대 차이: 소유 9.98e-06 · 집 차 1.42e-04
+  - TorchScript `own_v0_ts.pt` 대비(앞 2,048국면): 소유 7.71e-06 · 집 차 9.92e-05
+  - 정답(b18) 대비: 소유 부호 98.6% · 소유 MAE 0.084 · 집 차 MAE 6.9 · 승자 79.4% — §4 '전체' 행과 같다(table.py 정의)
+- 속도(배치 1, CPU): 4060 9.91ms(스레드 1 = 11.96ms) · **iMac 1.87ms**(스레드 1 = 5.69ms, onnxruntime 1.23.2 기존 설치분, 무작위 입력면). 코드 형세 iMac 10.3ms 대비 빠르다.
+- 산출: iMac `~/.monkos/go-board/models/own_v0/run1/own_v0.onnx` · `own_v0_verify.json`(4060 원본과 SHA-256 `c23f0d56…85225` 일치). 4060 원본 `C:\Users\smuse73\go_train\own_v0\run1\`.
+- 하지 않은 것: GPU 사용 · 8765·형세 막대 교체 · 원본 데이터 수정 · 삭제.
