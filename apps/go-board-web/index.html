@@ -757,6 +757,7 @@ document.addEventListener('change', e => {
   if (e.target && (e.target.id === 'shapeView' || e.target.id === 'shapeViewRv')) {
     SHAPE.on = e.target.checked; SHAPE.want = null; SHAPE.data = null;
     PREF.set('goBoardShapeView', SHAPE.on ? '1' : '0');
+    if (!S) return;  // 방을 못 읽은 화면(없는 방·남의 방) — 그릴 판이 없다
     if (window.RV && RV.on) rvRender(); else render();
   }
 });
