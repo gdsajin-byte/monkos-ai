@@ -103,6 +103,7 @@ domain: "presentation, 3d-avatar, tts, content-pipeline"
 | 11/07 | iMac/쌍아 | 유니 캐스터 합성 대사 v0 지시서 발행(시트 확정) | [ORDER_20261107_iMac쌍아_막내4_PRESENTATION_유니캐스터_합성대사v0](../../orders/2026-11/ORDER_20261107_iMac쌍아_막내4_PRESENTATION_유니캐스터_합성대사v0.md) | ⏳ |
 | 11/07 | iMac/쌍아 | **DESIGN** 캐릭터 영상 대화 봇(연애 봇) — 다인·유니와 영상 통화하듯 대화. 열린 대화 두뇌 + 사용자 기억 + 캐릭터 말투 + 목소리 + 얼굴 영상 3단계. 유니 캐스터 공정 위에 얹는 구조, TTS 비용 전략 포함 | [DESIGN_20261107_PRESENTATION_캐릭터영상대화봇](../../../tech/designs/2026-11/DESIGN_20261107_PRESENTATION_캐릭터영상대화봇.md) | ⏳ |
 | 11/07 | iMac/쌍아-막내4 | 유니 캐스터 합성 대사 v0 — 카드 114·대화 114·유니 문장 1,268 · 선판단 0 · 감수 표본 50 (REVIEW50_v0.html) | [COMPLETION_20261107_iMac쌍아-막내4_PRESENTATION_유니캐스터_합성대사v0](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내4_PRESENTATION_유니캐스터_합성대사v0.md) | ✅ |
+| 11/08 | ?/? | **ORDER** 유니 합성 대사 v1 — 장면을 보면서 감수하는 판(도면+엔진 사실+해설자+유니) + 묶음 단위 중복 상한 + 실제 캐스터 말투 참조로 어색한 되받기 교정 | [ORDER_20261108_iMac쌍아_막내8_PRESENTATION_유니_v1_장면감수판_중복교정](../../orders/2026-11/ORDER_20261108_iMac쌍아_막내8_PRESENTATION_유니_v1_장면감수판_중복교정.md) | ⏳ |
 
 ---
 
