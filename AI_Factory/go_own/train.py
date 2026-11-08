@@ -9,6 +9,12 @@
 체크포인트 매 에폭: {out}/ckpt_e{NN}.pt + last.pt + best.pt(검증 손실). 끝나면 검증 예측 val_pred.npz · onnx(onnx 패키지 있을 때) · TorchScript.
 멈추기: {out}/STOP 파일을 만들면 200스텝 안에 그 에폭을 끝내고 저장한다.
 
+v1(--v1, ORDER_20261108 막내7 §1-2 · 작가님 11-08 10:49 승인): 자료 own_v1.npz(prep_v1.py — v0 + 국면별 포로 차 caps), 같은 분할.
+  · 입력면 9 = v0 8 + 포로 차 면(전면 = (흑이 딴 돌 − 백이 딴 돌) / 20)
+  · 일관성 손실(--cons-w, 기본 0.1): 소유로 센 집 차 Σown − Σ판 위 돌(흑 +) + 포로 차 − 덤 6.5 와 집 차 머리를 Huber(÷20)로 맞춘다
+    (한국 규칙 = 집 + 포로; 죽은 돌은 own 이 상대 쪽이라 −2 = 상대 집 1 + 포로 1 로 저절로 맞는다 — own_to_score.py)
+  · 내보내기 이름 own_v1.onnx · own_v1_ts.pt, 입력 planes [B,9,19,19]
+
 사용(4060 Git Bash):
   /c/Users/smuse73/venvs/go-train/Scripts/python.exe train.py --data C:/Users/smuse73/go_train/own_v0/data --out C:/Users/smuse73/go_train/own_v0/run1
   --predict-only {ckpt}  : 학습 없이 검증 예측·onnx만
@@ -71,14 +77,21 @@ class OwnNet(nn.Module):
         return own, score
 
 
-def planes(board, libs, tomove):
-    """board/libs int8 [B,361] · tomove int8 [B] (GPU) → float [B,8,19,19]"""
+def planes(board, libs, tomove, caps=None):
+    """board/libs int8 [B,361] · tomove int8 [B] (· caps int16 [B] = v1) → float [B,8 또는 9,19,19]"""
     b = board.view(-1, 1, 19, 19)
     lb = libs.view(-1, 1, 19, 19)
     ones = torch.ones_like(b, dtype=torch.float32)
     x = torch.cat([(b == 1).float(), (b == -1).float(), (b == 0).float(), ones * (tomove.view(-1, 1, 1, 1) == 1).float(),
                    (lb == 1).float(), (lb == 2).float(), (lb >= 3).float(), ones], 1)
+    if caps is not None:  # v1 포로 차 면
+        x = torch.cat([x, ones * (caps.view(-1, 1, 1, 1).float() / 20.0)], 1)
     return x
+
+
+def xin(T, idx):
+    """자료 T 의 idx 국면 → 입력면(v1 자료면 포로 차 면 포함)"""
+    return planes(T["board"][idx], T["libs"][idx], T["tomove"][idx], T["caps"][idx] if "caps" in T else None)
 
 
 def sym(x, k):
@@ -92,25 +105,34 @@ def sym(x, k):
     return x
 
 
-def load(data_dir, dev):
-    d = np.load(os.path.join(data_dir, "own_v0.npz"))
+KOMI = 6.5  # 자료 전부 korean·덤 6.5(prep.py 단언)
+
+
+def load(data_dir, dev, v1=False):
+    d = np.load(os.path.join(data_dir, "own_v1.npz" if v1 else "own_v0.npz"))
     split = json.load(open(os.path.join(data_dir, "split.json")))
     nval = split["n_val"]
     g = d["game"]
     vi = np.nonzero(g < nval)[0]
     ti = np.nonzero(g >= nval)[0]
-    T = {k: torch.from_numpy(d[k]).to(dev) for k in ("board", "libs", "tomove", "own", "score")}
+    T = {k: torch.from_numpy(d[k]).to(dev) for k in ("board", "libs", "tomove", "own", "score") + (("caps",) if v1 else ())}
     return T, torch.from_numpy(ti).to(dev), torch.from_numpy(vi).to(dev), d["turn"][vi], split
 
 
+CONS_W = 0.0  # main 이 --cons-w 로 정한다(v0 = 0)
+
+
 def losses(model, T, idx, k=0):
-    x = sym(planes(T["board"][idx], T["libs"][idx], T["tomove"][idx]), k)
+    x = sym(xin(T, idx), k)
     y = sym(T["own"][idx].float().view(-1, 1, 19, 19) / 100.0, k).flatten(1)
     s = T["score"][idx]
     with torch.autocast(x.device.type, dtype=torch.bfloat16, enabled=x.is_cuda):
         po, ps = model(x)
     lo = F.mse_loss(po.float(), y)
     ls = F.huber_loss(ps.float() / 20.0, s / 20.0, delta=1.0)
+    if CONS_W and "caps" in T:  # v1 일관성: 소유로 센 집 차 ↔ 집 차 머리(대칭 변환은 합계 불변)
+        s_own = po.float().sum(1) - T["board"][idx].float().sum(1) + T["caps"][idx].float() - KOMI
+        ls = ls + CONS_W * F.huber_loss(s_own / 20.0, ps.float() / 20.0, delta=1.0)
     return lo, ls
 
 
@@ -132,15 +154,15 @@ def predict(model, T, vi, bs=2048):
     O, S = [], []
     for i in range(0, len(vi), bs):
         idx = vi[i:i + bs]
-        x = planes(T["board"][idx], T["libs"][idx], T["tomove"][idx])
+        x = xin(T, idx)
         po, ps = model(x)
         O.append(po.float().cpu().numpy()); S.append(ps.float().cpu().numpy())
     return np.concatenate(O), np.concatenate(S)
 
 
-def export_onnx(model, path, fh):
+def export_onnx(model, path, fh, cin=8):
     model = model.float().eval().cpu()
-    x = torch.zeros(1, 8, 19, 19)
+    x = torch.zeros(1, cin, 19, 19)
     try:
         torch.onnx.export(model, (x,), path, input_names=["planes"], output_names=["own", "score"],
                           dynamic_axes={"planes": {0: "b"}, "own": {0: "b"}, "score": {0: "b"}}, opset_version=17, dynamo=False)
@@ -168,6 +190,8 @@ def main():
     ap.add_argument("--hours", type=float, default=4.0)
     ap.add_argument("--deadline", default="07:30")
     ap.add_argument("--predict-only")
+    ap.add_argument("--v1", action="store_true", help="v1 — 포로 차 입력면 + 일관성 손실(own_v1.npz)")
+    ap.add_argument("--cons-w", type=float, default=None, help="일관성 손실 가중(v1 기본 0.1, v0 0)")
     ap.add_argument("--smoke-steps", type=int, default=0, help="창 밖 CPU 스모크 — 지정 스텝만 돌리고 저장 없이 끝(GPU 미사용)")
     ap.add_argument("--cpu-test", type=int, default=0, help="창 밖 CPU 전 구간 시험 — 학습·검증 국면을 앞 N개로 줄여 끝까지(GPU 미사용)")
     a = ap.parse_args()
@@ -190,14 +214,18 @@ def main():
     if dl <= start:
         dl += dt.timedelta(days=1)
     stop_at = min(dl, start + dt.timedelta(hours=a.hours))
-    T, ti, vi, vturn, split = load(a.data, dev)
+    global CONS_W
+    CONS_W = (0.1 if a.v1 else 0.0) if a.cons_w is None else a.cons_w
+    tag = "own_v1" if a.v1 else "own_v0"
+    cin = 9 if a.v1 else 8
+    T, ti, vi, vturn, split = load(a.data, dev, a.v1)
     if a.cpu_test:
         ti, vi, vturn = ti[:a.cpu_test], vi[:a.cpu_test], vturn[:a.cpu_test]
-    model = OwnNet(8, a.channels, a.blocks).to(dev)
+    model = OwnNet(cin, a.channels, a.blocks).to(dev)
     if not cpu:
         model = model.to(memory_format=torch.channels_last)
     nparam = sum(p.numel() for p in model.parameters())
-    log(f"시작 · 학습 국면 {len(ti)} · 검증 국면 {len(vi)} · 망 b{a.blocks}c{a.channels} {nparam:,} 파라미터 · 멈춤 {stop_at:%m-%d %H:%M} · 장치 {dev}", fh)
+    log(f"시작 · 학습 국면 {len(ti)} · 검증 국면 {len(vi)} · 망 b{a.blocks}c{a.channels} {nparam:,} 파라미터 · {tag} 입력면 {cin} · 일관성 {CONS_W} · 멈춤 {stop_at:%m-%d %H:%M} · 장치 {dev}", fh)
 
     if a.predict_only:
         model.load_state_dict(torch.load(a.predict_only, map_location=dev)["model"])
@@ -266,7 +294,7 @@ def main():
     log(f"검증 예측 저장: {len(ps)} 국면", fh)
     # 속도(배치 1, GPU) — 형세 막대 용도 참고값
     model.eval()
-    x = planes(T["board"][vi[:1]], T["libs"][vi[:1]], T["tomove"][vi[:1]])
+    x = xin(T, vi[:1])
     sync = torch.cuda.synchronize if not cpu else (lambda: None)
     with torch.no_grad():
         for _ in range(10):
@@ -277,10 +305,10 @@ def main():
             model(x)
         sync()
     log(f"추론 배치1 {dev} {10 * (time.time() - t0):.2f}ms/국면", fh)
-    export_onnx(model, os.path.join(a.out, "own_v0.onnx"), fh)
+    export_onnx(model, os.path.join(a.out, f"{tag}.onnx"), fh, cin)
     try:  # onnx 패키지가 없을 때의 이식용 사본 — TorchScript(외부 패키지 불필요)
-        torch.jit.trace(model.float().eval().cpu(), torch.zeros(1, 8, 19, 19)).save(os.path.join(a.out, "own_v0_ts.pt"))
-        log("TorchScript 저장: own_v0_ts.pt", fh)
+        torch.jit.trace(model.float().eval().cpu(), torch.zeros(1, cin, 19, 19)).save(os.path.join(a.out, f"{tag}_ts.pt"))
+        log(f"TorchScript 저장: {tag}_ts.pt", fh)
     except Exception as e:
         log(f"⚠️ TorchScript 실패: {type(e).__name__}: {e}", fh)
     log(f"끝 · 총 {(now() - start).total_seconds() / 60:.1f}분", fh)

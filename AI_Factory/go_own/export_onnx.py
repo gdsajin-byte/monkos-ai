@@ -33,7 +33,7 @@ import train  # OwnNet · planes · load
 
 def np_planes(T, idx):
     with torch.no_grad():
-        return train.planes(T["board"][idx], T["libs"][idx], T["tomove"][idx]).numpy()
+        return train.xin(T, idx).numpy()  # v1 자료면 포로 차 면 포함(9면)
 
 
 def main():
@@ -51,19 +51,20 @@ def main():
 
     ck = torch.load(a.ckpt, map_location="cpu")
     args = ck.get("args", {})
-    model = train.OwnNet(8, args.get("channels", 96), args.get("blocks", 6))
+    v1 = bool(args.get("v1"))  # v1 체크포인트(11-08 막내7) — 입력면 9·own_v1.npz
+    model = train.OwnNet(9 if v1 else 8, args.get("channels", 96), args.get("blocks", 6))
     model.load_state_dict(ck["model"])
     model = model.float().eval()
     print(f"체크포인트: {a.ckpt} · 에폭 {ck.get('epoch')} · 파라미터 {sum(p.numel() for p in model.parameters()):,}")
 
-    train.export_onnx(model, a.out, None)
+    train.export_onnx(model, a.out, None, 9 if v1 else 8)
     if not os.path.exists(a.out):
         print("❌ onnx 파일이 생기지 않았다")
         sys.exit(1)
     onnx.checker.check_model(onnx.load(a.out))
     print(f"onnx.checker 통과 · {os.path.getsize(a.out):,} 바이트 · onnx {onnx.__version__} · onnxruntime {ort.__version__} · torch {torch.__version__}")
 
-    T, _, vi, vturn, _ = train.load(a.data, "cpu")
+    T, _, vi, vturn, _ = train.load(a.data, "cpu", v1)
     vi = vi.numpy()
     sess = ort.InferenceSession(a.out, providers=["CPUExecutionProvider"])
 
@@ -81,7 +82,7 @@ def main():
     O = np.concatenate(O); S = np.concatenate(S)
     print(f"검증 {len(vi):,}국면 onnxruntime CPU {time.time() - t0:.0f}초 · torch fp32 대비 최대 차이 소유 {dO:.2e} · 집 차 {dS:.2e}")
 
-    ts_path = a.ts or os.path.join(os.path.dirname(a.ckpt), "own_v0_ts.pt")
+    ts_path = a.ts or os.path.join(os.path.dirname(a.ckpt), "own_v1_ts.pt" if v1 else "own_v0_ts.pt")
     if os.path.exists(ts_path):
         ts = torch.jit.load(ts_path, map_location="cpu").eval()
         x = np_planes(T, torch.from_numpy(vi[:2048]))

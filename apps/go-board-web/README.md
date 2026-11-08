@@ -170,3 +170,12 @@ apps/go-board-web/run.sh      # http://127.0.0.1:8765/ 브라우저 자동 오�
 - 사람 이름 표기는 `Auth.display_name(uid)` 한 곳("닉 기력", 기력 없으면 닉) — 대기실 접속자·내 이름·방 목록·대국자 칸이 이 값(`display`·`ownerDisplay`)을 쓴다. 기보 PB/PW·파일명은 닉만. AI는 "KataGo AI"·"MONKOS Go"(이름 정본 `BOT_NAME` 등).
 - **관리자 기력 지정(사용자 설정 상한 18급~5단 밖, 예: 6단 이상)** — 관리자 API는 없다. ① 진행 중 판 0 확인(방 파일에 결과 없고 수가 있는 판) ② `cp ~/.monkos/go-board/users.json ~/.monkos/go-board/users.json.bak-$(date +%Y%m%d-%H%M%S)` 후 해당 계정의 `"rank"`만 `RANKS` 값(`6d` 등)으로 바꾼다(권한 600 유지, 다른 계정 손대지 않음)
   ③ `launchctl kickstart -k gui/$(id -u)/ai.monkos.go-board`로 재기동(서버가 시작 때 읽음 — 실행 중 수정은 다음 저장 때 덮일 수 있어 수정 직후 바로 재기동) → 대기실 "닉 6단" 확인. 롤백 = 백업 사본을 되돌리고 같은 재기동. 첫 적용: 11-05 07:20 신작가 6단.
+
+## 형세 보기 — 형세망 칸 소유·사석 (2026-11-08, 쌍아-막내7 — ORDER_20261108 형세망 막대반영)
+
+- 형세분석 탭 '형세 보기'(대국) · 감상 줄 '형세'(기보 감상) — **기본 꺼짐**, 켜짐은 설정 서버 저장(`goBoardShapeView`). 켜면 판 위에 칸 소유를 반투명 흑·백으로 칠하고(|소유| < 0.3 은 칠하지 않음) 사석은 돌 위 ✕(돌 칸 소유가 상대 쪽 0.5 초과).
+- **표시 전용**: 집 숫자·형세 막대 수치·계가(닫힌 집·KataGo 사석)는 그대로. 계가 중에는 그리지 않는다.
+- 원천 `shape_net.py`: 형세 소형망 v0 onnx(`~/.monkos/go-board/models/own_v0/run1/own_v0.onnx`, `GO_OWN_MODEL` 로 바꿈) → 실패(모델·패키지 부재 = 이후 계속 / 실행 오류 = 그 국면만) 시 코드 형세(`AI_Factory/go_codeeval` S1)로 강등 + 로그 1줄(`⚠️ go-board: 형세 보기 — …`) + 화면 출처 표기 '코드 형세(형세망 사용 불가: 사유)'. 엔진(GPU) 안 씀 — CPU 1스레드.
+- API: `GET /api/rooms/{id}/shape`(지금 국면) · `POST …/shape {moves}`(감상 국면·시험수). 응답 `{src: net|code, why, own[361 흑 기준], dead[[x,y]], moveNo}`.
+- 런타임: 실사용 파이썬(3.13 프레임워크)에 `onnxruntime 1.23.2`(+ coloredlogs·flatbuffers·protobuf·sympy, numpy 2.3.5 기존) — 작가님 11-08 10:49 승인.
+- 스모크: `python3 -I shape_net.py`(망) · `GO_OWN_MODEL=/없음 python3 -I shape_net.py`(강등 = code + 사유).

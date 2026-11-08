@@ -432,7 +432,7 @@
       <div class="rv-head"><div class="rv-info" id="rvInfo"></div><a id="rvSave" class="btn" download hidden>⤓ 기보</a></div>
       <div class="rv-nav"><button data-nav="first" aria-label="처음">⏮</button><button data-nav="-10">−10</button><button data-nav="-1" aria-label="한 수 뒤">◀</button><button data-nav="1" aria-label="한 수 앞">▶</button><button data-nav="10">+10</button><button data-nav="last" aria-label="끝">⏭</button></div>
       <div class="rv-row"><input type="range" id="rvSlider" min="0" max="0" value="0" aria-label="수순"><input type="number" id="rvNum" min="0" inputmode="numeric" aria-label="수 번호"><span id="rvCount">/ 0</span></div>
-      <div class="rv-row" id="rvRow2"><button id="rvPlay">▶ 재생</button><select id="rvSpeed" aria-label="재생 속도"><option value="0.5">0.5초</option><option value="1" selected>1초</option><option value="2">2초</option><option value="3">3초</option></select><select id="rvNums" aria-label="수 번호"><option value="off">번호 끔</option><option value="last10">최근 10수</option><option value="all">전체 번호</option></select><button id="rvExit">감상 끝</button></div>
+      <div class="rv-row" id="rvRow2"><button id="rvPlay">▶ 재생</button><select id="rvSpeed" aria-label="재생 속도"><option value="0.5">0.5초</option><option value="1" selected>1초</option><option value="2">2초</option><option value="3">3초</option></select><select id="rvNums" aria-label="수 번호"><option value="off">번호 끔</option><option value="last10">최근 10수</option><option value="all">전체 번호</option></select><label class="small rv-shape"><input type="checkbox" id="shapeViewRv"> 형세</label><button id="rvExit">감상 끝</button></div>
       <div class="rv-row" id="rvTrial" hidden><span id="rvTrialTxt"></span><button id="rvTrialUndo">한 수 무르기</button><button id="rvTrialBack">본 수순으로</button></div>
       <svg id="rvGraph" viewBox="0 0 300 64" preserveAspectRatio="none" aria-label="승률 그래프"></svg>
       <div id="rvGraphTxt"></div>
@@ -465,6 +465,7 @@
       <section id="tab-shape" hidden>
         <div class="barlbl"><span>흑</span><span id="scoreTxt">형세 —</span><span>백</span></div>
         <div class="bar"><div class="b" id="barB" style="width:50%"></div><div class="w"></div></div>
+        <label class="small"><input type="checkbox" id="shapeView"> 형세 보기 — 판 위에 칸 소유(반투명 흑·백)·사석(돌 위 ✕) <span id="shapeSrc"></span></label>
         <div class="small">AI 판정은 아래 버튼 줄의 'AI 판정'. 승률 그래프는 대국이 끝난 뒤 '기보 감상'에서 봅니다.</div>
         <div class="small" id="judgeTxt"></div>
       </section>
@@ -577,7 +578,7 @@ const P = i => M + i * STEP;
 // 로그인한 사용자의 설정은 서버(prefs.json)가 정본: 화면을 열 때 서버 값을 이 출처의 저장소로 내려받고(아래 코드는 그대로 localStorage 를 읽는다),
 // 바꿀 때마다 PREF.set 이 저장소와 서버에 함께 쓴다. 서버 값이 없으면 이 출처의 기존 설정을 1회 올린다(덮어쓰기 아님). 서버 불통·미로그인 = 저장소만
 const PREF_KEYS = ['goBoardSkin', 'goBoardSkinBoard', 'goBoardSkinStones', 'goBoardPack', 'goBoardKataLevel', 'goBoardMonkVer', 'goBoardBots',
-  'goBoardSound', 'goBoardSize', 'goBoardColorPick', 'goBoardRvNums', 'goBoardRvSpeed', 'goBoardLiveFolded', 'goLobbyTab'];  // 정본 = server.py PREF_KEYS
+  'goBoardSound', 'goBoardSize', 'goBoardColorPick', 'goBoardRvNums', 'goBoardRvSpeed', 'goBoardLiveFolded', 'goLobbyTab', 'goBoardShapeView'];  // 정본 = server.py PREF_KEYS
 const PREF = (() => {
   let srv = null;  // 서버 설정(로그인·연결됨) — null 이면 저장소만
   const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
@@ -727,6 +728,39 @@ function setupWidgets() {  // 첫 상태를 받은 뒤 1회 — 선택지 채우
   document.getElementById('skinStones').onchange = e => { skinStones = e.target.value; save(); render(); };
 }
 
+// ---- 형세 보기(11-08 작가님 승인 — 형세망 칸 소유·사석). 기본 꺼짐(대국 중 힌트가 되니 켜는 사람만), 켜짐은 설정 서버 저장
+const SHAPE = { on: false, data: null, want: null, busy: false };
+try { SHAPE.on = localStorage.getItem('goBoardShapeView') === '1'; } catch (e) { /* 저장소 불가 — 꺼짐 */ }
+const shapeMoves = () => [...(RV.base.moveList || []).slice(0, RV.k), ...RV.trial.map(t => [t.color, xyGtp(t.x, t.y)])];
+// 지금 보이는 국면의 열쇠 — 대국 = 수 번호, 감상 = 그 수 + 시험수
+const shapeKey = () => (window.RV && RV.on ? `rv:${RV.k}:${RV.trial.map(t => t.color + xyGtp(t.x, t.y)).join(',')}` : `m:${S.moveNo}`);
+const shapeLive = () => SHAPE.on && ROOM && SHAPE.data && SHAPE.data.key === shapeKey() && !S.scoring;
+function shapeTick() {
+  for (const id of ['shapeView', 'shapeViewRv']) { const cb = document.getElementById(id); if (cb) cb.checked = SHAPE.on; }
+  const src = document.getElementById('shapeSrc');
+  if (src) src.textContent = !SHAPE.on || !SHAPE.data ? '' : SHAPE.data.error ? `· ${SHAPE.data.error}` :
+    SHAPE.data.src === 'net' ? '· 형세망' : `· 코드 형세(형세망 사용 불가${SHAPE.data.why ? ': ' + SHAPE.data.why : ''})`;
+  if (!SHAPE.on || !ROOM || S.scoring || SHAPE.busy) return;
+  const key = shapeKey();
+  if (SHAPE.want === key) return;  // 이미 받았거나 요청 중·실패한 국면
+  SHAPE.want = key; SHAPE.busy = true;
+  const req = window.RV && RV.on
+    ? fetch(api('/api/shape'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ moves: shapeMoves() }) })
+    : fetch(api('/api/shape'));
+  req.then(r => r.json()).then(j => {
+    SHAPE.data = j.error ? { error: j.error, key: null } : { ...j, key };
+    if (j.error) console.warn('형세 보기 실패', j.error);
+  }).catch(e => { SHAPE.data = { error: '서버 불통', key: null }; console.warn('형세 보기 실패', e); })
+    .finally(() => { SHAPE.busy = false; if (window.RV && RV.on) rvRender(); else render(); });
+}
+document.addEventListener('change', e => {
+  if (e.target && (e.target.id === 'shapeView' || e.target.id === 'shapeViewRv')) {
+    SHAPE.on = e.target.checked; SHAPE.want = null; SHAPE.data = null;
+    PREF.set('goBoardShapeView', SHAPE.on ? '1' : '0');
+    if (window.RV && RV.on) rvRender(); else render();
+  }
+});
+
 function render() {
   drawBase();
   const g = S.board;
@@ -747,6 +781,20 @@ function render() {
     const d = STEP * .18;
     el('rect', { x: P(x) - d, y: P(y) - d, width: 2 * d, height: 2 * d, fill: o === 'B' ? '#151515' : '#fafaf5',
                  stroke: o === 'B' ? '#000' : '#777', 'stroke-width': .5 });
+  }
+  if (shapeLive()) {  // 11-08 형세 보기 — 형세망 칸 소유·사석(표시 전용, 집 숫자·막대는 그대로)
+    const sh = SHAPE.data;
+    for (let i = 0; i < N * N; i++) {
+      const o = sh.own[i], x = i % N, y = (i / N) | 0;
+      if (!o || g[y][x]) continue;
+      el('rect', { x: P(x) - STEP / 2, y: P(y) - STEP / 2, width: STEP, height: STEP, fill: o > 0 ? '#000' : '#fff',
+                   opacity: (.18 + .32 * Math.abs(o)).toFixed(2), 'pointer-events': 'none' });
+    }
+    for (const [x, y] of sh.dead) {
+      const d = STEP * .2, col = g[y][x] === 'B' ? '#fff' : '#222';
+      el('path', { d: `M${P(x) - d},${P(y) - d}L${P(x) + d},${P(y) + d}M${P(x) + d},${P(y) - d}L${P(x) - d},${P(y) + d}`,
+                   stroke: col, 'stroke-width': 2.2, 'stroke-linecap': 'round', 'pointer-events': 'none' });
+    }
   }
   if (S.last) {
     const [x, y] = S.last, c = g[y][x];
@@ -864,6 +912,7 @@ function render() {
     document.getElementById('barB').style.width = '50%';
     document.getElementById('scoreTxt').textContent = '형세 —';
   }
+  shapeTick();
   document.getElementById('judgeTxt').textContent = judge ? `AI 판정(${judge.moveNo}수 시점): ${judge.resultKo}` : '';
 
   // 추천수 목록 — 승률·점수는 지금 둘 쪽 기준

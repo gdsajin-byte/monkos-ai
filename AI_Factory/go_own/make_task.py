@@ -2,6 +2,7 @@
 
 출처: ORDER_20261107_iMac쌍아_막내5_GO_형세소형망_학습v0 §1-2 (23:05 이후만).
 사용: python make_task.py 2026-11-07T23:06:00 [--dry-run]
+      python make_task.py 2026-11-08T23:06:00 --v1 [--dry-run]   (11-08 막내7: \MONK\GO-own-train-v1 → night_v1.py, 실행 한도 7시간 30분)
 학습 자체가 창(23:05~07:30) 밖 시작을 거부하고, 시간 상한 4시간·마감 07:30 을 스스로 지킨다. 작업 실행 한도는 4시간 30분.
 """
 import re
@@ -17,7 +18,14 @@ ARGS = (rf'"{ROOT}\train.py" --data C:/Users/smuse73/go_train/own_v0/data --out 
 
 
 def main():
+    global DST, ROOT, ARGS
     at = sys.argv[1]
+    limit = "PT4H30M"
+    if "--v1" in sys.argv:  # v1 야간 1회 — b6c96 → b10c128 학습 + onnx 변환·대조(night_v1.py)
+        DST = r"\MONK\GO-own-train-v1"
+        ROOT = r"C:\Users\smuse73\go_train\own_v1"
+        ARGS = rf'"{ROOT}\night_v1.py"'
+        limit = "PT7H30M"
     raw = subprocess.run(["schtasks", "/query", "/tn", SRC, "/xml"], capture_output=True, check=True).stdout
     for enc in ("utf-16", "utf-8", "cp949"):
         try:
@@ -38,9 +46,9 @@ def main():
     put("Command", PYW)
     put("Arguments", ARGS.replace("&", "&amp;").replace('"', "&quot;"))
     put("WorkingDirectory", ROOT)
-    put("ExecutionTimeLimit", "PT4H30M", count=0)
+    put("ExecutionTimeLimit", limit, count=0)
     x = re.sub(r'encoding="[^"]+"', lambda _m: 'encoding="UTF-16"', x, count=1)
-    path = ROOT + r"\GO-own-train.xml"
+    path = ROOT + ("\\GO-own-train-v1.xml" if "--v1" in sys.argv else r"\GO-own-train.xml")
     open(path, "w", encoding="utf-16").write(x)
     print(x)
     if "--dry-run" in sys.argv:
