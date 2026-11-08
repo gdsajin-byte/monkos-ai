@@ -173,6 +173,7 @@ status: active
 | 11/07 | iMac/쌍아-막내2 | **COMPLETION** COMPLETION_20261107_iMac쌍아-막내2_GO_이현욱_교정사전_수번호_100편 | [COMPLETION_20261107_iMac쌍아-막내2_GO_이현욱_교정사전_수번호_100편](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내2_GO_이현욱_교정사전_수번호_100편.md) | ✅ |
 | 11/07 | ?/? | **ORDER** 형세 소형망 v0 — 소유권 2,000판(437,354국면)으로 판→361칸 소유권+집 차이 예측 소형망 학습. 4060 밤 창 23:05~07:30. 준비는 지금 iMac에서(가볍게) | [ORDER_20261107_iMac쌍아_막내5_GO_형세소형망_학습v0](../../orders/2026-11/ORDER_20261107_iMac쌍아_막내5_GO_형세소형망_학습v0.md) | ⏳ |
 | 11/07 | iMac/쌍아-막내5 | **COMPLETION** COMPLETION_20261107_iMac쌍아-막내5_GO_형세소형망_학습v0 | [COMPLETION_20261107_iMac쌍아-막내5_GO_형세소형망_학습v0](../../reports/2026-11/COMPLETION_20261107_iMac쌍아-막내5_GO_형세소형망_학습v0.md) | ✅ |
+| 11/08 | iMac/쌍아-막내6 | 형세 소형망 v0 onnx 변환(추기) — 4060 venv onnx 설치, export_onnx.py, 검증 44,075국면 torch 대비 1e-5·정답 지표 재현, iMac CPU 배치1 1.87ms | [2026-11-08_iMac_쌍아-막내6](../../sessions/2026-11/2026-11-08_iMac_쌍아-막내6.md) | ✅ |
 
 ## 3. Phase 현황
 
