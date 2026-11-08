@@ -62,7 +62,7 @@ def _board(moves, setup):
     return ce, ce.replay(moves, setup)
 
 
-def _planes(ce, b, tomove_black):
+def _planes(ce, b, tomove_black, caps=None, cin=8):
     import numpy as np
     bd = np.array(b, dtype=np.int8)
     lib = np.zeros(N, dtype=np.int8)
@@ -75,8 +75,11 @@ def _planes(ce, b, tomove_black):
             for s in stones:
                 lib[s] = v
     one = np.ones(N, dtype=np.float32)
-    x = np.stack([bd == 1, bd == -1, bd == 0, one * (1 if tomove_black else 0), lib == 1, lib == 2, lib >= 3, one]).astype(np.float32)
-    return x.reshape(1, 8, SIZE, SIZE)
+    pl = [bd == 1, bd == -1, bd == 0, one * (1 if tomove_black else 0), lib == 1, lib == 2, lib >= 3, one]
+    if cin == 9:  # v1 망(own_v1.onnx) — 포로 차 면 = (흑이 딴 돌 − 백이 딴 돌) / 20
+        pl.append(one * ((caps[1] - caps[-1]) / 20.0))
+    x = np.stack(pl).astype(np.float32)
+    return x.reshape(1, cin, SIZE, SIZE)
 
 
 def evaluate(moves, setup=(), komi=6.5):
@@ -86,13 +89,14 @@ def evaluate(moves, setup=(), komi=6.5):
     with _lock:
         if key in _cache:
             return _cache[key]
-        ce, (b, _caps) = _board(moves, setup)
+        ce, (b, caps) = _board(moves, setup)
         tomove_black = moves[-1][0] == "W" if moves else not setup  # 접바둑 시작 = 백 차례
         res = None
         sess = _session()
         if sess is not None:
             try:
-                own = sess.run(["own"], {"planes": _planes(ce, b, tomove_black)})[0][0].tolist()
+                cin = sess.get_inputs()[0].shape[1]  # v0 = 8 · v1 = 9(포로 차 면)
+                own = sess.run(["own"], {"planes": _planes(ce, b, tomove_black, caps, cin)})[0][0].tolist()
                 dead = [i for i in range(N) if b[i] and own[i] * b[i] < -DEAD_MIN]
                 res = {"src": "net", "own": own, "dead": dead, "why": None}
             except Exception as e:  # 런타임 오류 — 이번 국면만 코드 형세로(다음 요청에서 다시 망 시도)
