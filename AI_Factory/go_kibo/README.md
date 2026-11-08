@@ -18,6 +18,8 @@
 | 파일 | 역할 |
 |---|---|
 | `kibo_common.py` | 경로·급수 코드·AI 판별·SGF 헤더/수순 파서 |
+| `go_text_terms.py` | 문장 용어 검출 v1(11-08 막내9) — 개념·손익·형세어 51종(GO_TERMS 47 + 보충 4), 활용형·STT 변형·일상어 제외·판 단서 규칙. `--selftest` 20/20 |
+| `retag_text_terms.py` | 정제본 재태깅(`v1`=30편 → v1_all_t1.jsonl · `f1`=판독 9편 → f1_all.jsonl · `spot`=정밀도 판독 표본). 결과 `reports/GO_TEXT_TERMS_v1.md` |
 | `parse_kibo.py` | 원장(id 기준 마지막 행) + SGF(+GIB) → 대국별 1행 `games_v1.jsonl/csv` + 파싱 실패·이상치 집계 |
 | `stats_kibo.py` | ① 22년 통계 → `reports/STATS_v1.md` + `stats_v1/*.csv, *.svg` |
 | `sample_mistakes.py` | ② 표본 2,000국 선정(시드 고정) + KataGo 질의 생성 |
